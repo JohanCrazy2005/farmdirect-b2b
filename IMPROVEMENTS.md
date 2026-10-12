@@ -475,3 +475,18 @@ This completes the volume pricing signal and makes the marketplace more practica
 - Fully client-side, dark-mode compatible, and mobile-friendly (stacked or horizontal-scroll table).
 
 This is a small, high-impact decision-support improvement that can be implemented in one short coding session and directly helps buyers choose among shortlisted farms.
+
+## 2026-10-12 (Hourly update) – Seller Comparison View (Implemented)
+
+**What:** Implemented the ability to select 2–3 sellers and open a side-by-side comparison table/modal showing key commercial and logistics attributes (base price + best bulk price, MOQ, lead time, rating, stock status, payment terms, fulfillment, freshness, distance, verified/organic badges).
+
+**Why:** Wholesale buyers routinely evaluate multiple suppliers against the same criteria before sending RFQs. The comparison view reduces cognitive load and speeds qualification.
+
+**How (implemented):**
+- Added “Compare” buttons on seller cards and map popups.
+- Client-side `compareIds` Set (max 3) with floating “Compare (n)” bar when ≥2 selected.
+- Modal with responsive table of key attributes and a “Request Quote” button per seller that opens the existing RFQ modal.
+- Fully client-side and dark-mode compatible.
+- Pushed to GitHub (commit 5c0a5fb). Vercel production update requires re-authentication of the connector.
+
+This completes the seller comparison feature and makes the marketplace more practical for multi-supplier sourcing decisions.
