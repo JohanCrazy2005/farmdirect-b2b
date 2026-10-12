@@ -683,6 +683,83 @@
       text-align: center;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
+    /* Seller Comparison */
+    .compare-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.3rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--text);
+      margin-left: 0.35rem;
+    }
+    .compare-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .compare-bar {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 9999px;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 2000;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      font-weight: 500;
+    }
+    .compare-bar.show { display: flex; }
+    .compare-bar button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .compare-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .compare-modal.show { display: flex; }
+    .compare-content {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 0.75rem;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 1.25rem;
+      width: 900px;
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .compare-table th, .compare-table td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .compare-table th { background: var(--hover-bg); font-weight: 600; }
+    .compare-close { float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text); }
+
 
     @media (max-width: 900px) {
       .sidebar { width: 320px; }
@@ -760,6 +837,7 @@
             <option>Price: Low to High</option>
             <option>Price: High to Low</option>
             <option>Rating</option>
+            <option>Freshest first</option>
           </select>
         </div>
       </div>
@@ -850,6 +928,15 @@
             <option value="both">Both</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label>Harvested within</label>
+          <select id="freshnessFilter" onchange="filterSellers()">
+            <option value="999">Any</option>
+            <option value="1">Today / 1 day</option>
+            <option value="2">≤ 2 days</option>
+            <option value="7">≤ 7 days</option>
+          </select>
+        </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
       </div>
 
@@ -877,6 +964,7 @@
         <div class="form-row">
           <label for="rfqQty">Quantity needed</label>
           <input type="text" id="rfqQty" placeholder="e.g. 500 kg or 20 cases" required />
+          <div id="rfqTierPrice" style="margin-top:0.35rem;font-size:0.85rem;color:var(--accent);font-weight:500;min-height:1.2em"></div>
         </div>
         <div class="form-row">
           <label for="rfqDate">Preferred delivery window</label>
@@ -905,6 +993,22 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Comparison floating bar & modal -->
+  <div class="compare-bar" id="compareBar">
+    <span id="compareCount">Compare (0)</span>
+    <button type="button" onclick="openCompareModal()">View Comparison</button>
+    <button type="button" onclick="clearCompare()" style="background:transparent;color:white;border:1px solid white;">Clear</button>
+  </div>
+
+  <div class="compare-modal" id="compareModal">
+    <div class="compare-content">
+      <button class="compare-close" onclick="closeCompareModal()">&times;</button>
+      <h2 style="margin-bottom:1rem;">Seller Comparison</h2>
+      <div id="compareTableWrap"></div>
+    </div>
+  </div>
+
+
   <script>
     const sellers = [
       {
@@ -930,7 +1034,10 @@
         leadTimeDays: 2,
         stockStatus: "in_stock",
         paymentTerms: "net_15",
-        fulfillment: "both"
+        fulfillment: "both",
+        harvestDaysAgo: 1
+      ,
+        volumeTiers: [{"minQty": 0, "price": 1.35}, {"minQty": 100, "price": 1.2}, {"minQty": 500, "price": 1.05}]
       },
       {
         id: 2,
@@ -955,7 +1062,10 @@
         leadTimeDays: 1,
         stockStatus: "in_stock",
         paymentTerms: "net_30",
-        fulfillment: "delivery"
+        fulfillment: "delivery",
+        harvestDaysAgo: 0
+      ,
+        volumeTiers: [{"minQty": 0, "price": 0.68}, {"minQty": 200, "price": 0.62}, {"minQty": 1000, "price": 0.55}]
       },
       {
         id: 3,
@@ -980,7 +1090,10 @@
         leadTimeDays: 1,
         stockStatus: "low",
         paymentTerms: "due_on_receipt",
-        fulfillment: "both"
+        fulfillment: "both",
+        harvestDaysAgo: 2
+      ,
+        volumeTiers: [{"minQty": 0, "price": 2.1}, {"minQty": 50, "price": 1.95}, {"minQty": 200, "price": 1.8}]
       },
       {
         id: 4,
@@ -1005,7 +1118,10 @@
         leadTimeDays: 7,
         stockStatus: "in_stock",
         paymentTerms: "net_30",
-        fulfillment: "pickup"
+        fulfillment: "pickup",
+        harvestDaysAgo: 14
+      ,
+        volumeTiers: [{"minQty": 0, "price": 235.0}, {"minQty": 10, "price": 225.0}, {"minQty": 25, "price": 210.0}]
       },
       {
         id: 5,
@@ -1030,7 +1146,10 @@
         leadTimeDays: 1,
         stockStatus: "in_stock",
         paymentTerms: "net_15",
-        fulfillment: "delivery"
+        fulfillment: "delivery",
+        harvestDaysAgo: 0
+      ,
+        volumeTiers: [{"minQty": 0, "price": 8.5}, {"minQty": 25, "price": 7.9}, {"minQty": 100, "price": 7.2}]
       },
       {
         id: 6,
@@ -1055,7 +1174,10 @@
         leadTimeDays: 3,
         stockStatus: "out",
         paymentTerms: "due_on_receipt",
-        fulfillment: "pickup"
+        fulfillment: "pickup",
+        harvestDaysAgo: 5
+      ,
+        volumeTiers: [{"minQty": 0, "price": 12.0}, {"minQty": 30, "price": 11.0}, {"minQty": 100, "price": 10.0}]
       }
     ];
 
@@ -1077,6 +1199,31 @@
     function saveFavorites() {
       try { localStorage.setItem('farmdirect_favorites', JSON.stringify([...favorites])); } catch (_) {}
     }
+
+    function freshnessLabel(daysAgo) {
+      if (daysAgo === 0) return 'Harvested / packed today';
+      if (daysAgo === 1) return 'Harvested 1 day ago';
+      if (daysAgo < 7) return `Harvested ${daysAgo} days ago`;
+      if (daysAgo < 14) return 'Harvested ~1 week ago';
+      return `Harvested ${daysAgo} days ago`;
+    }
+
+    function getApplicableTier(s, qty) {
+      if (!s.volumeTiers || !s.volumeTiers.length) return { minQty: 0, price: s.price };
+      const q = Math.max(0, Number(qty) || 0);
+      let best = s.volumeTiers[0];
+      for (const t of s.volumeTiers) {
+        if (q >= t.minQty) best = t;
+        else break;
+      }
+      return best;
+    }
+    function tierSummary(s) {
+      if (!s.volumeTiers || s.volumeTiers.length < 2) return '';
+      const best = s.volumeTiers[s.volumeTiers.length - 1];
+      return `Bulk from ${best.minQty} ${s.unit}: $${best.price.toFixed(2)}`;
+    }
+
     function toggleFavorite(id, e) {
       if (e) { e.stopPropagation(); e.preventDefault(); }
       if (favorites.has(id)) favorites.delete(id);
@@ -1093,6 +1240,69 @@
       showToast(isFav ? 'Added to favorites' : 'Removed from favorites');
     }
     loadFavorites();
+
+    let compareIds = new Set();
+    function toggleCompare(id, e) {
+      if (e) { e.stopPropagation(); e.preventDefault(); }
+      if (compareIds.has(id)) {
+        compareIds.delete(id);
+      } else {
+        if (compareIds.size >= 3) {
+          showToast("Maximum 3 sellers for comparison");
+          return;
+        }
+        compareIds.add(id);
+      }
+      updateCompareUI();
+    }
+    function updateCompareUI() {
+      document.querySelectorAll(".compare-btn").forEach(btn => {
+        const id = +btn.dataset.id;
+        btn.classList.toggle("active", compareIds.has(id));
+        btn.textContent = compareIds.has(id) ? "✓ Comparing" : "Compare";
+      });
+      const bar = document.getElementById("compareBar");
+      const countEl = document.getElementById("compareCount");
+      countEl.textContent = `Compare (${compareIds.size})`;
+      bar.classList.toggle("show", compareIds.size >= 2);
+    }
+    function clearCompare() {
+      compareIds.clear();
+      updateCompareUI();
+    }
+    function openCompareModal() {
+      if (compareIds.size < 2) return;
+      const selected = sellers.filter(s => compareIds.has(s.id));
+      const rows = [
+        { label: "Product / Farm", val: s => `${s.emoji} ${s.product}<br><small>${s.farm}</small>` },
+        { label: "Base price", val: s => `$${s.price.toFixed(2)} / ${s.unit}` },
+        { label: "Best bulk price", val: s => {
+          const best = s.volumeTiers && s.volumeTiers.length ? s.volumeTiers[s.volumeTiers.length-1] : null;
+          return best ? `$${best.price.toFixed(2)} (from ${best.minQty})` : "—";
+        }},
+        { label: "MOQ", val: s => `${s.moq} ${s.unit}` },
+        { label: "Lead time", val: s => `${s.leadTimeDays} day${s.leadTimeDays===1?"":"s"}` },
+        { label: "Rating", val: s => `★ ${s.rating} (${s.reviews})` },
+        { label: "Stock", val: s => s.stockStatus === "in_stock" ? "In stock" : s.stockStatus === "low" ? "Low stock" : "Out of stock" },
+        { label: "Payment terms", val: s => s.paymentTerms === "due_on_receipt" ? "Due on receipt" : s.paymentTerms === "net_15" ? "Net 15" : "Net 30" },
+        { label: "Fulfillment", val: s => s.fulfillment === "both" ? "Pickup & Delivery" : s.fulfillment === "delivery" ? "Delivery" : "Pickup" },
+        { label: "Freshness", val: s => freshnessLabel(s.harvestDaysAgo) },
+        { label: "Distance", val: s => `${s.distance} km` },
+        { label: "Badges", val: s => [s.organic?"Organic":"", s.verified?"Verified":""].filter(Boolean).join(", ") || "—" },
+      ];
+      let html = `<table class="compare-table"><thead><tr><th>Attribute</th>${selected.map(s => `<th>${s.name}</th>`).join("")}</tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td><strong>${r.label}</strong></td>${selected.map(s => `<td>${r.val(s)}</td>`).join("")}</tr>`;
+      });
+      html += `<tr><td></td>${selected.map(s => `<td><button class="btn btn-primary" style="font-size:0.8rem;padding:0.35rem 0.7rem" onclick="closeCompareModal(); openRfqModal(${s.id})">Request Quote</button></td>`).join("")}</tr>`;
+      html += "</tbody></table>";
+      document.getElementById("compareTableWrap").innerHTML = html;
+      document.getElementById("compareModal").classList.add("show");
+    }
+    function closeCompareModal() {
+      document.getElementById("compareModal").classList.remove("show");
+    }
+
 
     let userMarker = null;
     let userLat = null;
@@ -1137,7 +1347,7 @@
       const favIcon = favActive ? '♥' : '♡';
       return `
         <div class="popup-card">
-          <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favIcon}</button></h3>
+          <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favIcon}</button> <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button></h3>
           <div class="product">${s.emoji} ${s.product} · ${s.farm}</div>
           <div class="price-row">
             <span>Price (per ${s.unit})</span>
@@ -1146,6 +1356,8 @@
           <div class="qty">Available: ${s.qty} · ${s.distance} km away</div>
           <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
+          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
+          ${tierSummary(s) ? `<div class="qty" style="margin-top:0.1rem;font-size:0.8rem;color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
           <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
         </div>
       `;
@@ -1264,10 +1476,12 @@
             <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
             <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
             <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel} · ${fulfillLabel}</div>
+            <div class="seller-meta" style="color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
+            ${tierSummary(s) ? `<div class="seller-meta" style="color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
           </div>
           <div class="seller-actions">
             <div style="display:flex;align-items:center;gap:0.25rem;">
-              <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favorites.has(s.id) ? '♥' : '♡'}</button>
+              <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favorites.has(s.id) ? '♥' : '♡'}</button> <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button>
               <div class="seller-rating">
                 <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
                 <span>${s.rating} (${s.reviews})</span>
@@ -1303,6 +1517,7 @@
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
       const paymentTerms = document.getElementById('paymentFilter').value;
       const fulfillment = document.getElementById('fulfillmentFilter').value;
+      const maxHarvestDays = +document.getElementById('freshnessFilter').value;
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -1324,6 +1539,7 @@
             return false;
           }
         }
+        if (s.harvestDaysAgo > maxHarvestDays) return false;
         if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
         return true;
       });
@@ -1333,6 +1549,7 @@
       else if (sort === 'Price: Low to High') filtered.sort((a, b) => a.price - b.price);
       else if (sort === 'Price: High to Low') filtered.sort((a, b) => b.price - a.price);
       else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
+      else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
 
       renderSellers(filtered);
       updateFilterChips();
@@ -1390,6 +1607,12 @@
         const label = opt ? opt.textContent : fulfillment;
         chips.push({ label: `Fulfillment: ${label}`, reset: () => { document.getElementById('fulfillmentFilter').value = 'any'; } });
       }
+      const maxHarvestDays = +document.getElementById('freshnessFilter').value;
+      if (maxHarvestDays < 999) {
+        const opt = document.querySelector(`#freshnessFilter option[value="${maxHarvestDays}"]`);
+        const label = opt ? opt.textContent : `≤ ${maxHarvestDays}d`;
+        chips.push({ label: `Harvested: ${label}`, reset: () => { document.getElementById('freshnessFilter').value = '999'; } });
+      }
       const searchVal = document.getElementById('searchInput').value.trim();
       if (searchVal) {
         chips.push({ label: `Search: “${searchVal}”`, reset: () => { document.getElementById('searchInput').value = ''; } });
@@ -1436,6 +1659,7 @@
       document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
       document.getElementById('paymentFilter').value = 'any';
       document.getElementById('fulfillmentFilter').value = 'any';
+      document.getElementById('freshnessFilter').value = '999';
       filterSellers();
     }
 
@@ -1445,19 +1669,36 @@
       if (!s) return;
       document.getElementById('rfqSellerId').value = id;
       document.getElementById('rfqSubtitle').textContent =
-        `${s.name} · ${s.product} · $${s.price}/${s.unit} · ${s.qty} available`;
-      document.getElementById('rfqQty').value = '';
+        `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available`;
+      const qtyInput = document.getElementById('rfqQty');
+      qtyInput.value = '';
       document.getElementById('rfqDate').value = '';
       document.getElementById('rfqEmail').value = '';
       document.getElementById('rfqPhone').value = '';
       document.getElementById('rfqMsg').value = '';
       document.getElementById('rfqError').classList.remove('show');
+      const tierEl = document.getElementById('rfqTierPrice');
+      tierEl.textContent = '';
+      const updateTier = () => {
+        const raw = qtyInput.value.replace(/[^0-9.]/g, '');
+        const qty = parseFloat(raw) || 0;
+        const tier = getApplicableTier(s, qty);
+        if (qty > 0 && tier.price < s.price) {
+          tierEl.textContent = `Unit price at this qty: $${tier.price.toFixed(2)} / ${s.unit} (saves $${(s.price - tier.price).toFixed(2)})`;
+        } else if (qty > 0) {
+          tierEl.textContent = `Unit price: $${tier.price.toFixed(2)} / ${s.unit}`;
+        } else {
+          tierEl.textContent = tierSummary(s) || '';
+        }
+      };
+      qtyInput.oninput = updateTier;
+      updateTier();
       // Default date = tomorrow
       const t = new Date();
       t.setDate(t.getDate() + 1);
       document.getElementById('rfqDate').value = t.toISOString().slice(0, 10);
       document.getElementById('rfqModal').classList.add('open');
-      document.getElementById('rfqQty').focus();
+      qtyInput.focus();
     }
 
     function closeRfqModal() {

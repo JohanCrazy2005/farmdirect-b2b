@@ -427,3 +427,51 @@ This is a small, high-impact commercial signal that can be implemented in one sh
 - Keep fully client-side and compatible with dark mode.
 
 This is a small, high-impact logistics signal that can be implemented in one short coding session and makes the marketplace more practical for real B2B buyers.
+
+## 2026-10-12 (Hourly update) – Harvest / Pack Date Freshness Indicator & Sort (Implemented)
+
+**What:** Added harvest/pack freshness to every seller: a human-readable label on cards and map popups (“Harvested / packed today”, “1 day ago”, etc.), a “Freshest first” sort option, and a “Harvested within” filter (Any / Today–1 day / ≤2 days / ≤7 days) with active filter chip support.
+
+**Why:** For produce, dairy, eggs and other perishables, absolute price and distance matter less than how recently the product was harvested or packed. Buyers previously had no freshness signal. Showing this early lets restaurants, retailers and processors prioritize quality and reduces post-RFQ surprises.
+
+**How (implemented):**
+- Extended sample `sellers` with `harvestDaysAgo` (0–14).
+- Added `freshnessLabel()` helper for readable text.
+- Displayed the label in green/primary on seller cards and Leaflet popups.
+- Added “Freshest first” to the sort `<select>` and sorting logic.
+- Added `#freshnessFilter` select + chip + clearFilters support.
+- Fully client-side and dark-mode compatible.
+
+This completes the freshness signal proposed earlier and makes the marketplace more practical for time-sensitive fresh-produce buying.
+
+## 2026-10-12 (Hourly update) – Volume Pricing Tiers (Implemented)
+
+**What:** Added volume/bulk pricing tiers to every seller. Cards and map popups now show the best bulk rate (e.g. “Bulk from 100 kg: $1.20”). The RFQ modal displays the applicable unit price live as the buyer types a quantity, including the savings versus base price.
+
+**Why:** Wholesale buyers make decisions based on bulk discounts. Surfacing tiers early improves transparency, speeds qualification, and increases the quality of inquiries.
+
+**How (implemented):**
+- Extended sample `sellers` with `volumeTiers` arrays of `{minQty, price}`.
+- Added `getApplicableTier()` and `tierSummary()` helpers.
+- Displayed bulk summary on seller cards and Leaflet popups.
+- Added `#rfqTierPrice` element; quantity input updates the live unit price.
+- Fully client-side and dark-mode compatible.
+
+This completes the volume pricing signal and makes the marketplace more practical for real B2B volume buyers.
+
+## 2026-10-12 (Hourly update) – Seller Comparison View
+
+**What:** Add the ability to select 2–3 sellers and open a side-by-side comparison table/modal showing key commercial and logistics attributes (base price + best bulk price, MOQ, lead time, rating, stock status, payment terms, fulfillment, freshness, distance, verified/organic badges, and volume tier summary).
+
+**Why:** Wholesale buyers routinely evaluate multiple suppliers against the same criteria before sending RFQs. Without a comparison view they must mentally track differences across cards or re-open popups. A dedicated side-by-side view reduces cognitive load, speeds qualification, and makes the marketplace more practical for real multi-supplier sourcing decisions.
+
+**How:**
+- Add a “Compare” toggle/button on each seller card and map popup.
+- Maintain a client-side set of selected seller IDs (maximum 3).
+- Show a floating “Compare (n)” bar when at least 2 sellers are selected.
+- Clicking the bar opens a modal with a responsive comparison table.
+- Include a “Request Quote” button per seller inside the comparison that opens the existing RFQ modal.
+- Allow clearing the selection. Persist nothing (session-only is fine for the prototype).
+- Fully client-side, dark-mode compatible, and mobile-friendly (stacked or horizontal-scroll table).
+
+This is a small, high-impact decision-support improvement that can be implemented in one short coding session and directly helps buyers choose among shortlisted farms.
