@@ -582,3 +582,31 @@ This is a small, high-impact browsing improvement that makes the marketplace fee
 - Escape and overlay close. Fully client-side and dark-mode compatible.
 
 This completes the seller detail drawer and improves browsing depth for wholesale buyers.
+
+## 2026-10-12 (Hourly update) – Fit Map to Filtered Results
+
+**What:** Add a “Zoom to results” control on the map (and optional auto-fit after filters change) that recenters and zooms the map so all currently filtered sellers are visible with comfortable padding.
+
+**Why:** After applying category, distance, price, rating, or availability filters the list updates but the map often stays on the previous view, leaving buyers to pan and zoom manually. A one-click “show these sellers on the map” (plus auto-fit when filters change) keeps the map and list in sync and is especially valuable on mobile where screen space is limited.
+
+**How:**
+- After `filterSellers()` finishes rendering markers, optionally call `map.fitBounds` on the visible marker LatLngs (with padding).
+- Add a small Leaflet control or header button “Zoom to results” that does the same on demand.
+- Fallback to a sensible default view when zero or one seller is visible.
+- Respect existing user location marker and dark-mode styles. Fully client-side.
+
+This is a small, high-impact map UX improvement that makes filtering feel complete for B2B buyers scanning supply nearby.
+
+## 2026-10-12 (Hourly update) – Fit Map to Filtered Results (Implemented)
+
+**What:** Implemented “Zoom to results” map control + filtered marker visibility. Map markers now appear/disappear with the current filters; a dedicated button fits the map bounds to the matching sellers with padding.
+
+**Why:** Keeps the map in sync with the filtered list so buyers immediately see where the qualifying farms are without manual pan/zoom.
+
+**How (implemented):**
+- `updateVisibleMarkers(filtered)` adds/removes layers from the Leaflet.markercluster group based on the current filter set.
+- `fitMapToFiltered()` builds LatLngBounds from the filtered sellers and calls `map.fitBounds` (or flyTo for a single result).
+- “🔎 Zoom to results” button added to the map controls next to Near Me.
+- Fully client-side, works with clusters, dark mode, and existing popups.
+
+This completes the map-filter sync improvement for faster B2B supply scanning.

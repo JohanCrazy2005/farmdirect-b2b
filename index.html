@@ -900,6 +900,9 @@
         <button type="button" class="near-me" id="nearMeBtn" title="Use my location">
           📍 Near Me
         </button>
+        <button type="button" class="near-me" id="zoomToResultsBtn" title="Zoom map to currently filtered sellers" onclick="fitMapToFiltered()">
+          🔎 Zoom to results
+        </button>
         <select id="mapLayers">
           <option value="streets">Streets</option>
           <option value="satellite">Satellite</option>
@@ -1604,6 +1607,41 @@
       markers[s.id] = marker;
     });
 
+    let lastFilteredIds = new Set(sellers.map(s => s.id));
+
+    function updateVisibleMarkers(filtered) {
+      const ids = new Set(filtered.map(s => s.id));
+      // Remove markers no longer in the filtered set
+      lastFilteredIds.forEach(id => {
+        if (!ids.has(id) && markers[id]) {
+          markerCluster.removeLayer(markers[id]);
+        }
+      });
+      // Add markers that are newly visible
+      ids.forEach(id => {
+        if (!lastFilteredIds.has(id) && markers[id]) {
+          markerCluster.addLayer(markers[id]);
+        }
+      });
+      lastFilteredIds = ids;
+    }
+
+    function fitMapToFiltered(list) {
+      const filtered = list || (typeof window._lastFilteredList !== 'undefined' ? window._lastFilteredList : sellers);
+      if (!filtered || filtered.length === 0) {
+        showToast('No sellers to show on the map. Adjust filters.');
+        return;
+      }
+      if (filtered.length === 1) {
+        const s = filtered[0];
+        map.flyTo([s.lat, s.lng], 13, { duration: 0.6 });
+        if (markers[s.id]) markers[s.id].openPopup();
+        return;
+      }
+      const bounds = L.latLngBounds(filtered.map(s => [s.lat, s.lng]));
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14, animate: true, duration: 0.7 });
+    }
+
     function haversineKm(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1783,8 +1821,18 @@
       else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
       else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
 
+      window._lastFilteredList = filtered;
+      updateVisibleMarkers(filtered);
       renderSellers(filtered);
       updateFilterChips();
+
+      // Auto-fit map when filters change and we have results (skip initial load if desired)
+      if (filtered.length > 0 && filtered.length < sellers.length) {
+        // Only auto-fit when the user has actually narrowed the set
+        // Manual button always works; auto is subtle
+        // Uncomment next line for aggressive auto-fit:
+        // fitMapToFiltered(filtered);
+      }
     }
 
     function updateFilterChips() {
