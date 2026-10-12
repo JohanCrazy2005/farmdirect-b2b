@@ -31,7 +31,7 @@ python3 -m http.server 8080
 
 Live deployment (if synced): https://farmdirect-b2b-johancrazy2005s-projects.vercel.app
 
-Temporary preview of latest (claim to make permanent): https://temporary-spry-gust-80osar7.vercel.app
+Temporary preview of latest (Payment Terms feature — claim to make permanent): https://temporary-spry-crater-e08fct3.vercel.app (claim: https://vercel.com/claim-deployment?code=f843fda8-7a73-4036-a8c3-1bc74870c93d)
 
 GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
 
