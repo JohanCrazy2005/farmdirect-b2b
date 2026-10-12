@@ -4,7 +4,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 
 ## Features (functional)
 
-- **Interactive map** (Leaflet + Carto/Esri) with product emoji markers and popups
+- **Marker clustering** – nearby sellers group into clusters at wider zooms (Leaflet.markercluster)
 - **RFQ / Request Quote modal** – quantity, delivery date, email, notes; validation + success toast
 - **Near Me** – browser geolocation, Haversine distance recalculation, user marker, saved position
 - **Verified seller badges** + “Verified only” filter

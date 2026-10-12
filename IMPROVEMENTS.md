@@ -521,3 +521,34 @@ This is a small, high-impact workflow improvement that can be implemented in one
 
 This completes the inquiry cart feature and makes multi-seller shortlisting practical for buyers.
 
+
+## 2026-10-12 (Hourly update) – Marker Clustering
+
+**What:** Add Leaflet.markercluster so nearby seller markers group into numbered clusters at wider zoom levels, expanding into individual emoji markers (or spiderfy) when the buyer zooms in or clicks a cluster.
+
+**Why:** Even with a modest number of sellers the map can look cluttered when many farms sit close together (common in regional produce belts). Clustering keeps the overview clean, reduces visual noise, and improves performance and usability as the catalog grows—while still letting buyers drill down to exact locations.
+
+**How:**
+- Include Leaflet.markercluster CSS/JS from CDN.
+- Create an L.markerClusterGroup (maxClusterRadius ~60, spiderfyOnMaxZoom, zoomToBoundsOnClick) and add it to the map.
+- Add each seller marker to the cluster group instead of directly to the map.
+- Keep the existing popup content, favorites, compare, and cart buttons working inside the clusters.
+- User location marker remains unclustered on the base map.
+- Fully client-side and compatible with the current dark-mode and filter system (map markers always show all sellers; sidebar still filters).
+
+This is a small, high-impact map UX improvement that can be implemented in one short coding session and scales the prototype for denser seller coverage.
+
+## 2026-10-12 (Hourly update) – Marker Clustering (Implemented)
+
+**What:** Implemented Leaflet.markercluster. Nearby sellers now group into clusters at wider zooms and expand cleanly on zoom or click.
+
+**Why:** Cleaner map overview and better scalability for regional farm density.
+
+**How (implemented):**
+- Added MarkerCluster CSS + JS via unpkg.
+- Initialized markerCluster group and added it to the map.
+- Seller markers are now added to the cluster group.
+- Existing popups, buttons, and user marker remain functional.
+- Fully client-side and dark-mode compatible.
+
+This completes the marker clustering feature and improves map readability for buyers.
