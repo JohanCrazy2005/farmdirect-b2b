@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FarmDirect B2B – Direct Farm Marketplace</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-dark: #1b4332;
+      --accent: #40916c;
+      --bg: #f8faf9;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --header-bg: #ffffff;
+      --input-bg: #f9fafb;
+      --hover-bg: #f3f4f6;
+      --active-card: #f0fdf4;
+    }
+    html.dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --header-bg: #1e293b;
+      --input-bg: #0f172a;
+      --hover-bg: #334155;
+      --active-card: #14532d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      gap: 1rem;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .logo svg { width: 28px; height: 28px; }
+    .search-box {
+      flex: 1;
+      max-width: 420px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
+      background: var(--card);
+    }
+    .search-box svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 18px;
+      height: 18px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--hover-bg); }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover { background: var(--hover-bg); }
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .map-container {
+      flex: 1;
+      position: relative;
+      background: #e5e7eb;
+    }
+    #map { width: 100%; height: 100%; }
+    .map-controls {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .map-controls select, .map-controls button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .map-controls button.near-me {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 500;
+    }
+    .map-controls button.near-me:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+    .legend {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1rem;
+      z-index: 1000;
+      background: var(--card);
+      color: var(--text);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+    }
+    .legend h4 { margin-bottom: 0.4rem; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; margin: 0.25rem 0; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .sidebar {
+      width: 380px;
+      background: var(--card);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .sidebar-header .count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .filters {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .filter-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .filter-group select, .filter-group input[type="range"] {
+      width: 100%;
+    }
+    .filter-group select {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      font-size: 0.9rem;
+      background: var(--input-bg);
+      color: var(--text);
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #d1d5db;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle.on { background: var(--success); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle.on::after { transform: translateX(20px); }
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .clear-filters {
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+    }
+    .clear-filters:hover { text-decoration: underline; }
+
+    .filter-chips {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      align-items: center;
+    }
+    .filter-chips.visible { display: flex; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.5rem 0.2rem 0.6rem;
+      background: var(--hover-bg);
+      color: var(--text);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+    }
+    .chip button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      padding: 0;
+      margin-left: 0.1rem;
+    }
+    .chip button:hover { color: var(--text); }
+    .chip-clear-all {
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 0.25rem;
+      text-decoration: underline;
+    }
+    .seller-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+    }
+    .seller-card {
+      display: flex;
+      gap: 0.85rem;
+      padding: 0.85rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      margin-bottom: 0.65rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--card);
+    }
+    .seller-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(64, 145, 108, 0.12);
+    }
+    .seller-card.active {
+      border-color: var(--primary);
+      background: var(--active-card);
+    }
+    .seller-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 0.5rem;
+      object-fit: cover;
+      background: var(--hover-bg);
+      flex-shrink: 0;
+    }
+    .seller-info { flex: 1; min-width: 0; }
+    .seller-info h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .badge-organic {
+      font-size: 0.65rem;
+      background: #dcfce7;
+      color: #166534;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+    html.dark .badge-organic {
+      background: #14532d;
+      color: #86efac;
+    }
+    .badge-verified {
+      font-size: 0.65rem;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    html.dark .badge-verified {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
+    .badge-stock {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+    .badge-stock.in_stock { background: #dcfce7; color: #166534; }
+    .badge-stock.low { background: #fef3c7; color: #92400e; }
+    .badge-stock.out { background: #f3f4f6; color: #6b7280; }
+    html.dark .badge-stock.in_stock { background: #14532d; color: #86efac; }
+    html.dark .badge-stock.low { background: #78350f; color: #fcd34d; }
+    html.dark .badge-stock.out { background: #374151; color: #9ca3af; }
+
+    .seller-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0.15rem 0;
+    }
+    .seller-price {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+    .seller-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .stars { color: #f59e0b; letter-spacing: -1px; }
+    .seller-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .btn-sm {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      border-radius: 0.4rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-sm:hover { background: var(--hover-bg); }
+    .view-more {
+      text-align: center;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--accent);
+      cursor: pointer;
+      border-top: 1px solid var(--border);
+    }
+    .view-more:hover { background: var(--hover-bg); }
+    .custom-marker {
+      background: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      border: 3px solid;
+      font-size: 18px;
+    }
+    .user-marker {
+      background: var(--primary);
+      color: white;
+      border: 3px solid white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.35);
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 0.75rem;
+      padding: 0;
+      overflow: hidden;
+      background: var(--card);
+      color: var(--text);
+    }
+    .leaflet-popup-content {
+      margin: 0;
+      min-width: 220px;
+    }
+    .leaflet-popup-tip {
+      background: var(--card);
+    }
+    .popup-card {
+      padding: 0.9rem 1rem;
+    }
+    .popup-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .popup-card .product {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .popup-card .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .popup-card .price { font-weight: 700; color: var(--primary); }
+    .popup-card .qty { color: var(--muted); font-size: 0.8rem; }
+    .popup-btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.4rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .popup-btn:hover { background: var(--primary-dark); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1.25rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .modal-header .sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.15rem;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-row label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .form-row input, .form-row textarea, .form-row select {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.45rem;
+      font-size: 0.95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+    .form-row input:focus, .form-row textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
+    }
+    .form-row textarea { min-height: 80px; resize: vertical; }
+    .form-row .hint { font-size: 0.75rem; color: var(--muted); }
+    .form-error {
+      font-size: 0.8rem;
+      color: #ef4444;
+      display: none;
+    }
+    .form-error.show { display: block; }
+    .modal-footer {
+      padding: 0 1.25rem 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+    .modal-footer .btn { min-width: 100px; justify-content: center; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--primary-dark);
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      z-index: 3000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 320px; }
+    }
+    @media (max-width: 700px) {
+      .main { flex-direction: column; }
+      .sidebar { width: 100%; height: 45%; border-left: none; border-top: 1px solid var(--border); }
+      .map-container { height: 55%; }
+      .header-actions .btn span { display: none; }
+      .search-box { max-width: none; }
+      .modal { max-width: 100%; border-radius: 1rem 1rem 0 0; max-height: 85vh; }
+      .modal-overlay { align-items: flex-end; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      FarmDirect <span style="font-weight:500;color:var(--muted);font-size:0.9rem">B2B</span>
+    </a>
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="text" id="searchInput" placeholder="Search products or farms..." />
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <svg id="darkIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <button class="btn btn-primary" onclick="showToast('Seller onboarding coming soon — contact us to list your farm.')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 11h18v10H3z"/></svg>
+        <span>Sell Your Goods</span>
+      </button>
+      <button class="btn btn-ghost" onclick="showToast('Login will be available in a future update.')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Login</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="map-container">
+      <div class="map-controls">
+        <button type="button" class="near-me" id="nearMeBtn" title="Use my location">
+          📍 Near Me
+        </button>
+        <select id="mapLayers">
+          <option value="streets">Streets</option>
+          <option value="satellite">Satellite</option>
+        </select>
+      </div>
+      <div id="map"></div>
+      <div class="legend">
+        <h4>Farms &amp; Suppliers</h4>
+        <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Produce</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Dairy</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Eggs &amp; Poultry</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#84cc16"></span> Grains</div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>
+          Nearby Sellers
+          <span class="count" id="sellerCount">0 sellers</span>
+        </h2>
+        <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--muted)">
+          Sort by:
+          <select id="sortBy" style="border:none;background:transparent;font-weight:500;cursor:pointer;color:var(--text)">
+            <option>Distance</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label>Product Category</label>
+          <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="tomatoes">Tomatoes</option>
+            <option value="milk">Milk</option>
+            <option value="eggs">Eggs</option>
+            <option value="wheat">Wheat</option>
+            <option value="herbs">Herbs</option>
+            <option value="honey">Honey</option>
+          </select>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Organic only</span>
+          <div class="toggle" id="organicToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Verified sellers only</span>
+          <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Available now only</span>
+          <div class="toggle" id="availableToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
+
+        <div class="filter-group">
+          <label>Max Distance: <span id="distValue">50</span> km</label>
+          <input type="range" id="distRange" min="5" max="100" value="50" step="5" oninput="document.getElementById('distValue').textContent=this.value; filterSellers()" />
+          <div class="range-labels"><span>5 km</span><span>100 km</span></div>
+        </div>
+        <div class="filter-group">
+          <label>Max price (per unit, non-bulk)</label>
+          <input type="range" id="priceRange" min="0" max="10" value="10" step="0.25" oninput="filterSellers()" />
+          <div class="range-labels"><span>$0</span><span>$10+</span></div>
+        </div>
+        <div class="filter-group">
+          <label>Max MOQ</label>
+          <select id="moqFilter" onchange="filterSellers()">
+            <option value="9999">Any</option>
+            <option value="25">≤ 25</option>
+            <option value="50">≤ 50</option>
+            <option value="100">≤ 100</option>
+            <option value="250">≤ 250</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Max Lead Time</label>
+          <select id="leadTimeFilter" onchange="filterSellers()">
+            <option value="999">Any</option>
+            <option value="1">≤ 1 day</option>
+            <option value="3">≤ 3 days</option>
+            <option value="7">≤ 7 days</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Min. rating</label>
+          <select id="ratingFilter" onchange="filterSellers()">
+            <option value="0">Any</option>
+            <option value="4">4.0+</option>
+            <option value="4.5">4.5+</option>
+            <option value="4.8">4.8+</option>
+          </select>
+        </div>
+        <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
+      </div>
+
+      <div class="filter-chips" id="filterChips"></div>
+
+      <div class="seller-list" id="sellerList"></div>
+      <div class="view-more" onclick="map.setZoom(11); showToast('Zoom out on the map to see more farms in the area.')">
+        View more sellers on map →
+      </div>
+    </aside>
+  </div>
+
+  <!-- RFQ Modal -->
+  <div class="modal-overlay" id="rfqModal" role="dialog" aria-modal="true" aria-labelledby="rfqTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="rfqTitle">Request a Quote</h2>
+          <div class="sub" id="rfqSubtitle">Send a bulk inquiry to this seller</div>
+        </div>
+        <button class="modal-close" onclick="closeRfqModal()" aria-label="Close">&times;</button>
+      </div>
+      <form id="rfqForm" class="modal-body" onsubmit="return submitRfq(event)">
+        <input type="hidden" id="rfqSellerId" />
+        <div class="form-row">
+          <label for="rfqQty">Quantity needed</label>
+          <input type="text" id="rfqQty" placeholder="e.g. 500 kg or 20 cases" required />
+        </div>
+        <div class="form-row">
+          <label for="rfqDate">Preferred delivery window</label>
+          <input type="date" id="rfqDate" />
+        </div>
+        <div class="form-row">
+          <label for="rfqEmail">Your business email</label>
+          <input type="email" id="rfqEmail" placeholder="buyer@restaurant.com" required />
+        </div>
+        <div class="form-row">
+          <label for="rfqPhone">Phone (optional)</label>
+          <input type="tel" id="rfqPhone" placeholder="+1 555 000 0000" />
+        </div>
+        <div class="form-row">
+          <label for="rfqMsg">Notes / requirements</label>
+          <textarea id="rfqMsg" placeholder="Delivery address, packaging, certifications needed..."></textarea>
+        </div>
+        <p class="form-error" id="rfqError">Please fill in quantity and a valid email.</p>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeRfqModal()">Cancel</button>
+        <button type="submit" form="rfqForm" class="btn btn-primary">Send Inquiry</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const sellers = [
+      {
+        id: 1,
+        name: "Greenfield Tomatoes",
+        farm: "Greenfield Farm",
+        product: "Tomatoes",
+        category: "tomatoes",
+        price: 1.35,
+        unit: "kg",
+        qty: "2,400 kg",
+        organic: true,
+        verified: true,
+        rating: 4.8,
+        reviews: 32,
+        distance: 12,
+        lat: 51.52,
+        lng: -0.09,
+        color: "#ef4444",
+        emoji: "🍅",
+        img: "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=128&h=128&fit=crop",
+        moq: 50,
+        leadTimeDays: 2,
+        stockStatus: "in_stock"
+      },
+      {
+        id: 2,
+        name: "Riverside Dairy",
+        farm: "Riverside Farm",
+        product: "Milk",
+        category: "milk",
+        price: 0.68,
+        unit: "liter",
+        qty: "5,000 L",
+        organic: false,
+        verified: true,
+        rating: 4.2,
+        reviews: 28,
+        distance: 18,
+        lat: 51.505,
+        lng: -0.07,
+        color: "#3b82f6",
+        emoji: "🥛",
+        img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=128&h=128&fit=crop",
+        moq: 100,
+        leadTimeDays: 1,
+        stockStatus: "in_stock"
+      },
+      {
+        id: 3,
+        name: "Oakwood Poultry",
+        farm: "Oakwood Farm",
+        product: "Eggs",
+        category: "eggs",
+        price: 2.10,
+        unit: "dozen",
+        qty: "1,200 doz",
+        organic: true,
+        verified: false,
+        rating: 4.6,
+        reviews: 19,
+        distance: 22,
+        lat: 51.49,
+        lng: -0.11,
+        color: "#f59e0b",
+        emoji: "🥚",
+        img: "https://images.unsplash.com/photo-1582722872448-3b6d1b0c4f1a?w=128&h=128&fit=crop",
+        moq: 20,
+        leadTimeDays: 1,
+        stockStatus: "low"
+      },
+      {
+        id: 4,
+        name: "Meadowbrook Grains",
+        farm: "Meadowbrook Farm",
+        product: "Wheat",
+        category: "wheat",
+        price: 235.00,
+        unit: "ton",
+        qty: "150 ton",
+        organic: false,
+        verified: true,
+        rating: 4.9,
+        reviews: 41,
+        distance: 28,
+        lat: 51.48,
+        lng: -0.05,
+        color: "#84cc16",
+        emoji: "🌾",
+        img: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=128&h=128&fit=crop",
+        moq: 5,
+        leadTimeDays: 7,
+        stockStatus: "in_stock"
+      },
+      {
+        id: 5,
+        name: "Hillside Herbs",
+        farm: "Hillside Growers",
+        product: "Fresh Herbs",
+        category: "herbs",
+        price: 8.50,
+        unit: "kg",
+        qty: "180 kg",
+        organic: true,
+        verified: true,
+        rating: 4.7,
+        reviews: 15,
+        distance: 9,
+        lat: 51.53,
+        lng: -0.12,
+        color: "#22c55e",
+        emoji: "🌿",
+        img: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=128&h=128&fit=crop",
+        moq: 10,
+        leadTimeDays: 1,
+        stockStatus: "in_stock"
+      },
+      {
+        id: 6,
+        name: "Beehive Acres",
+        farm: "Beehive Acres",
+        product: "Raw Honey",
+        category: "honey",
+        price: 12.00,
+        unit: "kg",
+        qty: "320 kg",
+        organic: true,
+        verified: false,
+        rating: 4.5,
+        reviews: 22,
+        distance: 35,
+        lat: 51.47,
+        lng: -0.02,
+        color: "#eab308",
+        emoji: "🍯",
+        img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=128&h=128&fit=crop",
+        moq: 15,
+        leadTimeDays: 3,
+        stockStatus: "out"
+      }
+    ];
+
+    // Persist original coords for distance recalculation
+    sellers.forEach(s => {
+      s._baseLat = s.lat;
+      s._baseLng = s.lng;
+      s._baseDistance = s.distance;
+    });
+
+    let userMarker = null;
+    let userLat = null;
+    let userLng = null;
+
+    const map = L.map('map', { zoomControl: false }).setView([51.505, -0.09], 12);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    const streetsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    document.getElementById('mapLayers').addEventListener('change', (e) => {
+      if (e.target.value === 'satellite') {
+        map.removeLayer(streetsLayer);
+        satelliteLayer.addTo(map);
+      } else {
+        map.removeLayer(satelliteLayer);
+        streetsLayer.addTo(map);
+      }
+    });
+
+    const markers = {};
+    function buildPopupHtml(s) {
+      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+      const badges = [
+        s.organic ? '<span class="badge-organic">Organic</span>' : '',
+        s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
+        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : ''
+      ].filter(Boolean).join(' ');
+      return `
+        <div class="popup-card">
+          <h3>${s.name} ${badges}</h3>
+          <div class="product">${s.emoji} ${s.product} · ${s.farm}</div>
+          <div class="price-row">
+            <span>Price (per ${s.unit})</span>
+            <span class="price">$${s.price.toFixed(2)}</span>
+          </div>
+          <div class="qty">Available: ${s.qty} · ${s.distance} km away</div>
+          <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
+          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews)</div>
+          <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
+        </div>
+      `;
+    }
+
+    sellers.forEach(s => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="custom-marker" style="border-color:${s.color}">${s.emoji}</div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      });
+      const marker = L.marker([s.lat, s.lng], { icon }).addTo(map);
+      marker.bindPopup(buildPopupHtml(s));
+      markers[s.id] = marker;
+    });
+
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 +
+        Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+        Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function updateDistancesFromUser(lat, lng) {
+      userLat = lat;
+      userLng = lng;
+      sellers.forEach(s => {
+        s.distance = Math.round(haversineKm(lat, lng, s.lat, s.lng) * 10) / 10;
+      });
+      // Refresh popups with new distances
+      sellers.forEach(s => {
+        if (markers[s.id]) markers[s.id].setPopupContent(buildPopupHtml(s));
+      });
+      filterSellers();
+    }
+
+    document.getElementById('nearMeBtn').addEventListener('click', () => {
+      const btn = document.getElementById('nearMeBtn');
+      if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser.');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Locating…';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          if (userMarker) map.removeLayer(userMarker);
+          userMarker = L.marker([latitude, longitude], {
+            icon: L.divIcon({
+              className: '',
+              html: '<div class="user-marker"></div>',
+              iconSize: [18, 18],
+              iconAnchor: [9, 9]
+            })
+          }).addTo(map).bindPopup('You are here');
+          map.flyTo([latitude, longitude], 12);
+          updateDistancesFromUser(latitude, longitude);
+          try {
+            localStorage.setItem('farmdirect_user_lat', String(latitude));
+            localStorage.setItem('farmdirect_user_lng', String(longitude));
+          } catch (_) {}
+          btn.disabled = false;
+          btn.textContent = '📍 Near Me';
+          showToast('Distances updated from your location.');
+        },
+        (err) => {
+          btn.disabled = false;
+          btn.textContent = '📍 Near Me';
+          showToast(err.code === 1
+            ? 'Location access denied — showing default area.'
+            : 'Could not get location. Try again.');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+
+    // Restore last location if available
+    try {
+      const savedLat = localStorage.getItem('farmdirect_user_lat');
+      const savedLng = localStorage.getItem('farmdirect_user_lng');
+      if (savedLat && savedLng) {
+        updateDistancesFromUser(+savedLat, +savedLng);
+      }
+    } catch (_) {}
+
+    function renderSellers(list) {
+      const container = document.getElementById('sellerList');
+      container.innerHTML = '';
+      if (list.length === 0) {
+        container.innerHTML = '<p style="padding:1rem;color:var(--muted);font-size:0.9rem;text-align:center">No sellers match your filters.</p>';
+      }
+      list.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'seller-card';
+        card.dataset.id = s.id;
+        const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+        const badges = [
+          s.organic ? '<span class="badge-organic">Organic</span>' : '',
+          s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
+          s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : ''
+        ].filter(Boolean).join(' ');
+        card.innerHTML = `
+          <img class="seller-img" src="${s.img}" alt="${s.product}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${encodeURIComponent(s.emoji)}'" />
+          <div class="seller-info">
+            <h3>${s.name} ${badges}</h3>
+            <div class="seller-meta">${s.product} · ${s.farm}</div>
+            <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
+            <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
+            <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d</div>
+          </div>
+          <div class="seller-actions">
+            <div class="seller-rating">
+              <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
+              <span>${s.rating} (${s.reviews})</span>
+            </div>
+            <button class="btn-sm" onclick="event.stopPropagation(); openRfqModal(${s.id})">Request Quote</button>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.seller-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          map.setView([s.lat, s.lng], 13);
+          markers[s.id].openPopup();
+        });
+        container.appendChild(card);
+      });
+      const maxDist = document.getElementById('distRange').value;
+      document.getElementById('sellerCount').textContent =
+        `${list.length} seller${list.length === 1 ? '' : 's'} within ${maxDist} km`;
+    }
+
+    function filterSellers() {
+      const cat = document.getElementById('categoryFilter').value;
+      const organicOnly = document.getElementById('organicToggle').classList.contains('on');
+      const verifiedOnly = document.getElementById('verifiedToggle').classList.contains('on');
+      const maxDist = +document.getElementById('distRange').value;
+      const maxPrice = +document.getElementById('priceRange').value;
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const maxMoq = +document.getElementById('moqFilter').value;
+      const maxLead = +document.getElementById('leadTimeFilter').value;
+      const minRating = +document.getElementById('ratingFilter').value;
+      const availableOnly = document.getElementById('availableToggle').classList.contains('on');
+
+      let filtered = sellers.filter(s => {
+        if (cat !== 'all' && s.category !== cat) return false;
+        if (organicOnly && !s.organic) return false;
+        if (verifiedOnly && !s.verified) return false;
+        if (s.distance > maxDist) return false;
+        // Skip strict price filter for bulk units (ton)
+        if (s.unit !== 'ton' && s.price > maxPrice) return false;
+        if (s.moq > maxMoq) return false;
+        if (s.leadTimeDays > maxLead) return false;
+        if (s.rating < minRating) return false;
+        if (availableOnly && s.stockStatus === 'out') return false;
+        if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
+        return true;
+      });
+
+      const sort = document.getElementById('sortBy').value;
+      if (sort === 'Distance') filtered.sort((a, b) => a.distance - b.distance);
+      else if (sort === 'Price: Low to High') filtered.sort((a, b) => a.price - b.price);
+      else if (sort === 'Price: High to Low') filtered.sort((a, b) => b.price - a.price);
+      else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
+
+      renderSellers(filtered);
+      updateFilterChips();
+    }
+
+    function updateFilterChips() {
+      const chips = [];
+      const cat = document.getElementById('categoryFilter').value;
+      if (cat !== 'all') {
+        const opt = document.querySelector(`#categoryFilter option[value="${cat}"]`);
+        const label = opt ? opt.textContent : cat;
+        chips.push({ label: `Category: ${label}`, reset: () => { document.getElementById('categoryFilter').value = 'all'; } });
+      }
+      if (document.getElementById('organicToggle').classList.contains('on')) {
+        chips.push({ label: 'Organic', reset: () => { const t = document.getElementById('organicToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
+      if (document.getElementById('verifiedToggle').classList.contains('on')) {
+        chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
+      if (document.getElementById('availableToggle').classList.contains('on')) {
+        chips.push({ label: 'Available now', reset: () => { const t = document.getElementById('availableToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
+      const maxDist = +document.getElementById('distRange').value;
+      if (maxDist !== 50) {
+        chips.push({ label: `≤ ${maxDist} km`, reset: () => { document.getElementById('distRange').value = 50; document.getElementById('distValue').textContent = '50'; } });
+      }
+      const maxPrice = +document.getElementById('priceRange').value;
+      if (maxPrice !== 10) {
+        chips.push({ label: `Price ≤ $${maxPrice}`, reset: () => { document.getElementById('priceRange').value = 10; } });
+      }
+      const maxMoq = +document.getElementById('moqFilter').value;
+      if (maxMoq < 9999) {
+        chips.push({ label: `MOQ ≤ ${maxMoq}`, reset: () => { document.getElementById('moqFilter').value = '9999'; } });
+      }
+      const maxLead = +document.getElementById('leadTimeFilter').value;
+      if (maxLead < 999) {
+        chips.push({ label: `Lead ≤ ${maxLead}d`, reset: () => { document.getElementById('leadTimeFilter').value = '999'; } });
+      }
+      const minRating = +document.getElementById('ratingFilter').value;
+      if (minRating > 0) {
+        chips.push({ label: `Rating ${minRating}+`, reset: () => { document.getElementById('ratingFilter').value = '0'; } });
+      }
+      const searchVal = document.getElementById('searchInput').value.trim();
+      if (searchVal) {
+        chips.push({ label: `Search: “${searchVal}”`, reset: () => { document.getElementById('searchInput').value = ''; } });
+      }
+
+      const container = document.getElementById('filterChips');
+      if (chips.length === 0) {
+        container.classList.remove('visible');
+        container.innerHTML = '';
+        return;
+      }
+      container.classList.add('visible');
+      container.innerHTML = chips.map((c, i) => `
+        <span class="chip">${c.label} <button type="button" data-chip-index="${i}" aria-label="Clear ${c.label}">×</button></span>
+      `).join('') + '<button type="button" class="chip-clear-all" onclick="clearFilters()">Clear all</button>';
+
+      container.querySelectorAll('[data-chip-index]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = +btn.getAttribute('data-chip-index');
+          chips[idx].reset();
+          filterSellers();
+        });
+      });
+    }
+
+    function clearFilters() {
+      document.getElementById('categoryFilter').value = 'all';
+      document.getElementById('organicToggle').classList.remove('on');
+      document.getElementById('organicToggle').setAttribute('aria-checked', 'false');
+      document.getElementById('verifiedToggle').classList.remove('on');
+      document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
+      document.getElementById('distRange').value = 50;
+      document.getElementById('distValue').textContent = 50;
+      document.getElementById('priceRange').value = 10;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('sortBy').value = 'Distance';
+      document.getElementById('moqFilter').value = '9999';
+      document.getElementById('leadTimeFilter').value = '999';
+      document.getElementById('ratingFilter').value = '0';
+      document.getElementById('availableToggle').classList.remove('on');
+      document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
+      filterSellers();
+    }
+
+    // RFQ Modal
+    function openRfqModal(id) {
+      const s = sellers.find(x => x.id === id);
+      if (!s) return;
+      document.getElementById('rfqSellerId').value = id;
+      document.getElementById('rfqSubtitle').textContent =
+        `${s.name} · ${s.product} · $${s.price}/${s.unit} · ${s.qty} available`;
+      document.getElementById('rfqQty').value = '';
+      document.getElementById('rfqDate').value = '';
+      document.getElementById('rfqEmail').value = '';
+      document.getElementById('rfqPhone').value = '';
+      document.getElementById('rfqMsg').value = '';
+      document.getElementById('rfqError').classList.remove('show');
+      // Default date = tomorrow
+      const t = new Date();
+      t.setDate(t.getDate() + 1);
+      document.getElementById('rfqDate').value = t.toISOString().slice(0, 10);
+      document.getElementById('rfqModal').classList.add('open');
+      document.getElementById('rfqQty').focus();
+    }
+
+    function closeRfqModal() {
+      document.getElementById('rfqModal').classList.remove('open');
+    }
+
+    function submitRfq(e) {
+      e.preventDefault();
+      const qty = document.getElementById('rfqQty').value.trim();
+      const email = document.getElementById('rfqEmail').value.trim();
+      const err = document.getElementById('rfqError');
+      if (!qty || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.classList.add('show');
+        return false;
+      }
+      err.classList.remove('show');
+      const s = sellers.find(x => x.id === +document.getElementById('rfqSellerId').value);
+      closeRfqModal();
+      showToast(`Inquiry sent to ${s ? s.name : 'seller'}. They will reply to ${email}.`);
+      return false;
+    }
+
+    document.getElementById('rfqModal').addEventListener('click', (e) => {
+      if (e.target.id === 'rfqModal') closeRfqModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeRfqModal();
+    });
+
+    // Toast
+    let toastTimer;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+    }
+
+    // Dark mode
+    function applyDark(on) {
+      document.documentElement.classList.toggle('dark', on);
+      const icon = document.getElementById('darkIcon');
+      if (on) {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+      } else {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+      }
+      try { localStorage.setItem('farmdirect_dark', on ? '1' : '0'); } catch (_) {}
+    }
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      applyDark(!document.documentElement.classList.contains('dark'));
+    });
+    try {
+      if (localStorage.getItem('farmdirect_dark') === '1') applyDark(true);
+    } catch (_) {}
+
+    // Events
+    document.getElementById('categoryFilter').addEventListener('change', filterSellers);
+    document.getElementById('sortBy').addEventListener('change', filterSellers);
+    document.getElementById('searchInput').addEventListener('input', filterSellers);
+
+    filterSellers();
+  </script>
+</body>
+</html>
