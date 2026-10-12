@@ -28,7 +28,11 @@ npx serve .
 python3 -m http.server 8080
 ```
 
-Live deployment (if synced): see project Vercel URL in project notes.
+Live deployment (if synced): https://farmdirect-b2b-johancrazy2005s-projects.vercel.app
+
+Temporary preview of latest (claim to make permanent): https://temporary-spry-gust-80osar7.vercel.app
+
+GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
 
 ## Improvement log
 
