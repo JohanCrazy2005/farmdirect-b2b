@@ -552,3 +552,33 @@ This is a small, high-impact map UX improvement that can be implemented in one s
 - Fully client-side and dark-mode compatible.
 
 This completes the marker clustering feature and improves map readability for buyers.
+
+## 2026-10-12 (Hourly update) – Seller Detail Drawer / Quick Profile Panel
+
+**What:** Add a slide-out Seller Detail Drawer that opens from a “Details” button (or seller name/image click) on cards and map popups. The drawer shows an expanded profile: larger photo, farm bio, full commercial terms (price tiers, MOQ, lead time, payment, fulfillment, stock, freshness), certifications, location distance, and quick actions (Request Quote, Favorite, Compare, Add to Cart).
+
+**Why:** Seller cards and Leaflet popups are intentionally compact. Wholesale buyers often need richer context (farm story, packaging notes, exact logistics fit) before sending an RFQ. A drawer keeps the map and filtered list visible while providing depth, improving qualification speed without requiring a separate page in the prototype.
+
+**How:**
+- Add a right-side drawer (bottom sheet on small screens) with overlay.
+- Trigger via new “Details” button on cards/popups and optional click on seller name.
+- Populate from existing seller data; add a short `bio` field to sample sellers.
+- Reuse existing action handlers (openRfqModal, toggleFavorite, etc.).
+- Close on overlay click, Escape, or close button. Fully client-side, dark-mode compatible, and accessible.
+
+This is a small, high-impact browsing improvement that makes the marketplace feel more complete for serious B2B evaluation.
+
+## 2026-10-12 (Hourly update) – Seller Detail Drawer / Quick Profile Panel (Implemented)
+
+**What:** Implemented a slide-out Seller Detail Drawer that opens from “Details” buttons and seller name clicks on cards and map popups. Shows larger photo, farm bio, full commercial terms, volume tiers, freshness, and quick actions.
+
+**Why:** Gives buyers richer context without leaving the map/list view, speeding qualification before RFQ.
+
+**How (implemented):**
+- Right-side drawer (bottom sheet on mobile) with overlay.
+- Triggered by Details button and name click on cards; View Details on popups.
+- Short bio added to sample sellers.
+- Actions reuse existing RFQ, favorite, cart, and compare handlers.
+- Escape and overlay close. Fully client-side and dark-mode compatible.
+
+This completes the seller detail drawer and improves browsing depth for wholesale buyers.

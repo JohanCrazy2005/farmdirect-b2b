@@ -784,6 +784,69 @@
     .compare-table th { background: var(--hover-bg); font-weight: 600; }
     .compare-close { float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text); }
 
+    /* Seller Detail Drawer */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 2500;
+    }
+    .drawer-overlay.open { display: block; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 420px;
+      max-width: 92vw;
+      height: 100%;
+      background: var(--card);
+      color: var(--text);
+      z-index: 2600;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.18);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .drawer-header h2 { font-size: 1.15rem; margin: 0 0 0.25rem 0; }
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem;
+    }
+    .drawer-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .drawer-meta { font-size: 0.9rem; color: var(--muted); margin: 0.25rem 0; }
+    .drawer-actions {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .drawer-actions .btn { flex: 1; min-width: 120px; }
+
+    @media (max-width: 700px) {
+      .drawer { width: 100%; height: 85vh; top: auto; bottom: 0; border-radius: 1rem 1rem 0 0; transform: translateY(100%); }
+      .drawer.open { transform: translateY(0); }
+    }
+
 
     @media (max-width: 900px) {
       .sidebar { width: 320px; }
@@ -1056,6 +1119,18 @@
     </div>
   </div>
 
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeSellerDrawer()"></div>
+  <aside class="drawer" id="sellerDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="drawer-header">
+      <div>
+        <h2 id="drawerTitle">Seller Profile</h2>
+        <div class="drawer-meta" id="drawerSubtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeSellerDrawer()" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-actions" id="drawerActions"></div>
+  </aside>
 
   <script>
     const sellers = [
@@ -1083,8 +1158,8 @@
         stockStatus: "in_stock",
         paymentTerms: "net_15",
         fulfillment: "both",
-        harvestDaysAgo: 1
-      ,
+        harvestDaysAgo: 1,
+        bio: "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available for same-week delivery or farm pickup. GAP certified.",
         volumeTiers: [{"minQty": 0, "price": 1.35}, {"minQty": 100, "price": 1.2}, {"minQty": 500, "price": 1.05}]
       },
       {
@@ -1111,8 +1186,8 @@
         stockStatus: "in_stock",
         paymentTerms: "net_30",
         fulfillment: "delivery",
-        harvestDaysAgo: 0
-      ,
+        harvestDaysAgo: 0,
+        bio: "Pasture-based dairy producing fresh milk and cream. Regular wholesale routes to restaurants and grocers. HACCP compliant.",
         volumeTiers: [{"minQty": 0, "price": 0.68}, {"minQty": 200, "price": 0.62}, {"minQty": 1000, "price": 0.55}]
       },
       {
@@ -1139,8 +1214,8 @@
         stockStatus: "low",
         paymentTerms: "due_on_receipt",
         fulfillment: "both",
-        harvestDaysAgo: 2
-      ,
+        harvestDaysAgo: 2,
+        bio: "Free-range poultry farm with daily egg collection. Organic certified; limited weekly volumes.",
         volumeTiers: [{"minQty": 0, "price": 2.1}, {"minQty": 50, "price": 1.95}, {"minQty": 200, "price": 1.8}]
       },
       {
@@ -1167,8 +1242,8 @@
         stockStatus: "in_stock",
         paymentTerms: "net_30",
         fulfillment: "pickup",
-        harvestDaysAgo: 14
-      ,
+        harvestDaysAgo: 14,
+        bio: "Large-scale grain grower offering bulk wheat and milling contracts. Pickup preferred for full truckloads.",
         volumeTiers: [{"minQty": 0, "price": 235.0}, {"minQty": 10, "price": 225.0}, {"minQty": 25, "price": 210.0}]
       },
       {
@@ -1195,8 +1270,8 @@
         stockStatus: "in_stock",
         paymentTerms: "net_15",
         fulfillment: "delivery",
-        harvestDaysAgo: 0
-      ,
+        harvestDaysAgo: 0,
+        bio: "Specialty herb grower with greenhouse and field production. High turnover, harvested to order.",
         volumeTiers: [{"minQty": 0, "price": 8.5}, {"minQty": 25, "price": 7.9}, {"minQty": 100, "price": 7.2}]
       },
       {
@@ -1510,6 +1585,7 @@
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
           ${tierSummary(s) ? `<div class="qty" style="margin-top:0.1rem;font-size:0.8rem;color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
+          <button class="popup-btn" onclick="openSellerDrawer(${s.id})">View Details</button>
           <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
         </div>
       `;
@@ -1624,7 +1700,7 @@
         card.innerHTML = `
           <img class="seller-img" src="${s.img}" alt="${s.product}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${encodeURIComponent(s.emoji)}'" />
           <div class="seller-info">
-            <h3>${s.name} ${badges}</h3>
+            <h3 style="cursor:pointer" onclick="event.stopPropagation(); openSellerDrawer(${s.id})">${s.name} ${badges}</h3>
             <div class="seller-meta">${s.product} · ${s.farm}</div>
             <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
             <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
@@ -1636,6 +1712,7 @@
             <div style="display:flex;align-items:center;gap:0.25rem;">
               <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favorites.has(s.id) ? '♥' : '♡'}</button>
               <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button>
+              <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="event.stopPropagation(); openSellerDrawer(${s.id})" title="View profile">Details</button>
               <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="addToInquiry(${s.id}, event)" title="Add to Inquiry Cart">+ Cart</button>
               <div class="seller-rating">
                 <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
@@ -1860,6 +1937,51 @@
       document.getElementById('rfqModal').classList.remove('open');
     }
 
+    function openSellerDrawer(id) {
+      const s = sellers.find(x => x.id === id);
+      if (!s) return;
+      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+      const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
+      const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
+      const badges = [
+        s.organic ? '<span class="badge-organic">Organic</span>' : '',
+        s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
+        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
+        s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
+      ].filter(Boolean).join(' ');
+      document.getElementById('drawerTitle').textContent = s.name;
+      document.getElementById('drawerSubtitle').innerHTML = `${s.farm} · ${s.product} ${badges}`;
+      const tierHtml = (s.volumeTiers || []).map(t => 
+        `<div class="drawer-meta">From ${t.minQty} ${s.unit}: $${t.price.toFixed(2)} / ${s.unit}</div>`
+      ).join('');
+      document.getElementById('drawerBody').innerHTML = `
+        <img class="drawer-img" src="${s.img}" alt="${s.product}" onerror="this.src='https://via.placeholder.com/400x160?text=${encodeURIComponent(s.emoji)}'" />
+        <p style="margin:0 0 1rem 0;line-height:1.45">${s.bio || 'Direct farm supplier available for wholesale orders.'}</p>
+        <div class="drawer-meta"><strong>Price:</strong> $${s.price.toFixed(2)} / ${s.unit}</div>
+        <div class="drawer-meta"><strong>Available:</strong> ${s.qty}</div>
+        <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days</div>
+        <div class="drawer-meta"><strong>Payment:</strong> ${payLabel} · <strong>Fulfillment:</strong> ${fulfillLabel}</div>
+        <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
+        <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${s.rating} (${s.reviews} reviews)</div>
+        ${tierHtml ? '<div style="margin-top:0.75rem"><strong>Volume pricing</strong>' + tierHtml + '</div>' : ''}
+      `;
+      const favActive = favorites.has(s.id);
+      document.getElementById('drawerActions').innerHTML = `
+        <button class="btn btn-primary" onclick="openRfqModal(${s.id}); closeSellerDrawer()">Request Quote</button>
+        <button class="btn btn-ghost" onclick="toggleFavorite(${s.id}, event); openSellerDrawer(${s.id})">${favActive ? '♥ Favorited' : '♡ Favorite'}</button>
+        <button class="btn btn-ghost" onclick="addToInquiry(${s.id}, event); showToast('Added to inquiry cart')">+ Cart</button>
+        <button class="btn btn-ghost" onclick="toggleCompare(${s.id}, event)">Compare</button>
+      `;
+      document.getElementById('drawerOverlay').classList.add('open');
+      document.getElementById('sellerDrawer').classList.add('open');
+    }
+
+    function closeSellerDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('open');
+      document.getElementById('sellerDrawer').classList.remove('open');
+    }
+
     function submitRfq(e) {
       e.preventDefault();
       const qty = document.getElementById('rfqQty').value.trim();
@@ -1880,7 +2002,11 @@
       if (e.target.id === 'rfqModal') closeRfqModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeRfqModal();
+      if (e.key === 'Escape') {
+        closeRfqModal();
+        closeSellerDrawer();
+        if (document.getElementById('compareModal')?.classList.contains('show')) closeCompareModal();
+      }
     });
 
     // Toast
