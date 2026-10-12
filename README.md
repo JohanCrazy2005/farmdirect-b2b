@@ -14,6 +14,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Min. rating filter** – Any / 4.0+ / 4.5+ / 4.8+; rating + review count on cards and popups
 - **Availability status** – In stock / Low / Out badges on cards & popups + “Available now only” filter
 - **Payment terms** – badges (Due on receipt / Net 15 / Net 30) on cards & popups + filter select
+- **Fulfillment method** – badges (Pickup / Delivery / Both) on cards & popups + filter select
 - **Active filter chips** – dismissible chips showing current filters with individual clear
 - Seller cards: ratings, stock, click-to-focus map
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)

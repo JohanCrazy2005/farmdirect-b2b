@@ -411,3 +411,19 @@ This is a small, high-impact workflow improvement that can be implemented in one
 - Keep fully client-side and compatible with dark mode.
 
 This is a small, high-impact commercial signal that can be implemented in one short coding session and makes the marketplace more practical for real B2B buyers.
+
+## 2026-10-12 (Hourly update) – Fulfillment Method Filter & Badges
+
+**What:** Add fulfillment method (Pickup only / Delivery only / Both) to each seller, display it as a small badge on seller cards and map popups, and add a “Fulfillment” select filter so buyers can restrict results to sellers matching their logistics preference.
+
+**Why:** Delivery versus farm pickup is a decisive logistics constraint for wholesale buyers. Restaurants and retailers often need delivery, while processors or high-volume buyers may prefer or require pickup. Surfacing the option early lets buyers self-qualify and avoids RFQs that cannot be fulfilled on logistics grounds.
+
+**How:**
+- Extend the sample `sellers` array with a `fulfillment` field (`"pickup"`, `"delivery"`, or `"both"`).
+- Show a compact badge (e.g. blue/teal) next to existing badges on cards and popups (and include the short label in the meta line).
+- Add a `<select id="fulfillmentFilter">` in the filters panel with options Any / Pickup only / Delivery only / Both.
+- Update `filterSellers()` to exclude sellers whose fulfillment does not match when the select is not “any” (treat “both” as matching either pickup or delivery requests if desired, or exact match).
+- Add a dismissible chip when a specific method is selected and reset it in `clearFilters()`.
+- Keep fully client-side and compatible with dark mode.
+
+This is a small, high-impact logistics signal that can be implemented in one short coding session and makes the marketplace more practical for real B2B buyers.

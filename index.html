@@ -423,6 +423,18 @@
       background: #713f12;
       color: #fde047;
     }
+    .badge-fulfillment {
+      font-size: 0.65rem;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+    html.dark .badge-fulfillment {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
 
     .seller-meta {
       font-size: 0.8rem;
@@ -829,6 +841,15 @@
             <option value="net_30">Net 30</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label>Fulfillment</label>
+          <select id="fulfillmentFilter" onchange="filterSellers()">
+            <option value="any">Any</option>
+            <option value="pickup">Pickup only</option>
+            <option value="delivery">Delivery only</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
       </div>
 
@@ -908,7 +929,8 @@
         moq: 50,
         leadTimeDays: 2,
         stockStatus: "in_stock",
-        paymentTerms: "net_15"
+        paymentTerms: "net_15",
+        fulfillment: "both"
       },
       {
         id: 2,
@@ -932,7 +954,8 @@
         moq: 100,
         leadTimeDays: 1,
         stockStatus: "in_stock",
-        paymentTerms: "net_30"
+        paymentTerms: "net_30",
+        fulfillment: "delivery"
       },
       {
         id: 3,
@@ -956,7 +979,8 @@
         moq: 20,
         leadTimeDays: 1,
         stockStatus: "low",
-        paymentTerms: "due_on_receipt"
+        paymentTerms: "due_on_receipt",
+        fulfillment: "both"
       },
       {
         id: 4,
@@ -980,7 +1004,8 @@
         moq: 5,
         leadTimeDays: 7,
         stockStatus: "in_stock",
-        paymentTerms: "net_30"
+        paymentTerms: "net_30",
+        fulfillment: "pickup"
       },
       {
         id: 5,
@@ -1004,7 +1029,8 @@
         moq: 10,
         leadTimeDays: 1,
         stockStatus: "in_stock",
-        paymentTerms: "net_15"
+        paymentTerms: "net_15",
+        fulfillment: "delivery"
       },
       {
         id: 6,
@@ -1028,7 +1054,8 @@
         moq: 15,
         leadTimeDays: 3,
         stockStatus: "out",
-        paymentTerms: "due_on_receipt"
+        paymentTerms: "due_on_receipt",
+        fulfillment: "pickup"
       }
     ];
 
@@ -1098,11 +1125,13 @@
     function buildPopupHtml(s) {
       const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
+      const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
         s.organic ? '<span class="badge-organic">Organic</span>' : '',
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : ''
+        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
+        s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
       ].filter(Boolean).join(' ');
       const favActive = favorites.has(s.id);
       const favIcon = favActive ? '♥' : '♡';
@@ -1116,7 +1145,7 @@
           </div>
           <div class="qty">Available: ${s.qty} · ${s.distance} km away</div>
           <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
-          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel}</div>
+          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
           <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
         </div>
       `;
@@ -1219,11 +1248,13 @@
         card.dataset.id = s.id;
         const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
         const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
+        const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
         const badges = [
           s.organic ? '<span class="badge-organic">Organic</span>' : '',
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-          s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : ''
+          s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
+          s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
         ].filter(Boolean).join(' ');
         card.innerHTML = `
           <img class="seller-img" src="${s.img}" alt="${s.product}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${encodeURIComponent(s.emoji)}'" />
@@ -1232,7 +1263,7 @@
             <div class="seller-meta">${s.product} · ${s.farm}</div>
             <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
             <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
-            <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel}</div>
+            <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel} · ${fulfillLabel}</div>
           </div>
           <div class="seller-actions">
             <div style="display:flex;align-items:center;gap:0.25rem;">
@@ -1271,6 +1302,7 @@
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
       const paymentTerms = document.getElementById('paymentFilter').value;
+      const fulfillment = document.getElementById('fulfillmentFilter').value;
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -1285,6 +1317,13 @@
         if (availableOnly && s.stockStatus === 'out') return false;
         if (favoritesOnly && !favorites.has(s.id)) return false;
         if (paymentTerms !== 'any' && s.paymentTerms !== paymentTerms) return false;
+        if (fulfillment !== 'any') {
+          if (fulfillment === 'both') {
+            if (s.fulfillment !== 'both') return false;
+          } else if (s.fulfillment !== fulfillment && s.fulfillment !== 'both') {
+            return false;
+          }
+        }
         if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
         return true;
       });
@@ -1345,6 +1384,12 @@
         const label = opt ? opt.textContent : paymentTerms;
         chips.push({ label: `Terms: ${label}`, reset: () => { document.getElementById('paymentFilter').value = 'any'; } });
       }
+      const fulfillment = document.getElementById('fulfillmentFilter').value;
+      if (fulfillment !== 'any') {
+        const opt = document.querySelector(`#fulfillmentFilter option[value="${fulfillment}"]`);
+        const label = opt ? opt.textContent : fulfillment;
+        chips.push({ label: `Fulfillment: ${label}`, reset: () => { document.getElementById('fulfillmentFilter').value = 'any'; } });
+      }
       const searchVal = document.getElementById('searchInput').value.trim();
       if (searchVal) {
         chips.push({ label: `Search: “${searchVal}”`, reset: () => { document.getElementById('searchInput').value = ''; } });
@@ -1390,6 +1435,7 @@
       document.getElementById('favoritesToggle').classList.remove('on');
       document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
       document.getElementById('paymentFilter').value = 'any';
+      document.getElementById('fulfillmentFilter').value = 'any';
       filterSellers();
     }
 
