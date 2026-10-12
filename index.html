@@ -411,6 +411,18 @@
     html.dark .badge-stock.in_stock { background: #14532d; color: #86efac; }
     html.dark .badge-stock.low { background: #78350f; color: #fcd34d; }
     html.dark .badge-stock.out { background: #374151; color: #9ca3af; }
+    .badge-payment {
+      font-size: 0.65rem;
+      background: #fef9c3;
+      color: #854d0e;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+    html.dark .badge-payment {
+      background: #713f12;
+      color: #fde047;
+    }
 
     .seller-meta {
       font-size: 0.8rem;
@@ -808,6 +820,15 @@
             <option value="4.8">4.8+</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label>Payment terms</label>
+          <select id="paymentFilter" onchange="filterSellers()">
+            <option value="any">Any</option>
+            <option value="due_on_receipt">Due on receipt</option>
+            <option value="net_15">Net 15</option>
+            <option value="net_30">Net 30</option>
+          </select>
+        </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
       </div>
 
@@ -886,7 +907,8 @@
         img: "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=128&h=128&fit=crop",
         moq: 50,
         leadTimeDays: 2,
-        stockStatus: "in_stock"
+        stockStatus: "in_stock",
+        paymentTerms: "net_15"
       },
       {
         id: 2,
@@ -909,7 +931,8 @@
         img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=128&h=128&fit=crop",
         moq: 100,
         leadTimeDays: 1,
-        stockStatus: "in_stock"
+        stockStatus: "in_stock",
+        paymentTerms: "net_30"
       },
       {
         id: 3,
@@ -932,7 +955,8 @@
         img: "https://images.unsplash.com/photo-1582722872448-3b6d1b0c4f1a?w=128&h=128&fit=crop",
         moq: 20,
         leadTimeDays: 1,
-        stockStatus: "low"
+        stockStatus: "low",
+        paymentTerms: "due_on_receipt"
       },
       {
         id: 4,
@@ -955,7 +979,8 @@
         img: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=128&h=128&fit=crop",
         moq: 5,
         leadTimeDays: 7,
-        stockStatus: "in_stock"
+        stockStatus: "in_stock",
+        paymentTerms: "net_30"
       },
       {
         id: 5,
@@ -978,7 +1003,8 @@
         img: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=128&h=128&fit=crop",
         moq: 10,
         leadTimeDays: 1,
-        stockStatus: "in_stock"
+        stockStatus: "in_stock",
+        paymentTerms: "net_15"
       },
       {
         id: 6,
@@ -1001,7 +1027,8 @@
         img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=128&h=128&fit=crop",
         moq: 15,
         leadTimeDays: 3,
-        stockStatus: "out"
+        stockStatus: "out",
+        paymentTerms: "due_on_receipt"
       }
     ];
 
@@ -1070,10 +1097,12 @@
     const markers = {};
     function buildPopupHtml(s) {
       const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+      const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const badges = [
         s.organic ? '<span class="badge-organic">Organic</span>' : '',
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
-        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : ''
+        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : ''
       ].filter(Boolean).join(' ');
       const favActive = favorites.has(s.id);
       const favIcon = favActive ? '♥' : '♡';
@@ -1087,7 +1116,7 @@
           </div>
           <div class="qty">Available: ${s.qty} · ${s.distance} km away</div>
           <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
-          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews)</div>
+          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel}</div>
           <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
         </div>
       `;
@@ -1189,10 +1218,12 @@
         card.className = 'seller-card';
         card.dataset.id = s.id;
         const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+        const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
         const badges = [
           s.organic ? '<span class="badge-organic">Organic</span>' : '',
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
-          s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : ''
+          s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+          s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : ''
         ].filter(Boolean).join(' ');
         card.innerHTML = `
           <img class="seller-img" src="${s.img}" alt="${s.product}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${encodeURIComponent(s.emoji)}'" />
@@ -1201,7 +1232,7 @@
             <div class="seller-meta">${s.product} · ${s.farm}</div>
             <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
             <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
-            <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d</div>
+            <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel}</div>
           </div>
           <div class="seller-actions">
             <div style="display:flex;align-items:center;gap:0.25rem;">
@@ -1239,6 +1270,7 @@
       const minRating = +document.getElementById('ratingFilter').value;
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
+      const paymentTerms = document.getElementById('paymentFilter').value;
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -1252,6 +1284,7 @@
         if (s.rating < minRating) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
         if (favoritesOnly && !favorites.has(s.id)) return false;
+        if (paymentTerms !== 'any' && s.paymentTerms !== paymentTerms) return false;
         if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
         return true;
       });
@@ -1306,6 +1339,12 @@
       if (minRating > 0) {
         chips.push({ label: `Rating ${minRating}+`, reset: () => { document.getElementById('ratingFilter').value = '0'; } });
       }
+      const paymentTerms = document.getElementById('paymentFilter').value;
+      if (paymentTerms !== 'any') {
+        const opt = document.querySelector(`#paymentFilter option[value="${paymentTerms}"]`);
+        const label = opt ? opt.textContent : paymentTerms;
+        chips.push({ label: `Terms: ${label}`, reset: () => { document.getElementById('paymentFilter').value = 'any'; } });
+      }
       const searchVal = document.getElementById('searchInput').value.trim();
       if (searchVal) {
         chips.push({ label: `Search: “${searchVal}”`, reset: () => { document.getElementById('searchInput').value = ''; } });
@@ -1350,6 +1389,7 @@
       document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
       document.getElementById('favoritesToggle').classList.remove('on');
       document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
+      document.getElementById('paymentFilter').value = 'any';
       filterSellers();
     }
 

@@ -395,3 +395,19 @@ This is a small, high-impact UX improvement that can be implemented in one short
 - Keep fully client-side, style with existing CSS variables (works in dark mode), and preserve all current filter behaviour.
 
 This is a small, high-impact workflow improvement that can be implemented in one focused coding session and helps buyers manage their shortlist of potential suppliers.
+
+## 2026-10-12 (Hourly update) – Payment Terms Filter & Badges
+
+**What:** Add payment terms (Due on receipt / Net 15 / Net 30) to each seller, display them as a small badge on cards and map popups, and add a “Payment terms” select filter so buyers can restrict results to sellers offering a specific term.
+
+**Why:** Cash-flow and payment timing are decisive in wholesale purchasing. Buyers often have strict requirements (e.g. only Net 30 suppliers, or only due-on-receipt for new relationships). Surfacing terms early lets buyers self-qualify and avoids RFQs that will be rejected on commercial grounds.
+
+**How:**
+- Extend the sample `sellers` array with a `paymentTerms` field (`"due_on_receipt"`, `"net_15"`, or `"net_30"`).
+- Show a compact gold/yellow badge next to existing badges on cards and popups (and include the label in the meta line).
+- Add a `<select id="paymentFilter">` in the filters panel with options Any / Due on receipt / Net 15 / Net 30.
+- Update `filterSellers()` to exclude sellers whose terms do not match when the select is not “any”.
+- Add a dismissible chip when a specific term is selected and reset it in `clearFilters()`.
+- Keep fully client-side and compatible with dark mode.
+
+This is a small, high-impact commercial signal that can be implemented in one short coding session and makes the marketplace more practical for real B2B buyers.
