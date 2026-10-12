@@ -379,3 +379,19 @@ This is a small, high-impact visibility improvement that can be implemented in o
 - Position it so it remains visible on both desktop and mobile without covering the map or list.
 
 This is a small, high-impact UX improvement that can be implemented in one short coding session and makes the growing filter set much more usable for real buyers.
+
+## 2026-10-12 (Hourly update) – Favorites / Shortlist
+
+**What:** Add a heart icon on each seller card and map popup that toggles a favorite, persist the list in localStorage, and add a “Favorites only” filter toggle so buyers can quickly return to sellers they are evaluating.
+
+**Why:** Wholesale buyers typically research and compare several farms before sending RFQs. Without a shortlist, they must remember names or re-apply filters every session. Favorites give a persistent personal shortlist, reduce re-work, and make the marketplace more useful for multi-seller sourcing decisions.
+
+**How:**
+- Add a heart button (♡ / ♥) to seller cards and popups.
+- Store favorited seller IDs in localStorage under `farmdirect_favorites`.
+- Add a “Favorites only” toggle in the filters panel (default off).
+- Update `filterSellers()` to respect the toggle and include a dismissible chip when active.
+- Update hearts immediately on toggle and re-filter when the favorites-only view is active.
+- Keep fully client-side, style with existing CSS variables (works in dark mode), and preserve all current filter behaviour.
+
+This is a small, high-impact workflow improvement that can be implemented in one focused coding session and helps buyers manage their shortlist of potential suppliers.

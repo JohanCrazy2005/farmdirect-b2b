@@ -447,6 +447,18 @@
       white-space: nowrap;
     }
     .btn-sm:hover { background: var(--hover-bg); }
+    .fav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 0.15rem 0.3rem;
+      color: var(--muted);
+      transition: color 0.15s, transform 0.15s;
+    }
+    .fav-btn:hover { color: #ef4444; transform: scale(1.1); }
+    .fav-btn.active { color: #ef4444; }
     .view-more {
       text-align: center;
       padding: 0.75rem;
@@ -753,6 +765,10 @@
           <span style="font-size:0.9rem">Available now only</span>
           <div class="toggle" id="availableToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
         </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Favorites only</span>
+          <div class="toggle" id="favoritesToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
 
         <div class="filter-group">
           <label>Max Distance: <span id="distValue">50</span> km</label>
@@ -996,6 +1012,34 @@
       s._baseDistance = s.distance;
     });
 
+    // Favorites (localStorage)
+    let favorites = new Set();
+    function loadFavorites() {
+      try {
+        const raw = localStorage.getItem('farmdirect_favorites');
+        if (raw) favorites = new Set(JSON.parse(raw).map(Number));
+      } catch (_) {}
+    }
+    function saveFavorites() {
+      try { localStorage.setItem('farmdirect_favorites', JSON.stringify([...favorites])); } catch (_) {}
+    }
+    function toggleFavorite(id, e) {
+      if (e) { e.stopPropagation(); e.preventDefault(); }
+      if (favorites.has(id)) favorites.delete(id);
+      else favorites.add(id);
+      saveFavorites();
+      const isFav = favorites.has(id);
+      document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(btn => {
+        btn.classList.toggle('active', isFav);
+        btn.innerHTML = isFav ? '♥' : '♡';
+      });
+      if (document.getElementById('favoritesToggle')?.classList.contains('on')) {
+        filterSellers();
+      }
+      showToast(isFav ? 'Added to favorites' : 'Removed from favorites');
+    }
+    loadFavorites();
+
     let userMarker = null;
     let userLat = null;
     let userLng = null;
@@ -1031,9 +1075,11 @@
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : ''
       ].filter(Boolean).join(' ');
+      const favActive = favorites.has(s.id);
+      const favIcon = favActive ? '♥' : '♡';
       return `
         <div class="popup-card">
-          <h3>${s.name} ${badges}</h3>
+          <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favIcon}</button></h3>
           <div class="product">${s.emoji} ${s.product} · ${s.farm}</div>
           <div class="price-row">
             <span>Price (per ${s.unit})</span>
@@ -1158,9 +1204,12 @@
             <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d</div>
           </div>
           <div class="seller-actions">
-            <div class="seller-rating">
-              <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
-              <span>${s.rating} (${s.reviews})</span>
+            <div style="display:flex;align-items:center;gap:0.25rem;">
+              <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favorites.has(s.id) ? '♥' : '♡'}</button>
+              <div class="seller-rating">
+                <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
+                <span>${s.rating} (${s.reviews})</span>
+              </div>
             </div>
             <button class="btn-sm" onclick="event.stopPropagation(); openRfqModal(${s.id})">Request Quote</button>
           </div>
@@ -1189,6 +1238,7 @@
       const maxLead = +document.getElementById('leadTimeFilter').value;
       const minRating = +document.getElementById('ratingFilter').value;
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
+      const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -1201,6 +1251,7 @@
         if (s.leadTimeDays > maxLead) return false;
         if (s.rating < minRating) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
+        if (favoritesOnly && !favorites.has(s.id)) return false;
         if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
         return true;
       });
@@ -1231,6 +1282,9 @@
       }
       if (document.getElementById('availableToggle').classList.contains('on')) {
         chips.push({ label: 'Available now', reset: () => { const t = document.getElementById('availableToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
+      if (document.getElementById('favoritesToggle').classList.contains('on')) {
+        chips.push({ label: 'Favorites', reset: () => { const t = document.getElementById('favoritesToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
       const maxDist = +document.getElementById('distRange').value;
       if (maxDist !== 50) {
@@ -1294,6 +1348,8 @@
       document.getElementById('ratingFilter').value = '0';
       document.getElementById('availableToggle').classList.remove('on');
       document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
+      document.getElementById('favoritesToggle').classList.remove('on');
+      document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
       filterSellers();
     }
 
