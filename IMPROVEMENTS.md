@@ -490,3 +490,34 @@ This is a small, high-impact decision-support improvement that can be implemente
 - Pushed to GitHub (commit 5c0a5fb). Vercel production update requires re-authentication of the connector.
 
 This completes the seller comparison feature and makes the marketplace more practical for multi-supplier sourcing decisions.
+
+## 2026-10-12 (Hourly update) – Inquiry Cart / Multi-seller Shortlist
+
+**What:** Add a lightweight Inquiry Cart so buyers can collect multiple sellers (with quantities) into a shortlist, then open a cart summary modal from a header button and send a combined inquiry.
+
+**Why:** Real B2B farm sourcing almost always involves more than one supplier in a purchasing cycle. The current single-seller RFQ forces repeated interactions. An inquiry cart turns browsing into a practical multi-item workflow, increases the value of favorites and comparison, and makes the prototype ready for actual buyer use.
+
+**How:**
+- Add an “Add to Inquiry” button on each seller card and map popup.
+- Maintain a client-side cart (seller ID → quantity), persisted in localStorage.
+- Show a header cart icon with a live count badge; clicking it opens a summary modal with editable quantities, remove buttons, and estimated value.
+- From the cart modal, provide a “Send Combined Inquiry” button that confirms the list (toast + clear cart).
+- Fully client-side, dark-mode compatible, and mobile-friendly.
+
+This is a small, high-impact workflow improvement that can be implemented in one focused coding session and helps buyers manage multi-supplier sourcing.
+
+
+## 2026-10-12 (Hourly update) – Inquiry Cart / Multi-seller Shortlist (Implemented)
+
+**What:** Implemented a client-side Inquiry Cart. Buyers can add sellers (with quantities) from cards and map popups, view/edit the shortlist in a header-triggered modal, and send a combined inquiry (demo toast).
+
+**Why:** Enables practical multi-supplier sourcing workflows without repeated single RFQs.
+
+**How (implemented):**
+- Header cart button with count badge (persisted via localStorage).
+- “+ Cart” buttons on seller cards and Leaflet popups.
+- Cart modal with editable quantities, remove, estimated total, clear, and Send Combined Inquiry.
+- Fully client-side and dark-mode compatible.
+
+This completes the inquiry cart feature and makes multi-seller shortlisting practical for buyers.
+
