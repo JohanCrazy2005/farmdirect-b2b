@@ -31,7 +31,6 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
 - **Year-round supply** – Year-round / Seasonal badges + “Year-round only” filter
 - **Search radius circle** – visualizes the current max-distance filter on the map (centered on your location)
-- **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
 - Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split) and laptop (tuned sidebar widths)
@@ -46,7 +45,7 @@ npx serve .
 python3 -m http.server 8080
 ```
 
-Live deployment: https://farmdirect-b2b-johancrazy2005s-projects.vercel.app
+Live deployment: https://farmdirect-b2b.vercel.app (or project URL from Vercel dashboard)
 
 GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
 
