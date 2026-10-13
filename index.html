@@ -437,6 +437,20 @@
     html.dark .badge-grade.premium { background: #78350f; color: #fcd34d; }
     html.dark .badge-grade.standard { background: #0c4a6e; color: #7dd3fc; }
     html.dark .badge-grade.surplus { background: #831843; color: #f9a8d4; }
+    .badge-pack {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    html.dark .badge-pack {
+      background: #312e81;
+      color: #a5b4fc;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1033,6 +1047,15 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradeSurplus" onchange="filterSellers()"> Surplus</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Pack format</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packLoose" onchange="filterSellers()"> Loose</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packCase" onchange="filterSellers()"> Case</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packPallet" onchange="filterSellers()"> Pallet</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packBulk" onchange="filterSellers()"> Bulk</label>
+          </div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1268,6 +1291,7 @@
         qty: "2,400 kg",
         organic: true,
         grade: "premium",
+        pack: "case",
         certs: ["organic", "gap"],
         verified: true,
         rating: 4.8,
@@ -1298,6 +1322,7 @@
         qty: "5,000 L",
         organic: false,
         grade: "standard",
+        pack: "bulk",
         certs: ["haccp"],
         verified: true,
         rating: 4.2,
@@ -1328,6 +1353,7 @@
         qty: "1,200 doz",
         organic: true,
         grade: "standard",
+        pack: "case",
         certs: ["organic"],
         verified: false,
         rating: 4.6,
@@ -1358,6 +1384,7 @@
         qty: "150 ton",
         organic: false,
         grade: "standard",
+        pack: "pallet",
         certs: [],
         verified: true,
         rating: 4.9,
@@ -1388,6 +1415,7 @@
         qty: "180 kg",
         organic: true,
         grade: "premium",
+        pack: "loose",
         certs: ["organic", "regen"],
         verified: true,
         rating: 4.7,
@@ -1418,6 +1446,7 @@
         qty: "320 kg",
         organic: true,
         grade: "surplus",
+        pack: "case",
         certs: ["organic"],
         verified: false,
         rating: 4.5,
@@ -1819,6 +1848,7 @@
       const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
         getGradeBadge(s),
+        getPackBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -1981,6 +2011,8 @@
         const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
         const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
         const badges = [
+          getGradeBadge(s),
+          getPackBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2040,6 +2072,13 @@
       return `<span class="badge-grade ${s.grade}">${label}</span>`;
     }
 
+    function getPackBadge(s) {
+      if (!s.pack) return '';
+      const labels = { loose: 'Loose', case: 'Case', pallet: 'Pallet', bulk: 'Bulk' };
+      const label = labels[s.pack] || s.pack;
+      return `<span class="badge-pack">${label}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2074,6 +2113,15 @@
         if (anyGrade) {
           const g = s.grade || 'standard';
           if (!( (wantPremium && g === 'premium') || (wantStandard && g === 'standard') || (wantSurplus && g === 'surplus') )) return false;
+        }
+        const wantLoose = document.getElementById('packLoose')?.checked;
+        const wantCase = document.getElementById('packCase')?.checked;
+        const wantPallet = document.getElementById('packPallet')?.checked;
+        const wantBulk = document.getElementById('packBulk')?.checked;
+        const anyPack = wantLoose || wantCase || wantPallet || wantBulk;
+        if (anyPack) {
+          const p = s.pack || 'case';
+          if (!( (wantLoose && p === 'loose') || (wantCase && p === 'case') || (wantPallet && p === 'pallet') || (wantBulk && p === 'bulk') )) return false;
         }
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
@@ -2146,6 +2194,10 @@
       if (document.getElementById('gradePremium')?.checked) chips.push({ label: 'Premium', reset: () => { document.getElementById('gradePremium').checked = false; } });
       if (document.getElementById('gradeStandard')?.checked) chips.push({ label: 'Standard', reset: () => { document.getElementById('gradeStandard').checked = false; } });
       if (document.getElementById('gradeSurplus')?.checked) chips.push({ label: 'Surplus', reset: () => { document.getElementById('gradeSurplus').checked = false; } });
+      if (document.getElementById('packLoose')?.checked) chips.push({ label: 'Loose', reset: () => { document.getElementById('packLoose').checked = false; } });
+      if (document.getElementById('packCase')?.checked) chips.push({ label: 'Case', reset: () => { document.getElementById('packCase').checked = false; } });
+      if (document.getElementById('packPallet')?.checked) chips.push({ label: 'Pallet', reset: () => { document.getElementById('packPallet').checked = false; } });
+      if (document.getElementById('packBulk')?.checked) chips.push({ label: 'Bulk', reset: () => { document.getElementById('packBulk').checked = false; } });
       if (document.getElementById('verifiedToggle').classList.contains('on')) {
         chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
@@ -2233,6 +2285,10 @@
       if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = false;
       if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = false;
       if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = false;
+      if (document.getElementById('packLoose')) document.getElementById('packLoose').checked = false;
+      if (document.getElementById('packCase')) document.getElementById('packCase').checked = false;
+      if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = false;
+      if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = false;
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
       document.getElementById('distRange').value = 50;
@@ -2282,7 +2338,11 @@
         freshness: document.getElementById('freshnessFilter').value,
         gradePremium: document.getElementById('gradePremium')?.checked || false,
         gradeStandard: document.getElementById('gradeStandard')?.checked || false,
-        gradeSurplus: document.getElementById('gradeSurplus')?.checked || false
+        gradeSurplus: document.getElementById('gradeSurplus')?.checked || false,
+        packLoose: document.getElementById('packLoose')?.checked || false,
+        packCase: document.getElementById('packCase')?.checked || false,
+        packPallet: document.getElementById('packPallet')?.checked || false,
+        packBulk: document.getElementById('packBulk')?.checked || false
       };
     }
     function applyFilterState(s) {
@@ -2311,6 +2371,10 @@
       if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
       if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
       if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
+      if (document.getElementById('packLoose')) document.getElementById('packLoose').checked = !!s.packLoose;
+      if (document.getElementById('packCase')) document.getElementById('packCase').checked = !!s.packCase;
+      if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = !!s.packPallet;
+      if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = !!s.packBulk;
       filterSellers();
     }
 
@@ -2319,7 +2383,8 @@
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
       search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
-      gradePremium: false, gradeStandard: false, gradeSurplus: false
+      gradePremium: false, gradeStandard: false, gradeSurplus: false,
+      packLoose: false, packCase: false, packPallet: false, packBulk: false
     };
     function stateToQuery(state) {
       const params = new URLSearchParams();
@@ -2342,6 +2407,10 @@
       if (state.gradePremium) params.set('gprem', '1');
       if (state.gradeStandard) params.set('gstd', '1');
       if (state.gradeSurplus) params.set('gsur', '1');
+      if (state.packLoose) params.set('ploose', '1');
+      if (state.packCase) params.set('pcase', '1');
+      if (state.packPallet) params.set('ppal', '1');
+      if (state.packBulk) params.set('pbulk', '1');
       return params;
     }
     function queryToState(params) {
@@ -2365,6 +2434,10 @@
       if (params.get('gprem') === '1') s.gradePremium = true;
       if (params.get('gstd') === '1') s.gradeStandard = true;
       if (params.get('gsur') === '1') s.gradeSurplus = true;
+      if (params.get('ploose') === '1') s.packLoose = true;
+      if (params.get('pcase') === '1') s.packCase = true;
+      if (params.get('ppal') === '1') s.packPallet = true;
+      if (params.get('pbulk') === '1') s.packBulk = true;
       return s;
     }
     function updateUrlFromFilters() {
@@ -2408,6 +2481,10 @@
         if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
         if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
         if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
+        if (document.getElementById('packLoose')) document.getElementById('packLoose').checked = !!s.packLoose;
+        if (document.getElementById('packCase')) document.getElementById('packCase').checked = !!s.packCase;
+        if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = !!s.packPallet;
+        if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = !!s.packBulk;
         return true;
       } catch (_) { return false; }
     }
@@ -2540,6 +2617,7 @@
       const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
         getGradeBadge(s),
+        getPackBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',

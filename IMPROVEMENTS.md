@@ -920,3 +920,33 @@ This is a small, high-impact commercial feature that aligns the marketplace with
 This completes the grade/quality feature and makes the prototype more aligned with professional wholesale produce sourcing.
 
 
+
+## 2026-10-13 (Hourly update) – Packaging / Pack Format Badges & Filter
+
+**What:** Add packaging type (Loose, Case, Pallet, Bulk) as badges on seller cards, map popups, and the detail drawer, plus sidebar checkboxes to filter by one or more preferred pack formats.
+
+**Why:** Wholesale buyers and logistics teams care deeply about how product is packed — it affects handling equipment, labor, storage, and freight costs. Making pack format visible and filterable reduces back-and-forth and aligns the prototype with real B2B produce procurement workflows.
+
+**How:**
+- Extend sample sellers with a `pack` field ("loose" | "case" | "pallet" | "bulk").
+- Add compact pack-format badges (distinct style) next to existing grade/cert/verified badges.
+- New “Pack format” checkbox group in the filters sidebar.
+- Filter logic treats checked formats as an OR include filter; active filter chips, Clear all, saved presets, and shareable URL all respect it.
+- Fully client-side, dark-mode compatible, works alongside all existing filters.
+
+This is a small, high-impact logistics-focused feature that makes the marketplace more practical for professional buyers.
+
+## 2026-10-13 (Hourly update) – Packaging / Pack Format Badges & Filter (Implemented)
+
+**What:** Implemented packaging type (Loose, Case, Pallet, Bulk) badges and filter.
+
+**Why:** Gives buyers an immediate logistics signal for handling and freight planning.
+
+**How (implemented):**
+- Added `pack` field to all sample sellers.
+- Pack badges rendered on cards, popups, and drawer (dark-mode compatible).
+- Sidebar “Pack format” checkboxes (OR logic when any are selected).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the pack-format feature and improves the prototype for real wholesale logistics workflows.
