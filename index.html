@@ -1975,6 +1975,31 @@
     });
     map.addLayer(markerCluster);
 
+    // Search radius visualization
+    let radiusCircle = L.circle([51.505, -0.09], {
+      radius: 50000,
+      color: '#2d6a4f',
+      fillColor: '#40916c',
+      fillOpacity: 0.08,
+      weight: 1.5,
+      opacity: 0.6,
+      interactive: false
+    });
+    // Start hidden; shown when distance filter is below max
+    // radiusCircle.addTo(map);
+
+    function updateRadiusCircle() {
+      const maxDist = +document.getElementById('distRange').value;
+      const center = (userLat != null && userLng != null) ? [userLat, userLng] : map.getCenter();
+      if (maxDist >= 100) {
+        if (map.hasLayer(radiusCircle)) map.removeLayer(radiusCircle);
+        return;
+      }
+      radiusCircle.setLatLng(center);
+      radiusCircle.setRadius(maxDist * 1000); // km → m
+      if (!map.hasLayer(radiusCircle)) radiusCircle.addTo(map);
+    }
+
     function buildPopupHtml(s) {
       const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
@@ -2367,6 +2392,7 @@
       renderSellers(filtered);
       updateFilterChips();
       updateUrlFromFilters();
+      updateRadiusCircle();
 
       // Auto-fit map when filters change and we have results (skip initial load if desired)
       if (filtered.length > 0 && filtered.length < sellers.length) {

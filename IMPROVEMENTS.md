@@ -701,3 +701,33 @@ This completes the seasonal availability feature and improves the prototype for 
 
 No functional bugs found in this pass; core rendering, filters, RFQ, cart, and map continue to work. Prototype is now cleaner for both phone and laptop users.
 
+
+
+## 2026-10-13 (Hourly update) – Search Radius Circle on Map
+
+**What:** Visualize the current max-distance filter as a semi-transparent circle on the Leaflet map, centered on the buyer’s location (or default map center). The circle updates live when the distance slider changes or when Near Me recalculates distances.
+
+**Why:** Wholesale buyers using the map + distance filter currently have no visual sense of the geographic area they are searching. A radius circle immediately shows whether key farms fall inside or outside the range, speeds spatial understanding, and makes the “within X km” filter more intuitive — especially after using Near Me.
+
+**How:**
+- Create a Leaflet circle layer (green, low-opacity fill) after map initialization.
+- On every filter change and after location updates, set the circle’s center to the current user coordinates (fallback to map center) and its radius to the max-distance value in meters.
+- Hide the circle when the distance filter is at its maximum (100 km) to avoid covering the whole view; show it otherwise.
+- Fully client-side, dark-mode friendly, works with clustering and existing filters.
+
+This is a small, high-impact visual improvement that makes distance-based sourcing clearer for map-centric buyers.
+
+## 2026-10-13 (Hourly update) – Search Radius Circle on Map (Implemented)
+
+**What:** Implemented a live search-radius circle on the Leaflet map that visualizes the current max-distance filter.
+
+**Why:** Gives buyers an immediate geographic sense of their distance filter, especially useful after Near Me.
+
+**How (implemented):**
+- Added a non-interactive Leaflet circle layer.
+- `updateRadiusCircle()` sets center to user location (or map center) and radius from the distance slider (km → meters).
+- Called from `filterSellers()` so it updates with every filter change and location update.
+- Hidden when the distance filter is at maximum (100 km) to keep the map clean.
+- Fully client-side and compatible with clustering, dark mode, and all existing features.
+
+This completes the radius visualization and makes distance-based discovery clearer on the map.
