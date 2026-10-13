@@ -731,3 +731,19 @@ This is a small, high-impact visual improvement that makes distance-based sourci
 - Fully client-side and compatible with clustering, dark mode, and all existing features.
 
 This completes the radius visualization and makes distance-based discovery clearer on the map.
+
+## 2026-10-13 (Hourly update) – Estimated Weekly Capacity Badge & Filter
+
+**What:** Add an estimated weekly supply capacity indicator (e.g. “~500 kg/week”) as a compact badge on seller cards, map popups, and the detail drawer, plus a “Min weekly capacity” sidebar number filter.
+
+**Why:** Wholesale buyers planning regular or program supply need to know whether a farm can reliably meet their weekly volume requirements. Surfacing capacity early reduces mismatched inquiries, speeds supplier qualification, and supports more realistic RFQ conversations.
+
+**How:**
+- Extend sample sellers with a `weeklyCapacity` number (in the product’s native unit per week).
+- Render a capacity badge next to existing badges.
+- New “Min weekly capacity” number input in the filters sidebar.
+- Integrate into filter logic, active filter chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side, dark-mode compatible, works with all existing filters.
+
+This is a small, high-impact volume-planning feature that makes continuous-supply qualification more practical for professional buyers.
+

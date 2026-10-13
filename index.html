@@ -515,6 +515,20 @@
       background: #78350f;
       color: #fcd34d;
     }
+    .badge-capacity {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+    html.dark .badge-capacity {
+      background: #4c1d95;
+      color: #ddd6fe;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1154,6 +1168,11 @@
           <span style="font-size:0.9rem">Year-round supply only</span>
           <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Min weekly capacity</label>
+          <input type="number" id="minWeeklyCapacity" min="0" placeholder="Any" oninput="filterSellers()" style="width:100%;padding:0.4rem;border:1px solid var(--border);border-radius:0.375rem;background:var(--input-bg);color:var(--text)" />
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem">In product unit / week (e.g. kg, L, doz)</div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1398,6 +1417,7 @@
         qty: "2,400 kg",
         organic: true,
         yearRound: true,
+        weeklyCapacity: 800,
         grade: "premium",
         pack: "case",
         certs: ["organic", "gap"],
@@ -1433,6 +1453,7 @@
         qty: "5,000 L",
         organic: false,
         yearRound: true,
+        weeklyCapacity: 2000,
         grade: "standard",
         pack: "bulk",
         certs: ["haccp"],
@@ -1468,6 +1489,7 @@
         qty: "1,200 doz",
         organic: true,
         yearRound: false,
+        weeklyCapacity: 300,
         grade: "standard",
         pack: "case",
         certs: ["organic"],
@@ -1503,6 +1525,7 @@
         qty: "150 ton",
         organic: false,
         yearRound: true,
+        weeklyCapacity: 50,
         grade: "standard",
         pack: "pallet",
         certs: [],
@@ -1539,6 +1562,7 @@
         qty: "180 kg",
         organic: true,
         yearRound: false,
+        weeklyCapacity: 50,
         grade: "premium",
         pack: "loose",
         certs: ["organic", "regen"],
@@ -1574,6 +1598,7 @@
         qty: "320 kg",
         organic: true,
         yearRound: true,
+        weeklyCapacity: 40,
         grade: "surplus",
         pack: "case",
         certs: ["organic"],
@@ -2011,6 +2036,7 @@
         getProductionBadge(s),
         getStorageBadge(s),
         getSeasonBadge(s),
+        getCapacityBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2272,6 +2298,12 @@
       return '<span class="badge-season seasonal">Seasonal</span>';
     }
 
+    function getCapacityBadge(s) {
+      if (!s.weeklyCapacity) return '';
+      const unit = s.unit || 'units';
+      return `<span class="badge-capacity">~${s.weeklyCapacity} ${unit}/wk</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2285,6 +2317,7 @@
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
       const yearRoundOnly = document.getElementById('yearRoundToggle').classList.contains('on');
+      const minWeekly = +(document.getElementById('minWeeklyCapacity')?.value || 0);
       const paymentTerms = document.getElementById('paymentFilter').value;
       const fulfillment = document.getElementById('fulfillmentFilter').value;
       const maxHarvestDays = +document.getElementById('freshnessFilter').value;
@@ -2357,6 +2390,7 @@
         if (availableOnly && s.stockStatus === 'out') return false;
         if (favoritesOnly && !favorites.has(s.id)) return false;
         if (yearRoundOnly && !s.yearRound) return false;
+        if (minWeekly > 0 && (s.weeklyCapacity || 0) < minWeekly) return false;
         if (paymentTerms !== 'any' && s.paymentTerms !== paymentTerms) return false;
         if (fulfillment !== 'any') {
           if (fulfillment === 'both') {
@@ -2453,6 +2487,10 @@
       }
       if (document.getElementById('yearRoundToggle').classList.contains('on')) {
         chips.push({ label: 'Year-round only', reset: () => { const t = document.getElementById('yearRoundToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
+      const minWeekly = +(document.getElementById('minWeeklyCapacity')?.value || 0);
+      if (minWeekly > 0) {
+        chips.push({ label: `≥ ${minWeekly}/wk`, reset: () => { document.getElementById('minWeeklyCapacity').value = ''; } });
       }
       const maxDist = +document.getElementById('distRange').value;
       if (maxDist !== 50) {
@@ -2567,6 +2605,7 @@
       document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
       document.getElementById('yearRoundToggle').classList.remove('on');
       document.getElementById('yearRoundToggle').setAttribute('aria-checked', 'false');
+      if (document.getElementById('minWeeklyCapacity')) document.getElementById('minWeeklyCapacity').value = '';
       document.getElementById('paymentFilter').value = 'any';
       document.getElementById('fulfillmentFilter').value = 'any';
       document.getElementById('freshnessFilter').value = '999';
@@ -2597,6 +2636,7 @@
         available: document.getElementById('availableToggle').classList.contains('on'),
         favorites: document.getElementById('favoritesToggle').classList.contains('on'),
         yearRound: document.getElementById('yearRoundToggle').classList.contains('on'),
+        minWeekly: document.getElementById('minWeeklyCapacity')?.value || '',
         payment: document.getElementById('paymentFilter').value,
         fulfillment: document.getElementById('fulfillmentFilter').value,
         freshness: document.getElementById('freshnessFilter').value,
@@ -2635,6 +2675,7 @@
       setToggle('availableToggle', s.available);
       setToggle('favoritesToggle', s.favorites);
       setToggle('yearRoundToggle', s.yearRound);
+      if (document.getElementById('minWeeklyCapacity')) document.getElementById('minWeeklyCapacity').value = s.minWeekly || '';
       document.getElementById('distRange').value = s.dist || 50;
       document.getElementById('distValue').textContent = s.dist || 50;
       document.getElementById('priceRange').value = s.price || 10;
@@ -2700,6 +2741,7 @@
       if (state.available) params.set('available', '1');
       if (state.favorites) params.set('fav', '1');
       if (state.yearRound) params.set('yr', '1');
+      if (state.minWeekly && state.minWeekly !== '') params.set('wcap', state.minWeekly);
       if (state.payment && state.payment !== FILTER_DEFAULTS.payment) params.set('pay', state.payment);
       if (state.fulfillment && state.fulfillment !== FILTER_DEFAULTS.fulfillment) params.set('fulfill', state.fulfillment);
       if (state.freshness && String(state.freshness) !== FILTER_DEFAULTS.freshness) params.set('fresh', state.freshness);
@@ -2742,6 +2784,7 @@
       if (params.get('available') === '1') s.available = true;
       if (params.get('fav') === '1') s.favorites = true;
       if (params.get('yr') === '1') s.yearRound = true;
+      if (params.has('wcap')) s.minWeekly = params.get('wcap');
       if (params.has('pay')) s.payment = params.get('pay');
       if (params.has('fulfill')) s.fulfillment = params.get('fulfill');
       if (params.has('fresh')) s.freshness = params.get('fresh');
@@ -2794,6 +2837,8 @@
         setToggle('verifiedToggle', s.verified);
         setToggle('availableToggle', s.available);
         setToggle('favoritesToggle', s.favorites);
+        setToggle('yearRoundToggle', s.yearRound);
+        if (document.getElementById('minWeeklyCapacity')) document.getElementById('minWeeklyCapacity').value = s.minWeekly || '';
         document.getElementById('distRange').value = s.dist || 50;
         document.getElementById('distValue').textContent = s.dist || 50;
         document.getElementById('priceRange').value = s.price || 10;
@@ -2964,6 +3009,7 @@
         getProductionBadge(s),
         getStorageBadge(s),
         getSeasonBadge(s),
+        getCapacityBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
