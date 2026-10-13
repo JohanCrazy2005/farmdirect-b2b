@@ -747,3 +747,33 @@ This completes the radius visualization and makes distance-based discovery clear
 
 This is a small, high-impact volume-planning feature that makes continuous-supply qualification more practical for professional buyers.
 
+
+## 2026-10-13 (Hourly update) – Estimated Weekly Capacity Badge & Filter (Implemented)
+
+**What:** Implemented estimated weekly capacity badges and min weekly capacity filter.
+
+**Why:** Lets buyers quickly assess whether a supplier can meet their regular volume needs.
+
+**How (implemented):**
+- Added `weeklyCapacity` field to all sample sellers.
+- Capacity badges (~XXX unit/wk) rendered on cards, popups, and drawer.
+- Sidebar “Min weekly capacity” number input.
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the weekly capacity feature for better volume planning.
+
+## 2026-10-13 – Mobile View Mode Toggle (Map / Split / List)
+
+**What:** Add a floating control on phones (≤700px) that lets buyers switch between full Map, Split (map+list), and full List views. Preference is persisted.
+
+**Why:** The fixed 55/45 split on small screens forces a compromise. Buyers often want a full map for geographic discovery or a full list for scanning many options. A simple toggle makes both phone and laptop use more practical without losing the split option.
+
+**How:**
+- Floating pill control (Map | Split | List) visible only below 700px.
+- Classes on `.main` control heights and visibility.
+- Preference saved in localStorage (`farmdirect_viewMode`).
+- Works with existing filters, map, dark mode, and all other features.
+- Laptop layout remains the clean side-by-side map + sidebar.
+
+This improves usability for buyers on the go while keeping the desktop experience focused.
