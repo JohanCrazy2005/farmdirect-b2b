@@ -930,6 +930,8 @@
             <option>Distance</option>
             <option>Price: Low to High</option>
             <option>Price: High to Low</option>
+            <option>Delivery cost: Low to High</option>
+            <option>Landed cost (price + deliv)</option>
             <option>Rating</option>
             <option>Freshest first</option>
           </select>
@@ -1847,6 +1849,15 @@
       if (sort === 'Distance') filtered.sort((a, b) => a.distance - b.distance);
       else if (sort === 'Price: Low to High') filtered.sort((a, b) => a.price - b.price);
       else if (sort === 'Price: High to Low') filtered.sort((a, b) => b.price - a.price);
+      else if (sort === 'Delivery cost: Low to High') filtered.sort((a, b) => estimateDeliveryCost(a.distance) - estimateDeliveryCost(b.distance));
+      else if (sort === 'Landed cost (price + deliv)') {
+        // Amortize delivery over ~50 units so unit price still dominates but logistics matter
+        filtered.sort((a, b) => {
+          const la = a.price + estimateDeliveryCost(a.distance) / 50;
+          const lb = b.price + estimateDeliveryCost(b.distance) / 50;
+          return la - lb;
+        });
+      }
       else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
       else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
 
