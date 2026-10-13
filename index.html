@@ -423,6 +423,20 @@
       background: #0c4a6e;
       color: #7dd3fc;
     }
+    .badge-grade {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+    }
+    .badge-grade.premium { background: #fef3c7; color: #92400e; }
+    .badge-grade.standard { background: #e0f2fe; color: #075985; }
+    .badge-grade.surplus { background: #fce7f3; color: #9d174d; }
+    html.dark .badge-grade.premium { background: #78350f; color: #fcd34d; }
+    html.dark .badge-grade.standard { background: #0c4a6e; color: #7dd3fc; }
+    html.dark .badge-grade.surplus { background: #831843; color: #f9a8d4; }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1011,6 +1025,14 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certRegen" onchange="filterSellers()"> Regenerative</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Product grade</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradePremium" onchange="filterSellers()"> Premium</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradeStandard" onchange="filterSellers()"> Standard</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradeSurplus" onchange="filterSellers()"> Surplus</label>
+          </div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1245,6 +1267,7 @@
         unit: "kg",
         qty: "2,400 kg",
         organic: true,
+        grade: "premium",
         certs: ["organic", "gap"],
         verified: true,
         rating: 4.8,
@@ -1274,6 +1297,7 @@
         unit: "liter",
         qty: "5,000 L",
         organic: false,
+        grade: "standard",
         certs: ["haccp"],
         verified: true,
         rating: 4.2,
@@ -1303,6 +1327,7 @@
         unit: "dozen",
         qty: "1,200 doz",
         organic: true,
+        grade: "standard",
         certs: ["organic"],
         verified: false,
         rating: 4.6,
@@ -1332,6 +1357,7 @@
         unit: "ton",
         qty: "150 ton",
         organic: false,
+        grade: "standard",
         certs: [],
         verified: true,
         rating: 4.9,
@@ -1361,6 +1387,7 @@
         unit: "kg",
         qty: "180 kg",
         organic: true,
+        grade: "premium",
         certs: ["organic", "regen"],
         verified: true,
         rating: 4.7,
@@ -1390,6 +1417,7 @@
         unit: "kg",
         qty: "320 kg",
         organic: true,
+        grade: "surplus",
         certs: ["organic"],
         verified: false,
         rating: 4.5,
@@ -1790,6 +1818,7 @@
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
+        getGradeBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2004,6 +2033,13 @@
       return s.certs.map(c => `<span class="badge-cert">${labels[c] || c}</span>`).join(' ');
     }
 
+    function getGradeBadge(s) {
+      if (!s.grade) return '';
+      const labels = { premium: 'Premium', standard: 'Standard', surplus: 'Surplus' };
+      const label = labels[s.grade] || s.grade;
+      return `<span class="badge-grade ${s.grade}">${label}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2031,6 +2067,14 @@
         if (needGap && !scerts.includes('gap')) return false;
         if (needHaccp && !scerts.includes('haccp')) return false;
         if (needRegen && !scerts.includes('regen')) return false;
+        const wantPremium = document.getElementById('gradePremium')?.checked;
+        const wantStandard = document.getElementById('gradeStandard')?.checked;
+        const wantSurplus = document.getElementById('gradeSurplus')?.checked;
+        const anyGrade = wantPremium || wantStandard || wantSurplus;
+        if (anyGrade) {
+          const g = s.grade || 'standard';
+          if (!( (wantPremium && g === 'premium') || (wantStandard && g === 'standard') || (wantSurplus && g === 'surplus') )) return false;
+        }
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
         // Skip strict price filter for bulk units (ton)
@@ -2099,6 +2143,9 @@
       if (document.getElementById('certGap')?.checked) chips.push({ label: 'GAP', reset: () => { document.getElementById('certGap').checked = false; } });
       if (document.getElementById('certHaccp')?.checked) chips.push({ label: 'HACCP', reset: () => { document.getElementById('certHaccp').checked = false; } });
       if (document.getElementById('certRegen')?.checked) chips.push({ label: 'Regenerative', reset: () => { document.getElementById('certRegen').checked = false; } });
+      if (document.getElementById('gradePremium')?.checked) chips.push({ label: 'Premium', reset: () => { document.getElementById('gradePremium').checked = false; } });
+      if (document.getElementById('gradeStandard')?.checked) chips.push({ label: 'Standard', reset: () => { document.getElementById('gradeStandard').checked = false; } });
+      if (document.getElementById('gradeSurplus')?.checked) chips.push({ label: 'Surplus', reset: () => { document.getElementById('gradeSurplus').checked = false; } });
       if (document.getElementById('verifiedToggle').classList.contains('on')) {
         chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
@@ -2183,6 +2230,9 @@
       if (document.getElementById('certGap')) document.getElementById('certGap').checked = false;
       if (document.getElementById('certHaccp')) document.getElementById('certHaccp').checked = false;
       if (document.getElementById('certRegen')) document.getElementById('certRegen').checked = false;
+      if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = false;
+      if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = false;
+      if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = false;
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
       document.getElementById('distRange').value = 50;
@@ -2229,7 +2279,10 @@
         favorites: document.getElementById('favoritesToggle').classList.contains('on'),
         payment: document.getElementById('paymentFilter').value,
         fulfillment: document.getElementById('fulfillmentFilter').value,
-        freshness: document.getElementById('freshnessFilter').value
+        freshness: document.getElementById('freshnessFilter').value,
+        gradePremium: document.getElementById('gradePremium')?.checked || false,
+        gradeStandard: document.getElementById('gradeStandard')?.checked || false,
+        gradeSurplus: document.getElementById('gradeSurplus')?.checked || false
       };
     }
     function applyFilterState(s) {
@@ -2255,6 +2308,9 @@
       document.getElementById('paymentFilter').value = s.payment || 'any';
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
       document.getElementById('freshnessFilter').value = s.freshness || '999';
+      if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
+      if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
+      if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
       filterSellers();
     }
 
@@ -2262,7 +2318,8 @@
     const FILTER_DEFAULTS = {
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
       search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
-      available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999'
+      available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
+      gradePremium: false, gradeStandard: false, gradeSurplus: false
     };
     function stateToQuery(state) {
       const params = new URLSearchParams();
@@ -2282,6 +2339,9 @@
       if (state.payment && state.payment !== FILTER_DEFAULTS.payment) params.set('pay', state.payment);
       if (state.fulfillment && state.fulfillment !== FILTER_DEFAULTS.fulfillment) params.set('fulfill', state.fulfillment);
       if (state.freshness && String(state.freshness) !== FILTER_DEFAULTS.freshness) params.set('fresh', state.freshness);
+      if (state.gradePremium) params.set('gprem', '1');
+      if (state.gradeStandard) params.set('gstd', '1');
+      if (state.gradeSurplus) params.set('gsur', '1');
       return params;
     }
     function queryToState(params) {
@@ -2302,6 +2362,9 @@
       if (params.has('pay')) s.payment = params.get('pay');
       if (params.has('fulfill')) s.fulfillment = params.get('fulfill');
       if (params.has('fresh')) s.freshness = params.get('fresh');
+      if (params.get('gprem') === '1') s.gradePremium = true;
+      if (params.get('gstd') === '1') s.gradeStandard = true;
+      if (params.get('gsur') === '1') s.gradeSurplus = true;
       return s;
     }
     function updateUrlFromFilters() {
@@ -2342,6 +2405,9 @@
         document.getElementById('paymentFilter').value = s.payment || 'any';
         document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
         document.getElementById('freshnessFilter').value = s.freshness || '999';
+        if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
+        if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
+        if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
         return true;
       } catch (_) { return false; }
     }
@@ -2473,6 +2539,7 @@
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
+        getGradeBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',

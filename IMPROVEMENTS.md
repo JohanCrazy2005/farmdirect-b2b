@@ -888,3 +888,35 @@ This completes the inquiry history feature and strengthens the prototype as a li
 - Fully client-side, dark-mode compatible, works with existing organic toggle and other filters.
 
 This strengthens the prototype for real wholesale buying workflows where certification is a hard requirement.
+
+## 2026-10-13 (Hourly update) – Product Grade / Quality Badges & Filter
+
+**What:** Add product quality grades (Premium, Standard, Surplus) as badges on seller cards, map popups, and the detail drawer, plus sidebar checkboxes to filter by one or more grades.
+
+**Why:** Wholesale produce buyers frequently specify grade requirements or intentionally source surplus/imperfect product for cost savings (common on platforms like Full Harvest). Making grade visible and filterable reduces qualification time and expands the prototype’s usefulness for both premium and value-oriented procurement.
+
+**How:**
+- Extend sample sellers with a `grade` field ("premium" | "standard" | "surplus").
+- Add compact grade badges (distinct colors) next to existing organic/cert/verified badges.
+- New “Product grade” checkbox group (Premium / Standard / Surplus) in the filters sidebar.
+- Filter logic treats checked grades as an OR include filter; active filter chips and Clear all respect it.
+- Fully client-side, dark-mode compatible, works alongside all existing filters.
+
+This is a small, high-impact commercial feature that aligns the marketplace with real B2B produce buying criteria.
+
+## 2026-10-13 (Hourly update) – Product Grade / Quality Badges & Filter (Implemented)
+
+**What:** Implemented product quality grades (Premium, Standard, Surplus) with badges and filter checkboxes.
+
+**Why:** Gives buyers an immediate way to qualify or intentionally seek surplus product.
+
+**How (implemented):**
+- Added `grade` field to all sample sellers.
+- Grade badges rendered on cards, popups, and drawer (with dark-mode styles).
+- Sidebar “Product grade” checkboxes (OR logic when any are selected).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the grade/quality feature and makes the prototype more aligned with professional wholesale produce sourcing.
+
+
