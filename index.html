@@ -996,6 +996,15 @@
           </select>
         </div>
         <div class="filter-group">
+          <label>Max Delivery Fee</label>
+          <select id="deliveryFeeFilter" onchange="filterSellers()">
+            <option value="9999">Any</option>
+            <option value="40">≤ $40</option>
+            <option value="60">≤ $60</option>
+            <option value="100">≤ $100</option>
+          </select>
+        </div>
+        <div class="filter-group">
           <label>Min. rating</label>
           <select id="ratingFilter" onchange="filterSellers()">
             <option value="0">Any</option>
@@ -1456,6 +1465,13 @@
       return `Bulk from ${best.minQty} ${s.unit}: $${best.price.toFixed(2)}`;
     }
 
+    function estimateDeliveryCost(distanceKm) {
+      const d = Math.max(0, Number(distanceKm) || 0);
+      // Simple prototype formula: $25 base + $0.70/km, capped at $180
+      const cost = Math.min(180, 25 + d * 0.70);
+      return Math.round(cost);
+    }
+
     function toggleFavorite(id, e) {
       if (e) { e.stopPropagation(); e.preventDefault(); }
       if (favorites.has(id)) favorites.delete(id);
@@ -1594,7 +1610,7 @@
             <span>Price (per ${s.unit})</span>
             <span class="price">$${s.price.toFixed(2)}</span>
           </div>
-          <div class="qty">Available: ${s.qty} · ${s.distance} km away</div>
+          <div class="qty">Available: ${s.qty} · ${s.distance} km away · Delivery est. $${estimateDeliveryCost(s.distance)}</div>
           <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
@@ -1752,7 +1768,7 @@
             <h3 style="cursor:pointer" onclick="event.stopPropagation(); openSellerDrawer(${s.id})">${s.name} ${badges}</h3>
             <div class="seller-meta">${s.product} · ${s.farm}</div>
             <div class="seller-price">$${s.price.toFixed(2)} / ${s.unit}</div>
-            <div class="seller-meta">${s.qty} available · ${s.distance} km</div>
+            <div class="seller-meta">${s.qty} available · ${s.distance} km · Delivery est. $${estimateDeliveryCost(s.distance)}</div>
             <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel} · ${fulfillLabel}</div>
             <div class="seller-meta" style="color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
             ${tierSummary(s) ? `<div class="seller-meta" style="color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
@@ -1799,6 +1815,7 @@
       const paymentTerms = document.getElementById('paymentFilter').value;
       const fulfillment = document.getElementById('fulfillmentFilter').value;
       const maxHarvestDays = +document.getElementById('freshnessFilter').value;
+      const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -1809,6 +1826,7 @@
         if (s.unit !== 'ton' && s.price > maxPrice) return false;
         if (s.moq > maxMoq) return false;
         if (s.leadTimeDays > maxLead) return false;
+        if (estimateDeliveryCost(s.distance) > maxDeliveryFee) return false;
         if (s.rating < minRating) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
         if (favoritesOnly && !favorites.has(s.id)) return false;
@@ -1883,6 +1901,10 @@
       if (maxLead < 999) {
         chips.push({ label: `Lead ≤ ${maxLead}d`, reset: () => { document.getElementById('leadTimeFilter').value = '999'; } });
       }
+      const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
+      if (maxDeliveryFee < 9999) {
+        chips.push({ label: `Delivery ≤ $${maxDeliveryFee}`, reset: () => { document.getElementById('deliveryFeeFilter').value = '9999'; } });
+      }
       const minRating = +document.getElementById('ratingFilter').value;
       if (minRating > 0) {
         chips.push({ label: `Rating ${minRating}+`, reset: () => { document.getElementById('ratingFilter').value = '0'; } });
@@ -1944,6 +1966,7 @@
       document.getElementById('sortBy').value = 'Distance';
       document.getElementById('moqFilter').value = '9999';
       document.getElementById('leadTimeFilter').value = '999';
+      document.getElementById('deliveryFeeFilter').value = '9999';
       document.getElementById('ratingFilter').value = '0';
       document.getElementById('availableToggle').classList.remove('on');
       document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
@@ -1974,6 +1997,7 @@
         sort: document.getElementById('sortBy').value,
         moq: document.getElementById('moqFilter').value,
         leadTime: document.getElementById('leadTimeFilter').value,
+        deliveryFee: document.getElementById('deliveryFeeFilter').value,
         rating: document.getElementById('ratingFilter').value,
         available: document.getElementById('availableToggle').classList.contains('on'),
         favorites: document.getElementById('favoritesToggle').classList.contains('on'),
@@ -2000,6 +2024,7 @@
       document.getElementById('sortBy').value = s.sort || 'Distance';
       document.getElementById('moqFilter').value = s.moq || '9999';
       document.getElementById('leadTimeFilter').value = s.leadTime || '999';
+      document.getElementById('deliveryFeeFilter').value = s.deliveryFee || '9999';
       document.getElementById('ratingFilter').value = s.rating || '0';
       document.getElementById('paymentFilter').value = s.payment || 'any';
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
@@ -2010,7 +2035,7 @@
     // Shareable filter URL helpers
     const FILTER_DEFAULTS = {
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
-      search: '', sort: 'Distance', moq: '9999', leadTime: '999', rating: '0',
+      search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999'
     };
     function stateToQuery(state) {
@@ -2024,6 +2049,7 @@
       if (state.sort && state.sort !== FILTER_DEFAULTS.sort) params.set('sort', state.sort);
       if (state.moq && String(state.moq) !== FILTER_DEFAULTS.moq) params.set('moq', state.moq);
       if (state.leadTime && String(state.leadTime) !== FILTER_DEFAULTS.leadTime) params.set('lead', state.leadTime);
+      if (state.deliveryFee && String(state.deliveryFee) !== FILTER_DEFAULTS.deliveryFee) params.set('deliv', state.deliveryFee);
       if (state.rating && String(state.rating) !== FILTER_DEFAULTS.rating) params.set('rating', state.rating);
       if (state.available) params.set('available', '1');
       if (state.favorites) params.set('fav', '1');
@@ -2043,6 +2069,7 @@
       if (params.has('sort')) s.sort = params.get('sort');
       if (params.has('moq')) s.moq = params.get('moq');
       if (params.has('lead')) s.leadTime = params.get('lead');
+      if (params.has('deliv')) s.deliveryFee = params.get('deliv');
       if (params.has('rating')) s.rating = params.get('rating');
       if (params.get('available') === '1') s.available = true;
       if (params.get('fav') === '1') s.favorites = true;
@@ -2084,6 +2111,7 @@
         document.getElementById('sortBy').value = s.sort || 'Distance';
         document.getElementById('moqFilter').value = s.moq || '9999';
         document.getElementById('leadTimeFilter').value = s.leadTime || '999';
+        document.getElementById('deliveryFeeFilter').value = s.deliveryFee || '9999';
         document.getElementById('ratingFilter').value = s.rating || '0';
         document.getElementById('paymentFilter').value = s.payment || 'any';
         document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
@@ -2166,7 +2194,7 @@
       if (!s) return;
       document.getElementById('rfqSellerId').value = id;
       document.getElementById('rfqSubtitle').textContent =
-        `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available`;
+        `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available · Delivery est. $${estimateDeliveryCost(s.distance)}`;
       const qtyInput = document.getElementById('rfqQty');
       qtyInput.value = '';
       document.getElementById('rfqDate').value = '';

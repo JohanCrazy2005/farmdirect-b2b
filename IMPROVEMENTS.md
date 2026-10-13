@@ -698,3 +698,34 @@ This is a high-impact collaboration feature that can be implemented in one focus
 - Works with all existing filters, dark mode, saved presets, and mobile.
 
 This completes the shareable deep-link feature and makes collaborative research practical.
+
+## 2026-10-13 (Hourly update) – Estimated Delivery Cost Indicator
+
+**What:** Show an estimated delivery fee (based on distance) on seller cards, map popups, and inside the RFQ modal so buyers can compare true landed cost.
+
+**Why:** Wholesale buyers care about total cost of goods, not just farm-gate price. A nearby supplier with a slightly higher unit price can be cheaper once logistics are included. Making delivery estimates visible improves decision quality and reduces surprises in the inquiry stage.
+
+**How:**
+- Add a simple client-side formula (e.g. $25 base + $0.70 per km, with a reasonable cap).
+- Display “Delivery est. $XX” in the seller meta line on cards and in Leaflet popups.
+- Include the estimate in the RFQ modal subtitle or as a live note when quantity is entered.
+- Optional lightweight filter for maximum delivery fee (Any / ≤$50 / ≤$100).
+- Fully client-side; updates automatically when Near Me recalculates distances. Works with dark mode and existing filters.
+
+This is a high-impact commercial clarity feature for B2B logistics-sensitive buyers that can be implemented in one short coding session.
+
+## 2026-10-13 (Hourly update) – Estimated Delivery Cost Indicator (Implemented)
+
+**What:** Implemented estimated delivery fee on seller cards, map popups, and RFQ modal, plus a Max Delivery Fee filter.
+
+**Why:** Gives buyers a realistic landed-cost view so they can compare nearby vs distant suppliers accurately.
+
+**How (implemented):**
+- `estimateDeliveryCost(distanceKm)` uses $25 base + $0.70/km (capped at $180).
+- Shown in card meta, Leaflet popups, and RFQ subtitle.
+- New “Max Delivery Fee” select (Any / ≤$40 / ≤$60 / ≤$100) integrated into filtering, active chips, saved presets, and shareable URL (`deliv` param).
+- Fully client-side; updates with Near Me distance changes. Dark-mode compatible.
+
+This completes the delivery cost visibility feature for more practical B2B procurement decisions.
+
+
