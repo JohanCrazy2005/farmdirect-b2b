@@ -408,6 +408,22 @@
       background: #14532d;
       color: #86efac;
     }
+
+    .badge-cert {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-left: 0.25rem;
+    }
+    html.dark .badge-cert {
+      background: #0c4a6e;
+      color: #7dd3fc;
+    }
+
     .badge-verified {
       font-size: 0.65rem;
       background: #dbeafe;
@@ -987,6 +1003,15 @@
           <span style="font-size:0.9rem">Organic only</span>
           <div class="toggle" id="organicToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Required certifications</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certGap" onchange="filterSellers()"> GAP</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certHaccp" onchange="filterSellers()"> HACCP</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certRegen" onchange="filterSellers()"> Regenerative</label>
+          </div>
+        </div>
+
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
           <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
@@ -1220,6 +1245,7 @@
         unit: "kg",
         qty: "2,400 kg",
         organic: true,
+        certs: ["organic", "gap"],
         verified: true,
         rating: 4.8,
         reviews: 32,
@@ -1248,6 +1274,7 @@
         unit: "liter",
         qty: "5,000 L",
         organic: false,
+        certs: ["haccp"],
         verified: true,
         rating: 4.2,
         reviews: 28,
@@ -1276,6 +1303,7 @@
         unit: "dozen",
         qty: "1,200 doz",
         organic: true,
+        certs: ["organic"],
         verified: false,
         rating: 4.6,
         reviews: 19,
@@ -1304,6 +1332,7 @@
         unit: "ton",
         qty: "150 ton",
         organic: false,
+        certs: [],
         verified: true,
         rating: 4.9,
         reviews: 41,
@@ -1332,6 +1361,7 @@
         unit: "kg",
         qty: "180 kg",
         organic: true,
+        certs: ["organic", "regen"],
         verified: true,
         rating: 4.7,
         reviews: 15,
@@ -1360,6 +1390,7 @@
         unit: "kg",
         qty: "320 kg",
         organic: true,
+        certs: ["organic"],
         verified: false,
         rating: 4.5,
         reviews: 22,
@@ -1759,7 +1790,7 @@
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
-        s.organic ? '<span class="badge-organic">Organic</span>' : '',
+        getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
@@ -1921,7 +1952,7 @@
         const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
         const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
         const badges = [
-          s.organic ? '<span class="badge-organic">Organic</span>' : '',
+          getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
           s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
@@ -1966,6 +1997,13 @@
         `${list.length} seller${list.length === 1 ? '' : 's'} within ${maxDist} km`;
     }
 
+
+    function getCertBadges(s) {
+      if (!s.certs || !s.certs.length) return '';
+      const labels = { organic: 'Organic', gap: 'GAP', haccp: 'HACCP', regen: 'Regenerative' };
+      return s.certs.map(c => `<span class="badge-cert">${labels[c] || c}</span>`).join(' ');
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -1986,6 +2024,13 @@
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
         if (organicOnly && !s.organic) return false;
+        const needGap = document.getElementById('certGap')?.checked;
+        const needHaccp = document.getElementById('certHaccp')?.checked;
+        const needRegen = document.getElementById('certRegen')?.checked;
+        const scerts = s.certs || [];
+        if (needGap && !scerts.includes('gap')) return false;
+        if (needHaccp && !scerts.includes('haccp')) return false;
+        if (needRegen && !scerts.includes('regen')) return false;
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
         // Skip strict price filter for bulk units (ton)
@@ -2051,6 +2096,9 @@
       if (document.getElementById('organicToggle').classList.contains('on')) {
         chips.push({ label: 'Organic', reset: () => { const t = document.getElementById('organicToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
+      if (document.getElementById('certGap')?.checked) chips.push({ label: 'GAP', reset: () => { document.getElementById('certGap').checked = false; } });
+      if (document.getElementById('certHaccp')?.checked) chips.push({ label: 'HACCP', reset: () => { document.getElementById('certHaccp').checked = false; } });
+      if (document.getElementById('certRegen')?.checked) chips.push({ label: 'Regenerative', reset: () => { document.getElementById('certRegen').checked = false; } });
       if (document.getElementById('verifiedToggle').classList.contains('on')) {
         chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
@@ -2132,6 +2180,9 @@
       document.getElementById('categoryFilter').value = 'all';
       document.getElementById('organicToggle').classList.remove('on');
       document.getElementById('organicToggle').setAttribute('aria-checked', 'false');
+      if (document.getElementById('certGap')) document.getElementById('certGap').checked = false;
+      if (document.getElementById('certHaccp')) document.getElementById('certHaccp').checked = false;
+      if (document.getElementById('certRegen')) document.getElementById('certRegen').checked = false;
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
       document.getElementById('distRange').value = 50;
@@ -2422,7 +2473,7 @@
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       const badges = [
-        s.organic ? '<span class="badge-organic">Organic</span>' : '',
+        getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',

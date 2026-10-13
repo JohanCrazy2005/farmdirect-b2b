@@ -873,3 +873,18 @@ This is a small, high-impact productivity feature that makes the marketplace fee
 
 This completes the inquiry history feature and strengthens the prototype as a lightweight buyer workspace.
 
+
+## 2026-10-13 (Hourly update) – Certification Badges & Required Cert Filter
+
+**What:** Surface food-safety and farming practice certifications (GAP, HACCP, Regenerative) as badges on seller cards, map popups, and the detail drawer. Add sidebar checkboxes so buyers can require one or more certifications when filtering.
+
+**Why:** B2B food buyers frequently need documented certifications for compliance, audits, or retailer programs. Making them visible and filterable reduces qualification time and makes the marketplace more useful for professional procurement.
+
+**How:**
+- Extended sample sellers with a `certs` array (e.g. ["organic", "gap"]).
+- Added compact certification badges (blue) alongside existing organic/verified badges.
+- New “Required certifications” checkbox group (GAP / HACCP / Regenerative) in the filters sidebar.
+- Filter logic, active filter chips, and “Clear all filters” all respect the new cert requirements.
+- Fully client-side, dark-mode compatible, works with existing organic toggle and other filters.
+
+This strengthens the prototype for real wholesale buying workflows where certification is a hard requirement.
