@@ -30,7 +30,8 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Production method** – badges (Field / Greenhouse / Hydroponic / Pasture) + filter
 - **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
-- Responsive layout for mobile
+- **Mobile view toggle** – Map / List / Split floating control on phones for full-height focused views
+- Responsive layout for mobile and laptop
 
 ## How to run
 

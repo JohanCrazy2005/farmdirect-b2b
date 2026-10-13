@@ -1074,3 +1074,18 @@ This is a small, high-impact logistics feature that makes cold-chain matching pr
 - Fully client-side and compatible with existing features.
 
 This completes the cold-chain feature and improves the prototype for logistics-aware B2B sourcing workflows.
+
+## 2026-10-13 (Improvement pass) – Mobile Map/List/Split View Toggle + Responsiveness Polish
+
+**What:** Added a floating mobile-only view toggle (Map / List / Split) so buyers on phones can switch between full-height map, full-height seller list, or the original split view. Also refined mobile CSS for the modes and ensured map tiles refresh after layout changes.
+
+**Why:** The previous 55%/45% stacked layout on small screens made both the map and the seller list cramped and hard to use. Dedicated full views remove the compromise, while the split option preserves the overview when needed. Preference is remembered in sessionStorage.
+
+**How (implemented):**
+- New floating segmented control (bottom-center, mobile only).
+- CSS classes `.mobile-map-only` / `.mobile-list-only` that hide the unused pane and expand the active one to 100%.
+- JS handler that toggles classes, updates button states, persists choice, and calls `map.invalidateSize()`.
+- Desktop / laptop layout unchanged (side-by-side remains the default).
+- Fully client-side.
+
+This makes the prototype significantly more usable on phones while keeping the laptop experience clean.

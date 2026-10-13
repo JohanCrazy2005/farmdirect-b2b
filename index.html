@@ -979,6 +979,42 @@
       .search-box { max-width: none; }
       .modal { max-width: 100%; border-radius: 1rem 1rem 0 0; max-height: 85vh; }
       .modal-overlay { align-items: flex-end; padding: 0; }
+
+      /* Mobile view modes */
+      .main.mobile-map-only .sidebar { display: none; }
+      .main.mobile-map-only .map-container { height: 100%; flex: 1; }
+      .main.mobile-list-only .map-container { display: none; }
+      .main.mobile-list-only .sidebar { height: 100%; flex: 1; }
+
+      .mobile-view-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        overflow: hidden;
+      }
+      .mobile-view-toggle button {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        background: transparent;
+        color: var(--text);
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .mobile-view-toggle button.active {
+        background: var(--primary);
+        color: white;
+      }
+    }
+    @media (min-width: 701px) {
+      .mobile-view-toggle { display: none !important; }
     }
   </style>
 </head>
@@ -1358,6 +1394,12 @@
     <div class="drawer-body" id="drawerBody"></div>
     <div class="drawer-actions" id="drawerActions"></div>
   </aside>
+
+  <div class="mobile-view-toggle" id="mobileViewToggle" aria-label="Switch mobile view">
+    <button type="button" data-view="map">Map</button>
+    <button type="button" data-view="list" class="active">List</button>
+    <button type="button" data-view="split">Split</button>
+  </div>
 
   <script>
     const sellers = [
@@ -3062,6 +3104,41 @@
     renderInquiries();
     applyFiltersFromUrl(); // restore from shareable link if present
     filterSellers();
+
+    // Mobile view toggle
+    (function initMobileView() {
+      const main = document.querySelector('.main');
+      const toggle = document.getElementById('mobileViewToggle');
+      if (!main || !toggle) return;
+
+      function setView(view) {
+        main.classList.remove('mobile-map-only', 'mobile-list-only');
+        if (view === 'map') main.classList.add('mobile-map-only');
+        else if (view === 'list') main.classList.add('mobile-list-only');
+        // split is the default (no extra class)
+
+        toggle.querySelectorAll('button').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.view === view);
+        });
+
+        try { sessionStorage.setItem('farmdirect_mobile_view', view); } catch (_) {}
+
+        // Invalidate map size so tiles render correctly after layout change
+        setTimeout(() => {
+          if (typeof map !== 'undefined' && map.invalidateSize) map.invalidateSize();
+        }, 50);
+      }
+
+      toggle.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-view]');
+        if (btn) setView(btn.dataset.view);
+      });
+
+      // Restore preference or default to list on small screens
+      let preferred = 'list';
+      try { preferred = sessionStorage.getItem('farmdirect_mobile_view') || 'list'; } catch (_) {}
+      if (window.innerWidth <= 700) setView(preferred);
+    })();
   </script>
 </body>
 </html>
