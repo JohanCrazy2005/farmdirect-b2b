@@ -33,7 +33,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Search radius circle** – visualizes the current max-distance filter on the map (centered on your location)
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
-- Responsive layout optimized for phone and laptop
+- Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split) and laptop (tuned sidebar widths)
 
 ## How to run
 
