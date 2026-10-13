@@ -1089,3 +1089,18 @@ This completes the cold-chain feature and improves the prototype for logistics-a
 - Fully client-side.
 
 This makes the prototype significantly more usable on phones while keeping the laptop experience clean.
+
+## 2026-10-13 (Bugfix & Responsiveness pass) – Critical JS Fixes + View Polish
+
+**What:** Fixed runtime JavaScript errors that prevented sellers from rendering (invalid template interpolation in badge arrays, missing `closeSellerDrawer` function, undeclared `favorites`/`compareIds` sets, and temporal dead zone on `lastFilteredIds`). Also confirmed mobile Map/List/Split toggle and desktop side-by-side layout work correctly.
+
+**Why:** The prototype was showing 0 sellers due to uncaught syntax/runtime errors introduced in recent feature additions. Restoring core functionality is essential before further features. Mobile and laptop views are now reliably usable.
+
+**How (implemented):**
+- Corrected three badges array expressions that used `${}` outside template literals.
+- Added the missing `closeSellerDrawer()` function.
+- Declared `favorites` and `compareIds` as Sets early in the script and initialized `lastFilteredIds` after data load.
+- Verified sellers render (5+ within default distance), map markers appear, and filters work.
+- Mobile view toggle remains available under 700px; desktop layout unchanged.
+
+This restores a working marketplace prototype for both phone and laptop users.

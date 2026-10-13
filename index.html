@@ -1886,7 +1886,6 @@
     loadFavorites();
     loadCart();
 
-    let compareIds = new Set();
     function toggleCompare(id, e) {
       if (e) { e.stopPropagation(); e.preventDefault(); }
       if (compareIds.has(id)) {
@@ -1977,6 +1976,9 @@
     });
 
     const markers = {};
+    let lastFilteredIds = new Set();
+    let favorites = new Set();
+    let compareIds = new Set();
     const markerCluster = L.markerClusterGroup({
       maxClusterRadius: 60,
       spiderfyOnMaxZoom: true,
@@ -1998,7 +2000,7 @@
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
+        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
         s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
       ].filter(Boolean).join(' ');
@@ -2023,6 +2025,7 @@
       `;
     }
 
+    lastFilteredIds = new Set(sellers.map(s => s.id));
     sellers.forEach(s => {
       const icon = L.divIcon({
         className: '',
@@ -2035,8 +2038,6 @@
       markerCluster.addLayer(marker);
       markers[s.id] = marker;
     });
-
-    let lastFilteredIds = new Set(sellers.map(s => s.id));
 
     function updateVisibleMarkers(filtered) {
       const ids = new Set(filtered.map(s => s.id));
@@ -2165,7 +2166,7 @@
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
+        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
           s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
           s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : '',
           getNote(s.id) ? '<span class="badge-note">📝 Note</span>' : ''
@@ -2929,7 +2930,7 @@
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
+        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
         s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
       ].filter(Boolean).join(' ');
@@ -2973,6 +2974,8 @@
       // refresh list so badge appears/disappears
       if (typeof filterSellers === 'function') filterSellers();
     }
+
+    function closeSellerDrawer() {
       document.getElementById('drawerOverlay').classList.remove('open');
       document.getElementById('sellerDrawer').classList.remove('open');
     }
