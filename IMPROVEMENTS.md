@@ -69,3 +69,21 @@ Core features (map, RFQ, cart, comparison, filters, dark mode) remain intact. Pr
 - Works with existing Near Me (browser location), clustering, filters, and dark mode. Fully client-side.
 
 This is a high-impact location accuracy improvement for map-centric wholesale buyers.
+
+## 2026-10-13 (Hourly update) – Custom Delivery Point Pin on Map (Implemented)
+
+**What:** Implemented the custom delivery / warehouse pin on the map.
+
+**Why:** Lets buyers set the real destination (kitchen, warehouse, distribution center) so distance ranking, the search-radius circle, and estimated delivery costs are accurate even when they are not browsing from that location.
+
+**How (implemented):**
+- Added “Set delivery point” and “Clear point” controls in the map toolbar.
+- Activating the button enables a one-click map mode; the next click places a distinct blue delivery-point marker.
+- All seller distances, the radius circle, and delivery-cost estimates update from the pin.
+- Coordinates are persisted in localStorage and restored on reload (marker is re-placed).
+- Near Me also uses the same reference-point flow and shows the clear control.
+- Clearing restores original sample distances.
+- Fully client-side and compatible with clustering, filters, dark mode, and existing features.
+
+This completes the custom delivery point and makes map-centric wholesale sourcing more accurate.
+
