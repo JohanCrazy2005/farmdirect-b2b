@@ -757,3 +757,30 @@ This is a lightweight, high-signal commercial decision aid that builds directly 
 - Fully integrated with filter pipeline, shareable URL (`sort` param), saved presets, and active filter chips. No backend required.
 
 This completes the landed-cost ranking feature for more practical B2B procurement decisions.
+## 2026-10-13 (Hourly update) – Private Buyer Notes on Sellers
+
+**What:** Let buyers attach private, persistent notes to any seller. Notes are stored locally, shown in the seller detail drawer (editable), and indicated with a small note badge on cards and popups.
+
+**Why:** B2B farm sourcing is relationship- and memory-driven. Buyers routinely track informal details (“prefers WhatsApp”, “great for weekend specials”, “call before 8am”, “delivered late last time”). Private notes turn the prototype into a lightweight personal supplier CRM without needing accounts or a backend.
+
+**How:**
+- Store notes as a simple `{ sellerId: text }` object in `localStorage`.
+- Add a notes textarea + Save button inside the existing seller detail drawer.
+- Show a compact “📝 Note” badge on seller cards (and optionally popups) when a note exists.
+- Fully client-side, works with dark mode, favorites, and all existing filters. No new backend.
+
+This is a small, high-impact productivity feature for repeat wholesale buyers that can be implemented in one short coding session.
+
+## 2026-10-13 (Hourly update) – Private Buyer Notes on Sellers (Implemented)
+
+**What:** Implemented private buyer notes on sellers. Notes are saved in localStorage, editable in the seller detail drawer, and indicated with a “📝 Note” badge on cards.
+
+**Why:** Gives B2B buyers a lightweight personal CRM for supplier relationships inside the marketplace.
+
+**How (implemented):**
+- `loadNotes` / `saveNotes` / `getNote` / `setNote` using `localStorage` key `farmdirect_notes`.
+- Notes textarea + Save button added to the seller drawer; save refreshes the card list so the badge appears immediately.
+- Card rendering shows a note badge when a note exists for that seller.
+- Fully client-side and dark-mode compatible.
+
+This completes the private notes feature and improves daily usability for repeat buyers.
