@@ -18,6 +18,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Volume pricing tiers** – bulk discounts shown on cards/popups + live unit price in RFQ modal
 - **Seller comparison view** – select 2–3 sellers and open a side-by-side comparison table
 - **Active filter chips** – dismissible chips showing current filters with individual clear
+- **Export filtered results as CSV** – one-click download of the current seller shortlist
 - Seller cards: ratings, stock, click-to-focus map
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - Responsive layout for mobile

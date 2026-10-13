@@ -640,3 +640,31 @@ This is a high-impact productivity feature for repeat B2B buyers that can be imp
 - Delete removes the preset. Fully client-side and dark-mode compatible.
 
 This completes the saved-search feature and improves daily usability for B2B buyers.
+
+## 2026-10-12 (Hourly update) – Export Filtered Results as CSV
+
+**What:** Add an “Export CSV” button in the sidebar that downloads the currently filtered seller list as a spreadsheet-ready CSV (name, farm, product, price/unit, MOQ, lead time, rating, distance, organic, verified, payment terms, fulfillment, stock status, harvest days ago).
+
+**Why:** Wholesale buyers regularly need to share shortlists with colleagues, paste into procurement spreadsheets, or attach to approval emails. One-click export turns the interactive prototype into a practical research and reporting tool without requiring extra manual copying.
+
+**How:**
+- Place a clear “Export CSV” button next to Clear all filters.
+- On click, serialize `window._lastFilteredList` (or full list if none filtered) into a properly escaped CSV string.
+- Trigger a browser download with a timestamped filename (e.g. farmdirect-sellers-2026-10-12.csv).
+- Show a toast confirming the export. Fully client-side, works with all existing filters, dark mode, and mobile.
+
+This is a small, high-impact productivity feature for B2B buyers that can be implemented in one short coding session.
+
+## 2026-10-12 (Hourly update) – Export Filtered Results as CSV (Implemented)
+
+**What:** Implemented one-click CSV export of the currently filtered seller list from the sidebar.
+
+**Why:** Lets wholesale buyers download a ready-to-share spreadsheet of matching suppliers for procurement workflows, approvals, or offline review.
+
+**How (implemented):**
+- “Export CSV” button added in the filters panel.
+- Serializes `window._lastFilteredList` (falls back to full catalog) into a properly escaped CSV with key commercial fields.
+- Triggers a timestamped download and shows a confirmation toast.
+- Fully client-side, works with all filters, dark mode, and mobile.
+
+This completes the CSV export feature and makes the prototype more practical for real B2B sourcing research.
