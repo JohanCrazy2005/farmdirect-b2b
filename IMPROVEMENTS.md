@@ -842,3 +842,34 @@ This is a small, high-impact productivity feature for repeat B2B buyers that can
 
 This completes the recent-activity feature and improves multi-session research workflows.
 
+
+## 2026-10-13 (Hourly update) – Inquiry History / Sent RFQs Log
+
+**What:** Add a persistent local log of sent inquiries (single-seller RFQs and combined cart inquiries). Show the last 10–12 entries in a new sidebar section with timestamp, seller(s), quantity summary, and a one-click way to re-open the seller or copy details.
+
+**Why:** B2B buyers repeatedly follow up on the same farms. A lightweight inquiry history turns the prototype into a personal procurement notebook — buyers can remember what they asked for, when, and at what quantity without needing accounts or email digests. It also makes demo presentations more realistic.
+
+**How:**
+- On successful `submitRfq` and `sendCombinedInquiry`, push a record `{ id, ts, type: 'single'|'combined', sellerIds, summary, email }` into an array in `localStorage` (key `farmdirect_inquiries`, max 12).
+- Render compact rows under Recently viewed in the sidebar.
+- Clicking a row opens the seller drawer (for single) or shows a toast with the summary.
+- Include a “Clear history” button.
+- Fully client-side, dark-mode compatible, works with all existing features.
+
+This is a small, high-impact productivity feature that makes the marketplace feel like a real buyer workspace.
+
+
+## 2026-10-13 (Hourly update) – Inquiry History / Sent RFQs Log (Implemented)
+
+**What:** Implemented a persistent Inquiry history section in the sidebar.
+
+**Why:** Gives buyers a personal log of what they have already inquired about, improving follow-up and demo realism.
+
+**How (implemented):**
+- `loadInquiries` / `saveInquiries` / `trackInquiry` / `renderInquiries` / `clearInquiries` using `localStorage` key `farmdirect_inquiries` (max 12).
+- Records are created on successful single RFQ submit and combined cart inquiry.
+- Compact clickable rows show type, relative time, and summary; single inquiries reopen the seller drawer.
+- Fully client-side and dark-mode compatible.
+
+This completes the inquiry history feature and strengthens the prototype as a lightweight buyer workspace.
+
