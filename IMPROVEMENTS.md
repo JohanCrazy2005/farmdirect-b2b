@@ -1074,3 +1074,34 @@ This is a small, high-impact logistics feature that makes cold-chain matching pr
 - Fully client-side and compatible with existing features.
 
 This completes the cold-chain feature and improves the prototype for logistics-aware B2B sourcing workflows.
+
+## 2026-10-13 (Hourly update) – Year-Round vs Seasonal Availability Badges & Filter
+
+**What:** Add a year-round / seasonal supply indicator as a compact badge on seller cards, map popups, and the detail drawer, plus a “Year-round supply only” sidebar toggle.
+
+**Why:** Wholesale buyers planning continuous or year-round programs (restaurants with fixed menus, processors, retailers) need to quickly distinguish farms that can supply consistently from those limited to harvest seasons. This reduces mismatched inquiries and supports longer-term procurement planning.
+
+**How:**
+- Extend sample sellers with a `yearRound: true/false` field.
+- Render distinct “Year-round” (green) or “Seasonal” (amber) badges next to existing badges.
+- New “Year-round supply only” toggle in the filters sidebar.
+- Integrate into filter logic, active filter chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side, dark-mode compatible, works with all existing filters.
+
+This is a small, high-impact supply-planning feature that makes continuous vs seasonal availability practical for professional buyers.
+
+## 2026-10-13 (Hourly update) – Year-Round vs Seasonal Availability Badges & Filter (Implemented)
+
+**What:** Implemented year-round / seasonal badges and filter toggle.
+
+**Why:** Lets buyers quickly qualify or prefer continuous year-round suppliers versus seasonal harvest-dependent farms.
+
+**How (implemented):**
+- Added `yearRound` field to all sample sellers.
+- Season badges rendered on cards, popups, and drawer (dark-mode styles).
+- Sidebar “Year-round supply only” toggle.
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the seasonal availability feature and improves the prototype for continuous-supply B2B sourcing workflows.
+

@@ -29,6 +29,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Available stock quantity** – numeric badges on cards/popups/drawer + Minimum stock filter (100+/500+/1,000+)
 - **Production method** – badges (Field / Greenhouse / Hydroponic / Pasture) + filter
 - **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
+- **Year-round supply** – Year-round / Seasonal badges + “Year-round only” filter
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - Responsive layout for mobile
 
