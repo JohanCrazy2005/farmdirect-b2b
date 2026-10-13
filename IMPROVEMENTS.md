@@ -777,3 +777,19 @@ This completes the weekly capacity feature for better volume planning.
 - Laptop layout remains the clean side-by-side map + sidebar.
 
 This improves usability for buyers on the go while keeping the desktop experience focused.
+
+## 2026-10-13 (Hourly update) – Preferred Contact Channel Badges & Filter (Implemented)
+
+**What:** Added preferred contact channel (Email / Phone / WhatsApp / Portal) badges on seller cards, map popups, and detail drawer, plus OR-filter checkboxes in the sidebar.
+
+**Why:** Wholesale buyers often have preferred communication methods for RFQs and follow-ups. Surfacing this early reduces friction and helps match operational styles (e.g., WhatsApp-heavy farms vs email-first buyers).
+
+**How (implemented):**
+- Extended sample sellers with `preferredContact` field.
+- Contact badges rendered alongside other badges (dark-mode compatible).
+- Sidebar “Preferred contact” checkbox group.
+- Integrated into filter logic, active filter chips, Clear all, and saved presets.
+- Mobile header further refined: wraps on narrow screens, hides “B2B” label, search drops to full width, extra bottom padding so floating view toggle never covers list content.
+- Fully client-side and compatible with all existing features.
+
+This completes the contact-preference signal and improves practical usability on both phone and laptop.
