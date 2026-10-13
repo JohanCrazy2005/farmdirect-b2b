@@ -1086,6 +1086,12 @@
           </div>
           <div id="presetsList" style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem"></div>
         </div>
+
+        <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+          <label>Recently viewed</label>
+          <div id="recentList" style="display:flex;flex-direction:column;gap:0.3rem;font-size:0.82rem;min-height:1.5rem"></div>
+          <button type="button" class="btn btn-ghost" style="margin-top:0.4rem;width:100%;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="clearRecent()">Clear history</button>
+        </div>
       </div>
 
       <div class="filter-chips" id="filterChips"></div>
@@ -1397,6 +1403,46 @@
       saveNotes();
     }
     loadNotes();
+
+    // Recently viewed sellers (localStorage)
+    let recentIds = [];
+    function loadRecent() {
+      try {
+        const raw = localStorage.getItem('farmdirect_recent');
+        if (raw) recentIds = JSON.parse(raw) || [];
+      } catch (_) { recentIds = []; }
+    }
+    function saveRecent() {
+      try { localStorage.setItem('farmdirect_recent', JSON.stringify(recentIds)); } catch (_) {}
+    }
+    function trackRecent(id) {
+      recentIds = recentIds.filter(x => x !== id);
+      recentIds.unshift(id);
+      if (recentIds.length > 8) recentIds.length = 8;
+      saveRecent();
+      renderRecent();
+    }
+    function clearRecent() {
+      recentIds = [];
+      saveRecent();
+      renderRecent();
+      showToast('Recent history cleared');
+    }
+    function renderRecent() {
+      const el = document.getElementById('recentList');
+      if (!el) return;
+      if (!recentIds.length) {
+        el.innerHTML = '<span style="color:var(--muted);font-size:0.8rem">No recent sellers yet</span>';
+        return;
+      }
+      el.innerHTML = recentIds.map(id => {
+        const s = sellers.find(x => x.id === id);
+        if (!s) return '';
+        return `<button type="button" style="text-align:left;background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;cursor:pointer;width:100%;color:var(--text)" onclick="openSellerDrawer(${s.id})">${s.emoji || '🌱'} ${s.name} <span style="color:var(--muted);font-size:0.75rem">· ${s.product}</span></button>`;
+      }).join('');
+    }
+    loadRecent();
+
     function loadFavorites() {
       try {
         const raw = localStorage.getItem('farmdirect_favorites');
@@ -2271,6 +2317,7 @@
     function openRfqModal(id) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
+      trackRecent(id);
       document.getElementById('rfqSellerId').value = id;
       document.getElementById('rfqSubtitle').textContent =
         `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available · Delivery est. $${estimateDeliveryCost(s.distance)}`;
@@ -2312,6 +2359,7 @@
     function openSellerDrawer(id) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
+      trackRecent(id);
       const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
@@ -2478,6 +2526,7 @@
     document.getElementById('searchInput').addEventListener('input', filterSellers);
 
     renderPresets();
+    renderRecent();
     applyFiltersFromUrl(); // restore from shareable link if present
     filterSellers();
   </script>

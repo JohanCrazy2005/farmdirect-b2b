@@ -811,3 +811,34 @@ This is a small, high-impact UX improvement that speeds up the core buyer inquir
 - Fully client-side, dark-mode compatible, and works with all current RFQ features.
 
 This completes the quantity preset feature and improves the speed of bulk inquiry creation.
+
+## 2026-10-13 (Hourly update) – Recently Viewed Sellers
+
+**What:** Add a “Recently viewed” list in the sidebar that shows the last 5–8 sellers a buyer opened in the detail drawer or RFQ modal, with one-click reopen and a clear button.
+
+**Why:** Wholesale buyers research and return to the same shortlist of farms across sessions. Surfacing recent activity removes friction, turns the prototype into a lightweight personal workspace, and makes repeated comparisons faster without requiring accounts.
+
+**How:**
+- Track seller IDs (most-recent first, max 8) in localStorage whenever the drawer or RFQ opens.
+- Render compact clickable rows under Saved searches.
+- Clicking a row reopens the seller drawer.
+- Include a “Clear history” action.
+- Fully client-side, dark-mode compatible, and works alongside favorites, notes, and all filters.
+
+This is a small, high-impact productivity feature for repeat B2B buyers that can be implemented in one short coding session.
+
+## 2026-10-13 (Hourly update) – Recently Viewed Sellers (Implemented)
+
+**What:** Implemented a Recently viewed section in the sidebar.
+
+**Why:** Gives buyers instant re-access to sellers they have already researched.
+
+**How (implemented):**
+- `trackRecent(id)` called from `openSellerDrawer` and `openRfqModal`.
+- Ordered list (max 8) stored in localStorage under `farmdirect_recent`.
+- Compact buttons rendered in the sidebar; click reopens the drawer.
+- Clear history button + toast.
+- Fully client-side and dark-mode compatible.
+
+This completes the recent-activity feature and improves multi-session research workflows.
+
