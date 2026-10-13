@@ -451,6 +451,20 @@
       background: #312e81;
       color: #a5b4fc;
     }
+    .badge-region {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    html.dark .badge-region {
+      background: #064e3b;
+      color: #6ee7b7;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1056,6 +1070,17 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packBulk" onchange="filterSellers()"> Bulk</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Growing region</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionKent" onchange="filterSellers()"> Kent</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionNorfolk" onchange="filterSellers()"> Norfolk</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionCornwall" onchange="filterSellers()"> Cornwall</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionYorkshire" onchange="filterSellers()"> Yorkshire</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionMidlands" onchange="filterSellers()"> Midlands</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionSussex" onchange="filterSellers()"> Sussex</label>
+          </div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1293,6 +1318,7 @@
         grade: "premium",
         pack: "case",
         certs: ["organic", "gap"],
+        region: "Kent",
         verified: true,
         rating: 4.8,
         reviews: 32,
@@ -1324,6 +1350,7 @@
         grade: "standard",
         pack: "bulk",
         certs: ["haccp"],
+        region: "Norfolk",
         verified: true,
         rating: 4.2,
         reviews: 28,
@@ -1355,6 +1382,7 @@
         grade: "standard",
         pack: "case",
         certs: ["organic"],
+        region: "Cornwall",
         verified: false,
         rating: 4.6,
         reviews: 19,
@@ -1386,6 +1414,7 @@
         grade: "standard",
         pack: "pallet",
         certs: [],
+        region: "Yorkshire",
         verified: true,
         rating: 4.9,
         reviews: 41,
@@ -1417,6 +1446,7 @@
         grade: "premium",
         pack: "loose",
         certs: ["organic", "regen"],
+        region: "Midlands",
         verified: true,
         rating: 4.7,
         reviews: 15,
@@ -1448,6 +1478,7 @@
         grade: "surplus",
         pack: "case",
         certs: ["organic"],
+        region: "Sussex",
         verified: false,
         rating: 4.5,
         reviews: 22,
@@ -1849,6 +1880,7 @@
       const badges = [
         getGradeBadge(s),
         getPackBadge(s),
+        getRegionBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2013,6 +2045,7 @@
         const badges = [
           getGradeBadge(s),
           getPackBadge(s),
+          getRegionBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2079,6 +2112,11 @@
       return `<span class="badge-pack">${label}</span>`;
     }
 
+    function getRegionBadge(s) {
+      if (!s.region) return '';
+      return `<span class="badge-region">${s.region}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2122,6 +2160,17 @@
         if (anyPack) {
           const p = s.pack || 'case';
           if (!( (wantLoose && p === 'loose') || (wantCase && p === 'case') || (wantPallet && p === 'pallet') || (wantBulk && p === 'bulk') )) return false;
+        }
+        const wantKent = document.getElementById('regionKent')?.checked;
+        const wantNorfolk = document.getElementById('regionNorfolk')?.checked;
+        const wantCornwall = document.getElementById('regionCornwall')?.checked;
+        const wantYorkshire = document.getElementById('regionYorkshire')?.checked;
+        const wantMidlands = document.getElementById('regionMidlands')?.checked;
+        const wantSussex = document.getElementById('regionSussex')?.checked;
+        const anyRegion = wantKent || wantNorfolk || wantCornwall || wantYorkshire || wantMidlands || wantSussex;
+        if (anyRegion) {
+          const r = s.region || '';
+          if (!( (wantKent && r === 'Kent') || (wantNorfolk && r === 'Norfolk') || (wantCornwall && r === 'Cornwall') || (wantYorkshire && r === 'Yorkshire') || (wantMidlands && r === 'Midlands') || (wantSussex && r === 'Sussex') )) return false;
         }
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
@@ -2198,6 +2247,12 @@
       if (document.getElementById('packCase')?.checked) chips.push({ label: 'Case', reset: () => { document.getElementById('packCase').checked = false; } });
       if (document.getElementById('packPallet')?.checked) chips.push({ label: 'Pallet', reset: () => { document.getElementById('packPallet').checked = false; } });
       if (document.getElementById('packBulk')?.checked) chips.push({ label: 'Bulk', reset: () => { document.getElementById('packBulk').checked = false; } });
+      if (document.getElementById('regionKent')?.checked) chips.push({ label: 'Kent', reset: () => { document.getElementById('regionKent').checked = false; } });
+      if (document.getElementById('regionNorfolk')?.checked) chips.push({ label: 'Norfolk', reset: () => { document.getElementById('regionNorfolk').checked = false; } });
+      if (document.getElementById('regionCornwall')?.checked) chips.push({ label: 'Cornwall', reset: () => { document.getElementById('regionCornwall').checked = false; } });
+      if (document.getElementById('regionYorkshire')?.checked) chips.push({ label: 'Yorkshire', reset: () => { document.getElementById('regionYorkshire').checked = false; } });
+      if (document.getElementById('regionMidlands')?.checked) chips.push({ label: 'Midlands', reset: () => { document.getElementById('regionMidlands').checked = false; } });
+      if (document.getElementById('regionSussex')?.checked) chips.push({ label: 'Sussex', reset: () => { document.getElementById('regionSussex').checked = false; } });
       if (document.getElementById('verifiedToggle').classList.contains('on')) {
         chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
@@ -2289,6 +2344,12 @@
       if (document.getElementById('packCase')) document.getElementById('packCase').checked = false;
       if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = false;
       if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = false;
+      if (document.getElementById('regionKent')) document.getElementById('regionKent').checked = false;
+      if (document.getElementById('regionNorfolk')) document.getElementById('regionNorfolk').checked = false;
+      if (document.getElementById('regionCornwall')) document.getElementById('regionCornwall').checked = false;
+      if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = false;
+      if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = false;
+      if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = false;
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
       document.getElementById('distRange').value = 50;
@@ -2342,7 +2403,13 @@
         packLoose: document.getElementById('packLoose')?.checked || false,
         packCase: document.getElementById('packCase')?.checked || false,
         packPallet: document.getElementById('packPallet')?.checked || false,
-        packBulk: document.getElementById('packBulk')?.checked || false
+        packBulk: document.getElementById('packBulk')?.checked || false,
+        regionKent: document.getElementById('regionKent')?.checked || false,
+        regionNorfolk: document.getElementById('regionNorfolk')?.checked || false,
+        regionCornwall: document.getElementById('regionCornwall')?.checked || false,
+        regionYorkshire: document.getElementById('regionYorkshire')?.checked || false,
+        regionMidlands: document.getElementById('regionMidlands')?.checked || false,
+        regionSussex: document.getElementById('regionSussex')?.checked || false
       };
     }
     function applyFilterState(s) {
@@ -2375,6 +2442,12 @@
       if (document.getElementById('packCase')) document.getElementById('packCase').checked = !!s.packCase;
       if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = !!s.packPallet;
       if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = !!s.packBulk;
+      if (document.getElementById('regionKent')) document.getElementById('regionKent').checked = !!s.regionKent;
+      if (document.getElementById('regionNorfolk')) document.getElementById('regionNorfolk').checked = !!s.regionNorfolk;
+      if (document.getElementById('regionCornwall')) document.getElementById('regionCornwall').checked = !!s.regionCornwall;
+      if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = !!s.regionYorkshire;
+      if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = !!s.regionMidlands;
+      if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = !!s.regionSussex;
       filterSellers();
     }
 
@@ -2384,7 +2457,8 @@
       search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
-      packLoose: false, packCase: false, packPallet: false, packBulk: false
+      packLoose: false, packCase: false, packPallet: false, packBulk: false,
+      regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false
     };
     function stateToQuery(state) {
       const params = new URLSearchParams();
@@ -2411,6 +2485,12 @@
       if (state.packCase) params.set('pcase', '1');
       if (state.packPallet) params.set('ppal', '1');
       if (state.packBulk) params.set('pbulk', '1');
+      if (state.regionKent) params.set('rkent', '1');
+      if (state.regionNorfolk) params.set('rnorf', '1');
+      if (state.regionCornwall) params.set('rcorn', '1');
+      if (state.regionYorkshire) params.set('ryork', '1');
+      if (state.regionMidlands) params.set('rmidl', '1');
+      if (state.regionSussex) params.set('rsuss', '1');
       return params;
     }
     function queryToState(params) {
@@ -2438,6 +2518,12 @@
       if (params.get('pcase') === '1') s.packCase = true;
       if (params.get('ppal') === '1') s.packPallet = true;
       if (params.get('pbulk') === '1') s.packBulk = true;
+      if (params.get('rkent') === '1') s.regionKent = true;
+      if (params.get('rnorf') === '1') s.regionNorfolk = true;
+      if (params.get('rcorn') === '1') s.regionCornwall = true;
+      if (params.get('ryork') === '1') s.regionYorkshire = true;
+      if (params.get('rmidl') === '1') s.regionMidlands = true;
+      if (params.get('rsuss') === '1') s.regionSussex = true;
       return s;
     }
     function updateUrlFromFilters() {
@@ -2485,6 +2571,12 @@
         if (document.getElementById('packCase')) document.getElementById('packCase').checked = !!s.packCase;
         if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = !!s.packPallet;
         if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = !!s.packBulk;
+        if (document.getElementById('regionKent')) document.getElementById('regionKent').checked = !!s.regionKent;
+        if (document.getElementById('regionNorfolk')) document.getElementById('regionNorfolk').checked = !!s.regionNorfolk;
+        if (document.getElementById('regionCornwall')) document.getElementById('regionCornwall').checked = !!s.regionCornwall;
+        if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = !!s.regionYorkshire;
+        if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = !!s.regionMidlands;
+        if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = !!s.regionSussex;
         return true;
       } catch (_) { return false; }
     }
@@ -2618,6 +2710,7 @@
       const badges = [
         getGradeBadge(s),
         getPackBadge(s),
+        getRegionBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',

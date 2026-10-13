@@ -950,3 +950,35 @@ This is a small, high-impact logistics-focused feature that makes the marketplac
 - Fully client-side and compatible with existing features.
 
 This completes the pack-format feature and improves the prototype for real wholesale logistics workflows.
+
+
+## 2026-10-13 (Hourly update) – Growing Region / County Badges & Filter
+
+**What:** Add growing region (county-level, e.g. Kent, Norfolk, Cornwall, Yorkshire) as badges on seller cards, map popups, and the detail drawer, plus sidebar checkboxes to filter by one or more preferred regions.
+
+**Why:** Professional buyers frequently specify regional preferences for freshness, local-sourcing policies, branding (“Kent tomatoes”), protected designations, or logistics. Making origin visible and filterable shortens qualification and aligns the marketplace with real wholesale procurement criteria.
+
+**How:**
+- Extend sample sellers with a `region` field (string).
+- Add compact region badges next to existing grade/pack/cert badges.
+- New “Growing region” checkbox group in the filters sidebar (OR logic when any are selected).
+- Integrate into filter logic, active filter chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side, dark-mode compatible, works with all existing filters.
+
+This is a small, high-impact commercial feature that makes regional sourcing practical for B2B buyers.
+
+
+## 2026-10-13 (Hourly update) – Growing Region / County Badges & Filter (Implemented)
+
+**What:** Implemented growing region badges and filter checkboxes.
+
+**Why:** Lets buyers quickly qualify or prefer specific regional origins for freshness, branding, or local-sourcing policies.
+
+**How (implemented):**
+- Added `region` field to all sample sellers.
+- Region badges rendered on cards, popups, and drawer (dark-mode compatible).
+- Sidebar “Growing region” checkboxes (OR logic when any are selected).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the growing-region feature and improves the prototype for regional B2B sourcing workflows.
