@@ -1033,6 +1033,7 @@
         </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
         <button type="button" class="btn btn-ghost" style="margin-top:0.5rem;width:100%;justify-content:center;font-size:0.85rem" onclick="exportFilteredToCsv()">Export CSV</button>
+        <button type="button" class="btn btn-ghost" style="margin-top:0.35rem;width:100%;justify-content:center;font-size:0.85rem" onclick="copyFilterLink()" title="Copy a link that restores these filters">Copy link</button>
 
         <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
           <label>Saved searches</label>
@@ -1835,6 +1836,7 @@
       updateVisibleMarkers(filtered);
       renderSellers(filtered);
       updateFilterChips();
+      updateUrlFromFilters();
 
       // Auto-fit map when filters change and we have results (skip initial load if desired)
       if (filtered.length > 0 && filtered.length < sellers.length) {
@@ -2003,6 +2005,119 @@
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
       document.getElementById('freshnessFilter').value = s.freshness || '999';
       filterSellers();
+    }
+
+    // Shareable filter URL helpers
+    const FILTER_DEFAULTS = {
+      category: 'all', organic: false, verified: false, dist: '50', price: '10',
+      search: '', sort: 'Distance', moq: '9999', leadTime: '999', rating: '0',
+      available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999'
+    };
+    function stateToQuery(state) {
+      const params = new URLSearchParams();
+      if (state.category && state.category !== FILTER_DEFAULTS.category) params.set('cat', state.category);
+      if (state.organic) params.set('organic', '1');
+      if (state.verified) params.set('verified', '1');
+      if (state.dist && String(state.dist) !== FILTER_DEFAULTS.dist) params.set('dist', state.dist);
+      if (state.price && String(state.price) !== FILTER_DEFAULTS.price) params.set('price', state.price);
+      if (state.search) params.set('q', state.search);
+      if (state.sort && state.sort !== FILTER_DEFAULTS.sort) params.set('sort', state.sort);
+      if (state.moq && String(state.moq) !== FILTER_DEFAULTS.moq) params.set('moq', state.moq);
+      if (state.leadTime && String(state.leadTime) !== FILTER_DEFAULTS.leadTime) params.set('lead', state.leadTime);
+      if (state.rating && String(state.rating) !== FILTER_DEFAULTS.rating) params.set('rating', state.rating);
+      if (state.available) params.set('available', '1');
+      if (state.favorites) params.set('fav', '1');
+      if (state.payment && state.payment !== FILTER_DEFAULTS.payment) params.set('pay', state.payment);
+      if (state.fulfillment && state.fulfillment !== FILTER_DEFAULTS.fulfillment) params.set('fulfill', state.fulfillment);
+      if (state.freshness && String(state.freshness) !== FILTER_DEFAULTS.freshness) params.set('fresh', state.freshness);
+      return params;
+    }
+    function queryToState(params) {
+      const s = {};
+      if (params.has('cat')) s.category = params.get('cat');
+      if (params.get('organic') === '1') s.organic = true;
+      if (params.get('verified') === '1') s.verified = true;
+      if (params.has('dist')) s.dist = params.get('dist');
+      if (params.has('price')) s.price = params.get('price');
+      if (params.has('q')) s.search = params.get('q');
+      if (params.has('sort')) s.sort = params.get('sort');
+      if (params.has('moq')) s.moq = params.get('moq');
+      if (params.has('lead')) s.leadTime = params.get('lead');
+      if (params.has('rating')) s.rating = params.get('rating');
+      if (params.get('available') === '1') s.available = true;
+      if (params.get('fav') === '1') s.favorites = true;
+      if (params.has('pay')) s.payment = params.get('pay');
+      if (params.has('fulfill')) s.fulfillment = params.get('fulfill');
+      if (params.has('fresh')) s.freshness = params.get('fresh');
+      return s;
+    }
+    function updateUrlFromFilters() {
+      try {
+        const params = stateToQuery(captureFilterState());
+        const qs = params.toString();
+        const newUrl = qs ? `${location.pathname}?${qs}` : location.pathname;
+        if (location.search.slice(1) !== qs) {
+          history.replaceState(null, '', newUrl);
+        }
+      } catch (_) {}
+    }
+    function applyFiltersFromUrl() {
+      try {
+        const params = new URLSearchParams(location.search);
+        if (![...params.keys()].length) return false;
+        const s = queryToState(params);
+        // Apply without triggering another URL write yet
+        document.getElementById('categoryFilter').value = s.category || 'all';
+        const setToggle = (id, on) => {
+          const el = document.getElementById(id);
+          el.classList.toggle('on', !!on);
+          el.setAttribute('aria-checked', !!on);
+        };
+        setToggle('organicToggle', s.organic);
+        setToggle('verifiedToggle', s.verified);
+        setToggle('availableToggle', s.available);
+        setToggle('favoritesToggle', s.favorites);
+        document.getElementById('distRange').value = s.dist || 50;
+        document.getElementById('distValue').textContent = s.dist || 50;
+        document.getElementById('priceRange').value = s.price || 10;
+        document.getElementById('searchInput').value = s.search || '';
+        document.getElementById('sortBy').value = s.sort || 'Distance';
+        document.getElementById('moqFilter').value = s.moq || '9999';
+        document.getElementById('leadTimeFilter').value = s.leadTime || '999';
+        document.getElementById('ratingFilter').value = s.rating || '0';
+        document.getElementById('paymentFilter').value = s.payment || 'any';
+        document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
+        document.getElementById('freshnessFilter').value = s.freshness || '999';
+        return true;
+      } catch (_) { return false; }
+    }
+    function copyFilterLink() {
+      updateUrlFromFilters();
+      const url = location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('Link copied — share to restore these filters');
+        }).catch(() => {
+          fallbackCopy(url);
+        });
+      } else {
+        fallbackCopy(url);
+      }
+    }
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Link copied — share to restore these filters');
+      } catch (_) {
+        showToast('Could not copy. Copy the address bar manually.');
+      }
+      document.body.removeChild(ta);
     }
     function saveCurrentPreset() {
       const name = (document.getElementById('presetNameInput').value || '').trim();
@@ -2244,6 +2359,7 @@
     document.getElementById('searchInput').addEventListener('input', filterSellers);
 
     renderPresets();
+    applyFiltersFromUrl(); // restore from shareable link if present
     filterSellers();
   </script>
 </body>

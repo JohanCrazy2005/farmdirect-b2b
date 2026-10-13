@@ -668,3 +668,33 @@ This is a small, high-impact productivity feature for B2B buyers that can be imp
 - Fully client-side, works with all filters, dark mode, and mobile.
 
 This completes the CSV export feature and makes the prototype more practical for real B2B sourcing research.
+
+## 2026-10-13 (Hourly update) – Shareable Filter URL + Copy Link
+
+**What:** Make the current filter state (search, category, toggles, ranges, selects, sort) reflect in the browser URL as query parameters, restore filters on page load from the URL, and add a “Copy link” button so buyers can share or bookmark an exact search view with colleagues.
+
+**Why:** Wholesale procurement is often collaborative. Buyers need to send a precise shortlist view to a purchasing manager or teammate without describing every filter. Shareable deep links turn the prototype into a real shared research tool and improve repeatability.
+
+**How:**
+- Serialize active filter state into clean query params (e.g. `?q=tomato&cat=vegetables&organic=1&maxPrice=4&sort=price-asc`).
+- On `filterSellers()` / control changes, update `history.replaceState` (no reload).
+- On initial page load, parse `location.search` and apply values to all controls before first render.
+- Add a compact “Copy link” button near Export CSV / Clear filters; on click, copy the full current URL and show a toast.
+- Keep it fully client-side, dark-mode compatible, and mobile-friendly.
+
+This is a high-impact collaboration feature that can be implemented in one focused coding session.
+
+## 2026-10-13 (Hourly update) – Shareable Filter URL + Copy Link (Implemented)
+
+**What:** Filter state is reflected in the browser URL as clean query parameters; loading a shared link restores the exact filters. A “Copy link” button in the sidebar copies the current URL for sharing with colleagues.
+
+**Why:** Enables collaborative B2B sourcing — buyers can send a precise shortlist view instead of describing every filter.
+
+**How (implemented):**
+- `stateToQuery` / `queryToState` serialize only non-default filter values into short query keys (`q`, `cat`, `organic`, `dist`, etc.).
+- `updateUrlFromFilters` called from `filterSellers` uses `history.replaceState` (no page reload).
+- `applyFiltersFromUrl` runs on initial load before first render.
+- “Copy link” button next to Export CSV uses Clipboard API (with fallback) and shows a toast.
+- Works with all existing filters, dark mode, saved presets, and mobile.
+
+This completes the shareable deep-link feature and makes collaborative research practical.
