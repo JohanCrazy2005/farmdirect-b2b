@@ -54,3 +54,18 @@ No functional regressions. Core map, filters, RFQ, cart, comparison, and drawer 
 - Existing Map/List/Split control preserved.
 
 Core features (map, RFQ, cart, comparison, filters, dark mode) remain intact. Prototype is now more practical for real mobile and desktop B2B use.
+
+## 2026-10-13 (Hourly update) – Custom Delivery Point Pin on Map
+
+**What:** Add the ability to drop a custom delivery / warehouse pin on the map. Distances, the search-radius circle, and estimated delivery costs recalculate from this pin (instead of only browser geolocation). The pin is persisted in localStorage and can be cleared.
+
+**Why:** Professional buyers often source for a kitchen, warehouse, or distribution center that is not their current browsing location. Accurate distance ranking and landed-cost estimates depend on the real destination. A custom pin makes Near Me and delivery-cost sorting practical for multi-site procurement.
+
+**How:**
+- New “Set delivery point” control in the map toolbar. Activating it enables a one-click map mode.
+- Next map click places a distinct delivery-point marker, updates all seller distances, refreshes the radius circle, and recalculates delivery costs.
+- “Clear point” removes the pin and restores original sample distances.
+- Coordinates are saved to localStorage so the pin and distances survive reloads.
+- Works with existing Near Me (browser location), clustering, filters, and dark mode. Fully client-side.
+
+This is a high-impact location accuracy improvement for map-centric wholesale buyers.

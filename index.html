@@ -729,6 +729,30 @@
       height: 18px;
       box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.35);
     }
+    .delivery-marker {
+      background: #2563eb;
+      border: 3px solid white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.35);
+      position: relative;
+    }
+    .delivery-marker::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      transform: translateX(-50%);
+      border-width: 7px 6px 0 6px;
+      border-style: solid;
+      border-color: #2563eb transparent transparent transparent;
+    }
+    .map-controls .near-me.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
     .leaflet-popup-content-wrapper {
       border-radius: 0.75rem;
       padding: 0;
@@ -1141,6 +1165,12 @@
       <div class="map-controls">
         <button type="button" class="near-me" id="nearMeBtn" title="Use my location">
           📍 Near Me
+        </button>
+        <button type="button" class="near-me" id="setDeliveryBtn" title="Click the map to set your delivery or warehouse location">
+          📌 Set delivery point
+        </button>
+        <button type="button" class="near-me" id="clearDeliveryBtn" title="Remove custom delivery point" style="display:none">
+          ✕ Clear point
         </button>
         <button type="button" class="near-me" id="zoomToResultsBtn" title="Zoom map to currently filtered sellers" onclick="fitMapToFiltered()">
           🔎 Zoom to results
@@ -2252,21 +2282,8 @@
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          if (userMarker) map.removeLayer(userMarker);
-          userMarker = L.marker([latitude, longitude], {
-            icon: L.divIcon({
-              className: '',
-              html: '<div class="user-marker"></div>',
-              iconSize: [18, 18],
-              iconAnchor: [9, 9]
-            })
-          }).addTo(map).bindPopup('You are here');
-          map.flyTo([latitude, longitude], 12);
-          updateDistancesFromUser(latitude, longitude);
-          try {
-            localStorage.setItem('farmdirect_user_lat', String(latitude));
-            localStorage.setItem('farmdirect_user_lng', String(longitude));
-          } catch (_) {}
+          placeDeliveryMarker(latitude, longitude, true);
+          if (userMarker) userMarker.setPopupContent('You are here — distances calculated from your current location.');
           btn.disabled = false;
           btn.textContent = '📍 Near Me';
           showToast('Distances updated from your location.');
@@ -2282,12 +2299,85 @@
       );
     });
 
+    // Custom delivery / warehouse pin
+    let deliveryMode = false;
+
+    function showClearDelivery(show) {
+      const clearBtn = document.getElementById('clearDeliveryBtn');
+      if (clearBtn) clearBtn.style.display = show ? '' : 'none';
+    }
+
+    function placeDeliveryMarker(lat, lng, fly) {
+      if (userMarker) map.removeLayer(userMarker);
+      userMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: '',
+          html: '<div class="delivery-marker"></div>',
+          iconSize: [22, 22],
+          iconAnchor: [11, 18]
+        }),
+        zIndexOffset: 1000
+      }).addTo(map).bindPopup('<strong>Delivery point</strong><br>Distances and delivery costs are calculated from here.');
+      if (fly) map.flyTo([lat, lng], Math.max(map.getZoom(), 12));
+      updateDistancesFromUser(lat, lng);
+      try {
+        localStorage.setItem('farmdirect_user_lat', String(lat));
+        localStorage.setItem('farmdirect_user_lng', String(lng));
+      } catch (_) {}
+      showClearDelivery(true);
+    }
+
+    document.getElementById('setDeliveryBtn').addEventListener('click', () => {
+      deliveryMode = !deliveryMode;
+      const btn = document.getElementById('setDeliveryBtn');
+      if (deliveryMode) {
+        btn.classList.add('active');
+        btn.textContent = '📌 Click map…';
+        map.getContainer().style.cursor = 'crosshair';
+        showToast('Click the map to set your delivery / warehouse location.');
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = '📌 Set delivery point';
+        map.getContainer().style.cursor = '';
+      }
+    });
+
+    map.on('click', (e) => {
+      if (!deliveryMode) return;
+      deliveryMode = false;
+      const btn = document.getElementById('setDeliveryBtn');
+      btn.classList.remove('active');
+      btn.textContent = '📌 Set delivery point';
+      map.getContainer().style.cursor = '';
+      placeDeliveryMarker(e.latlng.lat, e.latlng.lng, true);
+      showToast('Delivery point set. Distances and delivery costs updated.');
+    });
+
+    document.getElementById('clearDeliveryBtn').addEventListener('click', () => {
+      if (userMarker) map.removeLayer(userMarker);
+      userMarker = null;
+      userLat = null;
+      userLng = null;
+      sellers.forEach(s => { s.distance = s._baseDistance; });
+      try {
+        localStorage.removeItem('farmdirect_user_lat');
+        localStorage.removeItem('farmdirect_user_lng');
+      } catch (_) {}
+      showClearDelivery(false);
+      sellers.forEach(s => {
+        if (markers[s.id]) markers[s.id].setPopupContent(buildPopupHtml(s));
+      });
+      filterSellers();
+      updateRadiusCircle();
+      showToast('Delivery point cleared. Distances restored.');
+    });
+
     // Restore last location if available
     try {
       const savedLat = localStorage.getItem('farmdirect_user_lat');
       const savedLng = localStorage.getItem('farmdirect_user_lng');
       if (savedLat && savedLng) {
-        updateDistancesFromUser(+savedLat, +savedLng);
+        placeDeliveryMarker(+savedLat, +savedLng, false);
       }
     } catch (_) {}
 
