@@ -610,3 +610,33 @@ This is a small, high-impact map UX improvement that makes filtering feel comple
 - Fully client-side, works with clusters, dark mode, and existing popups.
 
 This completes the map-filter sync improvement for faster B2B supply scanning.
+
+## 2026-10-12 (Hourly update) – Saved Filter Presets
+
+**What:** Allow buyers to save the current combination of filters (category, organic, verified, distance, price, MOQ, lead time, rating, availability, payment terms, fulfillment, freshness, search text, and sort) under a custom name and quickly reload or delete them later.
+
+**Why:** B2B buyers frequently run the same sourcing criteria (e.g. “Organic tomatoes within 20 km, Net 15, harvested today”). Re-setting filters every session is tedious. Named presets turn recurring procurement searches into one-click actions and make the marketplace more practical for regular wholesale buyers.
+
+**How:**
+- Capture all active filter control values into a plain object.
+- Store an array of `{ name, state }` in localStorage.
+- Compact “Saved searches” section in the sidebar with name input + Save button.
+- List of saved presets with Load and Delete actions.
+- Loading applies the state and immediately re-filters the list and map markers.
+- Fully client-side, works with dark mode, and coexists with existing filter chips.
+
+This is a high-impact productivity feature for repeat B2B buyers that can be implemented in one short coding session.
+
+## 2026-10-12 (Hourly update) – Saved Filter Presets (Implemented)
+
+**What:** Implemented named Saved Filter Presets. Buyers can save the full current filter set under a custom name and reload or delete it later.
+
+**Why:** Removes repetitive filter setup for recurring wholesale sourcing criteria.
+
+**How (implemented):**
+- Sidebar “Saved searches” section with name input and Save button.
+- localStorage-backed list of presets (`farmdirect_presets`).
+- Load applies all controls (category, toggles, ranges, selects, search, sort) and re-runs filtering + marker visibility.
+- Delete removes the preset. Fully client-side and dark-mode compatible.
+
+This completes the saved-search feature and improves daily usability for B2B buyers.

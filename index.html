@@ -1032,6 +1032,15 @@
           </select>
         </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
+
+        <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+          <label>Saved searches</label>
+          <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem">
+            <input type="text" id="presetNameInput" placeholder="Name this search…" style="flex:1;padding:0.4rem 0.6rem;border:1px solid var(--border);border-radius:0.375rem;background:var(--input-bg);color:var(--text);font-size:0.85rem" />
+            <button type="button" class="btn-primary" style="padding:0.4rem 0.75rem;font-size:0.8rem" onclick="saveCurrentPreset()">Save</button>
+          </div>
+          <div id="presetsList" style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem"></div>
+        </div>
       </div>
 
       <div class="filter-chips" id="filterChips"></div>
@@ -1943,6 +1952,98 @@
       filterSellers();
     }
 
+    // Saved Filter Presets
+    function loadPresets() {
+      try { return JSON.parse(localStorage.getItem('farmdirect_presets') || '[]'); }
+      catch { return []; }
+    }
+    function savePresets(list) {
+      localStorage.setItem('farmdirect_presets', JSON.stringify(list));
+    }
+    function captureFilterState() {
+      return {
+        category: document.getElementById('categoryFilter').value,
+        organic: document.getElementById('organicToggle').classList.contains('on'),
+        verified: document.getElementById('verifiedToggle').classList.contains('on'),
+        dist: document.getElementById('distRange').value,
+        price: document.getElementById('priceRange').value,
+        search: document.getElementById('searchInput').value,
+        sort: document.getElementById('sortBy').value,
+        moq: document.getElementById('moqFilter').value,
+        leadTime: document.getElementById('leadTimeFilter').value,
+        rating: document.getElementById('ratingFilter').value,
+        available: document.getElementById('availableToggle').classList.contains('on'),
+        favorites: document.getElementById('favoritesToggle').classList.contains('on'),
+        payment: document.getElementById('paymentFilter').value,
+        fulfillment: document.getElementById('fulfillmentFilter').value,
+        freshness: document.getElementById('freshnessFilter').value
+      };
+    }
+    function applyFilterState(s) {
+      document.getElementById('categoryFilter').value = s.category || 'all';
+      const setToggle = (id, on) => {
+        const el = document.getElementById(id);
+        el.classList.toggle('on', !!on);
+        el.setAttribute('aria-checked', !!on);
+      };
+      setToggle('organicToggle', s.organic);
+      setToggle('verifiedToggle', s.verified);
+      setToggle('availableToggle', s.available);
+      setToggle('favoritesToggle', s.favorites);
+      document.getElementById('distRange').value = s.dist || 50;
+      document.getElementById('distValue').textContent = s.dist || 50;
+      document.getElementById('priceRange').value = s.price || 10;
+      document.getElementById('searchInput').value = s.search || '';
+      document.getElementById('sortBy').value = s.sort || 'Distance';
+      document.getElementById('moqFilter').value = s.moq || '9999';
+      document.getElementById('leadTimeFilter').value = s.leadTime || '999';
+      document.getElementById('ratingFilter').value = s.rating || '0';
+      document.getElementById('paymentFilter').value = s.payment || 'any';
+      document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
+      document.getElementById('freshnessFilter').value = s.freshness || '999';
+      filterSellers();
+    }
+    function saveCurrentPreset() {
+      const name = (document.getElementById('presetNameInput').value || '').trim();
+      if (!name) { showToast('Please enter a name for this search'); return; }
+      const presets = loadPresets();
+      const state = captureFilterState();
+      const existing = presets.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+      if (existing >= 0) presets[existing].state = state;
+      else presets.push({ name, state });
+      savePresets(presets);
+      document.getElementById('presetNameInput').value = '';
+      renderPresets();
+      showToast(`Saved search “${name}”`);
+    }
+    function loadPreset(name) {
+      const p = loadPresets().find(x => x.name === name);
+      if (!p) return;
+      applyFilterState(p.state);
+      showToast(`Loaded “${name}”`);
+    }
+    function deletePreset(name) {
+      const presets = loadPresets().filter(p => p.name !== name);
+      savePresets(presets);
+      renderPresets();
+      showToast(`Removed “${name}”`);
+    }
+    function renderPresets() {
+      const list = document.getElementById('presetsList');
+      if (!list) return;
+      const presets = loadPresets();
+      if (!presets.length) {
+        list.innerHTML = '<div style="color:var(--muted);font-size:0.8rem">No saved searches yet</div>';
+        return;
+      }
+      list.innerHTML = presets.map(p => `
+        <div style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.4rem;background:var(--hover-bg);border-radius:0.375rem">
+          <button type="button" onclick="loadPreset('${p.name.replace(/'/g, "\'")}')" style="flex:1;text-align:left;background:none;border:none;color:var(--text);cursor:pointer;font-size:0.85rem">${p.name}</button>
+          <button type="button" onclick="deletePreset('${p.name.replace(/'/g, "\'")}')" title="Delete" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1">&times;</button>
+        </div>
+      `).join('');
+    }
+
     // RFQ Modal
     function openRfqModal(id) {
       const s = sellers.find(x => x.id === id);
@@ -2090,6 +2191,7 @@
     document.getElementById('sortBy').addEventListener('change', filterSellers);
     document.getElementById('searchInput').addEventListener('input', filterSellers);
 
+    renderPresets();
     filterSellers();
   </script>
 </body>
