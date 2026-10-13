@@ -39,3 +39,18 @@ Each entry proposes **one** concrete UI or feature improvement that can be imple
 - Existing Map/List/Split floating control and compact header remain; desktop side-by-side is preserved.
 
 No functional regressions. Core map, filters, RFQ, cart, comparison, and drawer continue to work. The prototype is now more practical for real phone and laptop use by B2B buyers and sellers.
+
+## 2026-10-13 (implementation pass) – Confirmed Phone & Laptop Responsiveness
+
+**What:** Fully applied the responsiveness optimizations that were previously described: dynamic viewport, larger touch targets, collapsible filters, and refined laptop sidebar widths.
+
+**Why:** The log entry existed, but the CSS/JS changes for 100dvh, 44px touch targets, and collapsible filters were not yet present in index.html. Buyers on phones and procurement teams on laptops need reliable layouts without friction.
+
+**How (now implemented):**
+- body uses `height: 100dvh` + `overflow-x: hidden`.
+- Icon buttons forced to ≥44px with `touch-action: manipulation`.
+- “Filters” toggle button appears on ≤700px screens; filters panel collapses by default and expands on demand.
+- Sidebar widths: 360px on 901–1400px viewports, 400px on larger screens, 320px on smaller tablets, full-width stacked on phones.
+- Existing Map/List/Split control preserved.
+
+Core features (map, RFQ, cart, comparison, filters, dark mode) remain intact. Prototype is now more practical for real mobile and desktop B2B use.

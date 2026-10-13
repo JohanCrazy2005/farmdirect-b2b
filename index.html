@@ -41,8 +41,9 @@
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -126,8 +127,11 @@
     }
     .btn-ghost:hover { background: var(--hover-bg); }
     .icon-btn {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      touch-action: manipulation;
       border-radius: 0.5rem;
       border: 1px solid var(--border);
       background: var(--card);
@@ -240,6 +244,24 @@
       font-size: 0.8rem;
       color: var(--muted);
       font-weight: 400;
+    }
+
+    .filters-toggle {
+      display: none;
+      margin-top: 0.5rem;
+      padding: 0.45rem 0.8rem;
+      background: var(--hover-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+    @media (max-width: 700px) {
+      .filters-toggle { display: block; }
+      .filters { display: none; }
+      .filters.open { display: flex; }
     }
     .filters {
       padding: 1rem 1.25rem;
@@ -1018,6 +1040,12 @@
     }
 
 
+    @media (min-width: 901px) and (max-width: 1400px) {
+      .sidebar { width: 360px; }
+    }
+    @media (min-width: 1401px) {
+      .sidebar { width: 400px; }
+    }
     @media (max-width: 900px) {
       .sidebar { width: 320px; }
     }
@@ -1026,7 +1054,6 @@
       .logo { font-size: 1.1rem; }
       .logo span { display: none; }
       .search-box { order: 3; flex: 1 1 100%; max-width: none; margin-top: 0.35rem; }
-      .icon-btn { width: 36px; height: 36px; }
       .seller-list { padding-bottom: 5.5rem; }
       .main { flex-direction: column; }
       .sidebar { width: 100%; height: 45%; border-left: none; border-top: 1px solid var(--border); }
@@ -1152,6 +1179,8 @@
           </select>
         </div>
       </div>
+
+        <button type="button" class="filters-toggle" id="filtersToggle" onclick="toggleFilters()">Filters</button>
 
       <div class="filters">
         <div class="filter-group">
@@ -3272,6 +3301,15 @@
       el.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+    }
+
+
+    function toggleFilters() {
+      const filters = document.querySelector('.filters');
+      const btn = document.getElementById('filtersToggle');
+      if (!filters) return;
+      filters.classList.toggle('open');
+      btn.textContent = filters.classList.contains('open') ? 'Hide filters' : 'Filters';
     }
 
     // Dark mode
