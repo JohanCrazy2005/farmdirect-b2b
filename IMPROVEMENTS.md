@@ -1012,3 +1012,34 @@ This makes quantity visibility practical for real B2B procurement decisions.
 - Fully client-side and compatible with existing features including the Available now toggle.
 
 This completes the stock-quantity feature and improves the prototype for volume-based B2B sourcing.
+
+
+## 2026-10-13 (Hourly update) – Production Method / Farming System Badges & Filter
+
+**What:** Add production method (Field, Greenhouse, Hydroponic, Pasture) as compact badges on seller cards, map popups, and the detail drawer, plus sidebar checkboxes to filter by one or more preferred farming systems.
+
+**Why:** Wholesale buyers often have preferences or requirements around production method — greenhouse consistency and year-round supply, pasture-raised claims for dairy/eggs, hydroponic controlled environments, or traditional field-grown. Making this visible and filterable reduces qualification time and aligns the prototype with real B2B produce and protein sourcing criteria.
+
+**How:**
+- Extend sample sellers with a `production` field ("field" | "greenhouse" | "hydroponic" | "pasture").
+- Add distinct production-method badges next to existing grade/pack/region badges.
+- New “Production method” checkbox group in the filters sidebar (OR logic when any are selected).
+- Integrate into filter logic, active filter chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side, dark-mode compatible, works with all existing filters.
+
+This is a small, high-impact commercial feature that makes production-system preferences practical for professional buyers.
+
+## 2026-10-13 (Hourly update) – Production Method / Farming System Badges & Filter (Implemented)
+
+**What:** Implemented production method badges and filter checkboxes.
+
+**Why:** Lets buyers quickly qualify or prefer specific farming systems (greenhouse, pasture, field, hydroponic) for consistency, claims, or seasonality.
+
+**How (implemented):**
+- Added `production` field to all sample sellers.
+- Production badges rendered on cards, popups, and drawer (dark-mode styles).
+- Sidebar “Production method” checkboxes (OR logic when any are selected).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the production-method feature and improves the prototype for system-aware B2B sourcing workflows.
