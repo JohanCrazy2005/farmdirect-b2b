@@ -31,7 +31,8 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
 - **Year-round supply** – Year-round / Seasonal badges + “Year-round only” filter
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
-- Responsive layout for mobile
+- **Mobile view toggle** – Map / List / Split floating control on phones for full-height focused views
+- Responsive layout optimized for phone and laptop
 
 ## How to run
 
@@ -43,9 +44,7 @@ npx serve .
 python3 -m http.server 8080
 ```
 
-Live deployment (if synced): https://farmdirect-b2b-johancrazy2005s-projects.vercel.app
-
-Temporary preview of latest (Payment Terms feature — claim to make permanent): https://temporary-spry-crater-e08fct3.vercel.app (claim: https://vercel.com/claim-deployment?code=f843fda8-7a73-4036-a8c3-1bc74870c93d)
+Live deployment: https://farmdirect-b2b-johancrazy2005s-projects.vercel.app
 
 GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
 
