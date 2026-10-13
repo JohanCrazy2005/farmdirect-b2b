@@ -793,3 +793,18 @@ This improves usability for buyers on the go while keeping the desktop experienc
 - Fully client-side and compatible with all existing features.
 
 This completes the contact-preference signal and improves practical usability on both phone and laptop.
+
+## 2026-10-13 – Critical Bug Fixes: Syntax Errors & Initialization Order
+
+**What:** Fixed multiple JavaScript syntax and runtime errors that prevented the seller list and map markers from rendering at all.
+
+**Why:** The prototype was broken for all users — no seller cards appeared, map stayed empty, and filters did nothing. This was caused by leftover template-literal syntax in array literals (extra `$` and `}`), a missing function declaration for `closeSellerDrawer`, and `favorites` being used before it was declared (temporal dead zone during marker creation).
+
+**How (implemented):**
+- Corrected three badge-array ternaries that had invalid `${(...)}` syntax outside templates.
+- Restored the missing `function closeSellerDrawer()` declaration.
+- Added early `let favorites = new Set();` before marker creation so popups can safely reference it.
+- Verified full script parses cleanly and sellers/markers now render on load.
+
+This restores the core marketplace experience so buyers and sellers can actually use the prototype. Mobile and laptop layouts remain optimized with the existing view-mode toggle and compact header.
+
