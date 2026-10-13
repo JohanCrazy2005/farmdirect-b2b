@@ -490,6 +490,8 @@
     .badge-stock.in_stock { background: #dcfce7; color: #166534; }
     .badge-stock.low { background: #fef3c7; color: #92400e; }
     .badge-stock.out { background: #f3f4f6; color: #6b7280; }
+    .badge-qty { background: #e0f2fe; color: #0369a1; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 0.25rem; margin-left: 0.25rem; }
+    html.dark .badge-qty { background: #0c4a6e; color: #7dd3fc; }
     html.dark .badge-stock.in_stock { background: #14532d; color: #86efac; }
     html.dark .badge-stock.low { background: #78350f; color: #fcd34d; }
     html.dark .badge-stock.out { background: #374151; color: #9ca3af; }
@@ -1169,6 +1171,15 @@
             <option value="7">≤ 7 days</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label>Minimum stock</label>
+          <select id="minStockFilter" onchange="filterSellers()">
+            <option value="0">Any</option>
+            <option value="100">100+</option>
+            <option value="500">500+</option>
+            <option value="1000">1,000+</option>
+          </select>
+        </div>
         <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
         <button type="button" class="btn btn-ghost" style="margin-top:0.5rem;width:100%;justify-content:center;font-size:0.85rem" onclick="exportFilteredToCsv()">Export CSV</button>
         <button type="button" class="btn btn-ghost" style="margin-top:0.35rem;width:100%;justify-content:center;font-size:0.85rem" onclick="copyFilterLink()" title="Copy a link that restores these filters">Copy link</button>
@@ -1331,6 +1342,7 @@
         moq: 50,
         leadTimeDays: 2,
         stockStatus: "in_stock",
+        availableQty: 2400,
         paymentTerms: "net_15",
         fulfillment: "both",
         harvestDaysAgo: 1,
@@ -1363,6 +1375,7 @@
         moq: 100,
         leadTimeDays: 1,
         stockStatus: "in_stock",
+        availableQty: 5000,
         paymentTerms: "net_30",
         fulfillment: "delivery",
         harvestDaysAgo: 0,
@@ -1395,6 +1408,7 @@
         moq: 20,
         leadTimeDays: 1,
         stockStatus: "low",
+        availableQty: 450,
         paymentTerms: "due_on_receipt",
         fulfillment: "both",
         harvestDaysAgo: 2,
@@ -1427,6 +1441,7 @@
         moq: 5,
         leadTimeDays: 7,
         stockStatus: "in_stock",
+        availableQty: 150,
         paymentTerms: "net_30",
         fulfillment: "pickup",
         harvestDaysAgo: 14,
@@ -1459,6 +1474,7 @@
         moq: 10,
         leadTimeDays: 1,
         stockStatus: "in_stock",
+        availableQty: 180,
         paymentTerms: "net_15",
         fulfillment: "delivery",
         harvestDaysAgo: 0,
@@ -1491,6 +1507,7 @@
         moq: 15,
         leadTimeDays: 3,
         stockStatus: "out",
+        availableQty: 0,
         paymentTerms: "due_on_receipt",
         fulfillment: "pickup",
         harvestDaysAgo: 5
@@ -1884,6 +1901,7 @@
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
         s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
       ].filter(Boolean).join(' ');
@@ -2049,6 +2067,7 @@
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
           s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
           s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : '',
           getNote(s.id) ? '<span class="badge-note">📝 Note</span>' : ''
@@ -2133,6 +2152,7 @@
       const fulfillment = document.getElementById('fulfillmentFilter').value;
       const maxHarvestDays = +document.getElementById('freshnessFilter').value;
       const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
+      const minStock = +document.getElementById('minStockFilter').value;
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
@@ -2191,6 +2211,7 @@
           }
         }
         if (s.harvestDaysAgo > maxHarvestDays) return false;
+        if ((s.availableQty || 0) < minStock) return false;
         if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
         return true;
       });
@@ -2253,6 +2274,11 @@
       if (document.getElementById('regionYorkshire')?.checked) chips.push({ label: 'Yorkshire', reset: () => { document.getElementById('regionYorkshire').checked = false; } });
       if (document.getElementById('regionMidlands')?.checked) chips.push({ label: 'Midlands', reset: () => { document.getElementById('regionMidlands').checked = false; } });
       if (document.getElementById('regionSussex')?.checked) chips.push({ label: 'Sussex', reset: () => { document.getElementById('regionSussex').checked = false; } });
+      const minStock = +document.getElementById('minStockFilter').value;
+      if (minStock > 0) {
+        const opt = document.querySelector(`#minStockFilter option[value="${minStock}"]`);
+        chips.push({ label: `Min stock: ${opt ? opt.textContent : minStock+'+'}`, reset: () => { document.getElementById('minStockFilter').value = '0'; } });
+      }
       if (document.getElementById('verifiedToggle').classList.contains('on')) {
         chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
@@ -2350,6 +2376,7 @@
       if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = false;
       if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = false;
       if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = false;
+      if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = '0';
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
       document.getElementById('distRange').value = 50;
@@ -2409,7 +2436,8 @@
         regionCornwall: document.getElementById('regionCornwall')?.checked || false,
         regionYorkshire: document.getElementById('regionYorkshire')?.checked || false,
         regionMidlands: document.getElementById('regionMidlands')?.checked || false,
-        regionSussex: document.getElementById('regionSussex')?.checked || false
+        regionSussex: document.getElementById('regionSussex')?.checked || false,
+        minStock: document.getElementById('minStockFilter').value
       };
     }
     function applyFilterState(s) {
@@ -2448,6 +2476,7 @@
       if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = !!s.regionYorkshire;
       if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = !!s.regionMidlands;
       if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = !!s.regionSussex;
+      if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
       filterSellers();
     }
 
@@ -2458,7 +2487,8 @@
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
-      regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false
+      regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false,
+      minStock: '0'
     };
     function stateToQuery(state) {
       const params = new URLSearchParams();
@@ -2491,6 +2521,7 @@
       if (state.regionYorkshire) params.set('ryork', '1');
       if (state.regionMidlands) params.set('rmidl', '1');
       if (state.regionSussex) params.set('rsuss', '1');
+      if (state.minStock && String(state.minStock) !== FILTER_DEFAULTS.minStock) params.set('stock', state.minStock);
       return params;
     }
     function queryToState(params) {
@@ -2524,6 +2555,7 @@
       if (params.get('ryork') === '1') s.regionYorkshire = true;
       if (params.get('rmidl') === '1') s.regionMidlands = true;
       if (params.get('rsuss') === '1') s.regionSussex = true;
+      if (params.has('stock')) s.minStock = params.get('stock');
       return s;
     }
     function updateUrlFromFilters() {
@@ -2577,6 +2609,7 @@
         if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = !!s.regionYorkshire;
         if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = !!s.regionMidlands;
         if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = !!s.regionSussex;
+        if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
         return true;
       } catch (_) { return false; }
     }
@@ -2714,6 +2747,7 @@
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
+        ${(s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : ''},
         s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
         s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
       ].filter(Boolean).join(' ');

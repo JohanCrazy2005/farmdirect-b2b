@@ -982,3 +982,33 @@ This is a small, high-impact commercial feature that makes regional sourcing pra
 - Fully client-side and compatible with existing features.
 
 This completes the growing-region feature and improves the prototype for regional B2B sourcing workflows.
+
+## 2026-10-13 (Hourly update) – Available Stock Quantity Badge & Min Stock Filter
+
+**What:** Add a numeric available quantity (stock level) shown as a compact badge on seller cards, map popups, and the detail drawer, plus a sidebar filter for minimum available stock (Any / 100+ / 500+ / 1000+).
+
+**Why:** Wholesale buyers need to know at a glance whether a farm can fulfill a meaningful order size before sending an RFQ. Current stockStatus (In stock / Low / Out) is too coarse; a quantity figure plus min-stock filter lets buyers quickly qualify suppliers for large or recurring orders and reduces wasted inquiries.
+
+**How:**
+- Add an `availableQty` numeric field to each sample seller (derived from or alongside the existing qty string).
+- Render a stock-quantity badge (e.g. “2,400 kg available”) next to the existing stockStatus badge.
+- New “Minimum stock” select in the filters sidebar.
+- Filter logic excludes sellers below the threshold; active chips, Clear all, saved presets, and shareable URL params all respect it.
+- Fully client-side, dark-mode compatible, works with all existing filters and the Available now toggle.
+
+This makes quantity visibility practical for real B2B procurement decisions.
+
+## 2026-10-13 (Hourly update) – Available Stock Quantity Badge & Min Stock Filter (Implemented)
+
+**What:** Implemented numeric available quantity badges and a minimum stock filter.
+
+**Why:** Lets buyers see and filter by actual available volume so they can qualify large-order suppliers before sending RFQs.
+
+**How (implemented):**
+- Added `availableQty` field to all sample sellers.
+- Quantity badges (“2,400 kg avail”) rendered on cards, popups, and drawer (dark-mode styles).
+- Sidebar “Minimum stock” select (Any / 100+ / 500+ / 1,000+).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features including the Available now toggle.
+
+This completes the stock-quantity feature and improves the prototype for volume-based B2B sourcing.
