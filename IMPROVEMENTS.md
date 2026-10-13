@@ -1043,3 +1043,34 @@ This is a small, high-impact commercial feature that makes production-system pre
 - Fully client-side and compatible with existing features.
 
 This completes the production-method feature and improves the prototype for system-aware B2B sourcing workflows.
+
+
+## 2026-10-13 (Hourly update) – Storage / Cold Chain Condition Badges & Filter
+
+**What:** Add storage/temperature condition (Ambient, Chilled, Frozen) as compact badges on seller cards, map popups, and the detail drawer, plus sidebar checkboxes to filter by one or more preferred cold-chain requirements.
+
+**Why:** Wholesale buyers must match product storage needs to their warehouse capacity, delivery equipment, and food-safety protocols. Ambient grains vs chilled produce vs frozen items are fundamentally different logistics. Making the requirement visible and filterable reduces qualification time and prevents mismatched inquiries.
+
+**How:**
+- Extend sample sellers with a `storage` field ("ambient" | "chilled" | "frozen").
+- Add distinct storage badges next to existing grade/pack/region/production badges.
+- New “Storage / cold chain” checkbox group in the filters sidebar (OR logic when any are selected).
+- Integrate into filter logic, active filter chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side, dark-mode compatible, works with all existing filters.
+
+This is a small, high-impact logistics feature that makes cold-chain matching practical for professional buyers.
+
+## 2026-10-13 (Hourly update) – Storage / Cold Chain Condition Badges & Filter (Implemented)
+
+**What:** Implemented storage/cold-chain badges and filter checkboxes.
+
+**Why:** Lets buyers quickly qualify or prefer specific temperature requirements (ambient, chilled, frozen) for warehouse fit and food-safety compliance.
+
+**How (implemented):**
+- Added `storage` field to all sample sellers.
+- Storage badges rendered on cards, popups, and drawer (dark-mode styles).
+- Sidebar “Storage / cold chain” checkboxes (OR logic when any are selected).
+- Integrated into filter logic, active chips, Clear all, saved presets, and shareable URL params.
+- Fully client-side and compatible with existing features.
+
+This completes the cold-chain feature and improves the prototype for logistics-aware B2B sourcing workflows.

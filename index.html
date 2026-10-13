@@ -479,6 +479,20 @@
       background: #7c2d12;
       color: #fdba74;
     }
+    .badge-storage {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    html.dark .badge-storage {
+      background: #312e81;
+      color: #c7d2fe;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1106,6 +1120,14 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="prodPasture" onchange="filterSellers()"> Pasture</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Storage / cold chain</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storAmbient" onchange="filterSellers()"> Ambient</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storChilled" onchange="filterSellers()"> Chilled</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storFrozen" onchange="filterSellers()"> Frozen</label>
+          </div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1456,6 +1478,7 @@
         certs: [],
         region: "Yorkshire",
         production: "field",
+        storage: "ambient",
         verified: true,
         rating: 4.9,
         reviews: 41,
@@ -1524,6 +1547,7 @@
         certs: ["organic"],
         region: "Sussex",
         production: "field",
+        storage: "ambient",
         verified: false,
         rating: 4.5,
         reviews: 22,
@@ -1928,6 +1952,7 @@
         getPackBadge(s),
         getRegionBadge(s),
         getProductionBadge(s),
+        getStorageBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2174,6 +2199,13 @@
       return `<span class="badge-production">${label}</span>`;
     }
 
+    function getStorageBadge(s) {
+      if (!s.storage) return '';
+      const labels = { ambient: 'Ambient', chilled: 'Chilled', frozen: 'Frozen' };
+      const label = labels[s.storage] || s.storage;
+      return `<span class="badge-storage">${label}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2238,6 +2270,14 @@
         if (anyProd) {
           const prod = s.production || 'field';
           if (!( (wantField && prod === 'field') || (wantGreenhouse && prod === 'greenhouse') || (wantHydroponic && prod === 'hydroponic') || (wantPasture && prod === 'pasture') )) return false;
+        }
+        const wantAmbient = document.getElementById('storAmbient')?.checked;
+        const wantChilled = document.getElementById('storChilled')?.checked;
+        const wantFrozen = document.getElementById('storFrozen')?.checked;
+        const anyStor = wantAmbient || wantChilled || wantFrozen;
+        if (anyStor) {
+          const st = s.storage || 'ambient';
+          if (!( (wantAmbient && st === 'ambient') || (wantChilled && st === 'chilled') || (wantFrozen && st === 'frozen') )) return false;
         }
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
@@ -2325,6 +2365,9 @@
       if (document.getElementById('prodGreenhouse')?.checked) chips.push({ label: 'Greenhouse', reset: () => { document.getElementById('prodGreenhouse').checked = false; } });
       if (document.getElementById('prodHydroponic')?.checked) chips.push({ label: 'Hydroponic', reset: () => { document.getElementById('prodHydroponic').checked = false; } });
       if (document.getElementById('prodPasture')?.checked) chips.push({ label: 'Pasture', reset: () => { document.getElementById('prodPasture').checked = false; } });
+      if (document.getElementById('storAmbient')?.checked) chips.push({ label: 'Ambient', reset: () => { document.getElementById('storAmbient').checked = false; } });
+      if (document.getElementById('storChilled')?.checked) chips.push({ label: 'Chilled', reset: () => { document.getElementById('storChilled').checked = false; } });
+      if (document.getElementById('storFrozen')?.checked) chips.push({ label: 'Frozen', reset: () => { document.getElementById('storFrozen').checked = false; } });
       const minStock = +document.getElementById('minStockFilter').value;
       if (minStock > 0) {
         const opt = document.querySelector(`#minStockFilter option[value="${minStock}"]`);
@@ -2431,6 +2474,9 @@
       if (document.getElementById('prodGreenhouse')) document.getElementById('prodGreenhouse').checked = false;
       if (document.getElementById('prodHydroponic')) document.getElementById('prodHydroponic').checked = false;
       if (document.getElementById('prodPasture')) document.getElementById('prodPasture').checked = false;
+      if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = false;
+      if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = false;
+      if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = false;
       if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = '0';
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
@@ -2496,6 +2542,9 @@
         prodGreenhouse: document.getElementById('prodGreenhouse')?.checked || false,
         prodHydroponic: document.getElementById('prodHydroponic')?.checked || false,
         prodPasture: document.getElementById('prodPasture')?.checked || false,
+        storAmbient: document.getElementById('storAmbient')?.checked || false,
+        storChilled: document.getElementById('storChilled')?.checked || false,
+        storFrozen: document.getElementById('storFrozen')?.checked || false,
         minStock: document.getElementById('minStockFilter').value
       };
     }
@@ -2539,6 +2588,9 @@
       if (document.getElementById('prodGreenhouse')) document.getElementById('prodGreenhouse').checked = !!s.prodGreenhouse;
       if (document.getElementById('prodHydroponic')) document.getElementById('prodHydroponic').checked = !!s.prodHydroponic;
       if (document.getElementById('prodPasture')) document.getElementById('prodPasture').checked = !!s.prodPasture;
+      if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = !!s.storAmbient;
+      if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = !!s.storChilled;
+      if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = !!s.storFrozen;
       if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
       filterSellers();
     }
@@ -2552,6 +2604,7 @@
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
       regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false,
       prodField: false, prodGreenhouse: false, prodHydroponic: false, prodPasture: false,
+      storAmbient: false, storChilled: false, storFrozen: false,
       minStock: '0'
     };
     function stateToQuery(state) {
@@ -2589,6 +2642,9 @@
       if (state.prodGreenhouse) params.set('pgreen', '1');
       if (state.prodHydroponic) params.set('phydro', '1');
       if (state.prodPasture) params.set('ppast', '1');
+      if (state.storAmbient) params.set('samb', '1');
+      if (state.storChilled) params.set('schill', '1');
+      if (state.storFrozen) params.set('sfroz', '1');
       if (state.minStock && String(state.minStock) !== FILTER_DEFAULTS.minStock) params.set('stock', state.minStock);
       return params;
     }
@@ -2627,6 +2683,9 @@
       if (params.get('pgreen') === '1') s.prodGreenhouse = true;
       if (params.get('phydro') === '1') s.prodHydroponic = true;
       if (params.get('ppast') === '1') s.prodPasture = true;
+      if (params.get('samb') === '1') s.storAmbient = true;
+      if (params.get('schill') === '1') s.storChilled = true;
+      if (params.get('sfroz') === '1') s.storFrozen = true;
       if (params.has('stock')) s.minStock = params.get('stock');
       return s;
     }
@@ -2685,6 +2744,9 @@
         if (document.getElementById('prodGreenhouse')) document.getElementById('prodGreenhouse').checked = !!s.prodGreenhouse;
         if (document.getElementById('prodHydroponic')) document.getElementById('prodHydroponic').checked = !!s.prodHydroponic;
         if (document.getElementById('prodPasture')) document.getElementById('prodPasture').checked = !!s.prodPasture;
+        if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = !!s.storAmbient;
+        if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = !!s.storChilled;
+        if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = !!s.storFrozen;
         if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
         return true;
       } catch (_) { return false; }
@@ -2821,6 +2883,7 @@
         getPackBadge(s),
         getRegionBadge(s),
         getProductionBadge(s),
+        getStorageBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
