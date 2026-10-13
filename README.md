@@ -20,6 +20,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Active filter chips** – dismissible chips showing current filters with individual clear
 - **Estimated delivery cost** – calculated from distance ($25 base + $0.70/km) shown on cards, popups, and RFQ; plus max delivery fee filter
 - **Private buyer notes** – attach personal notes to sellers (localStorage); shown in drawer + note badge on cards
+- **Quick quantity presets** in RFQ modal (10/25/50/100) for faster bulk inquiries + live tier pricing
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - Responsive layout for mobile
 

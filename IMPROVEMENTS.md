@@ -784,3 +784,30 @@ This is a small, high-impact productivity feature for repeat wholesale buyers th
 - Fully client-side and dark-mode compatible.
 
 This completes the private notes feature and improves daily usability for repeat buyers.
+
+## 2026-10-13 (Hourly update) – Quick Quantity Presets in RFQ Modal
+
+**What:** Add one-click quantity preset buttons (10 / 25 / 50 / 100) inside the RFQ modal so buyers can instantly set common wholesale order sizes.
+
+**Why:** Typing quantities every time slows the inquiry flow. Most B2B buyers have standard order volumes; presets reduce friction, surface volume pricing faster, and make the RFQ feel more purposeful for repeat wholesale conversations.
+
+**How:**
+- Insert a small row of preset buttons under the quantity input in the RFQ modal.
+- Clicking a button sets the quantity field and triggers the existing live tier-price calculation.
+- Keep styling consistent with existing small buttons; fully client-side and mobile-friendly.
+- Works with the current volume pricing tiers and delivery estimate display.
+
+This is a small, high-impact UX improvement that speeds up the core buyer inquiry action.
+
+## 2026-10-13 (Hourly update) – Quick Quantity Presets in RFQ Modal (Implemented)
+
+**What:** Implemented quick quantity preset buttons (10 / 25 / 50 / 100) in the RFQ modal.
+
+**Why:** Lets buyers set common order sizes in one click and immediately see the applicable volume tier price.
+
+**How (implemented):**
+- Added preset button row under the quantity input.
+- `setRfqPreset(n)` sets the value and dispatches an input event so the existing `updateTier` logic runs.
+- Fully client-side, dark-mode compatible, and works with all current RFQ features.
+
+This completes the quantity preset feature and improves the speed of bulk inquiry creation.

@@ -1112,6 +1112,13 @@
         <div class="form-row">
           <label for="rfqQty">Quantity needed</label>
           <input type="text" id="rfqQty" placeholder="e.g. 500 kg or 20 cases" required />
+          <div class="qty-presets" style="margin-top:0.45rem; display:flex; gap:0.35rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.8rem" onclick="setRfqPreset(10)">10</button>
+            <button type="button" class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.8rem" onclick="setRfqPreset(25)">25</button>
+            <button type="button" class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.8rem" onclick="setRfqPreset(50)">50</button>
+            <button type="button" class="btn btn-sm" style="padding:0.2rem 0.6rem;font-size:0.8rem" onclick="setRfqPreset(100)">100</button>
+            <span style="font-size:0.75rem;color:var(--muted);align-self:center;margin-left:0.25rem">quick presets</span>
+          </div>
           <div id="rfqTierPrice" style="margin-top:0.35rem;font-size:0.85rem;color:var(--accent);font-weight:500;min-height:1.2em"></div>
         </div>
         <div class="form-row">
@@ -2253,6 +2260,14 @@
     }
 
     // RFQ Modal
+    function setRfqPreset(n) {
+      const qtyInput = document.getElementById('rfqQty');
+      if (!qtyInput) return;
+      qtyInput.value = String(n);
+      qtyInput.dispatchEvent(new Event('input', { bubbles: true }));
+      qtyInput.focus();
+    }
+
     function openRfqModal(id) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
