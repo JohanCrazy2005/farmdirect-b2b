@@ -1245,6 +1245,9 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 11h18v10H3z"/></svg>
         <span>Sell Your Goods</span>
       </button>
+      <button class="btn btn-ghost" id="myListingsBtn" onclick="openMyListings()" style="display:none" title="Manage your published listings">
+        My Listings
+      </button>
       <button class="btn btn-ghost" id="loginBtn" onclick="openLoginModal()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span id="loginLabel">Login</span>
@@ -1714,6 +1717,23 @@
     <div class="drawer-actions" id="drawerActions"></div>
   </aside>
 
+
+  <!-- My Listings Modal -->
+  <div class="modal-overlay" id="myListingsModal" role="dialog" aria-modal="true" aria-labelledby="myListingsTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="myListingsTitle">My Listings</h2>
+        <button class="modal-close" onclick="closeMyListings()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="myListingsBody">
+        <!-- filled by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeMyListings()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const sellers = [
       {
@@ -1958,6 +1978,24 @@
       s._baseLng = s.lng;
       s._baseDistance = s.distance;
     });
+
+
+    // Load persisted user listings
+    function loadUserListings() {
+      try {
+        const raw = localStorage.getItem('farmdirect_userListings');
+        if (!raw) return;
+        const extras = JSON.parse(raw);
+        if (!Array.isArray(extras)) return;
+        extras.forEach(s => {
+          if (!sellers.some(ex => ex.id === s.id)) {
+            s.isUserListing = true;
+            sellers.push(s);
+          }
+        });
+      } catch (e) { console.warn('user listings load failed', e); }
+    }
+    loadUserListings();
 
     // Favorites (localStorage)
     let sellerNotes = {};
@@ -4048,14 +4086,20 @@
       if (currentRole === 'seller') {
         if (label) label.textContent = 'Seller';
         if (sellBtn) sellBtn.style.display = '';
+        const myBtn = document.getElementById('myListingsBtn');
+        if (myBtn) myBtn.style.display = '';
         if (logoutBtn) logoutBtn.style.display = 'block';
       } else if (currentRole === 'buyer') {
         if (label) label.textContent = 'Buyer';
         if (sellBtn) sellBtn.style.display = 'none';
+        const myBtn = document.getElementById('myListingsBtn');
+        if (myBtn) myBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'block';
       } else {
         if (label) label.textContent = 'Login';
         if (sellBtn) sellBtn.style.display = '';
+        const myBtn = document.getElementById('myListingsBtn');
+        if (myBtn) myBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'none';
       }
     }
@@ -4140,10 +4184,32 @@
         bio: 'Newly listed by seller (demo).',
         volumeTiers: [{ minQty: 0, price: price }]
       };
+      newSeller.isUserListing = true;
+      newSeller._baseLat = newSeller.lat;
+      newSeller._baseLng = newSeller.lng;
+      newSeller._baseDistance = newSeller.distance;
       sellers.push(newSeller);
+
+      // Persist
+      const existing = JSON.parse(localStorage.getItem('farmdirect_userListings') || '[]');
+      existing.push(newSeller);
+      localStorage.setItem('farmdirect_userListings', JSON.stringify(existing));
+
+      // Create marker
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="custom-marker" style="border-color:${newSeller.color}">${newSeller.emoji}</div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      });
+      const marker = L.marker([newSeller.lat, newSeller.lng], { icon });
+      marker.bindPopup(buildPopupHtml(newSeller));
+      markerCluster.addLayer(marker);
+      markers[newSeller.id] = marker;
+
       closeListProduct();
       filterSellers();
-      showToast(`Listed “${product}” — visible on map & list`);
+      showToast(`Listed “${product}” — visible on map & list (saved)`);
       // reset form lightly
       document.getElementById('lpName').value = '';
       document.getElementById('lpProduct').value = '';
@@ -4151,7 +4217,53 @@
     loadRole();
 
     filterSellers();
-  </script>
+  
+    function getUserListingBadge(s) {
+      return s.isUserListing ? '<span class="badge" style="background:#22c55e;color:#fff;font-size:0.65rem;padding:0.1rem 0.35rem;border-radius:3px;margin-left:0.25rem">Your listing</span>' : '';
+    }
+
+    function openMyListings() {
+      if (currentRole !== 'seller') {
+        openLoginModal();
+        showToast('Log in as Seller to manage listings');
+        return;
+      }
+      const body = document.getElementById('myListingsBody');
+      const mine = sellers.filter(s => s.isUserListing);
+      if (mine.length === 0) {
+        body.innerHTML = '<p style="color:var(--muted)">You have not published any listings yet.</p>';
+      } else {
+        body.innerHTML = mine.map(s => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+            <div>
+              <strong>${s.product}</strong> · $${s.price}/${s.unit}<br>
+              <span style="font-size:0.8rem;color:var(--muted)">${s.qty} · ${s.farm}</span>
+            </div>
+            <button type="button" class="btn-sm" onclick="removeMyListing(${s.id})">Remove</button>
+          </div>
+        `).join('');
+      }
+      document.getElementById('myListingsModal').classList.add('open');
+    }
+    function closeMyListings() {
+      document.getElementById('myListingsModal').classList.remove('open');
+    }
+    function removeMyListing(id) {
+      const idx = sellers.findIndex(s => s.id === id);
+      if (idx === -1) return;
+      sellers.splice(idx, 1);
+      if (markers[id]) {
+        markerCluster.removeLayer(markers[id]);
+        delete markers[id];
+      }
+      const remaining = JSON.parse(localStorage.getItem('farmdirect_userListings') || '[]').filter(s => s.id !== id);
+      localStorage.setItem('farmdirect_userListings', JSON.stringify(remaining));
+      filterSellers();
+      openMyListings(); // refresh
+      showToast('Listing removed');
+    }
+
+</script>
 
   <div class="view-mode-control" id="viewModeControl" role="toolbar" aria-label="View mode">
     <button type="button" data-mode="map" onclick="setViewMode('map')">Map</button>

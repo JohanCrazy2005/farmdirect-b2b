@@ -431,3 +431,18 @@ This gives buyers a practical way to bookmark or forward an individual supplier 
 
 This makes the marketplace more useful for both sides of the B2B transaction in the prototype. Cycle continues (2026-10-14 is within 60 days of 2026-10-11).
 
+
+## 2026-10-14 – Seller Listings Persistence + My Listings Manager
+
+**What:** Extended the demo Seller Portal so published crop listings survive page reloads (localStorage) and sellers can view/remove their own listings from a simple “My Listings” panel. New listings are properly added as map markers and tagged with a “Your listing” badge.
+
+**Why:** The initial login + list flow was useful but ephemeral — listings disappeared on refresh and there was no way for a seller to manage what they had published. Persistence and a basic manager make the two-sided demo realistic for repeated use and directly improve the publish experience requested in GitHub issue #2.
+
+**How (implemented):**
+- User listings saved to `farmdirect_userListings` and merged into the `sellers` array on init.
+- `submitListProduct` now creates the Leaflet marker, adds it to the cluster, and marks the object `isUserListing: true`.
+- Header / sidebar “My Listings” button (visible when logged in as Seller) opens a modal listing the seller’s items with a Remove action.
+- “Your listing” badge appears on cards and popups for user-published items.
+- Fully client-side; works with existing role login, filters, clustering, and dark mode.
+
+This completes a practical seller-side loop: log in → publish → see it on the map → manage it later.

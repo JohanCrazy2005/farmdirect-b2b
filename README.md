@@ -37,6 +37,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
 - **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
 - **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
+- **Seller listings persistence & My Listings** – published crops survive reloads (localStorage), appear with a “Your listing” badge, and can be removed from a Seller-only My Listings panel.
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
 - Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
