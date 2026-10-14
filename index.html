@@ -579,6 +579,20 @@
       background: #78350f;
       color: #fcd34d;
     }
+    .badge-response {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #dcfce7;
+      color: #166534;
+    }
+    html.dark .badge-response {
+      background: #14532d;
+      color: #86efac;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1308,6 +1322,15 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="daySun" onchange="filterSellers()"> Sun</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Max response time</label>
+          <select id="responseFilter" onchange="filterSellers()">
+            <option value="999">Any</option>
+            <option value="4">Within 4 hours</option>
+            <option value="24">Within 24 hours</option>
+            <option value="48">Within 48 hours</option>
+          </select>
+        </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Year-round supply only</span>
           <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
@@ -1594,6 +1617,7 @@
         fulfillment: "both",
         harvestDaysAgo: 1,
         deliveryDays: ["Mon", "Wed", "Fri"],
+        responseHours: 4,
         bio: "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available for same-week delivery or farm pickup. GAP certified.",
         volumeTiers: [{"minQty": 0, "price": 1.35}, {"minQty": 100, "price": 1.2}, {"minQty": 500, "price": 1.05}]
       },
@@ -1632,6 +1656,7 @@
         fulfillment: "delivery",
         harvestDaysAgo: 0,
         deliveryDays: ["Tue", "Thu", "Sat"],
+        responseHours: 24,
         bio: "Pasture-based dairy producing fresh milk and cream. Regular wholesale routes to restaurants and grocers. HACCP compliant.",
         volumeTiers: [{"minQty": 0, "price": 0.68}, {"minQty": 200, "price": 0.62}, {"minQty": 1000, "price": 0.55}]
       },
@@ -1670,6 +1695,7 @@
         fulfillment: "both",
         harvestDaysAgo: 2,
         deliveryDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        responseHours: 2,
         bio: "Free-range poultry farm with daily egg collection. Organic certified; limited weekly volumes.",
         volumeTiers: [{"minQty": 0, "price": 2.1}, {"minQty": 50, "price": 1.95}, {"minQty": 200, "price": 1.8}]
       },
@@ -1709,6 +1735,7 @@
         fulfillment: "pickup",
         harvestDaysAgo: 14,
         deliveryDays: ["Fri"],
+        responseHours: 48,
         bio: "Large-scale grain grower offering bulk wheat and milling contracts. Pickup preferred for full truckloads.",
         volumeTiers: [{"minQty": 0, "price": 235.0}, {"minQty": 10, "price": 225.0}, {"minQty": 25, "price": 210.0}]
       },
@@ -1747,6 +1774,7 @@
         fulfillment: "delivery",
         harvestDaysAgo: 0,
         deliveryDays: ["Mon", "Wed", "Fri", "Sat"],
+        responseHours: 6,
         bio: "Specialty herb grower with greenhouse and field production. High turnover, harvested to order.",
         volumeTiers: [{"minQty": 0, "price": 8.5}, {"minQty": 25, "price": 7.9}, {"minQty": 100, "price": 7.2}]
       },
@@ -1786,6 +1814,7 @@
         fulfillment: "pickup",
         harvestDaysAgo: 5,
         deliveryDays: ["Sat", "Sun"],
+        responseHours: 12,
         volumeTiers: [{"minQty": 0, "price": 12.0}, {"minQty": 30, "price": 11.0}, {"minQty": 100, "price": 10.0}]
       }
     ];
@@ -2204,6 +2233,7 @@
         getCapacityBadge(s),
         getContactBadge(s),
         getDeliveryDaysBadge(s),
+        getResponseBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2436,6 +2466,7 @@
           getCapacityBadge(s),
           getContactBadge(s),
           getDeliveryDaysBadge(s),
+          getResponseBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2547,6 +2578,17 @@
       return `<span class="badge-days" title="Delivers: ${s.deliveryDays.join(', ')}">${short}</span>`;
     }
 
+    function getResponseBadge(s) {
+      if (s.responseHours == null) return '';
+      const h = s.responseHours;
+      let label;
+      if (h <= 4) label = `Replies in ${h}h`;
+      else if (h <= 24) label = 'Within 1 day';
+      else if (h <= 48) label = 'Within 2 days';
+      else label = `Typically ${h}h`;
+      return `<span class="badge-response" title="Typical response time: ${h} hours">${label}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2647,6 +2689,8 @@
             (wantSun && days.includes('Sun'))
           )) return false;
         }
+        const maxResponse = +(document.getElementById('responseFilter')?.value || 999);
+        if (maxResponse < 999 && (s.responseHours == null || s.responseHours > maxResponse)) return false;
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
         // Skip strict price filter for bulk units (ton)
@@ -2750,6 +2794,11 @@
       if (document.getElementById('dayFri')?.checked) chips.push({ label: 'Delivers Fri', reset: () => { document.getElementById('dayFri').checked = false; } });
       if (document.getElementById('daySat')?.checked) chips.push({ label: 'Delivers Sat', reset: () => { document.getElementById('daySat').checked = false; } });
       if (document.getElementById('daySun')?.checked) chips.push({ label: 'Delivers Sun', reset: () => { document.getElementById('daySun').checked = false; } });
+      const maxResp = +(document.getElementById('responseFilter')?.value || 999);
+      if (maxResp < 999) {
+        const opt = document.querySelector(`#responseFilter option[value="${maxResp}"]`);
+        chips.push({ label: `Response: ${opt ? opt.textContent : maxResp + 'h'}`, reset: () => { document.getElementById('responseFilter').value = '999'; } });
+      }
       const minStock = +document.getElementById('minStockFilter').value;
       if (minStock > 0) {
         const opt = document.querySelector(`#minStockFilter option[value="${minStock}"]`);
@@ -2900,6 +2949,7 @@
       document.getElementById('paymentFilter').value = 'any';
       document.getElementById('fulfillmentFilter').value = 'any';
       document.getElementById('freshnessFilter').value = '999';
+      if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = '999';
       filterSellers();
     }
 
@@ -2962,6 +3012,7 @@
         dayFri: document.getElementById('dayFri')?.checked || false,
         daySat: document.getElementById('daySat')?.checked || false,
         daySun: document.getElementById('daySun')?.checked || false,
+        response: document.getElementById('responseFilter')?.value || '999',
         minStock: document.getElementById('minStockFilter').value
       };
     }
@@ -2994,6 +3045,7 @@
       document.getElementById('paymentFilter').value = s.payment || 'any';
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
       document.getElementById('freshnessFilter').value = s.freshness || '999';
+      if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = s.response || '999';
       if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
       if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
       if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
@@ -3086,6 +3138,7 @@
       if (state.dayFri) params.set('dfri', '1');
       if (state.daySat) params.set('dsat', '1');
       if (state.daySun) params.set('dsun', '1');
+      if (state.response && String(state.response) !== '999') params.set('resp', state.response);
       if (state.minStock && String(state.minStock) !== FILTER_DEFAULTS.minStock) params.set('stock', state.minStock);
       return params;
     }
@@ -3136,6 +3189,7 @@
       if (params.get('dfri') === '1') s.dayFri = true;
       if (params.get('dsat') === '1') s.daySat = true;
       if (params.get('dsun') === '1') s.daySun = true;
+      if (params.has('resp')) s.response = params.get('resp');
       if (params.has('stock')) s.minStock = params.get('stock');
       return s;
     }
@@ -3179,6 +3233,7 @@
         document.getElementById('paymentFilter').value = s.payment || 'any';
         document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
         document.getElementById('freshnessFilter').value = s.freshness || '999';
+        if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = s.response || '999';
         if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
         if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
         if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
@@ -3340,6 +3395,7 @@
         getCapacityBadge(s),
         getContactBadge(s),
         getDeliveryDaysBadge(s),
+        getResponseBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -3360,6 +3416,7 @@
         <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days</div>
         <div class="drawer-meta"><strong>Payment:</strong> ${payLabel} · <strong>Fulfillment:</strong> ${fulfillLabel}</div>
         <div class="drawer-meta"><strong>Delivery days:</strong> ${(s.deliveryDays || []).join(', ') || 'Not specified'}</div>
+        <div class="drawer-meta"><strong>Typical response:</strong> ${s.responseHours != null ? s.responseHours + ' hours' : 'Not specified'}</div>
         <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
         <div class="drawer-meta"><strong>Supply:</strong> ${s.yearRound ? 'Year-round' : 'Seasonal'}</div>
         <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${s.rating} (${s.reviews} reviews)</div>

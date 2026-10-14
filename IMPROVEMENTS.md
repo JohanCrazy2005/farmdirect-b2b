@@ -96,3 +96,18 @@ This makes schedule compatibility visible and filterable for wholesale buyers.
 
 This completes the delivery-days feature for operational schedule matching.
 
+
+## 2026-10-13 (Hourly update) – Typical Response Time Badge & Filter
+
+**What:** Add typical response-time badges (e.g. “Replies in 4h”, “Within 1 day”) on seller cards, map popups and the detail drawer, plus a filter so buyers can show only sellers who typically respond within a chosen window (4h / 24h / 48h).
+
+**Why:** For perishable produce and time-sensitive wholesale orders, buyers need confidence that a seller will reply promptly to RFQs. Response speed is a strong operational trust signal that complements ratings, verification and delivery schedule.
+
+**How:**
+- New `responseHours` numeric field on each sample seller.
+- Compact badge rendered on cards, popups and the drawer.
+- Sidebar select (Any / Within 4 hours / Within 24 hours / Within 48 hours).
+- Full integration with active filter chips, saved presets and shareable URL state.
+- Works with existing clustering, custom delivery point, dark mode and all other filters. Fully client-side.
+
+This makes seller responsiveness visible and filterable for faster procurement decisions.
