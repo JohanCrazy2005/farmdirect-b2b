@@ -46,6 +46,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Keyboard accessibility** – Escape closes top overlay (cart / compare / RFQ / drawer) and restores focus; `/` focuses search; Tab focus trap inside modals; proper ARIA on dialogs
 - **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
 - **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
+- **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
 
 ## How to run
 

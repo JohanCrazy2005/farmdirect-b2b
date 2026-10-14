@@ -372,3 +372,18 @@ This adds a practical evaluation step to the B2B buying journey.
 - Existing 100dvh, touch targets, landscape side-by-side, dark mode, clustering, RFQ, cart and all filters preserved. Fully client-side.
 
 Prototype is more practical for real phone and laptop B2B use. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
+
+## 2026-10-14 – Delivery Days Filter & Badges (Implemented)
+
+**What:** Added delivery-day badges (e.g. Mon/Wed/Fri) on seller cards, map popups and the detail drawer, plus a multi-select filter so buyers can show only sellers who deliver on one or more preferred receiving days. Also listed explicitly in the seller drawer.
+
+**Why:** Restaurants, retailers and processors run fixed receiving windows. Matching a seller’s regular delivery schedule up front reduces failed deliveries, extra coordination and operational friction — a high-value B2B fit signal that pure distance or lead-time filters do not capture.
+
+**How (implemented):**
+- Added `deliveryDays` arrays (Mon–Sun subsets) to all sample sellers.
+- Compact badges rendered on cards, popups and drawer (reuses existing badge style).
+- Sidebar checkbox group (OR logic) for Mon–Sun under “Delivery days (any)”.
+- Full integration with active filter chips, clear filters, saved presets and shareable URL (`days=Mon,Wed`).
+- Fully client-side, compatible with clustering, custom delivery point, dark mode and all other filters.
+
+This makes schedule compatibility visible and filterable for wholesale buyers. Also confirmed map uses free OpenStreetMap tiles (no API key) and filters panel is scrollable, addressing open GitHub issue #1.

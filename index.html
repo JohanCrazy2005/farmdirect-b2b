@@ -1386,6 +1386,18 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="contactPortal" onchange="filterSellers()"> Portal</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Delivery days (any)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem 1rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayMon" onchange="filterSellers()"> Mon</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayTue" onchange="filterSellers()"> Tue</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayWed" onchange="filterSellers()"> Wed</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayThu" onchange="filterSellers()"> Thu</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayFri" onchange="filterSellers()"> Fri</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="daySat" onchange="filterSellers()"> Sat</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="daySun" onchange="filterSellers()"> Sun</label>
+          </div>
+        </div>
 
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
@@ -1657,6 +1669,7 @@
         pack: "case",
         certs: ["organic", "gap"],
         preferredContact: "email",
+        deliveryDays: ["Mon", "Wed", "Fri"],
         traceable: true,
         region: "Kent",
         production: "greenhouse",
@@ -1695,6 +1708,7 @@
         pack: "bulk",
         certs: ["haccp"],
         preferredContact: "phone",
+        deliveryDays: ["Tue", "Thu", "Sat"],
         traceable: true,
         region: "Norfolk",
         production: "pasture",
@@ -1733,6 +1747,7 @@
         pack: "case",
         certs: ["organic"],
         preferredContact: "whatsapp",
+        deliveryDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
         traceable: false,
         region: "Cornwall",
         production: "pasture",
@@ -1771,6 +1786,7 @@
         pack: "pallet",
         certs: [],
         preferredContact: "email",
+        deliveryDays: ["Mon", "Fri"],
         traceable: true,
         region: "Yorkshire",
         production: "field",
@@ -1810,6 +1826,7 @@
         pack: "loose",
         certs: ["organic", "regen"],
         preferredContact: "portal",
+        deliveryDays: ["Tue", "Thu"],
         region: "Midlands",
         production: "hydroponic",
         verified: true,
@@ -1847,6 +1864,7 @@
         pack: "case",
         certs: ["organic"],
         preferredContact: "phone",
+        deliveryDays: ["Wed", "Sat", "Sun"],
         region: "Sussex",
         production: "field",
         storage: "ambient",
@@ -2361,6 +2379,7 @@
         getReliabilityBadge(s),
           getTraceBadge(s),
         getCertBadges(s),
+        getDeliveryDaysBadge(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
@@ -2536,6 +2555,7 @@
           getReliabilityBadge(s),
           getTraceBadge(s),
           getCertBadges(s),
+          getDeliveryDaysBadge(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
@@ -2596,6 +2616,12 @@
       if (!s.certs || !s.certs.length) return '';
       const labels = { organic: 'Organic', gap: 'GAP', haccp: 'HACCP', regen: 'Regenerative' };
       return s.certs.map(c => `<span class="badge-cert">${labels[c] || c}</span>`).join(' ');
+    }
+
+    function getDeliveryDaysBadge(s) {
+      if (!s.deliveryDays || !s.deliveryDays.length) return '';
+      const days = s.deliveryDays.join('/');
+      return `<span class="badge-cert" title="Regular delivery days">${days}</span>`;
     }
 
     function getGradeBadge(s) {
@@ -2745,6 +2771,11 @@
         if (needGap && !scerts.includes('gap')) return false;
         if (needHaccp && !scerts.includes('haccp')) return false;
         if (needRegen && !scerts.includes('regen')) return false;
+        const selectedDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].filter(d => document.getElementById('day' + d)?.checked);
+        if (selectedDays.length) {
+          const sellerDays = s.deliveryDays || [];
+          if (!selectedDays.some(d => sellerDays.includes(d))) return false;
+        }
         const wantPremium = document.getElementById('gradePremium')?.checked;
         const wantStandard = document.getElementById('gradeStandard')?.checked;
         const wantSurplus = document.getElementById('gradeSurplus')?.checked;
@@ -2873,6 +2904,10 @@
       if (document.getElementById('certGap')?.checked) chips.push({ label: 'GAP', reset: () => { document.getElementById('certGap').checked = false; } });
       if (document.getElementById('certHaccp')?.checked) chips.push({ label: 'HACCP', reset: () => { document.getElementById('certHaccp').checked = false; } });
       if (document.getElementById('certRegen')?.checked) chips.push({ label: 'Regenerative', reset: () => { document.getElementById('certRegen').checked = false; } });
+      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+        const el = document.getElementById('day' + d);
+        if (el?.checked) chips.push({ label: d, reset: () => { el.checked = false; } });
+      });
       if (document.getElementById('gradePremium')?.checked) chips.push({ label: 'Premium', reset: () => { document.getElementById('gradePremium').checked = false; } });
       if (document.getElementById('gradeStandard')?.checked) chips.push({ label: 'Standard', reset: () => { document.getElementById('gradeStandard').checked = false; } });
       if (document.getElementById('gradeSurplus')?.checked) chips.push({ label: 'Surplus', reset: () => { document.getElementById('gradeSurplus').checked = false; } });
@@ -3046,6 +3081,10 @@
         const el = document.getElementById(id);
         if (el) el.checked = false;
       });
+      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+        const el = document.getElementById('day' + d);
+        if (el) el.checked = false;
+      });
       document.getElementById('paymentFilter').value = 'any';
       document.getElementById('fulfillmentFilter').value = 'any';
       document.getElementById('freshnessFilter').value = '999';
@@ -3084,6 +3123,13 @@
         contactPhone: document.getElementById('contactPhone')?.checked || false,
         contactWhatsapp: document.getElementById('contactWhatsapp')?.checked || false,
         contactPortal: document.getElementById('contactPortal')?.checked || false,
+        dayMon: document.getElementById('dayMon')?.checked || false,
+        dayTue: document.getElementById('dayTue')?.checked || false,
+        dayWed: document.getElementById('dayWed')?.checked || false,
+        dayThu: document.getElementById('dayThu')?.checked || false,
+        dayFri: document.getElementById('dayFri')?.checked || false,
+        daySat: document.getElementById('daySat')?.checked || false,
+        daySun: document.getElementById('daySun')?.checked || false,
         payment: document.getElementById('paymentFilter').value,
         fulfillment: document.getElementById('fulfillmentFilter').value,
         freshness: document.getElementById('freshnessFilter').value,
@@ -3128,6 +3174,10 @@
       if (document.getElementById('contactPhone')) document.getElementById('contactPhone').checked = !!s.contactPhone;
       if (document.getElementById('contactWhatsapp')) document.getElementById('contactWhatsapp').checked = !!s.contactWhatsapp;
       if (document.getElementById('contactPortal')) document.getElementById('contactPortal').checked = !!s.contactPortal;
+      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+        const el = document.getElementById('day' + d);
+        if (el) el.checked = !!s['day' + d];
+      });
       document.getElementById('distRange').value = s.dist || 50;
       document.getElementById('distValue').textContent = s.dist || 50;
       document.getElementById('priceRange').value = s.price || 10;
@@ -3177,7 +3227,8 @@
       prodField: false, prodGreenhouse: false, prodHydroponic: false, prodPasture: false,
       storAmbient: false, storChilled: false, storFrozen: false,
       minStock: '0',
-      yearRound: false
+      yearRound: false,
+      dayMon: false, dayTue: false, dayWed: false, dayThu: false, dayFri: false, daySat: false, daySun: false
     };
     function stateToQuery(state) {
       const params = new URLSearchParams();
@@ -3197,6 +3248,8 @@
       if (state.available) params.set('available', '1');
       if (state.favorites) params.set('fav', '1');
       if (state.yearRound) params.set('yr', '1');
+      const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].filter(d => state['day' + d]);
+      if (days.length) params.set('days', days.join(','));
       if (state.minWeekly && state.minWeekly !== '') params.set('wcap', state.minWeekly);
       if (state.payment && state.payment !== FILTER_DEFAULTS.payment) params.set('pay', state.payment);
       if (state.fulfillment && state.fulfillment !== FILTER_DEFAULTS.fulfillment) params.set('fulfill', state.fulfillment);
@@ -3242,6 +3295,10 @@
       if (params.get('available') === '1') s.available = true;
       if (params.get('fav') === '1') s.favorites = true;
       if (params.get('yr') === '1') s.yearRound = true;
+      if (params.has('days')) {
+        const ds = (params.get('days') || '').split(',').map(x => x.trim());
+        ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => { s['day' + d] = ds.includes(d); });
+      }
       if (params.has('wcap')) s.minWeekly = params.get('wcap');
       if (params.has('pay')) s.payment = params.get('pay');
       if (params.has('fulfill')) s.fulfillment = params.get('fulfill');
@@ -3330,6 +3387,10 @@
         if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = !!s.storChilled;
         if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = !!s.storFrozen;
         if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
+        ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+          const el = document.getElementById('day' + d);
+          if (el) el.checked = !!s['day' + d];
+        });
         return true;
       } catch (_) { return false; }
     }
@@ -3499,6 +3560,7 @@
           getTraceBadge(s),
         getArrivalBadge(s),
         getCertBadges(s),
+        getDeliveryDaysBadge(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
@@ -3518,6 +3580,7 @@
         <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days · ${getArrivalBadge(s)}</div>
         <div class="drawer-meta"><strong>Payment:</strong> ${payLabel} · <strong>Fulfillment:</strong> ${fulfillLabel}</div>
         <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
+        <div class="drawer-meta"><strong>Delivery days:</strong> ${(s.deliveryDays || []).join(', ') || 'On request'}</div>
         <div class="drawer-meta"><strong>Supply:</strong> ${s.yearRound ? 'Year-round' : 'Seasonal'}</div>
         <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${s.rating} (${s.reviews} reviews)</div>
         ${tierHtml ? '<div style="margin-top:0.75rem"><strong>Volume pricing</strong>' + tierHtml + '</div>' : ''}
