@@ -1217,6 +1217,26 @@
     @media (max-width: 700px) {
       .filters-toggle { display: block; }
       .filters.collapsed { display: none; }
+      /* Phone optimizations */
+      .seller-card { padding: 0.75rem; gap: 0.65rem; }
+      .seller-img { width: 56px; height: 56px; }
+      .btn, .icon-btn { min-height: 44px; }
+      .header-actions { gap: 0.35rem; }
+      .map-controls { gap: 0.35rem; }
+      .modal { margin: 0; }
+      .seller-list { -webkit-overflow-scrolling: touch; }
+      /* Prevent overflow */
+      body, .main { max-width: 100vw; }
+    }
+    @media (min-width: 701px) and (max-width: 1200px) {
+      /* Laptop/tablet polish */
+      .sidebar { width: 340px; }
+      .seller-card { padding: 0.8rem; }
+    }
+    /* Safe area for notched phones */
+    @supports (padding: max(0px)) {
+      header { padding-top: max(0.5rem, env(safe-area-inset-top)); }
+      .view-mode-control { bottom: max(1rem, env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
@@ -4014,15 +4034,20 @@
     
     
     // Collapse filters by default on phones for more list space
-    if (window.matchMedia('(max-width: 700px)').matches) {
+    function collapseFiltersIfPhone() {
+      const isPhone = window.matchMedia('(max-width: 700px)').matches;
       const panel = document.getElementById('filtersPanel');
       const btn = document.getElementById('filtersToggle');
-      if (panel && btn && !panel.classList.contains('collapsed')) {
+      if (isPhone && panel && btn && !panel.classList.contains('collapsed')) {
         panel.classList.add('collapsed');
         btn.setAttribute('aria-expanded', 'false');
         btn.textContent = 'Filters ▸';
       }
     }
+    collapseFiltersIfPhone();
+    // Re-check after layout (handles delayed viewport / orientation)
+    setTimeout(collapseFiltersIfPhone, 100);
+    setTimeout(collapseFiltersIfPhone, 500);
 
     function toggleFilters() {
       const panel = document.getElementById('filtersPanel');
@@ -4031,6 +4056,7 @@
       const collapsed = panel.classList.toggle('collapsed');
       btn.setAttribute('aria-expanded', String(!collapsed));
       btn.textContent = collapsed ? 'Filters ▸' : 'Filters ▾';
+      if (!collapsed) sessionStorage.setItem('filtersUserOpened', '1');
     }
 
     function setViewMode(mode) {
@@ -4061,9 +4087,14 @@
       const panel = document.getElementById('filtersPanel');
       const btn = document.getElementById('filtersToggle');
       if (panel && btn) {
-        if (isPhone && !panel.classList.contains('collapsed')) {
-          // keep user choice if they expanded; only force on first load (already handled above)
-        } else if (!isPhone && panel.classList.contains('collapsed')) {
+        if (isPhone) {
+          // On phone, prefer collapsed unless user has explicitly opened; but don't force if already open
+          if (!panel.classList.contains('collapsed') && !sessionStorage.getItem('filtersUserOpened')) {
+            panel.classList.add('collapsed');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.textContent = 'Filters ▸';
+          }
+        } else if (panel.classList.contains('collapsed')) {
           panel.classList.remove('collapsed');
           btn.setAttribute('aria-expanded', 'true');
           btn.textContent = 'Filters ▾';
