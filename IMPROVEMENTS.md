@@ -387,3 +387,16 @@ Prototype is more practical for real phone and laptop B2B use. Cycle continues (
 - Fully client-side, compatible with clustering, custom delivery point, dark mode and all other filters.
 
 This makes schedule compatibility visible and filterable for wholesale buyers. Also confirmed map uses free OpenStreetMap tiles (no API key) and filters panel is scrollable, addressing open GitHub issue #1.
+## 2026-10-14 – Resize / Orientation Map Polish for Phone & Laptop
+
+**What:** Added debounced window resize and orientationchange listeners that call map.invalidateSize() and intelligently manage the filters panel collapse state when crossing the 700px breakpoint. Reinforced font smoothing and overflow handling.
+
+**Why:** Rotating a phone or resizing a laptop window (or switching between split/map/list views) previously left the Leaflet map with stale dimensions, causing blank tiles or clipped markers. Filters that were collapsed on phone could stay collapsed after expanding to laptop width. These small fixes keep the discovery surface (map + list) correctly sized and usable without manual refresh.
+
+**How:**
+- Debounced (150ms) resize/orientationchange handler that invalidates the map size.
+- When viewport grows beyond 700px, auto-expands the filters panel if it was collapsed.
+- Added -webkit-font-smoothing for crisper text on Retina/laptop displays.
+- Fully client-side; preserves all existing filters, view modes, dark mode, RFQ, cart and clustering.
+
+This keeps the prototype reliable for real-world phone rotation and laptop window management. Cycle continues.
