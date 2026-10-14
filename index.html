@@ -1124,6 +1124,15 @@
       .modal-overlay { align-items: flex-end; padding: 0; }
     }
 
+
+    @media (min-width: 901px) and (max-width: 1400px) {
+      .sidebar { width: 380px; }
+    }
+    @media (min-width: 1401px) {
+      .sidebar { width: 420px; }
+      .main { max-width: 1600px; margin: 0 auto; }
+    }
+
     /* Mobile view mode toggle */
     .view-mode-control {
       display: none;
@@ -1153,6 +1162,13 @@
       background: var(--primary);
       color: white;
     }
+
+    @media (max-width: 700px) {
+      .map-controls { top: 0.5rem; right: 0.5rem; flex-wrap: wrap; max-width: 90%; }
+      .map-controls button, .map-controls select { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+      .legend { display: none; }
+    }
+
     @media (max-width: 700px) {
       .view-mode-control { display: flex; }
       .main.view-map .sidebar { display: none; }
@@ -3779,6 +3795,18 @@
 
     // Mobile view mode
     
+    
+    // Collapse filters by default on phones for more list space
+    if (window.matchMedia('(max-width: 700px)').matches) {
+      const panel = document.getElementById('filtersPanel');
+      const btn = document.getElementById('filtersToggle');
+      if (panel && btn && !panel.classList.contains('collapsed')) {
+        panel.classList.add('collapsed');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = 'Filters ▸';
+      }
+    }
+
     function toggleFilters() {
       const panel = document.getElementById('filtersPanel');
       const btn = document.getElementById('filtersToggle');
