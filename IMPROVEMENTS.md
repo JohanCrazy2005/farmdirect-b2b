@@ -345,7 +345,6 @@ This gives buyers a practical, at-a-glance view of supplier dependability.
 
 Also addressed open GitHub issue #1: made the filters panel scrollable (`max-height: 55vh; overflow-y: auto`) so all filters are reachable on smaller viewports, and confirmed map uses free OpenStreetMap tiles (no API key required).
 
-
 ## 2026-10-14 – Request Sample Button & Sample Inquiry Tracking (Implemented)
 
 **What:** Added a “Request Sample” action on seller cards, map popups and the detail drawer. Clicking it opens the existing RFQ modal pre-filled with a small sample quantity (5) and a notes prefix “Sample request: ”. Sample inquiries are logged in Inquiry History with a distinct “🧪 Sample” type and can be reordered or exported like normal RFQs.
@@ -360,3 +359,16 @@ Also addressed open GitHub issue #1: made the filters panel scrollable (`max-hei
 - Fully client-side, works with dark mode, localStorage history, reorder, export CSV and all existing features.
 
 This adds a practical evaluation step to the B2B buying journey.
+## 2026-10-14 – Phone & Laptop View Refinements + Default Collapsed Filters
+
+**What:** Refined responsive layout for phones and laptops: laptop sidebar widths (380px mid, 420px large with centered max-width), more compact map controls and hidden legend on phones, and filters panel starts collapsed on ≤700px viewports so the seller list is immediately visible.
+
+**Why:** On-the-go buyers on phones need the product list front-and-center without the long filter panel pushing content down; office users on laptops benefit from balanced map/sidebar proportions that leave more room for comparing multiple suppliers side-by-side. Reducing initial clutter improves scan speed for wholesale sourcing.
+
+**How:**
+- Added media queries for 901–1400px (380px sidebar) and >1400px (420px sidebar + max-width container).
+- Mobile map-controls made wrap-friendly, smaller padding, legend hidden.
+- On load, if viewport ≤700px the filters panel is auto-collapsed and the toggle button updates accordingly (still fully expandable).
+- Existing 100dvh, touch targets, landscape side-by-side, dark mode, clustering, RFQ, cart and all filters preserved. Fully client-side.
+
+Prototype is more practical for real phone and laptop B2B use. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
