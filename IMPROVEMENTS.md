@@ -400,3 +400,18 @@ This makes schedule compatibility visible and filterable for wholesale buyers. A
 - Fully client-side; preserves all existing filters, view modes, dark mode, RFQ, cart and clustering.
 
 This keeps the prototype reliable for real-world phone rotation and laptop window management. Cycle continues.
+
+## 2026-10-14 – Deep-Linkable Seller Profiles & Share Button
+
+**What:** Added support for deep-linking directly to a seller’s detail drawer via a `?seller=<id>` URL parameter, plus a “Share” button inside the drawer that copies a ready-to-send link. Opening a drawer updates the URL (preserving any active filters); closing it removes the parameter. On page load, if a `seller=` param is present, the matching drawer opens automatically after filters are restored.
+
+**Why:** Procurement teams frequently need to share a specific supplier with colleagues or save a direct reference for later follow-up. Previously the only shareable state was filter combinations. A stable, copyable seller link reduces coordination friction and makes the prototype more useful as a lightweight internal tool.
+
+**How (implemented):**
+- `openSellerDrawer()` writes `seller=<id>` into the current query string with `history.replaceState` (other filter params stay intact).
+- `closeSellerDrawer()` deletes the `seller` param.
+- New `shareSeller(id)` helper builds the full URL and copies it via Clipboard API (with `fallbackCopy` fallback) and shows a toast.
+- On init, after `applyFiltersFromUrl()`, if `seller=` exists the corresponding drawer is opened after a short delay so the map and list have rendered.
+- Fully client-side; compatible with existing filters, chips, presets, shareable filter URLs, dark mode, clustering, and localStorage features.
+
+This gives buyers a practical way to bookmark or forward an individual supplier profile. Also reconfirmed the map uses free OpenStreetMap + Esri satellite tiles (no API key required) and the filters panel remains scrollable, addressing open GitHub issue #1.

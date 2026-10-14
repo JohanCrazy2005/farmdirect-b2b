@@ -3598,10 +3598,18 @@
         <button class="btn btn-ghost" onclick="toggleFavorite(${s.id}, event); openSellerDrawer(${s.id})">${favActive ? '♥ Favorited' : '♡ Favorite'}</button>
         <button class="btn btn-ghost" onclick="addToInquiry(${s.id}, event); showToast('Added to inquiry cart')">+ Cart</button>
         <button class="btn btn-ghost" onclick="toggleCompare(${s.id}, event)">Compare</button>
+        <button class="btn btn-ghost" onclick="shareSeller(${s.id})" title="Copy a link that opens this seller">Share</button>
       `;
       lastFocusedEl = document.activeElement;
       document.getElementById('drawerOverlay').classList.add('open');
       document.getElementById('sellerDrawer').classList.add('open');
+      // Deep-link: keep other filters and set seller=
+      try {
+        const params = new URLSearchParams(location.search);
+        params.set('seller', s.id);
+        const qs = params.toString();
+        history.replaceState(null, '', qs ? location.pathname + '?' + qs : location.pathname);
+      } catch (_) {}
       const focusables = getFocusable(document.getElementById('sellerDrawer'));
       if (focusables.length) setTimeout(() => focusables[0].focus(), 50);
     }
@@ -3618,7 +3626,30 @@
     function closeSellerDrawer() {
       document.getElementById('drawerOverlay').classList.remove('open');
       document.getElementById('sellerDrawer').classList.remove('open');
+      // Remove seller deep-link while preserving other filters
+      try {
+        const params = new URLSearchParams(location.search);
+        params.delete('seller');
+        const qs = params.toString();
+        history.replaceState(null, '', qs ? location.pathname + '?' + qs : location.pathname);
+      } catch (_) {}
     }
+    function shareSeller(id) {
+      // Ensure URL has the seller param then copy
+      try {
+        const params = new URLSearchParams(location.search);
+        params.set('seller', id);
+        const url = location.origin + location.pathname + '?' + params.toString();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => showToast('Seller link copied')).catch(() => fallbackCopy(url));
+        } else {
+          fallbackCopy(url);
+        }
+      } catch (_) {
+        showToast('Could not create share link');
+      }
+    }
+
 
     function submitRfq(e) {
       e.preventDefault();
@@ -3868,6 +3899,15 @@
     renderRecent();
     renderInquiries();
     applyFiltersFromUrl(); // restore from shareable link if present
+    // Open seller drawer if deep-linked
+    try {
+      const params = new URLSearchParams(location.search);
+      const sid = params.get('seller');
+      if (sid) {
+        const s = sellers.find(x => String(x.id) === sid);
+        if (s) setTimeout(() => openSellerDrawer(s.id), 300);
+      }
+    } catch (_) {}
 
     // Mobile view mode
     

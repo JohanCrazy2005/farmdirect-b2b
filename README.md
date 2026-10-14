@@ -36,6 +36,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Search radius circle** – visualizes the current max-distance filter on the map (centered on your location)
 - **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
 - **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
+- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
 - Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
@@ -47,6 +48,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
 - **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
 - **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
+- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 
 ## How to run
 
