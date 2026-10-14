@@ -57,3 +57,4 @@ See `IMPROVEMENTS.md` for the hourly suggestion history and the implementation p
 
 - **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
 - **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume
+- **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards, popups and drawer
