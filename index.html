@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d6a4f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>FarmDirect B2B – Direct Farm Marketplace</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
@@ -1238,13 +1241,13 @@
       <button class="icon-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
         <svg id="darkIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </button>
-      <button class="btn btn-primary" onclick="showToast('Seller onboarding coming soon — contact us to list your farm.')">
+      <button class="btn btn-primary" id="sellBtn" onclick="openListProduct()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 11h18v10H3z"/></svg>
         <span>Sell Your Goods</span>
       </button>
-      <button class="btn btn-ghost" onclick="showToast('Login will be available in a future update.')">
+      <button class="btn btn-ghost" id="loginBtn" onclick="openLoginModal()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>Login</span>
+        <span id="loginLabel">Login</span>
       </button>
     </div>
   </header>
@@ -1618,6 +1621,65 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-ghost" onclick="clearCart()">Clear Cart</button>
         <button type="button" class="btn btn-primary" onclick="sendCombinedInquiry()">Send Combined Inquiry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo Login Modal -->
+  <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <div>
+          <h2 id="loginTitle">Demo Login</h2>
+          <div class="sub">Choose a role for this session (stored locally)</div>
+        </div>
+        <button class="modal-close" onclick="closeLoginModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-group" style="margin-bottom:1rem">
+          <label>Role</label>
+          <select id="loginRole" style="width:100%;padding:0.5rem">
+            <option value="buyer">Buyer (source products)</option>
+            <option value="seller">Seller (list & manage crops)</option>
+          </select>
+        </div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">This is a client-side demo. No real accounts or passwords.</p>
+        <button type="button" class="btn btn-primary" style="width:100%" onclick="doLogin()">Continue as selected role</button>
+        <button type="button" class="btn btn-ghost" style="width:100%;margin-top:0.5rem" onclick="doLogout()" id="logoutBtn" style="display:none">Log out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- List Product Modal (seller) -->
+  <div class="modal-overlay" id="listProductModal" role="dialog" aria-modal="true" aria-labelledby="listTitle">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-header">
+        <div>
+          <h2 id="listTitle">List a Product</h2>
+          <div class="sub">Add a new crop listing (demo, client-side only)</div>
+        </div>
+        <button class="modal-close" onclick="closeListProduct()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-group"><label>Farm / Seller name</label><input type="text" id="lpName" placeholder="My Farm" style="width:100%;padding:0.45rem" /></div>
+        <div class="filter-group" style="margin-top:0.6rem"><label>Product</label><input type="text" id="lpProduct" placeholder="Tomatoes" style="width:100%;padding:0.45rem" /></div>
+        <div class="filter-group" style="margin-top:0.6rem"><label>Category</label>
+          <select id="lpCategory" style="width:100%;padding:0.45rem">
+            <option value="tomatoes">Tomatoes</option>
+            <option value="milk">Milk</option>
+            <option value="eggs">Eggs</option>
+            <option value="wheat">Wheat</option>
+            <option value="herbs">Herbs</option>
+            <option value="honey">Honey</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
+          <div class="filter-group" style="flex:1"><label>Price / unit</label><input type="number" id="lpPrice" step="0.01" min="0" value="1.50" style="width:100%;padding:0.45rem" /></div>
+          <div class="filter-group" style="flex:1"><label>Unit</label><input type="text" id="lpUnit" value="kg" style="width:100%;padding:0.45rem" /></div>
+        </div>
+        <div class="filter-group" style="margin-top:0.6rem"><label>Available qty</label><input type="number" id="lpQty" min="1" value="500" style="width:100%;padding:0.45rem" /></div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.8rem">Listing is added to the map/list for this session only. Refresh to reset sample data.</p>
+        <button type="button" class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="submitListProduct()">Publish Listing</button>
       </div>
     </div>
   </div>
@@ -2534,7 +2596,8 @@
       const container = document.getElementById('sellerList');
       container.innerHTML = '';
       if (list.length === 0) {
-        container.innerHTML = '<p style="padding:1rem;color:var(--muted);font-size:0.9rem;text-align:center">No sellers match your filters.</p>';
+        container.innerHTML = '<div style="padding:1.5rem;color:var(--muted);font-size:0.9rem;text-align:center"><p>No sellers match your filters.</p><button type="button" class="btn btn-ghost" style="margin-top:0.75rem" onclick="clearFilters()">Clear all filters</button></div>';
+        return;
       }
       list.forEach(s => {
         const card = document.createElement('div');
@@ -3971,6 +4034,121 @@
     }
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
+
+    // ---- Demo Login & Seller Listing ----
+    let currentRole = 'guest';
+    function loadRole() {
+      try { currentRole = localStorage.getItem('farmdirect_role') || 'guest'; } catch (_) {}
+      updateLoginUI();
+    }
+    function updateLoginUI() {
+      const label = document.getElementById('loginLabel');
+      const sellBtn = document.getElementById('sellBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (currentRole === 'seller') {
+        if (label) label.textContent = 'Seller';
+        if (sellBtn) sellBtn.style.display = '';
+        if (logoutBtn) logoutBtn.style.display = 'block';
+      } else if (currentRole === 'buyer') {
+        if (label) label.textContent = 'Buyer';
+        if (sellBtn) sellBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'block';
+      } else {
+        if (label) label.textContent = 'Login';
+        if (sellBtn) sellBtn.style.display = '';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('open');
+      const roleSel = document.getElementById('loginRole');
+      if (roleSel) roleSel.value = currentRole === 'seller' ? 'seller' : 'buyer';
+    }
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('open');
+    }
+    function doLogin() {
+      const role = document.getElementById('loginRole').value;
+      currentRole = role;
+      try { localStorage.setItem('farmdirect_role', role); } catch (_) {}
+      updateLoginUI();
+      closeLoginModal();
+      showToast(role === 'seller' ? 'Logged in as Seller — you can list products' : 'Logged in as Buyer');
+    }
+    function doLogout() {
+      currentRole = 'guest';
+      try { localStorage.removeItem('farmdirect_role'); } catch (_) {}
+      updateLoginUI();
+      closeLoginModal();
+      showToast('Logged out');
+    }
+    function openListProduct() {
+      if (currentRole !== 'seller') {
+        openLoginModal();
+        showToast('Log in as Seller to list products');
+        return;
+      }
+      document.getElementById('listProductModal').classList.add('open');
+    }
+    function closeListProduct() {
+      document.getElementById('listProductModal').classList.remove('open');
+    }
+    function submitListProduct() {
+      const name = (document.getElementById('lpName').value || 'My Farm').trim();
+      const product = (document.getElementById('lpProduct').value || 'Produce').trim();
+      const category = document.getElementById('lpCategory').value;
+      const price = parseFloat(document.getElementById('lpPrice').value) || 1;
+      const unit = (document.getElementById('lpUnit').value || 'kg').trim();
+      const qty = parseInt(document.getElementById('lpQty').value, 10) || 100;
+      const newId = Math.max(...sellers.map(s => s.id), 0) + 1;
+      const newSeller = {
+        id: newId,
+        name: name,
+        farm: name,
+        product: product,
+        category: category,
+        price: price,
+        unit: unit,
+        qty: qty + ' ' + unit,
+        organic: false,
+        yearRound: true,
+        weeklyCapacity: Math.round(qty / 4),
+        grade: 'standard',
+        pack: 'bulk',
+        certs: [],
+        preferredContact: 'email',
+        deliveryDays: ['Mon', 'Wed', 'Fri'],
+        traceable: false,
+        region: 'Local',
+        production: 'field',
+        verified: false,
+        rating: 0,
+        reviews: 0,
+        distance: 5,
+        lat: 51.51 + (Math.random() - 0.5) * 0.1,
+        lng: -0.08 + (Math.random() - 0.5) * 0.1,
+        color: '#84cc16',
+        emoji: '🌱',
+        img: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=128&h=128&fit=crop',
+        moq: 10,
+        leadTimeDays: 3,
+        stockStatus: 'in_stock',
+        availableQty: qty,
+        paymentTerms: 'due_on_receipt',
+        fulfillment: 'both',
+        harvestDaysAgo: 1,
+        bio: 'Newly listed by seller (demo).',
+        volumeTiers: [{ minQty: 0, price: price }]
+      };
+      sellers.push(newSeller);
+      closeListProduct();
+      filterSellers();
+      showToast(`Listed “${product}” — visible on map & list`);
+      // reset form lightly
+      document.getElementById('lpName').value = '';
+      document.getElementById('lpProduct').value = '';
+    }
+    loadRole();
 
     filterSellers();
   </script>

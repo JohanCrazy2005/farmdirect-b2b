@@ -415,3 +415,19 @@ This keeps the prototype reliable for real-world phone rotation and laptop windo
 - Fully client-side; compatible with existing filters, chips, presets, shareable filter URLs, dark mode, clustering, and localStorage features.
 
 This gives buyers a practical way to bookmark or forward an individual supplier profile. Also reconfirmed the map uses free OpenStreetMap + Esri satellite tiles (no API key required) and the filters panel remains scrollable, addressing open GitHub issue #1.
+
+## 2026-10-14 – Demo Login + Seller Product Listing
+
+**What:** Added a client-side demo login (Buyer / Seller roles stored in localStorage) and a “List a Product” flow so sellers can publish a new crop listing that immediately appears on the map and in the seller list.
+
+**Why:** Addresses open feedback that buyers can filter but sellers cannot log in or publish crops. Gives the prototype a basic role-based experience and lets sellers contribute inventory in the demo without a backend.
+
+**How:**
+- Header Login button opens a role picker; selection persists and updates the UI (Seller sees the list action; Buyer hides it).
+- Sell Your Goods / List a Product modal collects name, product, category, price, unit and quantity, then pushes a new seller object into the in-memory array and re-renders.
+- Empty-state improved with a one-click “Clear all filters” button.
+- Added theme-color and apple-mobile-web-app meta tags for better phone home-screen / status-bar appearance.
+- Fully client-side; existing filters, RFQ, cart, dark mode, clustering and responsive layout preserved.
+
+This makes the marketplace more useful for both sides of the B2B transaction in the prototype. Cycle continues (2026-10-14 is within 60 days of 2026-10-11).
+
