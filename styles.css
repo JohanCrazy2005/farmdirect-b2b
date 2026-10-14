@@ -1,0 +1,67 @@
+/* FarmDirect B2B styles - phone/laptop optimized */
+:root {
+  --primary: #2d6a4f;
+  --primary-dark: #1b4332;
+  --accent: #40916c;
+  --bg: #f8faf9;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --success: #059669;
+  --header-bg: #ffffff;
+  --input-bg: #f9fafb;
+  --hover-bg: #f3f4f6;
+  --active-card: #f0fdf4;
+}
+html.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #334155;
+  --header-bg: #1e293b;
+  --input-bg: #0f172a;
+  --hover-bg: #334155;
+  --active-card: #14532d;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100dvh;
+  overflow: hidden;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+/* Landscape phones/tablets */
+@media (max-width: 900px) and (orientation: landscape) {
+  .main { flex-direction: row !important; }
+  .map-container { height: 100% !important; width: 58% !important; flex: 1 1 58%; }
+  .sidebar { height: 100% !important; width: 42% !important; max-width: 42%; border-left: 1px solid var(--border); border-top: none; }
+  .main.view-map .sidebar { display: none; }
+  .main.view-map .map-container { width: 100% !important; }
+  .main.view-list .map-container { display: none; }
+  .main.view-list .sidebar { width: 100% !important; max-width: none; }
+  .view-mode-control { bottom: 0.5rem; }
+  .legend { display: none; }
+  header { padding: 0.35rem 0.75rem; }
+}
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .view-mode-control {
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  @media (max-width: 700px) {
+    .seller-list { padding-bottom: max(5.5rem, calc(4rem + env(safe-area-inset-bottom))); }
+  }
+}
+@media (max-width: 700px) {
+  input, select, textarea { font-size: 16px !important; }
+  .search-box input { font-size: 16px !important; }
+}
