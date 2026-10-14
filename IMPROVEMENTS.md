@@ -287,3 +287,17 @@ This completes a practical keyboard layer for the prototype.
 - Fully client-side, compatible with dark mode, mobile layout, all filters, and existing features.
 
 This reduces friction for bulk procurement workflows.
+
+## 2026-10-14 – One-Click Reorder from Inquiry History
+
+**What:** Add a “Reorder” action on every item in the Inquiry History sidebar. For single-seller RFQs it re-opens the RFQ modal pre-filled with the previous quantity, preferred delivery date and notes. For combined (cart) inquiries it rebuilds the inquiry cart with the same sellers and quantities and opens the cart modal so the buyer can tweak and re-send.
+
+**Why:** Wholesale buyers frequently reorder the same produce week after week (menus, promotions, standing orders). Re-typing quantities and requirements is pure friction. A one-click reorder from the history log turns the demo into a practical repeat-procurement tool and keeps the conversation context (notes, preferred dates) attached to the next inquiry.
+
+**How (implemented):**
+- Extended inquiry records with explicit `qty` / `preferredDate` (single) and `cartItems` (combined).
+- Fixed notes capture so `#rfqMsg` value is always stored.
+- `openRfqModal(id, prefillQty, prefillDate, prefillNotes)` accepts optional date and notes.
+- In `renderInquiries` added a compact “Reorder” button next to the status select.
+- `reorderInquiry(id)` restores state and opens the appropriate modal.
+- Fully client-side, works with existing status tracking, notes indicator, dark mode and localStorage history limit.

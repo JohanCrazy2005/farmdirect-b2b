@@ -22,6 +22,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Private buyer notes** – attach personal notes to sellers (localStorage); shown in drawer + note badge on cards
 - **Quick quantity presets** in RFQ modal (10/25/50/100) for faster bulk inquiries + live tier pricing
 - **Recently viewed** – sidebar list of last 8 sellers opened (drawer/RFQ), persisted, one-click reopen
+- **One-click Reorder** – from Inquiry History, restore qty / notes / date (single) or rebuild cart (combined) and re-open the modal
 - **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, and status tracking (Pending / Quoted / Accepted / Declined)
 - **Product grade** – badges (Premium / Standard / Surplus) + filter
 - **Pack format** – badges (Loose / Case / Pallet / Bulk) + filter

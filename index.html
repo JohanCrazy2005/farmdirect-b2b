@@ -1900,6 +1900,41 @@
         showToast('Inquiry status updated');
       }
     }
+    function reorderInquiry(id) {
+      const rec = inquiryHistory.find(r => r.id === id);
+      if (!rec) {
+        showToast('Inquiry not found');
+        return;
+      }
+      if (rec.type === 'single' && rec.sellerIds && rec.sellerIds[0]) {
+        const sellerId = rec.sellerIds[0];
+        let qty = rec.qty;
+        if (!qty && rec.summary) {
+          const m = rec.summary.match(/·\s*([\d.]+)\s*·/);
+          if (m) qty = parseFloat(m[1]);
+        }
+        openRfqModal(sellerId, qty || undefined, rec.preferredDate || '', rec.notes || '');
+        showToast('Reordered — review and send');
+        return;
+      }
+      if (rec.type === 'combined') {
+        inquiryCart.clear();
+        if (rec.cartItems && rec.cartItems.length) {
+          rec.cartItems.forEach(({ id: sid, qty }) => {
+            if (sellers.find(x => x.id === sid)) inquiryCart.set(sid, qty || 1);
+          });
+        } else if (rec.sellerIds) {
+          rec.sellerIds.forEach(sid => {
+            if (sellers.find(x => x.id === sid)) inquiryCart.set(sid, 1);
+          });
+        }
+        saveCart();
+        openCartModal();
+        showToast('Cart restored from previous combined inquiry');
+        return;
+      }
+      showToast('Cannot reorder this inquiry');
+    }
     function renderInquiries() {
       const el = document.getElementById('inquiryList');
       if (!el) return;
@@ -1911,7 +1946,7 @@
       const statusClass = { pending: 'status-pending', quoted: 'status-quoted', accepted: 'status-accepted', declined: 'status-declined' };
       el.innerHTML = inquiryHistory.map(rec => {
         const when = new Date(rec.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-const hasNotes = !!(rec.notes && rec.notes.trim());
+        const hasNotes = !!(rec.notes && rec.notes.trim());
         const notesIcon = hasNotes ? ' 📝' : '';
         const status = rec.status || 'pending';
         const title = (rec.summary || '') + (hasNotes ? '\nNotes: ' + rec.notes.replace(/"/g, "'") : '');
@@ -1920,16 +1955,19 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
           : `showToast('${((rec.summary || '') + (hasNotes ? ' — Notes: ' + rec.notes : '')).replace(/'/g, "\\'")}')`;
         return `<div style="background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;font-size:0.8rem;color:var(--text)">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:0.25rem">
-            <button type="button" style="text-align:left;background:transparent;border:none;padding:0;cursor:pointer;color:inherit;font-weight:500;flex:1" onclick="${click}" title="${title.replace(/"/g, '"')}">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}${notesIcon}</button>
+            <button type="button" style="text-align:left;background:transparent;border:none;padding:0;cursor:pointer;color:inherit;font-weight:500;flex:1" onclick="${click}" title="${title.replace(/"/g, '&quot;')}">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}${notesIcon}</button>
             <span class="status-badge ${statusClass[status] || ''}">${statusLabels[status] || status}</span>
           </div>
           <div style="color:var(--muted);font-size:0.72rem;margin:0.15rem 0">${when} · ${(rec.summary || '').slice(0, 42)}${(rec.summary || '').length > 42 ? '…' : ''}</div>
-          <select onchange="updateInquiryStatus(${rec.id}, this.value)" style="width:100%;font-size:0.72rem;padding:0.15rem;border-radius:0.25rem;border:1px solid var(--border);background:var(--bg);color:var(--text)">
-            <option value="pending"${status==='pending'?' selected':''}>Pending</option>
-            <option value="quoted"${status==='quoted'?' selected':''}>Quoted</option>
-            <option value="accepted"${status==='accepted'?' selected':''}>Accepted</option>
-            <option value="declined"${status==='declined'?' selected':''}>Declined</option>
-          </select>
+          <div style="display:flex;gap:0.25rem;margin-top:0.2rem">
+            <select onchange="updateInquiryStatus(${rec.id}, this.value)" style="flex:1;font-size:0.72rem;padding:0.15rem;border-radius:0.25rem;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+              <option value="pending"${status==='pending'?' selected':''}>Pending</option>
+              <option value="quoted"${status==='quoted'?' selected':''}>Quoted</option>
+              <option value="accepted"${status==='accepted'?' selected':''}>Accepted</option>
+              <option value="declined"${status==='declined'?' selected':''}>Declined</option>
+            </select>
+            <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem;white-space:nowrap" onclick="reorderInquiry(${rec.id})" title="Reorder with same details">Reorder</button>
+          </div>
         </div>`;
       }).join('');
     }
@@ -2034,19 +2072,23 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         showToast('Cart is empty');
         return;
       }
-      const items = [...inquiryCart].map(([id, qty]) => {
+      const cartItems = [...inquiryCart].map(([id, qty]) => ({ id, qty: +qty || 1 }));
+      const items = cartItems.map(({ id, qty }) => {
         const s = sellers.find(x => x.id === id);
         return s ? `${s.name} (${qty} ${s.unit})` : '';
       }).filter(Boolean).join(', ');
-      const sellerIds = [...inquiryCart.keys()];
+      const sellerIds = cartItems.map(c => c.id);
+      const notesEl = document.getElementById('cartNotes');
+      const notesVal = notesEl ? notesEl.value.trim() : '';
       trackInquiry({
         id: Date.now(),
         ts: Date.now(),
         type: 'combined',
         sellerIds,
+        cartItems,
         summary: items,
         email: '(combined)',
-        notes: notes || '',
+        notes: notesVal,
         status: 'pending'
       });
       showToast(`Combined inquiry prepared for: ${items}. (Demo — no email sent.)`);
@@ -3257,7 +3299,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         : '—';
     }
 
-    function openRfqModal(id, prefillQty) {
+    function openRfqModal(id, prefillQty, prefillDate, prefillNotes) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
       trackRecent(id);
@@ -3266,10 +3308,9 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available · Delivery est. $${estimateDeliveryCost(s.distance)}`;
       const qtyInput = document.getElementById('rfqQty');
       qtyInput.value = (prefillQty && prefillQty > 0) ? String(prefillQty) : '';
-      document.getElementById('rfqDate').value = '';
       document.getElementById('rfqEmail').value = '';
       document.getElementById('rfqPhone').value = '';
-      document.getElementById('rfqMsg').value = '';
+      document.getElementById('rfqMsg').value = (prefillNotes || '');
       document.getElementById('rfqError').classList.remove('show');
       const tierEl = document.getElementById('rfqTierPrice');
       tierEl.textContent = '';
@@ -3287,10 +3328,14 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       };
       qtyInput.oninput = updateTier;
       updateTier();
-      // Default date = tomorrow
-      const t = new Date();
-      t.setDate(t.getDate() + 1);
-      document.getElementById('rfqDate').value = t.toISOString().slice(0, 10);
+      // Default date = tomorrow, or prefill if provided
+      if (prefillDate) {
+        document.getElementById('rfqDate').value = prefillDate;
+      } else {
+        const t = new Date();
+        t.setDate(t.getDate() + 1);
+        document.getElementById('rfqDate').value = t.toISOString().slice(0, 10);
+      }
       lastFocusedEl = document.activeElement;
       document.getElementById('rfqModal').classList.add('open');
       qtyInput.focus();
@@ -3386,15 +3431,18 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       const sellerId = +document.getElementById('rfqSellerId').value;
       const s = sellers.find(x => x.id === sellerId);
       const date = document.getElementById('rfqDate').value;
+      const notesVal = (document.getElementById('rfqMsg').value || '').trim();
       const summary = s ? `${s.name} · ${qty} · deliv ${date || 'ASAP'}` : `Seller ${sellerId} · ${qty}`;
       trackInquiry({
         id: Date.now(),
         ts: Date.now(),
         type: 'single',
         sellerIds: [sellerId],
+        qty: parseFloat(qty) || 0,
+        preferredDate: date || '',
         summary,
         email,
-        notes: notes || '',
+        notes: notesVal,
         status: 'pending'
       });
       closeRfqModal();
