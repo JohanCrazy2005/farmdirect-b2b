@@ -12,6 +12,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Dark mode** (persisted in localStorage)
 - **MOQ & Lead Time** – badges on cards/popups + filters for max MOQ and max lead time
 - **Min. rating filter** – Any / 4.0+ / 4.5+ / 4.8+; rating + review count on cards and popups
+- **Supplier Reliability Score** – composite 0–100 badge (rating, reviews, verified, stock, response) + Min. reliability filter and Reliability sort
 - **Availability status** – In stock / Low / Out badges on cards & popups + “Available now only” filter
 - **Payment terms** – badges (Due on receipt / Net 15 / Net 30) on cards & popups + filter select
 - **Fulfillment method** – badges (Pickup / Delivery / Both) on cards & popups + filter select
@@ -23,7 +24,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Quick quantity presets** in RFQ modal (10/25/50/100) for faster bulk inquiries + live tier pricing
 - **Recently viewed** – sidebar list of last 8 sellers opened (drawer/RFQ), persisted, one-click reopen
 - **One-click Reorder** – from Inquiry History, restore qty / notes / date (single) or rebuild cart (combined) and re-open the modal
-- **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, and status tracking (Pending / Quoted / Accepted / Declined)
+- **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, status tracking (Pending / Quoted / Accepted / Declined), and **Export CSV** of the full history for procurement records
 - **Product grade** – badges (Premium / Standard / Surplus) + filter
 - **Pack format** – badges (Loose / Case / Pallet / Bulk) + filter
 - **Growing region** – badges (Kent / Norfolk / Cornwall / Yorkshire / Midlands / Sussex) + filter

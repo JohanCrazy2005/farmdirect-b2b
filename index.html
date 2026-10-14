@@ -441,6 +441,23 @@
     html.dark .status-quoted { background: #1e3a8a; color: #93c5fd; }
     html.dark .status-accepted { background: #064e3b; color: #6ee7b7; }
     html.dark .status-declined { background: #7f1d1d; color: #fca5a5; }
+
+    .badge-reliability {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .badge-reliability.mid { background: #fef3c7; color: #92400e; }
+    .badge-reliability.low { background: #fee2e2; color: #991b1b; }
+    html.dark .badge-reliability { background: #064e3b; color: #6ee7b7; }
+    html.dark .badge-reliability.mid { background: #78350f; color: #fcd34d; }
+    html.dark .badge-reliability.low { background: #7f1d1d; color: #fca5a5; }
+
     .badge-grade {
       display: inline-block;
       font-size: 0.65rem;
@@ -1238,6 +1255,7 @@
             <option>Rating</option>
             <option>Freshest first</option>
             <option>Earliest arrival</option>
+            <option>Reliability</option>
           </select>
         </div>
       </div>
@@ -1399,6 +1417,15 @@
             <option value="4">4.0+</option>
             <option value="4.5">4.5+</option>
             <option value="4.8">4.8+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Min. reliability</label>
+          <select id="reliabilityFilter" onchange="filterSellers()">
+            <option value="0">Any</option>
+            <option value="70">70+</option>
+            <option value="80">80+</option>
+            <option value="90">90+</option>
           </select>
         </div>
         <div class="filter-group">
@@ -1589,6 +1616,7 @@
         pack: "case",
         certs: ["organic", "gap"],
         preferredContact: "email",
+        responseHours: 3,
         region: "Kent",
         production: "greenhouse",
         verified: true,
@@ -1626,6 +1654,7 @@
         pack: "bulk",
         certs: ["haccp"],
         preferredContact: "phone",
+        responseHours: 8,
         region: "Norfolk",
         production: "pasture",
         verified: true,
@@ -1663,6 +1692,7 @@
         pack: "case",
         certs: ["organic"],
         preferredContact: "whatsapp",
+        responseHours: 2,
         region: "Cornwall",
         production: "pasture",
         verified: false,
@@ -1738,6 +1768,7 @@
         pack: "loose",
         certs: ["organic", "regen"],
         preferredContact: "portal",
+        responseHours: 24,
         region: "Midlands",
         production: "hydroponic",
         verified: true,
@@ -2286,6 +2317,7 @@
         getCapacityBadge(s),
         getContactBadge(s),
         getArrivalBadge(s),
+        getReliabilityBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2458,6 +2490,7 @@
           getCapacityBadge(s),
           getContactBadge(s),
           getArrivalBadge(s),
+          getReliabilityBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2598,6 +2631,30 @@
       return Math.round((d - today) / (1000 * 60 * 60 * 24));
     }
 
+
+    function getReliabilityScore(s) {
+      // Composite 0-100 score for B2B supplier trustworthiness
+      let score = (s.rating || 0) * 16; // 0-80 from rating
+      score += Math.min(12, Math.log10((s.reviews || 1) + 1) * 6); // review volume
+      if (s.verified) score += 6;
+      if (s.stockStatus === 'in_stock') score += 4;
+      else if (s.stockStatus === 'low') score += 1;
+      else if (s.stockStatus === 'out') score -= 10;
+      if (s.responseHours != null) {
+        if (s.responseHours <= 4) score += 4;
+        else if (s.responseHours <= 12) score += 2;
+        else if (s.responseHours > 48) score -= 3;
+      }
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function getReliabilityBadge(s) {
+      const score = getReliabilityScore(s);
+      const cls = score >= 85 ? '' : score >= 70 ? 'mid' : 'low';
+      const title = `Reliability score ${score}/100 (rating, reviews, verified, stock, response)`;
+      return `<span class="badge-reliability ${cls}" title="${title}">Reliability ${score}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2609,6 +2666,7 @@
       const maxLead = +document.getElementById('leadTimeFilter').value;
       const maxArrivalDays = +document.getElementById('arrivalFilter')?.value || 999;
       const minRating = +document.getElementById('ratingFilter').value;
+      const minReliability = +(document.getElementById('reliabilityFilter')?.value || 0);
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
       const yearRoundOnly = document.getElementById('yearRoundToggle').classList.contains('on');
@@ -2688,6 +2746,7 @@
         if (maxArrivalDays < 999 && daysUntilArrival(s) > maxArrivalDays) return false;
         if (estimateDeliveryCost(s.distance) > maxDeliveryFee) return false;
         if (s.rating < minRating) return false;
+        if (getReliabilityScore(s) < minReliability) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
         if (favoritesOnly && !favorites.has(s.id)) return false;
         if (yearRoundOnly && !s.yearRound) return false;
@@ -2726,6 +2785,7 @@
       else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
       else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
       else if (sort === 'Earliest arrival') filtered.sort((a, b) => daysUntilArrival(a) - daysUntilArrival(b));
+      else if (sort === 'Reliability') filtered.sort((a, b) => getReliabilityScore(b) - getReliabilityScore(a));
 
       window._lastFilteredList = filtered;
       updateVisibleMarkers(filtered);
@@ -2830,6 +2890,10 @@
       if (minRating > 0) {
         chips.push({ label: `Rating ${minRating}+`, reset: () => { document.getElementById('ratingFilter').value = '0'; } });
       }
+      const minRel = +(document.getElementById('reliabilityFilter')?.value || 0);
+      if (minRel > 0) {
+        chips.push({ label: `Reliability ${minRel}+`, reset: () => { document.getElementById('reliabilityFilter').value = '0'; } });
+      }
       const paymentTerms = document.getElementById('paymentFilter').value;
       if (paymentTerms !== 'any') {
         const opt = document.querySelector(`#paymentFilter option[value="${paymentTerms}"]`);
@@ -2914,6 +2978,7 @@
       if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = '999';
       document.getElementById('deliveryFeeFilter').value = '9999';
       document.getElementById('ratingFilter').value = '0';
+      if (document.getElementById('reliabilityFilter')) document.getElementById('reliabilityFilter').value = '0';
       document.getElementById('availableToggle').classList.remove('on');
       document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
       document.getElementById('favoritesToggle').classList.remove('on');
@@ -2953,6 +3018,7 @@
         arrival: document.getElementById('arrivalFilter')?.value || '999',
         deliveryFee: document.getElementById('deliveryFeeFilter').value,
         rating: document.getElementById('ratingFilter').value,
+        reliability: document.getElementById('reliabilityFilter')?.value || '0',
         available: document.getElementById('availableToggle').classList.contains('on'),
         favorites: document.getElementById('favoritesToggle').classList.contains('on'),
         yearRound: document.getElementById('yearRoundToggle').classList.contains('on'),
@@ -3014,6 +3080,7 @@
       if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = s.arrival || '999';
       document.getElementById('deliveryFeeFilter').value = s.deliveryFee || '9999';
       document.getElementById('ratingFilter').value = s.rating || '0';
+      if (document.getElementById('reliabilityFilter')) document.getElementById('reliabilityFilter').value = s.reliability || '0';
       document.getElementById('paymentFilter').value = s.payment || 'any';
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
       document.getElementById('freshnessFilter').value = s.freshness || '999';
@@ -3044,7 +3111,7 @@
     // Shareable filter URL helpers
     const FILTER_DEFAULTS = {
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
-      search: '', sort: 'Distance', moq: '9999', leadTime: '999', arrival: '999', deliveryFee: '9999', rating: '0',
+      search: '', sort: 'Distance', moq: '9999', leadTime: '999', arrival: '999', deliveryFee: '9999', rating: '0', reliability: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
@@ -3068,6 +3135,7 @@
       if (state.arrival && String(state.arrival) !== FILTER_DEFAULTS.arrival) params.set('arr', state.arrival);
       if (state.deliveryFee && String(state.deliveryFee) !== FILTER_DEFAULTS.deliveryFee) params.set('deliv', state.deliveryFee);
       if (state.rating && String(state.rating) !== FILTER_DEFAULTS.rating) params.set('rating', state.rating);
+      if (state.reliability && String(state.reliability) !== FILTER_DEFAULTS.reliability) params.set('rel', state.reliability);
       if (state.available) params.set('available', '1');
       if (state.favorites) params.set('fav', '1');
       if (state.yearRound) params.set('yr', '1');
@@ -3112,6 +3180,7 @@
       if (params.has('arr')) s.arrival = params.get('arr');
       if (params.has('deliv')) s.deliveryFee = params.get('deliv');
       if (params.has('rating')) s.rating = params.get('rating');
+      if (params.has('rel')) s.reliability = params.get('rel');
       if (params.get('available') === '1') s.available = true;
       if (params.get('fav') === '1') s.favorites = true;
       if (params.get('yr') === '1') s.yearRound = true;
@@ -3361,6 +3430,8 @@
         getSeasonBadge(s),
         getCapacityBadge(s),
         getContactBadge(s),
+        getReliabilityBadge(s),
+        getArrivalBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',

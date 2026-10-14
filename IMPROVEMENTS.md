@@ -301,3 +301,31 @@ This reduces friction for bulk procurement workflows.
 - In `renderInquiries` added a compact “Reorder” button next to the status select.
 - `reorderInquiry(id)` restores state and opens the appropriate modal.
 - Fully client-side, works with existing status tracking, notes indicator, dark mode and localStorage history limit.
+
+## 2026-10-14 – Export Inquiry History as CSV
+
+**What:** Add an “Export CSV” button in the Inquiry History sidebar that downloads a timestamped CSV of all recorded RFQs (single and combined). Columns include date/time, type, summary, status, quantity, preferred delivery date, notes, and seller IDs/names.
+
+**Why:** Wholesale buyers and procurement teams need an auditable record of inquiries for internal tracking, ERP import, or follow-up. Keeping the history only inside the browser limits usefulness; a one-click CSV export turns the demo log into a practical exportable procurement trail that works with existing spreadsheets and tools.
+
+**How (implemented):**
+- Button placed next to “Clear history” under Inquiry history.
+- Client-side generation mirroring the existing seller Export CSV pattern (Blob + download link).
+- Includes status so the export reflects the buyer’s current tracking state.
+- Fully compatible with localStorage history, reorder, notes, and dark mode.
+
+## 2026-10-14 – Supplier Reliability Score Badge, Filter & Sort
+
+**What:** Add a composite Reliability Score (0–100) badge on seller cards, map popups and the detail drawer. The score blends rating, review volume, verified status, current stock availability and typical response time. Include a sidebar “Min. reliability” filter (Any / 70+ / 80+ / 90+) and a new “Reliability” sort option.
+
+**Why:** Wholesale buyers need a quick, trustworthy signal when shortlisting suppliers beyond raw star ratings. A single reliability number that factors in responsiveness and current availability reduces risk and speeds up procurement decisions.
+
+**How (implemented):**
+- `getReliabilityScore()` and `getReliabilityBadge()` helpers (client-side calculation).
+- Colored badge (green / amber / red) rendered on cards, popups and drawer.
+- Sidebar select + full integration with active filter chips, clear-all, saved presets and shareable URL (`rel=`).
+- New sort option “Reliability”.
+- Sample `responseHours` added to several sellers so the score reflects response performance.
+- Fully client-side, compatible with dark mode, clustering, all existing filters and features.
+
+This gives buyers a practical, at-a-glance view of supplier dependability.
