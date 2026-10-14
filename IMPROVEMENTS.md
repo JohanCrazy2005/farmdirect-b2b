@@ -226,3 +226,18 @@ Prototype is again fully usable on phones and laptops for wholesale farm product
 - Works for both single RFQs and combined cart inquiries. Fully client-side, compatible with notes, dark mode, and the existing 12-item history limit.
 
 This completes a practical closed-loop for the RFQ workflow in the demo. (feat: add inquiry status tracking (Pending/Quoted/Accepted/Declined))
+
+## 2026-10-14 – Earliest Arrival Date Badge & Filter
+
+**What:** Add an “Arrives ~15 Oct” style badge on seller cards, map popups and the detail drawer that shows the earliest estimated arrival date based on the seller’s lead time. Include a sidebar filter “Earliest arrival within” (Any / ≤2 / ≤5 / ≤7 / ≤14 days) and a new “Earliest arrival” sort option.
+
+**Why:** Wholesale buyers planning restaurant menus, retail promotions or processing schedules need a concrete arrival window, not just a raw lead-time number. Making the earliest realistic delivery date glanceable and filterable reduces coordination friction and helps buyers shortlist suppliers who can actually meet their receiving deadlines.
+
+**How (implemented):**
+- New `getEarliestArrivalDate()`, `formatArrivalDate()`, `getArrivalBadge()` and `daysUntilArrival()` helpers (client-side, today + leadTimeDays).
+- Compact green badge rendered on cards, popups and drawer.
+- Sidebar select for maximum days until arrival + full integration with active filter chips, clear-all, saved presets and shareable URL (`arr=`).
+- New sort option “Earliest arrival”.
+- Works with existing clustering, dark mode, custom delivery point, landscape layout and all other filters. Fully client-side.
+
+This gives buyers a practical, time-aware view of when product can realistically reach them.

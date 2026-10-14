@@ -547,6 +547,20 @@
       background: #4c1d95;
       color: #ddd6fe;
     }
+    .badge-arrival {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    html.dark .badge-arrival {
+      background: #064e3b;
+      color: #6ee7b7;
+    }
     .badge-contact {
       display: inline-block;
       font-size: 0.65rem;
@@ -1202,6 +1216,7 @@
             <option>Landed cost (price + deliv)</option>
             <option>Rating</option>
             <option>Freshest first</option>
+            <option>Earliest arrival</option>
           </select>
         </div>
       </div>
@@ -1335,6 +1350,16 @@
             <option value="1">≤ 1 day</option>
             <option value="3">≤ 3 days</option>
             <option value="7">≤ 7 days</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Earliest arrival within</label>
+          <select id="arrivalFilter" onchange="filterSellers()">
+            <option value="999">Any</option>
+            <option value="2">≤ 2 days</option>
+            <option value="5">≤ 5 days</option>
+            <option value="7">≤ 7 days</option>
+            <option value="14">≤ 14 days</option>
           </select>
         </div>
         <div class="filter-group">
@@ -2191,6 +2216,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         getSeasonBadge(s),
         getCapacityBadge(s),
         getContactBadge(s),
+        getArrivalBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2209,7 +2235,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
             <span class="price">$${s.price.toFixed(2)}</span>
           </div>
           <div class="qty">Available: ${s.qty} · ${s.distance} km away · Delivery est. $${estimateDeliveryCost(s.distance)}</div>
-          <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'}</div>
+          <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'} · ${getArrivalBadge(s)}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
           ${tierSummary(s) ? `<div class="qty" style="margin-top:0.1rem;font-size:0.8rem;color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
@@ -2362,6 +2388,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
           getSeasonBadge(s),
           getCapacityBadge(s),
           getContactBadge(s),
+          getArrivalBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2467,6 +2494,33 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       return `<span class="badge-contact">${label}</span>`;
     }
 
+    function getEarliestArrivalDate(s) {
+      if (s.leadTimeDays == null) return null;
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + Number(s.leadTimeDays));
+      return d;
+    }
+
+    function formatArrivalDate(s) {
+      const d = getEarliestArrivalDate(s);
+      if (!d) return '';
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
+    function getArrivalBadge(s) {
+      const txt = formatArrivalDate(s);
+      return txt ? `<span class="badge-arrival" title="Earliest estimated arrival based on lead time">Arrives ~${txt}</span>` : '';
+    }
+
+    function daysUntilArrival(s) {
+      const d = getEarliestArrivalDate(s);
+      if (!d) return 999;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return Math.round((d - today) / (1000 * 60 * 60 * 24));
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2476,6 +2530,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
       const maxMoq = +document.getElementById('moqFilter').value;
       const maxLead = +document.getElementById('leadTimeFilter').value;
+      const maxArrivalDays = +document.getElementById('arrivalFilter')?.value || 999;
       const minRating = +document.getElementById('ratingFilter').value;
       const availableOnly = document.getElementById('availableToggle').classList.contains('on');
       const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
@@ -2553,6 +2608,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         if (s.unit !== 'ton' && s.price > maxPrice) return false;
         if (s.moq > maxMoq) return false;
         if (s.leadTimeDays > maxLead) return false;
+        if (maxArrivalDays < 999 && daysUntilArrival(s) > maxArrivalDays) return false;
         if (estimateDeliveryCost(s.distance) > maxDeliveryFee) return false;
         if (s.rating < minRating) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
@@ -2592,6 +2648,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       }
       else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
       else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
+      else if (sort === 'Earliest arrival') filtered.sort((a, b) => daysUntilArrival(a) - daysUntilArrival(b));
 
       window._lastFilteredList = filtered;
       updateVisibleMarkers(filtered);
@@ -2684,6 +2741,10 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       if (maxLead < 999) {
         chips.push({ label: `Lead ≤ ${maxLead}d`, reset: () => { document.getElementById('leadTimeFilter').value = '999'; } });
       }
+      const maxArr = +document.getElementById('arrivalFilter')?.value || 999;
+      if (maxArr < 999) {
+        chips.push({ label: `Arrives ≤ ${maxArr}d`, reset: () => { document.getElementById('arrivalFilter').value = '999'; } });
+      }
       const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
       if (maxDeliveryFee < 9999) {
         chips.push({ label: `Delivery ≤ $${maxDeliveryFee}`, reset: () => { document.getElementById('deliveryFeeFilter').value = '9999'; } });
@@ -2773,6 +2834,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       document.getElementById('sortBy').value = 'Distance';
       document.getElementById('moqFilter').value = '9999';
       document.getElementById('leadTimeFilter').value = '999';
+      if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = '999';
       document.getElementById('deliveryFeeFilter').value = '9999';
       document.getElementById('ratingFilter').value = '0';
       document.getElementById('availableToggle').classList.remove('on');
@@ -2811,6 +2873,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         sort: document.getElementById('sortBy').value,
         moq: document.getElementById('moqFilter').value,
         leadTime: document.getElementById('leadTimeFilter').value,
+        arrival: document.getElementById('arrivalFilter')?.value || '999',
         deliveryFee: document.getElementById('deliveryFeeFilter').value,
         rating: document.getElementById('ratingFilter').value,
         available: document.getElementById('availableToggle').classList.contains('on'),
@@ -2871,6 +2934,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       document.getElementById('sortBy').value = s.sort || 'Distance';
       document.getElementById('moqFilter').value = s.moq || '9999';
       document.getElementById('leadTimeFilter').value = s.leadTime || '999';
+      if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = s.arrival || '999';
       document.getElementById('deliveryFeeFilter').value = s.deliveryFee || '9999';
       document.getElementById('ratingFilter').value = s.rating || '0';
       document.getElementById('paymentFilter').value = s.payment || 'any';
@@ -2903,7 +2967,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
     // Shareable filter URL helpers
     const FILTER_DEFAULTS = {
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
-      search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
+      search: '', sort: 'Distance', moq: '9999', leadTime: '999', arrival: '999', deliveryFee: '9999', rating: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
@@ -2924,6 +2988,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       if (state.sort && state.sort !== FILTER_DEFAULTS.sort) params.set('sort', state.sort);
       if (state.moq && String(state.moq) !== FILTER_DEFAULTS.moq) params.set('moq', state.moq);
       if (state.leadTime && String(state.leadTime) !== FILTER_DEFAULTS.leadTime) params.set('lead', state.leadTime);
+      if (state.arrival && String(state.arrival) !== FILTER_DEFAULTS.arrival) params.set('arr', state.arrival);
       if (state.deliveryFee && String(state.deliveryFee) !== FILTER_DEFAULTS.deliveryFee) params.set('deliv', state.deliveryFee);
       if (state.rating && String(state.rating) !== FILTER_DEFAULTS.rating) params.set('rating', state.rating);
       if (state.available) params.set('available', '1');
@@ -2967,6 +3032,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       if (params.has('sort')) s.sort = params.get('sort');
       if (params.has('moq')) s.moq = params.get('moq');
       if (params.has('lead')) s.leadTime = params.get('lead');
+      if (params.has('arr')) s.arrival = params.get('arr');
       if (params.has('deliv')) s.deliveryFee = params.get('deliv');
       if (params.has('rating')) s.rating = params.get('rating');
       if (params.get('available') === '1') s.available = true;
@@ -3216,7 +3282,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
         <p style="margin:0 0 1rem 0;line-height:1.45">${s.bio || 'Direct farm supplier available for wholesale orders.'}</p>
         <div class="drawer-meta"><strong>Price:</strong> $${s.price.toFixed(2)} / ${s.unit}</div>
         <div class="drawer-meta"><strong>Available:</strong> ${s.qty}</div>
-        <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days</div>
+        <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days · ${getArrivalBadge(s)}</div>
         <div class="drawer-meta"><strong>Payment:</strong> ${payLabel} · <strong>Fulfillment:</strong> ${fulfillLabel}</div>
         <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
         <div class="drawer-meta"><strong>Supply:</strong> ${s.yearRound ? 'Year-round' : 'Seasonal'}</div>
