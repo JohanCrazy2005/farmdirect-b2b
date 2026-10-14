@@ -65,3 +65,34 @@ Each entry records a concrete UI or feature improvement that was implemented.
 - Existing 100dvh, 44px touch targets, filters toggle, and sidebar media queries remain in place
 
 Core features (map, RFQ, cart, comparison, filters, dark mode, view modes) continue to work. Prototype is practical for real phone and laptop B2B use.
+
+## 2026-10-13 (Hourly update) – Delivery Days Filter & Badges
+
+**What:** Add delivery-day badges (e.g. Mon/Wed/Fri) on seller cards, map popups and the detail drawer, plus a multi-select filter so buyers can show only sellers who deliver on one or more preferred receiving days.
+
+**Why:** Restaurants, retailers and processors run fixed receiving windows. Matching a seller’s regular delivery schedule up front reduces failed deliveries, extra coordination and operational friction — a high-value B2B fit signal that pure distance or lead-time filters do not capture.
+
+**How:**
+- New `deliveryDays` array field on each sample seller (subset of Mon–Sun).
+- Compact badges rendered on cards, popups and the drawer.
+- Sidebar checkbox group (OR logic) for Mon–Sun.
+- Full integration with active filter chips, saved presets and shareable URL state.
+- Works with existing clustering, custom delivery point, dark mode and all other filters. Fully client-side.
+
+This makes schedule compatibility visible and filterable for wholesale buyers.
+
+## 2026-10-13 (Hourly update) – Delivery Days Filter & Badges (Implemented)
+
+**What:** Implemented delivery-day badges and multi-select filter.
+
+**Why:** Lets buyers match sellers to their fixed receiving windows so schedule fit is visible and filterable.
+
+**How (implemented):**
+- Added `deliveryDays` arrays to all sample sellers.
+- Compact badges on cards, map popups and the seller drawer (plus explicit list in the drawer).
+- Sidebar checkbox group (OR logic) for Mon–Sun.
+- Integrated with active filter chips, clear filters, saved presets and shareable URL query params.
+- Fully client-side and compatible with existing map, clustering, custom delivery point, dark mode and other filters.
+
+This completes the delivery-days feature for operational schedule matching.
+

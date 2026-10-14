@@ -565,6 +565,20 @@
       background: #14532d;
       color: #86efac;
     }
+    .badge-days {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      margin-left: 0.25rem;
+      background: #fef3c7;
+      color: #92400e;
+    }
+    html.dark .badge-days {
+      background: #78350f;
+      color: #fcd34d;
+    }
 
     .badge-verified {
       font-size: 0.65rem;
@@ -1282,6 +1296,18 @@
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storFrozen" onchange="filterSellers()"> Frozen</label>
           </div>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Delivery days (any match)</label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="dayMon" onchange="filterSellers()"> Mon</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="dayTue" onchange="filterSellers()"> Tue</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="dayWed" onchange="filterSellers()"> Wed</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="dayThu" onchange="filterSellers()"> Thu</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="dayFri" onchange="filterSellers()"> Fri</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="daySat" onchange="filterSellers()"> Sat</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="daySun" onchange="filterSellers()"> Sun</label>
+          </div>
+        </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Year-round supply only</span>
           <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
@@ -1567,6 +1593,7 @@
         paymentTerms: "net_15",
         fulfillment: "both",
         harvestDaysAgo: 1,
+        deliveryDays: ["Mon", "Wed", "Fri"],
         bio: "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available for same-week delivery or farm pickup. GAP certified.",
         volumeTiers: [{"minQty": 0, "price": 1.35}, {"minQty": 100, "price": 1.2}, {"minQty": 500, "price": 1.05}]
       },
@@ -1604,6 +1631,7 @@
         paymentTerms: "net_30",
         fulfillment: "delivery",
         harvestDaysAgo: 0,
+        deliveryDays: ["Tue", "Thu", "Sat"],
         bio: "Pasture-based dairy producing fresh milk and cream. Regular wholesale routes to restaurants and grocers. HACCP compliant.",
         volumeTiers: [{"minQty": 0, "price": 0.68}, {"minQty": 200, "price": 0.62}, {"minQty": 1000, "price": 0.55}]
       },
@@ -1641,6 +1669,7 @@
         paymentTerms: "due_on_receipt",
         fulfillment: "both",
         harvestDaysAgo: 2,
+        deliveryDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
         bio: "Free-range poultry farm with daily egg collection. Organic certified; limited weekly volumes.",
         volumeTiers: [{"minQty": 0, "price": 2.1}, {"minQty": 50, "price": 1.95}, {"minQty": 200, "price": 1.8}]
       },
@@ -1679,6 +1708,7 @@
         paymentTerms: "net_30",
         fulfillment: "pickup",
         harvestDaysAgo: 14,
+        deliveryDays: ["Fri"],
         bio: "Large-scale grain grower offering bulk wheat and milling contracts. Pickup preferred for full truckloads.",
         volumeTiers: [{"minQty": 0, "price": 235.0}, {"minQty": 10, "price": 225.0}, {"minQty": 25, "price": 210.0}]
       },
@@ -1716,6 +1746,7 @@
         paymentTerms: "net_15",
         fulfillment: "delivery",
         harvestDaysAgo: 0,
+        deliveryDays: ["Mon", "Wed", "Fri", "Sat"],
         bio: "Specialty herb grower with greenhouse and field production. High turnover, harvested to order.",
         volumeTiers: [{"minQty": 0, "price": 8.5}, {"minQty": 25, "price": 7.9}, {"minQty": 100, "price": 7.2}]
       },
@@ -1753,8 +1784,8 @@
         availableQty: 0,
         paymentTerms: "due_on_receipt",
         fulfillment: "pickup",
-        harvestDaysAgo: 5
-      ,
+        harvestDaysAgo: 5,
+        deliveryDays: ["Sat", "Sun"],
         volumeTiers: [{"minQty": 0, "price": 12.0}, {"minQty": 30, "price": 11.0}, {"minQty": 100, "price": 10.0}]
       }
     ];
@@ -2172,6 +2203,7 @@
         getSeasonBadge(s),
         getCapacityBadge(s),
         getContactBadge(s),
+        getDeliveryDaysBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2403,6 +2435,7 @@
           getSeasonBadge(s),
           getCapacityBadge(s),
           getContactBadge(s),
+          getDeliveryDaysBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2508,6 +2541,12 @@
       return `<span class="badge-contact">${label}</span>`;
     }
 
+    function getDeliveryDaysBadge(s) {
+      if (!s.deliveryDays || !s.deliveryDays.length) return '';
+      const short = s.deliveryDays.join('/');
+      return `<span class="badge-days" title="Delivers: ${s.deliveryDays.join(', ')}">${short}</span>`;
+    }
+
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
@@ -2587,6 +2626,26 @@
         if (anyStor) {
           const st = s.storage || 'ambient';
           if (!( (wantAmbient && st === 'ambient') || (wantChilled && st === 'chilled') || (wantFrozen && st === 'frozen') )) return false;
+        }
+        const wantMon = document.getElementById('dayMon')?.checked;
+        const wantTue = document.getElementById('dayTue')?.checked;
+        const wantWed = document.getElementById('dayWed')?.checked;
+        const wantThu = document.getElementById('dayThu')?.checked;
+        const wantFri = document.getElementById('dayFri')?.checked;
+        const wantSat = document.getElementById('daySat')?.checked;
+        const wantSun = document.getElementById('daySun')?.checked;
+        const anyDay = wantMon || wantTue || wantWed || wantThu || wantFri || wantSat || wantSun;
+        if (anyDay) {
+          const days = s.deliveryDays || [];
+          if (!(
+            (wantMon && days.includes('Mon')) ||
+            (wantTue && days.includes('Tue')) ||
+            (wantWed && days.includes('Wed')) ||
+            (wantThu && days.includes('Thu')) ||
+            (wantFri && days.includes('Fri')) ||
+            (wantSat && days.includes('Sat')) ||
+            (wantSun && days.includes('Sun'))
+          )) return false;
         }
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
@@ -2684,6 +2743,13 @@
       if (document.getElementById('storAmbient')?.checked) chips.push({ label: 'Ambient', reset: () => { document.getElementById('storAmbient').checked = false; } });
       if (document.getElementById('storChilled')?.checked) chips.push({ label: 'Chilled', reset: () => { document.getElementById('storChilled').checked = false; } });
       if (document.getElementById('storFrozen')?.checked) chips.push({ label: 'Frozen', reset: () => { document.getElementById('storFrozen').checked = false; } });
+      if (document.getElementById('dayMon')?.checked) chips.push({ label: 'Delivers Mon', reset: () => { document.getElementById('dayMon').checked = false; } });
+      if (document.getElementById('dayTue')?.checked) chips.push({ label: 'Delivers Tue', reset: () => { document.getElementById('dayTue').checked = false; } });
+      if (document.getElementById('dayWed')?.checked) chips.push({ label: 'Delivers Wed', reset: () => { document.getElementById('dayWed').checked = false; } });
+      if (document.getElementById('dayThu')?.checked) chips.push({ label: 'Delivers Thu', reset: () => { document.getElementById('dayThu').checked = false; } });
+      if (document.getElementById('dayFri')?.checked) chips.push({ label: 'Delivers Fri', reset: () => { document.getElementById('dayFri').checked = false; } });
+      if (document.getElementById('daySat')?.checked) chips.push({ label: 'Delivers Sat', reset: () => { document.getElementById('daySat').checked = false; } });
+      if (document.getElementById('daySun')?.checked) chips.push({ label: 'Delivers Sun', reset: () => { document.getElementById('daySun').checked = false; } });
       const minStock = +document.getElementById('minStockFilter').value;
       if (minStock > 0) {
         const opt = document.querySelector(`#minStockFilter option[value="${minStock}"]`);
@@ -2804,6 +2870,10 @@
       if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = false;
       if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = false;
       if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = false;
+      ['dayMon','dayTue','dayWed','dayThu','dayFri','daySat','daySun'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+      });
       if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = '0';
       document.getElementById('verifiedToggle').classList.remove('on');
       document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
@@ -2885,6 +2955,13 @@
         storAmbient: document.getElementById('storAmbient')?.checked || false,
         storChilled: document.getElementById('storChilled')?.checked || false,
         storFrozen: document.getElementById('storFrozen')?.checked || false,
+        dayMon: document.getElementById('dayMon')?.checked || false,
+        dayTue: document.getElementById('dayTue')?.checked || false,
+        dayWed: document.getElementById('dayWed')?.checked || false,
+        dayThu: document.getElementById('dayThu')?.checked || false,
+        dayFri: document.getElementById('dayFri')?.checked || false,
+        daySat: document.getElementById('daySat')?.checked || false,
+        daySun: document.getElementById('daySun')?.checked || false,
         minStock: document.getElementById('minStockFilter').value
       };
     }
@@ -2937,6 +3014,13 @@
       if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = !!s.storAmbient;
       if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = !!s.storChilled;
       if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = !!s.storFrozen;
+      if (document.getElementById('dayMon')) document.getElementById('dayMon').checked = !!s.dayMon;
+      if (document.getElementById('dayTue')) document.getElementById('dayTue').checked = !!s.dayTue;
+      if (document.getElementById('dayWed')) document.getElementById('dayWed').checked = !!s.dayWed;
+      if (document.getElementById('dayThu')) document.getElementById('dayThu').checked = !!s.dayThu;
+      if (document.getElementById('dayFri')) document.getElementById('dayFri').checked = !!s.dayFri;
+      if (document.getElementById('daySat')) document.getElementById('daySat').checked = !!s.daySat;
+      if (document.getElementById('daySun')) document.getElementById('daySun').checked = !!s.daySun;
       if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
       filterSellers();
     }
@@ -2951,6 +3035,7 @@
       regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false,
       prodField: false, prodGreenhouse: false, prodHydroponic: false, prodPasture: false,
       storAmbient: false, storChilled: false, storFrozen: false,
+      dayMon: false, dayTue: false, dayWed: false, dayThu: false, dayFri: false, daySat: false, daySun: false,
       minStock: '0',
       yearRound: false
     };
@@ -2994,6 +3079,13 @@
       if (state.storAmbient) params.set('samb', '1');
       if (state.storChilled) params.set('schill', '1');
       if (state.storFrozen) params.set('sfroz', '1');
+      if (state.dayMon) params.set('dmon', '1');
+      if (state.dayTue) params.set('dtue', '1');
+      if (state.dayWed) params.set('dwed', '1');
+      if (state.dayThu) params.set('dthu', '1');
+      if (state.dayFri) params.set('dfri', '1');
+      if (state.daySat) params.set('dsat', '1');
+      if (state.daySun) params.set('dsun', '1');
       if (state.minStock && String(state.minStock) !== FILTER_DEFAULTS.minStock) params.set('stock', state.minStock);
       return params;
     }
@@ -3037,6 +3129,13 @@
       if (params.get('samb') === '1') s.storAmbient = true;
       if (params.get('schill') === '1') s.storChilled = true;
       if (params.get('sfroz') === '1') s.storFrozen = true;
+      if (params.get('dmon') === '1') s.dayMon = true;
+      if (params.get('dtue') === '1') s.dayTue = true;
+      if (params.get('dwed') === '1') s.dayWed = true;
+      if (params.get('dthu') === '1') s.dayThu = true;
+      if (params.get('dfri') === '1') s.dayFri = true;
+      if (params.get('dsat') === '1') s.daySat = true;
+      if (params.get('dsun') === '1') s.daySun = true;
       if (params.has('stock')) s.minStock = params.get('stock');
       return s;
     }
@@ -3240,6 +3339,7 @@
         getSeasonBadge(s),
         getCapacityBadge(s),
         getContactBadge(s),
+        getDeliveryDaysBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -3259,6 +3359,7 @@
         <div class="drawer-meta"><strong>Available:</strong> ${s.qty}</div>
         <div class="drawer-meta"><strong>MOQ:</strong> ${s.moq} ${s.unit} · <strong>Lead time:</strong> ${s.leadTimeDays} days</div>
         <div class="drawer-meta"><strong>Payment:</strong> ${payLabel} · <strong>Fulfillment:</strong> ${fulfillLabel}</div>
+        <div class="drawer-meta"><strong>Delivery days:</strong> ${(s.deliveryDays || []).join(', ') || 'Not specified'}</div>
         <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
         <div class="drawer-meta"><strong>Supply:</strong> ${s.yearRound ? 'Year-round' : 'Seasonal'}</div>
         <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${s.rating} (${s.reviews} reviews)</div>
