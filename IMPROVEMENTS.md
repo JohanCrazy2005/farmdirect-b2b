@@ -139,3 +139,17 @@ Prototype remains fully usable on phones and laptops for wholesale farm product 
 - Works with all existing filters, clustering, dark mode and mobile layout. Fully client-side.
 
 This helps buyers prioritise sellers with demonstrated buyer feedback volume.
+
+## 2026-10-14 – Reliability Score Badge
+
+**What:** Added a composite reliability score badge (★ rating out of 5) on seller cards, map popups and the detail drawer. Score factors in verified status, rating, review volume and response speed.
+
+**Why:** Buyers need a quick trust signal when scanning many suppliers. Combining multiple operational signals into one glanceable score reduces decision time and highlights reliable partners for perishable or high-volume orders.
+
+**How:**
+- New `getReliabilityBadge()` function calculates a 0–5 score from existing fields (verified +2, high rating, review count, fast response).
+- Rendered alongside existing badges on cards, popups and drawer.
+- Fully client-side, no data changes required, works with dark mode and all filters.
+- Complements the existing min-reviews and response-time filters.
+
+This gives buyers a practical at-a-glance reliability indicator for wholesale sourcing.
