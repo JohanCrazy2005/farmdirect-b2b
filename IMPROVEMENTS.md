@@ -111,3 +111,17 @@ This completes the delivery-days feature for operational schedule matching.
 - Works with existing clustering, custom delivery point, dark mode and all other filters. Fully client-side.
 
 This makes seller responsiveness visible and filterable for faster procurement decisions.
+
+## 2026-10-14 – Map reliability fix + phone/laptop polish
+
+**What:** Switched street map tiles from Carto Voyager (previously showing API KEY REQUIRED or unreliable) to free OpenStreetMap tiles. Refined mobile controls layout, touch-friendly sizing, and laptop sidebar proportions. Hid non-essential legend on phones.
+
+**Why:** Reliable geographic context is core for B2B buyers evaluating distance and logistics. Phone users need uncluttered map controls that don’t overlap content; laptop users benefit from balanced map/sidebar space for comparing multiple suppliers.
+
+**How:**
+- `L.tileLayer` now uses `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png` with proper OSM attribution.
+- Mobile `@media (max-width: 700px)`: map controls become flex-wrapped, compact buttons, legend hidden, tighter seller cards.
+- Tablet (701–1024px) and large laptop (>1400px) media queries for sidebar and max-width.
+- All existing features (RFQ, cart, filters, dark mode, view modes, delivery days, response time) preserved and client-side.
+
+Prototype remains fully usable on phones and laptops for wholesale farm product discovery and inquiry.
