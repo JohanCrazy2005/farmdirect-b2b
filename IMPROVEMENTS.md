@@ -167,3 +167,17 @@ This gives buyers a practical at-a-glance reliability indicator for wholesale so
 - Prototype remains fully client-side and practical for real B2B use on phones and laptops.
 
 Cycle continues (current date 2026-10-14 is well within 60 days of 2026-10-11).
+## 2026-10-14 – Sort by Reliability + Min Reliability Filter
+
+**What:** Make the existing composite reliability score actionable: add “Reliability: High to Low” sort and a Min. reliability filter (Any / 3.0+ / 3.5+ / 4.0+ / 4.5+) so buyers can prioritise or restrict the list to high-trust suppliers.
+
+**Why:** The reliability badge already combines verification, rating, review volume and response speed into one glanceable score. Sorting and filtering by that score turns a passive indicator into an active discovery tool—critical when buyers must quickly shortlist dependable partners for perishable or high-volume orders.
+
+**How (implemented):**
+- Extracted `getReliabilityScore(s)` (0–5) used by the badge and by new logic.
+- New sort option “Reliability: High to Low” on the main sort control.
+- Sidebar select “Min. reliability” with thresholds 3.0 / 3.5 / 4.0 / 4.5.
+- Full integration: active filter chips, clear-all, saved presets, and shareable URL param `rel=`.
+- Works with existing clustering, dark mode, delivery point, landscape layout and all other filters. Fully client-side.
+
+This completes the reliability feature set from badge → sort → filter for faster B2B trust-based sourcing.

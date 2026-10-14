@@ -38,7 +38,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
 - **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
 - **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume
-- **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards, popups and drawer
+- **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards/popups/drawer + sort by reliability + Min. reliability filter (3.0+/3.5+/4.0+/4.5+)
 
 ## How to run
 
