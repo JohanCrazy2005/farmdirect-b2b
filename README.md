@@ -45,6 +45,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Earliest arrival date** – “Arrives ~15 Oct” badge on cards/popups/drawer based on lead time + “Earliest arrival within” filter + “Earliest arrival” sort
 - **Keyboard accessibility** – Escape closes top overlay (cart / compare / RFQ / drawer) and restores focus; `/` focuses search; Tab focus trap inside modals; proper ARIA on dialogs
 - **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
+- **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
 
 ## How to run
 

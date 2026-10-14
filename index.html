@@ -2006,12 +2006,12 @@
         const notesIcon = hasNotes ? ' 📝' : '';
         const status = rec.status || 'pending';
         const title = (rec.summary || '') + (hasNotes ? '\nNotes: ' + rec.notes.replace(/"/g, "'") : '');
-        const click = rec.type === 'single' && rec.sellerIds?.[0]
+        const click = (rec.type === 'single' || rec.type === 'sample') && rec.sellerIds?.[0]
           ? `openSellerDrawer(${rec.sellerIds[0]})`
           : `showToast('${((rec.summary || '') + (hasNotes ? ' — Notes: ' + rec.notes : '')).replace(/'/g, "\\'")}')`;
         return `<div style="background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;font-size:0.8rem;color:var(--text)">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:0.25rem">
-            <button type="button" style="text-align:left;background:transparent;border:none;padding:0;cursor:pointer;color:inherit;font-weight:500;flex:1" onclick="${click}" title="${title.replace(/"/g, '&quot;')}">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}${notesIcon}</button>
+            <button type="button" style="text-align:left;background:transparent;border:none;padding:0;cursor:pointer;color:inherit;font-weight:500;flex:1" onclick="${click}" title="${title.replace(/"/g, '&quot;')}">${rec.type === 'combined' ? '📦 Combined' : rec.type === 'sample' ? '🧪 Sample' : '📝 RFQ'}${notesIcon}</button>
             <span class="status-badge ${statusClass[status] || ''}">${statusLabels[status] || status}</span>
           </div>
           <div style="color:var(--muted);font-size:0.72rem;margin:0.15rem 0">${when} · ${(rec.summary || '').slice(0, 42)}${(rec.summary || '').length > 42 ? '…' : ''}</div>
@@ -2368,6 +2368,7 @@
           ${tierSummary(s) ? `<div class="qty" style="margin-top:0.1rem;font-size:0.8rem;color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
           <button class="popup-btn" onclick="openSellerDrawer(${s.id})">View Details</button>
           <button class="popup-btn" onclick="openRfqModal(${s.id})">Request Quote / Buy Direct →</button>
+          <button class="popup-btn" onclick="openSampleRequest(${s.id})">Request Sample</button>
         </div>
       `;
     }
@@ -2541,6 +2542,7 @@
               <input type="number" min="1" step="1" value="${Math.max(1, s.moq || 1)}" id="cardQty_${s.id}" oninput="updateCardEstimate(${s.id})" onkeydown="event.stopPropagation()">
               <span class="card-est-total" id="cardEst_${s.id}">…</span>
               <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="event.stopPropagation(); openRfqModal(${s.id}, +document.getElementById('cardQty_${s.id}').value)">Quote</button>
+              <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="event.stopPropagation(); openSampleRequest(${s.id})">Sample</button>
             </div>
           </div>
           <div class="seller-actions">
@@ -2555,6 +2557,7 @@
               </div>
             </div>
             <button class="btn-sm" onclick="event.stopPropagation(); openRfqModal(${s.id})">Request Quote</button>
+            <button class="btn-sm" onclick="event.stopPropagation(); openSampleRequest(${s.id})">Request Sample</button>
           </div>
         `;
         card.addEventListener('click', () => {
@@ -3407,6 +3410,13 @@
         : '—';
     }
 
+    function openSampleRequest(id) {
+      openRfqModal(id, 5, '', 'Sample request: ');
+      // Optionally update subtitle or title for clarity
+      const subtitle = document.getElementById('rfqSubtitle');
+      if (subtitle) subtitle.textContent = subtitle.textContent + ' · SAMPLE';
+    }
+
     function openRfqModal(id, prefillQty, prefillDate, prefillNotes) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
@@ -3504,6 +3514,7 @@
       const favActive = favorites.has(s.id);
       document.getElementById('drawerActions').innerHTML = `
         <button class="btn btn-primary" onclick="openRfqModal(${s.id}); closeSellerDrawer()">Request Quote</button>
+        <button class="btn btn-ghost" onclick="openSampleRequest(${s.id}); closeSellerDrawer()">Request Sample</button>
         <button class="btn btn-ghost" onclick="toggleFavorite(${s.id}, event); openSellerDrawer(${s.id})">${favActive ? '♥ Favorited' : '♡ Favorite'}</button>
         <button class="btn btn-ghost" onclick="addToInquiry(${s.id}, event); showToast('Added to inquiry cart')">+ Cart</button>
         <button class="btn btn-ghost" onclick="toggleCompare(${s.id}, event)">Compare</button>
@@ -3543,11 +3554,12 @@
       const s = sellers.find(x => x.id === sellerId);
       const date = document.getElementById('rfqDate').value;
       const notesVal = (document.getElementById('rfqMsg').value || '').trim();
+      const isSample = notesVal.toLowerCase().startsWith('sample request:');
       const summary = s ? `${s.name} · ${qty} · deliv ${date || 'ASAP'}` : `Seller ${sellerId} · ${qty}`;
       trackInquiry({
         id: Date.now(),
         ts: Date.now(),
-        type: 'single',
+        type: isSample ? 'sample' : 'single',
         sellerIds: [sellerId],
         qty: parseFloat(qty) || 0,
         preferredDate: date || '',

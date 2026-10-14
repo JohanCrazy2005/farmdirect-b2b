@@ -344,3 +344,19 @@ This gives buyers a practical, at-a-glance view of supplier dependability.
 - Fully client-side, compatible with dark mode, clustering and all existing filters.
 
 Also addressed open GitHub issue #1: made the filters panel scrollable (`max-height: 55vh; overflow-y: auto`) so all filters are reachable on smaller viewports, and confirmed map uses free OpenStreetMap tiles (no API key required).
+
+
+## 2026-10-14 – Request Sample Button & Sample Inquiry Tracking (Implemented)
+
+**What:** Added a “Request Sample” action on seller cards, map popups and the detail drawer. Clicking it opens the existing RFQ modal pre-filled with a small sample quantity (5) and a notes prefix “Sample request: ”. Sample inquiries are logged in Inquiry History with a distinct “🧪 Sample” type and can be reordered or exported like normal RFQs.
+
+**Why:** Commercial buyers frequently need to evaluate product quality, packaging and taste before committing to bulk volumes. A one-click sample request lowers friction for new supplier relationships and gives procurement teams a clear audit trail of sample requests versus full orders.
+
+**How (to implement):**
+- “Request Sample” buttons next to existing Request Quote buttons (cards, popups, drawer).
+- Extends `openRfqModal` to accept optional prefill that sets qty=5 and prefixes notes.
+- On send, if notes start with “Sample request:”, store `type: 'sample'` in the inquiry record.
+- Inquiry History shows a “Sample” badge for these entries.
+- Fully client-side, works with dark mode, localStorage history, reorder, export CSV and all existing features.
+
+This adds a practical evaluation step to the B2B buying journey.
