@@ -13,6 +13,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **MOQ & Lead Time** – badges on cards/popups + filters for max MOQ and max lead time
 - **Min. rating filter** – Any / 4.0+ / 4.5+ / 4.8+; rating + review count on cards and popups
 - **Supplier Reliability Score** – composite 0–100 badge (rating, reviews, verified, stock, response) + Min. reliability filter and Reliability sort
+- **Lot / Batch Traceability** – “Lot-tracked” badge on cards/popups/drawer + “Traceable only” filter (full chips/presets/URL support)
 - **Availability status** – In stock / Low / Out badges on cards & popups + “Available now only” filter
 - **Payment terms** – badges (Due on receipt / Net 15 / Net 30) on cards & popups + filter select
 - **Fulfillment method** – badges (Pickup / Delivery / Both) on cards & popups + filter select

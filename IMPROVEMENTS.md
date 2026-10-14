@@ -329,3 +329,18 @@ This reduces friction for bulk procurement workflows.
 - Fully client-side, compatible with dark mode, clustering, all existing filters and features.
 
 This gives buyers a practical, at-a-glance view of supplier dependability.
+
+## 2026-10-14 – Lot / Batch Traceability Badge & Filter
+
+**What:** Add a “Lot-tracked” badge on seller cards, map popups and the detail drawer for suppliers that provide full lot/batch traceability. Include a sidebar “Lot-tracked / Traceable only” toggle filter.
+
+**Why:** Commercial buyers (restaurants, retailers, processors) increasingly require traceability for food safety, audits and compliance. A clear badge and filter lets them quickly shortlist suppliers who can provide batch-level origin information, reducing risk and speeding procurement.
+
+**How (implemented):**
+- Added `traceable: true/false` to sample sellers.
+- `getTraceBadge()` helper renders a “Lot-tracked” badge.
+- Badge appears on cards, popups and drawer.
+- Sidebar toggle + full integration with active filter chips, clear-all, saved presets and shareable URL (`trace=1`).
+- Fully client-side, compatible with dark mode, clustering and all existing filters.
+
+Also addressed open GitHub issue #1: made the filters panel scrollable (`max-height: 55vh; overflow-y: auto`) so all filters are reachable on smaller viewports, and confirmed map uses free OpenStreetMap tiles (no API key required).

@@ -249,6 +249,9 @@
       display: flex;
       flex-direction: column;
       gap: 0.9rem;
+      max-height: 55vh;
+      overflow-y: auto;
+      flex-shrink: 1;
     }
     .filter-group label {
       display: block;
@@ -424,6 +427,21 @@
     html.dark .badge-cert {
       background: #0c4a6e;
       color: #7dd3fc;
+    }
+
+    .badge-trace {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      background: #fef3c7;
+      color: #92400e;
+      margin-left: 0.25rem;
+    }
+    html.dark .badge-trace {
+      background: #78350f;
+      color: #fcd34d;
     }
 
     .status-badge {
@@ -1277,6 +1295,10 @@
           <span style="font-size:0.9rem">Organic only</span>
           <div class="toggle" id="organicToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
         </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Lot-tracked / Traceable only</span>
+          <div class="toggle" id="traceableToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
         <div class="filter-group" style="margin-top:0.5rem">
           <label>Required certifications</label>
           <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
@@ -1486,7 +1508,10 @@
         <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
           <label>Inquiry history</label>
           <div id="inquiryList" style="display:flex;flex-direction:column;gap:0.3rem;font-size:0.82rem;min-height:1.5rem"></div>
-          <button type="button" class="btn btn-ghost" style="margin-top:0.4rem;width:100%;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="clearInquiries()">Clear history</button>
+          <div style="display:flex;gap:0.35rem;margin-top:0.4rem">
+            <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="exportInquiryHistoryToCsv()" title="Download inquiry history as CSV">Export CSV</button>
+            <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="clearInquiries()">Clear</button>
+          </div>
         </div>
       </div>
 
@@ -1616,7 +1641,7 @@
         pack: "case",
         certs: ["organic", "gap"],
         preferredContact: "email",
-        responseHours: 3,
+        traceable: true,
         region: "Kent",
         production: "greenhouse",
         verified: true,
@@ -1654,7 +1679,7 @@
         pack: "bulk",
         certs: ["haccp"],
         preferredContact: "phone",
-        responseHours: 8,
+        traceable: true,
         region: "Norfolk",
         production: "pasture",
         verified: true,
@@ -1692,7 +1717,7 @@
         pack: "case",
         certs: ["organic"],
         preferredContact: "whatsapp",
-        responseHours: 2,
+        traceable: false,
         region: "Cornwall",
         production: "pasture",
         verified: false,
@@ -1730,6 +1755,7 @@
         pack: "pallet",
         certs: [],
         preferredContact: "email",
+        traceable: true,
         region: "Yorkshire",
         production: "field",
         storage: "ambient",
@@ -1768,7 +1794,6 @@
         pack: "loose",
         certs: ["organic", "regen"],
         preferredContact: "portal",
-        responseHours: 24,
         region: "Midlands",
         production: "hydroponic",
         verified: true,
@@ -2318,6 +2343,7 @@
         getContactBadge(s),
         getArrivalBadge(s),
         getReliabilityBadge(s),
+          getTraceBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2491,6 +2517,7 @@
           getContactBadge(s),
           getArrivalBadge(s),
           getReliabilityBadge(s),
+          getTraceBadge(s),
           getCertBadges(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
@@ -2597,6 +2624,11 @@
       return `<span class="badge-capacity">~${s.weeklyCapacity} ${unit}/wk</span>`;
     }
 
+    function getTraceBadge(s) {
+      if (!s.traceable) return '';
+      return '<span class="badge-trace" title="Full lot/batch traceability from farm to pack">Lot-tracked</span>';
+    }
+
     function getContactBadge(s) {
       if (!s.preferredContact) return '';
       const labels = { email: 'Email', phone: 'Phone', whatsapp: 'WhatsApp', portal: 'Portal' };
@@ -2658,6 +2690,7 @@
     function filterSellers() {
       const cat = document.getElementById('categoryFilter').value;
       const organicOnly = document.getElementById('organicToggle').classList.contains('on');
+      const traceableOnly = document.getElementById('traceableToggle')?.classList.contains('on');
       const verifiedOnly = document.getElementById('verifiedToggle').classList.contains('on');
       const maxDist = +document.getElementById('distRange').value;
       const maxPrice = +document.getElementById('priceRange').value;
@@ -2685,6 +2718,7 @@
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
         if (organicOnly && !s.organic) return false;
+        if (traceableOnly && !s.traceable) return false;
         const needGap = document.getElementById('certGap')?.checked;
         const needHaccp = document.getElementById('certHaccp')?.checked;
         const needRegen = document.getElementById('certRegen')?.checked;
@@ -2814,6 +2848,9 @@
       if (document.getElementById('organicToggle').classList.contains('on')) {
         chips.push({ label: 'Organic', reset: () => { const t = document.getElementById('organicToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
       }
+      if (document.getElementById('traceableToggle')?.classList.contains('on')) {
+        chips.push({ label: 'Lot-tracked', reset: () => { const t = document.getElementById('traceableToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      }
       if (document.getElementById('certGap')?.checked) chips.push({ label: 'GAP', reset: () => { document.getElementById('certGap').checked = false; } });
       if (document.getElementById('certHaccp')?.checked) chips.push({ label: 'HACCP', reset: () => { document.getElementById('certHaccp').checked = false; } });
       if (document.getElementById('certRegen')?.checked) chips.push({ label: 'Regenerative', reset: () => { document.getElementById('certRegen').checked = false; } });
@@ -2941,6 +2978,7 @@
     function clearFilters() {
       document.getElementById('categoryFilter').value = 'all';
       document.getElementById('organicToggle').classList.remove('on');
+      if (document.getElementById('traceableToggle')) document.getElementById('traceableToggle').classList.remove('on');
       document.getElementById('organicToggle').setAttribute('aria-checked', 'false');
       if (document.getElementById('certGap')) document.getElementById('certGap').checked = false;
       if (document.getElementById('certHaccp')) document.getElementById('certHaccp').checked = false;
@@ -2978,7 +3016,6 @@
       if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = '999';
       document.getElementById('deliveryFeeFilter').value = '9999';
       document.getElementById('ratingFilter').value = '0';
-      if (document.getElementById('reliabilityFilter')) document.getElementById('reliabilityFilter').value = '0';
       document.getElementById('availableToggle').classList.remove('on');
       document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
       document.getElementById('favoritesToggle').classList.remove('on');
@@ -3008,6 +3045,7 @@
       return {
         category: document.getElementById('categoryFilter').value,
         organic: document.getElementById('organicToggle').classList.contains('on'),
+        traceable: document.getElementById('traceableToggle')?.classList.contains('on') || false,
         verified: document.getElementById('verifiedToggle').classList.contains('on'),
         dist: document.getElementById('distRange').value,
         price: document.getElementById('priceRange').value,
@@ -3061,6 +3099,7 @@
         el.setAttribute('aria-checked', !!on);
       };
       setToggle('organicToggle', s.organic);
+      setToggle('traceableToggle', s.traceable);
       setToggle('verifiedToggle', s.verified);
       setToggle('availableToggle', s.available);
       setToggle('favoritesToggle', s.favorites);
@@ -3110,8 +3149,8 @@
 
     // Shareable filter URL helpers
     const FILTER_DEFAULTS = {
-      category: 'all', organic: false, verified: false, dist: '50', price: '10',
-      search: '', sort: 'Distance', moq: '9999', leadTime: '999', arrival: '999', deliveryFee: '9999', rating: '0', reliability: '0',
+      category: 'all', organic: false, traceable: false, verified: false, dist: '50', price: '10',
+      search: '', sort: 'Distance', moq: '9999', leadTime: '999', arrival: '999', deliveryFee: '9999', rating: '0',
       available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
@@ -3125,6 +3164,7 @@
       const params = new URLSearchParams();
       if (state.category && state.category !== FILTER_DEFAULTS.category) params.set('cat', state.category);
       if (state.organic) params.set('organic', '1');
+      if (state.traceable) params.set('trace', '1');
       if (state.verified) params.set('verified', '1');
       if (state.dist && String(state.dist) !== FILTER_DEFAULTS.dist) params.set('dist', state.dist);
       if (state.price && String(state.price) !== FILTER_DEFAULTS.price) params.set('price', state.price);
@@ -3135,7 +3175,6 @@
       if (state.arrival && String(state.arrival) !== FILTER_DEFAULTS.arrival) params.set('arr', state.arrival);
       if (state.deliveryFee && String(state.deliveryFee) !== FILTER_DEFAULTS.deliveryFee) params.set('deliv', state.deliveryFee);
       if (state.rating && String(state.rating) !== FILTER_DEFAULTS.rating) params.set('rating', state.rating);
-      if (state.reliability && String(state.reliability) !== FILTER_DEFAULTS.reliability) params.set('rel', state.reliability);
       if (state.available) params.set('available', '1');
       if (state.favorites) params.set('fav', '1');
       if (state.yearRound) params.set('yr', '1');
@@ -3170,6 +3209,7 @@
       const s = {};
       if (params.has('cat')) s.category = params.get('cat');
       if (params.get('organic') === '1') s.organic = true;
+      if (params.get('trace') === '1') s.traceable = true;
       if (params.get('verified') === '1') s.verified = true;
       if (params.has('dist')) s.dist = params.get('dist');
       if (params.has('price')) s.price = params.get('price');
@@ -3180,7 +3220,6 @@
       if (params.has('arr')) s.arrival = params.get('arr');
       if (params.has('deliv')) s.deliveryFee = params.get('deliv');
       if (params.has('rating')) s.rating = params.get('rating');
-      if (params.has('rel')) s.reliability = params.get('rel');
       if (params.get('available') === '1') s.available = true;
       if (params.get('fav') === '1') s.favorites = true;
       if (params.get('yr') === '1') s.yearRound = true;
@@ -3431,6 +3470,7 @@
         getCapacityBadge(s),
         getContactBadge(s),
         getReliabilityBadge(s),
+          getTraceBadge(s),
         getArrivalBadge(s),
         getCertBadges(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
@@ -3646,6 +3686,57 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast(`Exported ${list.length} seller${list.length === 1 ? '' : 's'} to CSV`);
+    }
+
+    // CSV Export of Inquiry History
+    function exportInquiryHistoryToCsv() {
+      if (!inquiryHistory || !inquiryHistory.length) {
+        showToast('No inquiry history to export yet.');
+        return;
+      }
+      const headers = [
+        'Date', 'Type', 'Status', 'Summary', 'Quantity', 'Preferred Date',
+        'Notes', 'Seller IDs', 'Seller Names', 'Email'
+      ];
+      const escape = (val) => {
+        const str = String(val == null ? '' : val);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+      const rows = inquiryHistory.map(rec => {
+        const when = new Date(rec.ts).toISOString();
+        const type = rec.type === 'combined' ? 'Combined' : 'Single';
+        const statusRaw = rec.status || 'pending';
+        const status = statusRaw.charAt(0).toUpperCase() + statusRaw.slice(1);
+        let qty = '';
+        if (rec.type === 'single') {
+          qty = rec.qty != null ? String(rec.qty) : '';
+        } else if (rec.cartItems && rec.cartItems.length) {
+          qty = rec.cartItems.map(c => c.qty).join('; ');
+        }
+        const preferred = rec.preferredDate || '';
+        const notes = rec.notes || '';
+        const ids = (rec.sellerIds || []).join('; ');
+        const names = (rec.sellerIds || []).map(id => {
+          const s = sellers.find(x => x.id === id);
+          return s ? s.name : String(id);
+        }).join('; ');
+        return [when, type, status, rec.summary || '', qty, preferred, notes, ids, names, rec.email || ''];
+      });
+      const csv = [headers.map(escape).join(','), ...rows.map(r => r.map(escape).join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `farmdirect-inquiry-history-${date}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Exported ${inquiryHistory.length} inquir${inquiryHistory.length === 1 ? 'y' : 'ies'} to CSV`);
     }
 
     // Toast
