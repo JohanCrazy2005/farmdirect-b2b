@@ -697,6 +697,27 @@
       white-space: nowrap;
     }
     .btn-sm:hover { background: var(--hover-bg); }
+    .card-estimator {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+      padding: 0.35rem 0.45rem;
+      background: var(--hover-bg);
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+    }
+    .card-estimator input {
+      width: 70px;
+      padding: 0.2rem 0.35rem;
+      border: 1px solid var(--border);
+      border-radius: 0.25rem;
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 0.75rem;
+    }
+    .card-est-total { font-weight: 600; color: var(--primary); white-space: nowrap; }
+    html.dark .card-estimator { background: #1f2937; }
     .fav-btn {
       background: none;
       border: none;
@@ -2413,6 +2434,12 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
             <div class="seller-meta">MOQ ${s.moq} ${s.unit} · Lead ${s.leadTimeDays}d · ${payLabel} · ${fulfillLabel}</div>
             <div class="seller-meta" style="color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
             ${tierSummary(s) ? `<div class="seller-meta" style="color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
+            <div class="card-estimator" onclick="event.stopPropagation()">
+              <label style="margin:0">Qty</label>
+              <input type="number" min="1" step="1" value="${Math.max(1, s.moq || 1)}" id="cardQty_${s.id}" oninput="updateCardEstimate(${s.id})" onkeydown="event.stopPropagation()">
+              <span class="card-est-total" id="cardEst_${s.id}">…</span>
+              <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="event.stopPropagation(); openRfqModal(${s.id}, +document.getElementById('cardQty_${s.id}').value)">Quote</button>
+            </div>
           </div>
           <div class="seller-actions">
             <div style="display:flex;align-items:center;gap:0.25rem;">
@@ -2439,6 +2466,8 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       const maxDist = document.getElementById('distRange').value;
       document.getElementById('sellerCount').textContent =
         `${list.length} seller${list.length === 1 ? '' : 's'} within ${maxDist} km`;
+      // Initialize live estimators
+      list.forEach(s => updateCardEstimate(s.id));
     }
 
 
@@ -3213,7 +3242,22 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       qtyInput.focus();
     }
 
-    function openRfqModal(id) {
+    function updateCardEstimate(id) {
+      const s = sellers.find(x => x.id === id);
+      const input = document.getElementById('cardQty_' + id);
+      const out = document.getElementById('cardEst_' + id);
+      if (!s || !input || !out) return;
+      const qty = Math.max(0, parseFloat(input.value) || 0);
+      const tier = getApplicableTier(s, qty);
+      const product = tier.price * qty;
+      const delivery = estimateDeliveryCost(s.distance);
+      const total = product + delivery;
+      out.textContent = qty > 0
+        ? `$${tier.price.toFixed(2)}/${s.unit} · $${product.toFixed(0)} + $${delivery} del = $${total.toFixed(0)}`
+        : '—';
+    }
+
+    function openRfqModal(id, prefillQty) {
       const s = sellers.find(x => x.id === id);
       if (!s) return;
       trackRecent(id);
@@ -3221,7 +3265,7 @@ const hasNotes = !!(rec.notes && rec.notes.trim());
       document.getElementById('rfqSubtitle').textContent =
         `${s.name} · ${s.product} · base $${s.price}/${s.unit} · ${s.qty} available · Delivery est. $${estimateDeliveryCost(s.distance)}`;
       const qtyInput = document.getElementById('rfqQty');
-      qtyInput.value = '';
+      qtyInput.value = (prefillQty && prefillQty > 0) ? String(prefillQty) : '';
       document.getElementById('rfqDate').value = '';
       document.getElementById('rfqEmail').value = '';
       document.getElementById('rfqPhone').value = '';

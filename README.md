@@ -41,6 +41,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards/popups/drawer + sort by reliability + Min. reliability filter (3.0+/3.5+/4.0+/4.5+)
 - **Earliest arrival date** – “Arrives ~15 Oct” badge on cards/popups/drawer based on lead time + “Earliest arrival within” filter + “Earliest arrival” sort
 - **Keyboard accessibility** – Escape closes top overlay (cart / compare / RFQ / drawer) and restores focus; `/` focuses search; Tab focus trap inside modals; proper ARIA on dialogs
+- **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
 
 ## How to run
 

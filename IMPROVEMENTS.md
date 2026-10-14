@@ -272,3 +272,18 @@ This makes the prototype significantly more usable for keyboard-driven procureme
 - Fully client-side, compatible with dark mode, mobile layout, all filters and existing features.
 
 This completes a practical keyboard layer for the prototype.
+
+## 2026-10-14 – Live Order Cost Estimator on Seller Cards
+
+**What:** Compact live cost estimator on every seller card: quantity input that instantly shows the applicable volume-tier unit price, product subtotal, estimated delivery fee, and grand total. The adjacent “Request Quote” button pre-fills the RFQ modal with that quantity.
+
+**Why:** Wholesale buyers routinely test different volumes to understand landed cost before committing to an inquiry. Calculating this only inside the RFQ modal forces extra clicks and slows side-by-side comparison. A live estimator on the card makes volume pricing and delivery cost immediately actionable.
+
+**How (implemented):**
+- Added a compact estimator row (number input + live breakdown) to each seller card.
+- Reuses existing `getApplicableTier()` and `estimateDeliveryCost()`.
+- Input events stop propagation so the card itself is not activated.
+- `openRfqModal(id, prefillQty)` accepts an optional quantity and sets the RFQ quantity field + live tier display.
+- Fully client-side, compatible with dark mode, mobile layout, all filters, and existing features.
+
+This reduces friction for bulk procurement workflows.
