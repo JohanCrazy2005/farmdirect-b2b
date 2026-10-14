@@ -241,3 +241,34 @@ This completes a practical closed-loop for the RFQ workflow in the demo. (feat: 
 - Works with existing clustering, dark mode, custom delivery point, landscape layout and all other filters. Fully client-side.
 
 This gives buyers a practical, time-aware view of when product can realistically reach them.
+
+## 2026-10-14 – Keyboard Accessibility & Modal Focus Management
+
+**What:** Improve keyboard usability for professional B2B buyers: Escape closes the RFQ modal, seller drawer, comparison modal, inquiry cart and any open overlay; focus is trapped inside open modals; the search input is focusable with `/`; primary interactive controls have clearer ARIA labels and roles.
+
+**Why:** Wholesale buyers often work at a desk with keyboard + mouse. Without Escape-to-close, focus trapping and logical tab order, the dense filter + map + modal UI is slow and frustrating. Accessibility also improves screen-reader compatibility and overall polish for a production-ready feel.
+
+**How (to implement):**
+- Global `keydown` listener: Esc closes the top-most open modal/drawer/cart and returns focus to the trigger.
+- Focus trap (Tab cycles inside) for RFQ modal, comparison modal, cart modal and seller drawer.
+- `/` key focuses the main search box when not typing in an input.
+- Add/verify `aria-label`, `role="dialog"`, `aria-modal="true"` and `aria-labelledby` on modals; ensure buttons have accessible names.
+- Works with existing dark mode, mobile layout and all filters. Fully client-side, no new dependencies.
+
+This makes the prototype significantly more usable for keyboard-driven procurement workflows.
+
+## 2026-10-14 – Keyboard Accessibility & Modal Focus Management (Implemented)
+
+**What:** Enhanced keyboard support for B2B buyers: Escape closes the top-most open overlay (cart → comparison → RFQ → drawer) and restores focus; `/` focuses the search box when not typing in a form field; Tab cycles inside open dialogs (focus trap); last-focused element is remembered on open; compare modal received proper role/aria attributes.
+
+**Why:** Desk-based wholesale buyers rely on keyboard workflows. Reliable Escape-to-close, search shortcut and focus management reduce friction in a dense map + filter + modal interface and improve accessibility.
+
+**How (implemented):**
+- Global keydown handler prioritises overlays and restores focus via `lastFocusedEl`.
+- `getFocusable()` + Tab trap keeps focus inside the active dialog.
+- Open handlers for cart, RFQ, drawer and comparison capture the previous active element and move focus into the dialog.
+- `/` shortcut focuses and selects `#searchInput`.
+- Compare modal now has `role="dialog"`, `aria-modal` and labelled close button.
+- Fully client-side, compatible with dark mode, mobile layout, all filters and existing features.
+
+This completes a practical keyboard layer for the prototype.
