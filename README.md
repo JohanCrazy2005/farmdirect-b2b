@@ -56,3 +56,4 @@ GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
 See `IMPROVEMENTS.md` for the hourly suggestion history and the implementation pass notes.
 
 - **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
+- **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume

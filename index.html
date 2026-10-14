@@ -1361,6 +1361,15 @@
             <option value="48">Within 48 hours</option>
           </select>
         </div>
+        <div class="filter-group" style="margin-top:0.5rem">
+          <label>Min. reviews</label>
+          <select id="reviewsFilter" onchange="filterSellers()">
+            <option value="0">Any</option>
+            <option value="10">10+ reviews</option>
+            <option value="20">20+ reviews</option>
+            <option value="30">30+ reviews</option>
+          </select>
+        </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Year-round supply only</span>
           <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
@@ -2721,6 +2730,8 @@
         }
         const maxResponse = +(document.getElementById('responseFilter')?.value || 999);
         if (maxResponse < 999 && (s.responseHours == null || s.responseHours > maxResponse)) return false;
+        const minReviews = parseInt(document.getElementById('reviewsFilter')?.value || '0', 10);
+        if (minReviews > 0 && (s.reviews || 0) < minReviews) return false;
         if (verifiedOnly && !s.verified) return false;
         if (s.distance > maxDist) return false;
         // Skip strict price filter for bulk units (ton)
@@ -2828,6 +2839,10 @@
       if (maxResp < 999) {
         const opt = document.querySelector(`#responseFilter option[value="${maxResp}"]`);
         chips.push({ label: `Response: ${opt ? opt.textContent : maxResp + 'h'}`, reset: () => { document.getElementById('responseFilter').value = '999'; } });
+      }
+      const minRev = document.getElementById('reviewsFilter')?.value;
+      if (minRev && minRev !== '0') {
+        chips.push({ label: `${minRev}+ reviews`, reset: () => { document.getElementById('reviewsFilter').value = '0'; } });
       }
       const minStock = +document.getElementById('minStockFilter').value;
       if (minStock > 0) {
@@ -2980,6 +2995,7 @@
       document.getElementById('fulfillmentFilter').value = 'any';
       document.getElementById('freshnessFilter').value = '999';
       if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = '999';
+      if (document.getElementById('reviewsFilter')) document.getElementById('reviewsFilter').value = '0';
       filterSellers();
     }
 
@@ -3043,6 +3059,7 @@
         daySat: document.getElementById('daySat')?.checked || false,
         daySun: document.getElementById('daySun')?.checked || false,
         response: document.getElementById('responseFilter')?.value || '999',
+        reviews: document.getElementById('reviewsFilter')?.value || '0',
         minStock: document.getElementById('minStockFilter').value
       };
     }
@@ -3076,6 +3093,7 @@
       document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
       document.getElementById('freshnessFilter').value = s.freshness || '999';
       if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = s.response || '999';
+      if (document.getElementById('reviewsFilter')) document.getElementById('reviewsFilter').value = s.reviews || '0';
       if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
       if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
       if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
@@ -3111,7 +3129,7 @@
     const FILTER_DEFAULTS = {
       category: 'all', organic: false, verified: false, dist: '50', price: '10',
       search: '', sort: 'Distance', moq: '9999', leadTime: '999', deliveryFee: '9999', rating: '0',
-      available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999',
+      available: false, favorites: false, payment: 'any', fulfillment: 'any', freshness: '999', reviews: '0',
       gradePremium: false, gradeStandard: false, gradeSurplus: false,
       packLoose: false, packCase: false, packPallet: false, packBulk: false,
       regionKent: false, regionNorfolk: false, regionCornwall: false, regionYorkshire: false, regionMidlands: false, regionSussex: false,
@@ -3169,6 +3187,7 @@
       if (state.daySat) params.set('dsat', '1');
       if (state.daySun) params.set('dsun', '1');
       if (state.response && String(state.response) !== '999') params.set('resp', state.response);
+      if (state.reviews && String(state.reviews) !== '0') params.set('reviews', state.reviews);
       if (state.minStock && String(state.minStock) !== FILTER_DEFAULTS.minStock) params.set('stock', state.minStock);
       return params;
     }
@@ -3220,6 +3239,7 @@
       if (params.get('dsat') === '1') s.daySat = true;
       if (params.get('dsun') === '1') s.daySun = true;
       if (params.has('resp')) s.response = params.get('resp');
+      if (params.has('reviews')) s.reviews = params.get('reviews');
       if (params.has('stock')) s.minStock = params.get('stock');
       return s;
     }
@@ -3264,6 +3284,7 @@
         document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
         document.getElementById('freshnessFilter').value = s.freshness || '999';
         if (document.getElementById('responseFilter')) document.getElementById('responseFilter').value = s.response || '999';
+        if (document.getElementById('reviewsFilter')) document.getElementById('reviewsFilter').value = s.reviews || '0';
         if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
         if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
         if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;

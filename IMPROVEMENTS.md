@@ -125,3 +125,17 @@ This makes seller responsiveness visible and filterable for faster procurement d
 - All existing features (RFQ, cart, filters, dark mode, view modes, delivery days, response time) preserved and client-side.
 
 Prototype remains fully usable on phones and laptops for wholesale farm product discovery and inquiry.
+## 2026-10-14 – Minimum Reviews Filter
+
+**What:** Add a minimum-reviews filter (Any / 10+ / 20+ / 30+) so buyers can hide sellers with very few reviews, plus full integration into chips, presets and shareable URLs.
+
+**Why:** Rating alone is incomplete for B2B trust. A 4.9 from 3 reviews is less reliable than a 4.6 from 35 reviews. Review volume is a practical signal of operational track record that complements verification, response time and rating.
+
+**How:**
+- New sidebar select for minimum review count.
+- Filter logic excludes sellers below the threshold.
+- Active filter chip with individual clear.
+- Captured in saved presets and shareable URL query params (`reviews=`).
+- Works with all existing filters, clustering, dark mode and mobile layout. Fully client-side.
+
+This helps buyers prioritise sellers with demonstrated buyer feedback volume.
