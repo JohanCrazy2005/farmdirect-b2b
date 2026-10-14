@@ -425,6 +425,22 @@
       background: #0c4a6e;
       color: #7dd3fc;
     }
+
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-quoted { background: #dbeafe; color: #1e40af; }
+    .status-accepted { background: #d1fae5; color: #065f46; }
+    .status-declined { background: #fee2e2; color: #991b1b; }
+    html.dark .status-pending { background: #78350f; color: #fcd34d; }
+    html.dark .status-quoted { background: #1e3a8a; color: #93c5fd; }
+    html.dark .status-accepted { background: #064e3b; color: #6ee7b7; }
+    html.dark .status-declined { background: #7f1d1d; color: #fca5a5; }
     .badge-grade {
       display: inline-block;
       font-size: 0.65rem;
@@ -1829,6 +1845,15 @@
       renderInquiries();
       showToast('Inquiry history cleared');
     }
+    function updateInquiryStatus(id, status) {
+      const rec = inquiryHistory.find(r => r.id === id);
+      if (rec) {
+        rec.status = status;
+        saveInquiries();
+        renderInquiries();
+        showToast('Inquiry status updated');
+      }
+    }
     function renderInquiries() {
       const el = document.getElementById('inquiryList');
       if (!el) return;
@@ -1836,15 +1861,30 @@
         el.innerHTML = '<span style="color:var(--muted);font-size:0.8rem">No inquiries sent yet</span>';
         return;
       }
+      const statusLabels = { pending: 'Pending', quoted: 'Quoted', accepted: 'Accepted', declined: 'Declined' };
+      const statusClass = { pending: 'status-pending', quoted: 'status-quoted', accepted: 'status-accepted', declined: 'status-declined' };
       el.innerHTML = inquiryHistory.map(rec => {
         const when = new Date(rec.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const hasNotes = !!(rec.notes && rec.notes.trim());
+        const notesIcon = hasNotes ? ' 📝' : '';
+        const status = rec.status || 'pending';
+        const title = (rec.summary || '') + (hasNotes ? '\nNotes: ' + rec.notes.replace(/"/g, "'") : '');
         const click = rec.type === 'single' && rec.sellerIds?.[0]
           ? `openSellerDrawer(${rec.sellerIds[0]})`
-          : `showToast('${(rec.summary || '').replace(/'/g, "\\'")}')`;
-        return `<button type="button" style="text-align:left;background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;cursor:pointer;width:100%;color:var(--text);font-size:0.8rem" onclick="${click}" title="${rec.summary || ''}">
-          <div style="font-weight:500">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}</div>
-          <div style="color:var(--muted);font-size:0.72rem">${when} · ${(rec.summary || '').slice(0, 48)}${(rec.summary || '').length > 48 ? '…' : ''}</div>
-        </button>`;
+          : `showToast('${((rec.summary || '') + (hasNotes ? ' — Notes: ' + rec.notes : '')).replace(/'/g, "\\'")}')`;
+        return `<div style="background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;font-size:0.8rem;color:var(--text)">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.25rem">
+            <button type="button" style="text-align:left;background:transparent;border:none;padding:0;cursor:pointer;color:inherit;font-weight:500;flex:1" onclick="${click}" title="${title.replace(/"/g, '"')}">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}${notesIcon}</button>
+            <span class="status-badge ${statusClass[status] || ''}">${statusLabels[status] || status}</span>
+          </div>
+          <div style="color:var(--muted);font-size:0.72rem;margin:0.15rem 0">${when} · ${(rec.summary || '').slice(0, 42)}${(rec.summary || '').length > 42 ? '…' : ''}</div>
+          <select onchange="updateInquiryStatus(${rec.id}, this.value)" style="width:100%;font-size:0.72rem;padding:0.15rem;border-radius:0.25rem;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+            <option value="pending"${status==='pending'?' selected':''}>Pending</option>
+            <option value="quoted"${status==='quoted'?' selected':''}>Quoted</option>
+            <option value="accepted"${status==='accepted'?' selected':''}>Accepted</option>
+            <option value="declined"${status==='declined'?' selected':''}>Declined</option>
+          </select>
+        </div>`;
       }).join('');
     }
     loadInquiries();
@@ -1956,7 +1996,9 @@
         type: 'combined',
         sellerIds,
         summary: items,
-        email: '(combined)'
+        email: '(combined)',
+        notes: notes || '',
+        status: 'pending'
       });
       showToast(`Combined inquiry prepared for: ${items}. (Demo — no email sent.)`);
       clearCart();
@@ -3231,7 +3273,9 @@
         type: 'single',
         sellerIds: [sellerId],
         summary,
-        email
+        email,
+        notes: notes || '',
+        status: 'pending'
       });
       closeRfqModal();
       showToast(`Inquiry sent to ${s ? s.name : 'seller'}. They will reply to ${email}.`);

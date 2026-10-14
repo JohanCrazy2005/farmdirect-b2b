@@ -212,3 +212,17 @@ This makes every inquiry more complete and useful for both buyers and sellers in
 - All existing B2B features (RFQ, cart, comparison, clustering, dark mode, filters, view modes) preserved and client-side.
 
 Prototype is again fully usable on phones and laptops for wholesale farm product discovery and inquiry. Cycle continues.
+
+## 2026-10-14 – Inquiry Status Tracking
+
+**What:** Add status tracking to the Inquiry History sidebar. Each sent RFQ (single or combined) starts as “Pending” and can be updated by the buyer to Quoted / Accepted / Declined. Status is shown with a colored badge and a compact dropdown; changes persist in localStorage.
+
+**Why:** Wholesale buyers often manage several active RFQs at once. A simple status turns the history log into a lightweight procurement tracker, so buyers can see at a glance which inquiries still need follow-up, which have quotes, and which have been closed—without leaving the marketplace.
+
+**How (implemented):**
+- Inquiry records now include a `status` field (default `pending`).
+- Sidebar history items display a colored status badge (Pending / Quoted / Accepted / Declined).
+- Inline `<select>` lets the buyer change status; change is saved immediately and the list re-renders.
+- Works for both single RFQs and combined cart inquiries. Fully client-side, compatible with notes, dark mode, and the existing 12-item history limit.
+
+This completes a practical closed-loop for the RFQ workflow in the demo. (feat: add inquiry status tracking (Pending/Quoted/Accepted/Declined))
