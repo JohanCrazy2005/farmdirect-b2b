@@ -433,6 +433,21 @@
       color: #7dd3fc;
     }
 
+    .badge-next-del {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      background: #dbeafe;
+      color: #1e40af;
+      margin-left: 0.25rem;
+    }
+    html.dark .badge-next-del {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
+
     .badge-trace {
       display: inline-block;
       font-size: 0.65rem;
@@ -2501,6 +2516,7 @@
           getTraceBadge(s),
         getCertBadges(s),
         getDeliveryDaysBadge(s),
+        getNextDeliveryBadge(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
@@ -2678,6 +2694,7 @@
           getTraceBadge(s),
           getCertBadges(s),
           getDeliveryDaysBadge(s),
+          getNextDeliveryBadge(s),
           s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
           s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
@@ -2744,6 +2761,24 @@
       if (!s.deliveryDays || !s.deliveryDays.length) return '';
       const days = s.deliveryDays.join('/');
       return `<span class="badge-cert" title="Regular delivery days">${days}</span>`;
+    }
+
+    function getNextDeliveryBadge(s) {
+      if (!s.deliveryDays || !s.deliveryDays.length) return '';
+      const daysOrder = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const todayIdx = new Date().getDay();
+      for (let offset = 0; offset < 7; offset++) {
+        const idx = (todayIdx + offset) % 7;
+        const dayName = daysOrder[idx];
+        if (s.deliveryDays.includes(dayName)) {
+          let label;
+          if (offset === 0) label = `Delivers today (${dayName})`;
+          else if (offset === 1) label = `Next: tomorrow (${dayName})`;
+          else label = `Next delivery: ${dayName}`;
+          return `<span class="badge-next-del" title="Soonest regular delivery day from today">${label}</span>`;
+        }
+      }
+      return '';
     }
 
     function getGradeBadge(s) {
@@ -3683,6 +3718,7 @@
         getArrivalBadge(s),
         getCertBadges(s),
         getDeliveryDaysBadge(s),
+        getNextDeliveryBadge(s),
         s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
         s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
         (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',

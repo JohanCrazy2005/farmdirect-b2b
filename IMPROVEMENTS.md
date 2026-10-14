@@ -27,3 +27,17 @@ Fully client-side; no impact on map clustering, seller portal, RFQ, or existing 
 - Fully client-side; works with clustering, dark mode, filters, inquiry flows, and existing “Your listing” badges.
 
 This completes the basic seller loop: login → publish → manage inventory.
+
+## 2026-10-14 – Next Available Delivery Window Badge
+
+**What:** Added a dynamic “Next delivery” badge on seller cards, map popups and the detail drawer that shows the soonest regular delivery day from today (e.g. “Delivers today (Wed)”, “Next: tomorrow (Thu)”, “Next delivery: Mon”).
+
+**Why:** Buyers already see the full list of delivery days, but calculating the next receiving opportunity still requires mental work against today’s date. A one-glance next-window indicator reduces coordination friction for restaurants, retailers and processors that operate on tight receiving schedules.
+
+**How (implemented):**
+- New `getNextDeliveryBadge(s)` helper that walks the seller’s `deliveryDays` array starting from the current weekday and returns the nearest match.
+- Compact blue badge rendered alongside existing delivery-day and certification badges on cards, popups and drawer.
+- Fully client-side; no new data fields required; works with dark mode, clustering, filters and all other existing features.
+
+This makes schedule fit immediately scannable for wholesale buyers. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
+

@@ -25,14 +25,33 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Quick quantity presets** in RFQ modal (10/25/50/100) for faster bulk inquiries + live tier pricing
 - **Recently viewed** – sidebar list of last 8 sellers opened (drawer/RFQ), persisted, one-click reopen
 - **One-click Reorder** – from Inquiry History, restore qty / notes / date (single) or rebuild cart (combined) and re-open the modal
-- **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, status tracking (Pending / Quoted / Accepted / Declined)
-- **Request Sample** – one-click sample RFQ with 🧪 type in history
-- **Deep-linkable seller profiles** – `?seller=` URL + Share button in drawer
-- **Previous inquiry indicator** – 📬 last-contacted badge + “Previously contacted only” filter
+- **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, status tracking (Pending / Quoted / Accepted / Declined), and **Export CSV** of the full history for procurement records
+- **Product grade** – badges (Premium / Standard / Surplus) + filter
+- **Pack format** – badges (Loose / Case / Pallet / Bulk) + filter
+- **Growing region** – badges (Kent / Norfolk / Cornwall / Yorkshire / Midlands / Sussex) + filter
+- **Available stock quantity** – numeric badges on cards/popups/drawer + Minimum stock filter (100+/500+/1,000+)
+- **Production method** – badges (Field / Greenhouse / Hydroponic / Pasture) + filter
+- **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
+- **Year-round supply** – Year-round / Seasonal badges + “Year-round only” filter
+- **Search radius circle** – visualizes the current max-distance filter on the map (centered on your location)
+- **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
+- **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
+- **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
+- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 - **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist in localStorage and show a “Your listing” badge on map/list.
-- **Delivery days**, region, packaging, grade, production method, storage, year-round, weekly capacity, response time, min reviews, earliest arrival, live order cost estimator, and more filters/badges
-- **Shareable filter URLs**, saved filter presets, CSV export of results and inquiry history
-- **Mobile / laptop polish** – responsive layout, view modes (map/split/list), resize handling, dark mode
+- Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
+- **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
+- Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
+- **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
+- **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume
+- **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards/popups/drawer + sort by reliability + Min. reliability filter (3.0+/3.5+/4.0+/4.5+)
+- **Earliest arrival date** – “Arrives ~15 Oct” badge on cards/popups/drawer based on lead time + “Earliest arrival within” filter + “Earliest arrival” sort
+- **Keyboard accessibility** – Escape closes top overlay (cart / compare / RFQ / drawer) and restores focus; `/` focuses search; Tab focus trap inside modals; proper ARIA on dialogs
+- **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
+- **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
+- **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
+- **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
+- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 
 ## How to run
 
