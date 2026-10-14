@@ -1154,6 +1154,36 @@
       .main.view-split .sidebar { height: 45%; }
     }
 
+  
+    /* Enhanced phone & laptop optimizations */
+    @media (max-width: 700px) {
+      .map-controls {
+        top: 0.5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .map-controls button {
+        flex: 1 1 auto;
+        min-width: 90px;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.5rem;
+      }
+      .legend { display: none; } /* Hide on small screens to save space */
+      .seller-card { padding: 0.7rem; gap: 0.6rem; }
+      .seller-img { width: 56px; height: 56px; }
+      body { -webkit-overflow-scrolling: touch; }
+    }
+    @media (min-width: 701px) and (max-width: 1024px) {
+      .sidebar { width: 340px; }
+      .map-controls button { font-size: 0.8rem; }
+    }
+    @media (min-width: 1401px) {
+      .main { max-width: 1600px; margin: 0 auto; }
+    }
+
   </style>
 </head>
 <body>
@@ -2164,9 +2194,9 @@
     const map = L.map('map', { zoomControl: false }).setView([51.505, -0.09], 12);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    const streetsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: 'abcd',
+    const streetsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      
       maxZoom: 19
     }).addTo(map);
 
