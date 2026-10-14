@@ -46,6 +46,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
     header {
       display: flex;
@@ -3843,6 +3844,30 @@
       const saved = localStorage.getItem('farmdirect_viewMode') || 'split';
       setViewMode(saved);
     } catch (_) { setViewMode('split'); }
+
+    // Phone & laptop polish: keep map sized correctly on resize / orientation change
+    let resizeTimer;
+    function handleResize() {
+      if (window.map) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => map.invalidateSize(), 150);
+      }
+      // Re-evaluate default collapsed filters when crossing the phone breakpoint
+      const isPhone = window.matchMedia('(max-width: 700px)').matches;
+      const panel = document.getElementById('filtersPanel');
+      const btn = document.getElementById('filtersToggle');
+      if (panel && btn) {
+        if (isPhone && !panel.classList.contains('collapsed')) {
+          // keep user choice if they expanded; only force on first load (already handled above)
+        } else if (!isPhone && panel.classList.contains('collapsed')) {
+          panel.classList.remove('collapsed');
+          btn.setAttribute('aria-expanded', 'true');
+          btn.textContent = 'Filters ▾';
+        }
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 
     filterSellers();
   </script>

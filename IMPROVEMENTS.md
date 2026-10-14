@@ -372,3 +372,17 @@ This adds a practical evaluation step to the B2B buying journey.
 - Existing 100dvh, touch targets, landscape side-by-side, dark mode, clustering, RFQ, cart and all filters preserved. Fully client-side.
 
 Prototype is more practical for real phone and laptop B2B use. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
+
+## 2026-10-14 – Resize / Orientation Map Polish for Phone & Laptop
+
+**What:** Added debounced window resize and orientationchange listeners that call map.invalidateSize() and intelligently manage the filters panel collapse state when crossing the 700px breakpoint. Reinforced font smoothing and overflow handling.
+
+**Why:** Rotating a phone or resizing a laptop window (or switching between split/map/list views) previously left the Leaflet map with stale dimensions, causing blank tiles or clipped markers. Filters that were collapsed on phone could stay collapsed after expanding to laptop width. These small fixes keep the discovery surface (map + list) correctly sized and usable without manual refresh.
+
+**How:**
+- Debounced (150ms) resize/orientationchange handler that invalidates the map size.
+- When viewport grows beyond 700px, auto-expands the filters panel if it was collapsed.
+- Added -webkit-font-smoothing for crisper text on Retina/laptop displays.
+- Fully client-side; preserves all existing filters, view modes, dark mode, RFQ, cart and clustering.
+
+This keeps the prototype reliable for real-world phone rotation and laptop window management. Cycle continues.
