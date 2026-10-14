@@ -1624,6 +1624,10 @@
       <div class="modal-body" id="cartBody">
         <p style="color:var(--muted);text-align:center;padding:1rem">Your inquiry cart is empty.</p>
       </div>
+      <div class="form-row" style="padding:0 1.25rem 0.5rem">
+        <label for="cartNotes">Shared notes for all sellers (optional)</label>
+        <textarea id="cartNotes" placeholder="Delivery constraints, packaging, certifications, references..." style="min-height:70px"></textarea>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-ghost" onclick="clearCart()">Clear Cart</button>
         <button type="button" class="btn btn-primary" onclick="sendCombinedInquiry()">Send Combined Inquiry</button>
@@ -2001,11 +2005,14 @@
       }
       el.innerHTML = inquiryHistory.map(rec => {
         const when = new Date(rec.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const hasNotes = !!(rec.notes && rec.notes.trim());
+        const notesIcon = hasNotes ? ' 📝' : '';
+        const title = (rec.summary || '') + (hasNotes ? '\nNotes: ' + rec.notes.replace(/"/g, "'") : '');
         const click = rec.type === 'single' && rec.sellerIds?.[0]
           ? `openSellerDrawer(${rec.sellerIds[0]})`
-          : `showToast('${(rec.summary || '').replace(/'/g, "\\'")}')`;
-        return `<button type="button" style="text-align:left;background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;cursor:pointer;width:100%;color:var(--text);font-size:0.8rem" onclick="${click}" title="${rec.summary || ''}">
-          <div style="font-weight:500">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}</div>
+          : `showToast('${((rec.summary || '') + (hasNotes ? ' — Notes: ' + rec.notes : '')).replace(/'/g, "\\'")}')`;
+        return `<button type="button" style="text-align:left;background:var(--hover-bg);border:1px solid var(--border);border-radius:0.375rem;padding:0.35rem 0.5rem;cursor:pointer;width:100%;color:var(--text);font-size:0.8rem" onclick="${click}" title="${title.replace(/"/g, '"')}">
+          <div style="font-weight:500">${rec.type === 'combined' ? '📦 Combined' : '📝 RFQ'}${notesIcon}</div>
           <div style="color:var(--muted);font-size:0.72rem">${when} · ${(rec.summary || '').slice(0, 48)}${(rec.summary || '').length > 48 ? '…' : ''}</div>
         </button>`;
       }).join('');
@@ -2113,14 +2120,18 @@
         return s ? `${s.name} (${qty} ${s.unit})` : '';
       }).filter(Boolean).join(', ');
       const sellerIds = [...inquiryCart.keys()];
+      const notesEl = document.getElementById('cartNotes');
+      const notes = notesEl ? notesEl.value.trim() : '';
       trackInquiry({
         id: Date.now(),
         ts: Date.now(),
         type: 'combined',
         sellerIds,
         summary: items,
-        email: '(combined)'
+        email: '(combined)',
+        notes: notes || ''
       });
+      if (notesEl) notesEl.value = '';
       showToast(`Combined inquiry prepared for: ${items}. (Demo — no email sent.)`);
       clearCart();
       closeCartModal();
@@ -3593,6 +3604,7 @@
       const sellerId = +document.getElementById('rfqSellerId').value;
       const s = sellers.find(x => x.id === sellerId);
       const date = document.getElementById('rfqDate').value;
+      const notes = document.getElementById('rfqMsg').value.trim();
       const summary = s ? `${s.name} · ${qty} · deliv ${date || 'ASAP'}` : `Seller ${sellerId} · ${qty}`;
       trackInquiry({
         id: Date.now(),
@@ -3600,7 +3612,8 @@
         type: 'single',
         sellerIds: [sellerId],
         summary,
-        email
+        email,
+        notes: notes || ''
       });
       closeRfqModal();
       showToast(`Inquiry sent to ${s ? s.name : 'seller'}. They will reply to ${email}.`);

@@ -181,3 +181,17 @@ Cycle continues (current date 2026-10-14 is well within 60 days of 2026-10-11).
 - Works with existing clustering, dark mode, delivery point, landscape layout and all other filters. Fully client-side.
 
 This completes the reliability feature set from badge → sort → filter for faster B2B trust-based sourcing.
+
+## 2026-10-14 – RFQ Notes Properly Captured & Shown in Inquiry History
+
+**What:** Persist the “Notes / requirements” field from single RFQs and add a shared notes field to the multi-seller Inquiry Cart. Display a notes indicator in the Inquiry History sidebar and surface the full note on click/title.
+
+**Why:** Buyers regularly need to convey packaging, delivery window, quality, or certification details that quantity and date alone cannot capture. Without storing and resurfacing those notes, follow-up quality drops and buyers lose context on past inquiries.
+
+**How (implemented):**
+- Single RFQ: notes from `#rfqMsg` are now saved on the inquiry record in localStorage.
+- Combined cart: added optional shared notes textarea; notes are attached to the combined inquiry record and cleared after send.
+- Inquiry History list shows a 📝 indicator when notes exist; click/title includes the note text.
+- Fully client-side, works with dark mode, existing history limit (12), and all other features.
+
+This makes every inquiry more complete and useful for both buyers and sellers in the demo.
