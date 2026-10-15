@@ -2615,43 +2615,34 @@
     }
 
     function buildPopupHtml(s) {
-      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
-      const badges = [
-        getGradeBadge(s),
-        getPackBadge(s),
-        getRegionBadge(s),
-        getProductionBadge(s),
-        getStorageBadge(s),
-        getSeasonBadge(s),
-        getCapacityBadge(s),
-        getContactBadge(s),
-        getArrivalBadge(s),
-        getReliabilityBadge(s),
-          getTraceBadge(s),
-        getCertBadges(s),
-        getDeliveryDaysBadge(s),
-        getNextDeliveryBadge(s),
-        s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
-        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
-        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
-        s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
-      ].filter(Boolean).join(' ');
+      // Lean badges for popup (≤3) — priority matches product goal
+      const badgeCandidates = [];
+      if (s.verified) badgeCandidates.push('<span class="badge-verified">✓ Verified</span>');
+      if (s.organic) badgeCandidates.push('<span class="badge-organic">Organic</span>');
+      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+      if (s.stockStatus && s.stockStatus !== 'in_stock') badgeCandidates.push(`<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>`);
+      if (s.isUserListing) badgeCandidates.push('<span class="badge-yours">Your listing</span>');
+      const badges = badgeCandidates.slice(0, 3).join(' ');
       const favActive = favorites.has(s.id);
       const favIcon = favActive ? '♥' : '♡';
+      const rating = s.rating != null ? Number(s.rating) : 0;
+      const reviews = s.reviews != null ? Number(s.reviews) : 0;
       return `
         <div class="popup-card">
           <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favIcon}</button> <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button> <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="addToInquiry(${s.id}, event)">+ Cart</button></h3>
           <div class="product">${s.emoji} ${s.product} · ${s.farm}</div>
+          <div class="seller-rating" style="margin:0.25rem 0 0.35rem;font-size:0.95rem;font-weight:600;color:var(--text,#111827);">
+            <span class="stars" style="color:#f59e0b;">★</span> ${rating.toFixed(1)} (${reviews} reviews)
+          </div>
           <div class="price-row">
             <span>Price (per ${s.unit})</span>
             <span class="price">$${s.price.toFixed(2)}</span>
           </div>
           <div class="qty">Available: ${s.qty} · ${s.distance} km away · Delivery est. $${estimateDeliveryCost(s.distance)}</div>
           <div class="qty" style="margin-top:0.25rem;font-size:0.8rem;color:var(--muted)">MOQ: ${s.moq} ${s.unit} · Lead: ${s.leadTimeDays} day${s.leadTimeDays === 1 ? '' : 's'} · ${getArrivalBadge(s)}</div>
-          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">★ ${s.rating} (${s.reviews} reviews) · ${payLabel} · ${fulfillLabel}</div>
+          <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--muted)">${[payLabel, fulfillLabel].filter(Boolean).join(' · ')}</div>
           <div class="qty" style="margin-top:0.15rem;font-size:0.8rem;color:var(--primary);font-weight:500">${freshnessLabel(s.harvestDaysAgo)}</div>
           ${tierSummary(s) ? `<div class="qty" style="margin-top:0.1rem;font-size:0.8rem;color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
           <button class="popup-btn" onclick="openSellerDrawer(${s.id})">View Details</button>
@@ -2660,6 +2651,7 @@
         </div>
       `;
     }
+
 
     sellers.forEach(s => {
       const icon = L.divIcon({

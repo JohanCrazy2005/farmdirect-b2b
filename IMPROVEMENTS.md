@@ -141,3 +141,19 @@ Addresses GitHub issue #4. Fully client-side. Cycle continues (still within 60 d
 - `listings-api.js` continues to merge API results into `window.sellers`, add markers, and fall back gracefully.
 
 Addresses the P6 priority (scripts wired + listings load from API). Fully client-side + existing serverless API. Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – Review Score Prominently on Map Popups (Issue #7)
+
+**What:** Added a dedicated, high-contrast rating line near the top of every map popup: `★ X.X (N reviews)`. Also capped popup badges at 3 (Verified / Organic / stock status) to keep the card scannable.
+
+**Why:** Buyers glance at map popups while exploring. The previous rating was buried in a muted secondary line mixed with payment and fulfillment terms, so quality was easy to miss. A clear near-top score matches the product success criterion and supports quick decisions. Capping badges prevents the popup from becoming overcrowded.
+
+**How (implemented):**
+- In `buildPopupHtml`, inserted a `.seller-rating` block immediately after the product line.
+- Rating and review count are null-safe (default to 0) so newly published user listings still render cleanly.
+- Gold ★ via existing `.stars` color; text uses `var(--text)` for readability in light and dark mode.
+- Popup badge list limited to the top 3 priority items so the header stays lean.
+- Rating removed from the lower payment/fulfillment line.
+- Addresses GitHub issue #7 acceptance criteria (visible without scrolling, works for 0 reviews, readable in both themes).
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
