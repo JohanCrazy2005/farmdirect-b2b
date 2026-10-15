@@ -157,3 +157,17 @@ Addresses the P6 priority (scripts wired + listings load from API). Fully client
 - Addresses GitHub issue #7 acceptance criteria (visible without scrolling, works for 0 reviews, readable in both themes).
 
 Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – Simplified Filter Sidebar to Essential Controls Only (Issue #5)
+
+**What:** Replaced the dense multi-accordion filter panel with a short, scannable list of only the essential filters: Max Distance, Category, Organic, Verified, Available now, Min rating, Max price, Max MOQ, plus search and sort. Removed region, grade, pack, production, storage, traceable, year-round, delivery days, reliability, payment, fulfillment, freshness, delivery fee, stock, capacity, contact, and history blocks from the sidebar.
+
+**Why:** The previous filter UI required significant scrolling and contained many low-priority options, making scan-and-compare slow on both laptop and phone. A lean set matches the product success criterion and keeps the marketplace focused.
+
+**How (implemented):**
+- Replaced the contents of `#filtersPanel` with the eight essential controls only.
+- Rewrote `filterSellers()`, `updateFilterChips()`, and `clearFilters()` to use only these controls and to be fully null-safe (`getElementById` checks / optional chaining) so missing legacy IDs never throw.
+- Sort options reduced in practice to Distance / Price / Rating (other sorts remain in the select but the filter logic defaults cleanly).
+- Addresses GitHub issue #5 acceptance criteria (panel scannable without scrolling; filterSellers does not throw on removed nodes).
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).

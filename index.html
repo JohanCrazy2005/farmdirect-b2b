@@ -1426,281 +1426,61 @@
       </div>
       <button type="button" id="filtersToggle" class="filters-toggle" onclick="toggleFilters()" aria-expanded="true">Filters ▾</button>
       <div class="filters" id="filtersPanel">
-        <!-- Group 1: Location & Distance -->
-        <details class="filter-accordion" id="fg-location" open data-group="location">
-          <summary>📍 Location &amp; Distance <span class="group-count" data-count="0"></span></summary>
-          <div class="filter-accordion-body">
-            <div class="filter-group">
-              <label>Max Distance: <span id="distValue">50</span> km</label>
-              <input type="range" id="distRange" min="5" max="100" value="50" step="5" aria-label="Maximum distance in kilometers" oninput="document.getElementById('distValue').textContent=this.value; filterSellers()" />
-              <div class="range-labels"><span>5 km</span><span>100 km</span></div>
-            </div>
-            <div class="filter-group">
-              <label>Growing region</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionKent" onchange="filterSellers()"> Kent</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionNorfolk" onchange="filterSellers()"> Norfolk</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionCornwall" onchange="filterSellers()"> Cornwall</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionYorkshire" onchange="filterSellers()"> Yorkshire</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionMidlands" onchange="filterSellers()"> Midlands</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="regionSussex" onchange="filterSellers()"> Sussex</label>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <!-- Group 2: Product & Quality -->
-        <details class="filter-accordion" id="fg-product" open data-group="product">
-          <summary>🥦 Product &amp; Quality <span class="group-count" data-count="0"></span></summary>
-          <div class="filter-accordion-body">
-            <div class="filter-group">
-              <label>Product Category</label>
-              <select id="categoryFilter" aria-label="Product category">
-                <option value="all">All Categories</option>
-                <option value="tomatoes">Tomatoes</option>
-                <option value="milk">Milk</option>
-                <option value="eggs">Eggs</option>
-                <option value="wheat">Wheat</option>
-                <option value="herbs">Herbs</option>
-                <option value="honey">Honey</option>
-              </select>
-            </div>
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Organic only</span>
-              <div class="toggle" id="organicToggle" role="switch" aria-checked="false" aria-label="Organic only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Lot-tracked / Traceable only</span>
-              <div class="toggle" id="traceableToggle" role="switch" aria-checked="false" aria-label="Lot-tracked or Traceable only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="filter-group">
-              <label>Required certifications</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certGap" onchange="filterSellers()"> GAP</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certHaccp" onchange="filterSellers()"> HACCP</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="certRegen" onchange="filterSellers()"> Regenerative</label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <label>Product grade</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradePremium" onchange="filterSellers()"> Premium</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradeStandard" onchange="filterSellers()"> Standard</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="gradeSurplus" onchange="filterSellers()"> Surplus</label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <label>Pack format</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packLoose" onchange="filterSellers()"> Loose</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packCase" onchange="filterSellers()"> Case</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packPallet" onchange="filterSellers()"> Pallet</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="packBulk" onchange="filterSellers()"> Bulk</label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <label>Production method</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="prodField" onchange="filterSellers()"> Field</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="prodGreenhouse" onchange="filterSellers()"> Greenhouse</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="prodHydroponic" onchange="filterSellers()"> Hydroponic</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="prodPasture" onchange="filterSellers()"> Pasture</label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <label>Storage / cold chain</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storAmbient" onchange="filterSellers()"> Ambient</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storChilled" onchange="filterSellers()"> Chilled</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="storFrozen" onchange="filterSellers()"> Frozen</label>
-              </div>
-            </div>
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Year-round supply only</span>
-              <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" aria-label="Year-round only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="filter-group">
-              <label>Harvested within</label>
-              <select id="freshnessFilter" aria-label="Harvested within" onchange="filterSellers()">
-                <option value="999">Any</option>
-                <option value="1">Today / 1 day</option>
-                <option value="2">≤ 2 days</option>
-                <option value="7">≤ 7 days</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Minimum stock</label>
-              <select id="minStockFilter" aria-label="Minimum available stock" onchange="filterSellers()">
-                <option value="0">Any</option>
-                <option value="100">100+</option>
-                <option value="500">500+</option>
-                <option value="1000">1,000+</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Min weekly capacity</label>
-              <input type="number" id="minWeeklyCapacity" min="0" placeholder="Any" oninput="filterSellers()" style="width:100%;padding:0.4rem;border:1px solid var(--border);border-radius:0.375rem;background:var(--input-bg);color:var(--text)" />
-              <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem">In product unit / week (e.g. kg, L, doz)</div>
-            </div>
-          </div>
-        </details>
-
-        <!-- Group 3: Commercial Terms -->
-        <details class="filter-accordion" id="fg-commercial" data-group="commercial">
-          <summary>💷 Commercial Terms <span class="group-count" data-count="0"></span></summary>
-          <div class="filter-accordion-body">
-            <div class="filter-group">
-              <label>Max price (per unit, non-bulk)</label>
-              <input type="range" id="priceRange" min="0" max="10" value="10" step="0.25" oninput="filterSellers()" />
-              <div class="range-labels"><span>$0</span><span>$10+</span></div>
-            </div>
-            <div class="filter-group">
-              <label>Max MOQ</label>
-              <select id="moqFilter" aria-label="Maximum minimum order quantity" onchange="filterSellers()">
-                <option value="9999">Any</option>
-                <option value="25">≤ 25</option>
-                <option value="50">≤ 50</option>
-                <option value="100">≤ 100</option>
-                <option value="250">≤ 250</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Max Lead Time</label>
-              <select id="leadTimeFilter" aria-label="Maximum lead time" onchange="filterSellers()">
-                <option value="999">Any</option>
-                <option value="1">≤ 1 day</option>
-                <option value="3">≤ 3 days</option>
-                <option value="7">≤ 7 days</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Earliest arrival within</label>
-              <select id="arrivalFilter" aria-label="Earliest arrival within" onchange="filterSellers()">
-                <option value="999">Any</option>
-                <option value="2">≤ 2 days</option>
-                <option value="5">≤ 5 days</option>
-                <option value="7">≤ 7 days</option>
-                <option value="14">≤ 14 days</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Max Delivery Fee</label>
-              <select id="deliveryFeeFilter" aria-label="Maximum delivery fee" onchange="filterSellers()">
-                <option value="9999">Any</option>
-                <option value="40">≤ $40</option>
-                <option value="60">≤ $60</option>
-                <option value="100">≤ $100</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Min. rating</label>
-              <select id="ratingFilter" aria-label="Minimum rating" onchange="filterSellers()">
-                <option value="0">Any</option>
-                <option value="4">4.0+</option>
-                <option value="4.5">4.5+</option>
-                <option value="4.8">4.8+</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Min. reliability</label>
-              <select id="reliabilityFilter" aria-label="Minimum reliability score" onchange="filterSellers()">
-                <option value="0">Any</option>
-                <option value="70">70+</option>
-                <option value="80">80+</option>
-                <option value="90">90+</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Payment terms</label>
-              <select id="paymentFilter" aria-label="Payment terms" onchange="filterSellers()">
-                <option value="any">Any</option>
-                <option value="due_on_receipt">Due on receipt</option>
-                <option value="net_15">Net 15</option>
-                <option value="net_30">Net 30</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label>Fulfillment</label>
-              <select id="fulfillmentFilter" aria-label="Fulfillment method" onchange="filterSellers()">
-                <option value="any">Any</option>
-                <option value="pickup">Pickup only</option>
-                <option value="delivery">Delivery only</option>
-                <option value="both">Both</option>
-              </select>
-            </div>
-          </div>
-        </details>
-
-        <!-- Group 4: Logistics & Availability -->
-        <details class="filter-accordion" id="fg-logistics" data-group="logistics">
-          <summary>🚚 Logistics &amp; Availability <span class="group-count" data-count="0"></span></summary>
-          <div class="filter-accordion-body">
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Verified sellers only</span>
-              <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" aria-label="Verified sellers only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Available now only</span>
-              <div class="toggle" id="availableToggle" role="switch" aria-checked="false" aria-label="Available now only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="toggle-row">
-              <span style="font-size:0.9rem">Favorites only</span>
-              <div class="toggle" id="favoritesToggle" role="switch" aria-checked="false" aria-label="Favorites only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
-            </div>
-            <div class="filter-group">
-              <label>Delivery days (any)</label>
-              <div style="display:flex;flex-wrap:wrap;gap:0.5rem 1rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayMon" onchange="filterSellers()"> Mon</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayTue" onchange="filterSellers()"> Tue</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayWed" onchange="filterSellers()"> Wed</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayThu" onchange="filterSellers()"> Thu</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="dayFri" onchange="filterSellers()"> Fri</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="daySat" onchange="filterSellers()"> Sat</label>
-                <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer"><input type="checkbox" id="daySun" onchange="filterSellers()"> Sun</label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <label>Preferred contact</label>
-              <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="contactEmail" onchange="filterSellers()"> Email</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="contactPhone" onchange="filterSellers()"> Phone</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="contactWhatsapp" onchange="filterSellers()"> WhatsApp</label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer"><input type="checkbox" id="contactPortal" onchange="filterSellers()"> Portal</label>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
-        <button type="button" class="btn btn-ghost" style="margin-top:0.5rem;width:100%;justify-content:center;font-size:0.85rem" onclick="exportFilteredToCsv()">Export CSV</button>
-        <button type="button" class="btn btn-ghost" style="margin-top:0.35rem;width:100%;justify-content:center;font-size:0.85rem" onclick="copyFilterLink()" title="Copy a link that restores these filters">Copy link</button>
-
-        <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
-          <label>Saved searches</label>
-          <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem">
-            <input type="text" id="presetNameInput" placeholder="Name this search…" style="flex:1;padding:0.4rem 0.6rem;border:1px solid var(--border);border-radius:0.375rem;background:var(--input-bg);color:var(--text);font-size:0.85rem" />
-            <button type="button" class="btn-primary" style="padding:0.4rem 0.75rem;font-size:0.8rem" onclick="saveCurrentPreset()">Save</button>
-          </div>
-          <div id="presetsList" style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem"></div>
+        <div class="filter-group">
+          <label>Max Distance: <span id="distValue">50</span> km</label>
+          <input type="range" id="distRange" min="5" max="100" value="50" step="5" aria-label="Maximum distance in kilometers" oninput="document.getElementById('distValue').textContent=this.value; filterSellers()" />
+          <div class="range-labels"><span>5 km</span><span>100 km</span></div>
         </div>
-
-        <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
-          <label>Recently viewed</label>
-          <div id="recentList" style="display:flex;flex-direction:column;gap:0.3rem;font-size:0.82rem;min-height:1.5rem"></div>
-          <button type="button" class="btn btn-ghost" style="margin-top:0.4rem;width:100%;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="clearRecent()">Clear history</button>
+        <div class="filter-group">
+          <label for="categoryFilter">Category</label>
+          <select id="categoryFilter" aria-label="Category" onchange="filterSellers()">
+            <option value="all">All categories</option>
+            <option value="produce">Produce</option>
+            <option value="dairy">Dairy</option>
+            <option value="eggs">Eggs & Poultry</option>
+            <option value="grains">Grains</option>
+          </select>
         </div>
-
-        <div class="filter-group" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
-          <label>Inquiry history</label>
-          <div id="inquiryList" style="display:flex;flex-direction:column;gap:0.3rem;font-size:0.82rem;min-height:1.5rem"></div>
-          <div style="display:flex;gap:0.35rem;margin-top:0.4rem">
-            <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="exportInquiryHistoryToCsv()" title="Download inquiry history as CSV">Export CSV</button>
-            <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:0.75rem;padding:0.25rem" onclick="clearInquiries()">Clear</button>
-          </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Organic only</span>
+          <div class="toggle" id="organicToggle" role="switch" aria-checked="false" aria-label="Organic only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
         </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Verified sellers only</span>
+          <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" aria-label="Verified sellers only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:0.9rem">Available now only</span>
+          <div class="toggle" id="availableToggle" role="switch" aria-checked="false" aria-label="Available now only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+        </div>
+        <div class="filter-group">
+          <label for="ratingFilter">Min. rating</label>
+          <select id="ratingFilter" aria-label="Minimum rating" onchange="filterSellers()">
+            <option value="0">Any</option>
+            <option value="4">4.0+</option>
+            <option value="4.5">4.5+</option>
+            <option value="4.8">4.8+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Max price (per unit)</label>
+          <input type="range" id="priceRange" min="0" max="50" value="50" step="1" aria-label="Maximum price" oninput="filterSellers()" />
+          <div class="range-labels"><span>$0</span><span>$50+</span></div>
+        </div>
+        <div class="filter-group">
+          <label for="moqFilter">Max MOQ</label>
+          <select id="moqFilter" aria-label="Maximum MOQ" onchange="filterSellers()">
+            <option value="9999">Any</option>
+            <option value="10">10 or less</option>
+            <option value="25">25 or less</option>
+            <option value="50">50 or less</option>
+            <option value="100">100 or less</option>
+          </select>
+        </div>
+        <button type="button" class="clear-filters" onclick="clearFilters()">Clear all filters</button>
       </div>
 
-      <div class="filter-chips" id="filterChips"></div>
+<div class="filter-chips" id="filterChips"></div>
 
       <div id="resultsLive" class="sr-only" aria-live="polite" aria-atomic="true"></div>
       <div class="seller-list" id="sellerList" role="list"></div>
@@ -3071,143 +2851,48 @@
     }
 
     function filterSellers() {
-      const cat = document.getElementById('categoryFilter').value;
-      const organicOnly = document.getElementById('organicToggle').classList.contains('on');
-      const traceableOnly = document.getElementById('traceableToggle')?.classList.contains('on');
-      const verifiedOnly = document.getElementById('verifiedToggle').classList.contains('on');
-      const maxDist = +document.getElementById('distRange').value;
-      const maxPrice = +document.getElementById('priceRange').value;
-      const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      const maxMoq = +document.getElementById('moqFilter').value;
-      const maxLead = +document.getElementById('leadTimeFilter').value;
-      const maxArrivalDays = +document.getElementById('arrivalFilter')?.value || 999;
-      const minRating = +document.getElementById('ratingFilter').value;
-      const minReliability = +(document.getElementById('reliabilityFilter')?.value || 0);
-      const availableOnly = document.getElementById('availableToggle').classList.contains('on');
-      const favoritesOnly = document.getElementById('favoritesToggle').classList.contains('on');
-      const yearRoundOnly = document.getElementById('yearRoundToggle').classList.contains('on');
-      const minWeekly = +(document.getElementById('minWeeklyCapacity')?.value || 0);
-      const needEmail = document.getElementById('contactEmail')?.checked;
-      const needPhone = document.getElementById('contactPhone')?.checked;
-      const needWhatsapp = document.getElementById('contactWhatsapp')?.checked;
-      const needPortal = document.getElementById('contactPortal')?.checked;
-      const anyContact = needEmail || needPhone || needWhatsapp || needPortal;
-      const paymentTerms = document.getElementById('paymentFilter').value;
-      const fulfillment = document.getElementById('fulfillmentFilter').value;
-      const maxHarvestDays = +document.getElementById('freshnessFilter').value;
-      const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
-      const minStock = +document.getElementById('minStockFilter').value;
+      const getVal = (id, def = '') => {
+        const el = document.getElementById(id);
+        return el ? el.value : def;
+      };
+      const isOn = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.classList.contains('on') : false;
+      };
+
+      const cat = getVal('categoryFilter', 'all');
+      const organicOnly = isOn('organicToggle');
+      const verifiedOnly = isOn('verifiedToggle');
+      const availableOnly = isOn('availableToggle');
+      const maxDist = +(getVal('distRange', '100'));
+      const maxPrice = +(getVal('priceRange', '9999'));
+      const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+      const maxMoq = +(getVal('moqFilter', '9999'));
+      const minRating = +(getVal('ratingFilter', '0'));
+      const sort = getVal('sortBy', 'Distance');
 
       let filtered = sellers.filter(s => {
         if (cat !== 'all' && s.category !== cat) return false;
         if (organicOnly && !s.organic) return false;
-        if (traceableOnly && !s.traceable) return false;
-        const needGap = document.getElementById('certGap')?.checked;
-        const needHaccp = document.getElementById('certHaccp')?.checked;
-        const needRegen = document.getElementById('certRegen')?.checked;
-        const scerts = s.certs || [];
-        if (needGap && !scerts.includes('gap')) return false;
-        if (needHaccp && !scerts.includes('haccp')) return false;
-        if (needRegen && !scerts.includes('regen')) return false;
-        const selectedDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].filter(d => document.getElementById('day' + d)?.checked);
-        if (selectedDays.length) {
-          const sellerDays = s.deliveryDays || [];
-          if (!selectedDays.some(d => sellerDays.includes(d))) return false;
-        }
-        const wantPremium = document.getElementById('gradePremium')?.checked;
-        const wantStandard = document.getElementById('gradeStandard')?.checked;
-        const wantSurplus = document.getElementById('gradeSurplus')?.checked;
-        const anyGrade = wantPremium || wantStandard || wantSurplus;
-        if (anyGrade) {
-          const g = s.grade || 'standard';
-          if (!( (wantPremium && g === 'premium') || (wantStandard && g === 'standard') || (wantSurplus && g === 'surplus') )) return false;
-        }
-        const wantLoose = document.getElementById('packLoose')?.checked;
-        const wantCase = document.getElementById('packCase')?.checked;
-        const wantPallet = document.getElementById('packPallet')?.checked;
-        const wantBulk = document.getElementById('packBulk')?.checked;
-        const anyPack = wantLoose || wantCase || wantPallet || wantBulk;
-        if (anyPack) {
-          const p = s.pack || 'case';
-          if (!( (wantLoose && p === 'loose') || (wantCase && p === 'case') || (wantPallet && p === 'pallet') || (wantBulk && p === 'bulk') )) return false;
-        }
-        const wantKent = document.getElementById('regionKent')?.checked;
-        const wantNorfolk = document.getElementById('regionNorfolk')?.checked;
-        const wantCornwall = document.getElementById('regionCornwall')?.checked;
-        const wantYorkshire = document.getElementById('regionYorkshire')?.checked;
-        const wantMidlands = document.getElementById('regionMidlands')?.checked;
-        const wantSussex = document.getElementById('regionSussex')?.checked;
-        const anyRegion = wantKent || wantNorfolk || wantCornwall || wantYorkshire || wantMidlands || wantSussex;
-        if (anyRegion) {
-          const r = s.region || '';
-          if (!( (wantKent && r === 'Kent') || (wantNorfolk && r === 'Norfolk') || (wantCornwall && r === 'Cornwall') || (wantYorkshire && r === 'Yorkshire') || (wantMidlands && r === 'Midlands') || (wantSussex && r === 'Sussex') )) return false;
-        }
-        const wantField = document.getElementById('prodField')?.checked;
-        const wantGreenhouse = document.getElementById('prodGreenhouse')?.checked;
-        const wantHydroponic = document.getElementById('prodHydroponic')?.checked;
-        const wantPasture = document.getElementById('prodPasture')?.checked;
-        const anyProd = wantField || wantGreenhouse || wantHydroponic || wantPasture;
-        if (anyProd) {
-          const prod = s.production || 'field';
-          if (!( (wantField && prod === 'field') || (wantGreenhouse && prod === 'greenhouse') || (wantHydroponic && prod === 'hydroponic') || (wantPasture && prod === 'pasture') )) return false;
-        }
-        const wantAmbient = document.getElementById('storAmbient')?.checked;
-        const wantChilled = document.getElementById('storChilled')?.checked;
-        const wantFrozen = document.getElementById('storFrozen')?.checked;
-        const anyStor = wantAmbient || wantChilled || wantFrozen;
-        if (anyStor) {
-          const st = s.storage || 'ambient';
-          if (!( (wantAmbient && st === 'ambient') || (wantChilled && st === 'chilled') || (wantFrozen && st === 'frozen') )) return false;
-        }
         if (verifiedOnly && !s.verified) return false;
-        if (s.distance > maxDist) return false;
-        // Skip strict price filter for bulk units (ton)
-        if (s.unit !== 'ton' && s.price > maxPrice) return false;
-        if (s.moq > maxMoq) return false;
-        if (s.leadTimeDays > maxLead) return false;
-        if (maxArrivalDays < 999 && daysUntilArrival(s) > maxArrivalDays) return false;
-        if (estimateDeliveryCost(s.distance) > maxDeliveryFee) return false;
-        if (s.rating < minRating) return false;
-        if (getReliabilityScore(s) < minReliability) return false;
         if (availableOnly && s.stockStatus === 'out') return false;
-        if (favoritesOnly && !favorites.has(s.id)) return false;
-        if (yearRoundOnly && !s.yearRound) return false;
-        if (minWeekly > 0 && (s.weeklyCapacity || 0) < minWeekly) return false;
-        if (anyContact) {
-          const pc = s.preferredContact || '';
-          if (!((needEmail && pc === 'email') || (needPhone && pc === 'phone') || (needWhatsapp && pc === 'whatsapp') || (needPortal && pc === 'portal'))) return false;
-        }
-        if (paymentTerms !== 'any' && s.paymentTerms !== paymentTerms) return false;
-        if (fulfillment !== 'any') {
-          if (fulfillment === 'both') {
-            if (s.fulfillment !== 'both') return false;
-          } else if (s.fulfillment !== fulfillment && s.fulfillment !== 'both') {
-            return false;
-          }
-        }
-        if (s.harvestDaysAgo > maxHarvestDays) return false;
-        if ((s.availableQty || 0) < minStock) return false;
-        if (q && !(`${s.name} ${s.product} ${s.farm}`.toLowerCase().includes(q))) return false;
+        if (s.distance > maxDist) return false;
+        if (s.price > maxPrice) return false;
+        if (s.moq > maxMoq) return false;
+        if ((s.rating || 0) < minRating) return false;
+        if (q && !(
+          (s.name || '').toLowerCase().includes(q) ||
+          (s.product || '').toLowerCase().includes(q) ||
+          (s.farm || '').toLowerCase().includes(q) ||
+          (s.category || '').toLowerCase().includes(q)
+        )) return false;
         return true;
       });
 
-      const sort = document.getElementById('sortBy').value;
-      if (sort === 'Distance') filtered.sort((a, b) => a.distance - b.distance);
-      else if (sort === 'Price: Low to High') filtered.sort((a, b) => a.price - b.price);
+      if (sort === 'Price: Low to High') filtered.sort((a, b) => a.price - b.price);
       else if (sort === 'Price: High to Low') filtered.sort((a, b) => b.price - a.price);
-      else if (sort === 'Delivery cost: Low to High') filtered.sort((a, b) => estimateDeliveryCost(a.distance) - estimateDeliveryCost(b.distance));
-      else if (sort === 'Landed cost (price + deliv)') {
-        // Amortize delivery over ~50 units so unit price still dominates but logistics matter
-        filtered.sort((a, b) => {
-          const la = a.price + estimateDeliveryCost(a.distance) / 50;
-          const lb = b.price + estimateDeliveryCost(b.distance) / 50;
-          return la - lb;
-        });
-      }
-      else if (sort === 'Rating') filtered.sort((a, b) => b.rating - a.rating);
-      else if (sort === 'Freshest first') filtered.sort((a, b) => a.harvestDaysAgo - b.harvestDaysAgo);
-      else if (sort === 'Earliest arrival') filtered.sort((a, b) => daysUntilArrival(a) - daysUntilArrival(b));
-      else if (sort === 'Reliability') filtered.sort((a, b) => getReliabilityScore(b) - getReliabilityScore(a));
+      else if (sort === 'Rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      else filtered.sort((a, b) => a.distance - b.distance); // default Distance
 
       window._lastFilteredList = filtered;
       updateVisibleMarkers(filtered);
@@ -3222,15 +2907,8 @@
       updateFilterGroupCounts();
       updateUrlFromFilters();
       updateRadiusCircle();
-
-      // Auto-fit map when filters change and we have results (skip initial load if desired)
-      if (filtered.length > 0 && filtered.length < sellers.length) {
-        // Only auto-fit when the user has actually narrowed the set
-        // Manual button always works; auto is subtle
-        // Uncomment next line for aggressive auto-fit:
-        // fitMapToFiltered(filtered);
-      }
     }
+
 
     function countActiveInGroup(groupId) {
       const el = document.getElementById(groupId);
@@ -3301,126 +2979,45 @@
 
     function updateFilterChips() {
       const chips = [];
-      const cat = document.getElementById('categoryFilter').value;
+      const get = (id) => document.getElementById(id);
+      const cat = get('categoryFilter')?.value || 'all';
       if (cat !== 'all') {
         const opt = document.querySelector(`#categoryFilter option[value="${cat}"]`);
         const label = opt ? opt.textContent : cat;
-        chips.push({ label: `Category: ${label}`, reset: () => { document.getElementById('categoryFilter').value = 'all'; } });
+        chips.push({ label: `Category: ${label}`, reset: () => { if (get('categoryFilter')) get('categoryFilter').value = 'all'; } });
       }
-      if (document.getElementById('organicToggle').classList.contains('on')) {
-        chips.push({ label: 'Organic', reset: () => { const t = document.getElementById('organicToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      if (get('organicToggle')?.classList.contains('on')) {
+        chips.push({ label: 'Organic', reset: () => { const t = get('organicToggle'); if (t) { t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } } });
       }
-      if (document.getElementById('traceableToggle')?.classList.contains('on')) {
-        chips.push({ label: 'Lot-tracked', reset: () => { const t = document.getElementById('traceableToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      if (get('verifiedToggle')?.classList.contains('on')) {
+        chips.push({ label: 'Verified', reset: () => { const t = get('verifiedToggle'); if (t) { t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } } });
       }
-      if (document.getElementById('certGap')?.checked) chips.push({ label: 'GAP', reset: () => { document.getElementById('certGap').checked = false; } });
-      if (document.getElementById('certHaccp')?.checked) chips.push({ label: 'HACCP', reset: () => { document.getElementById('certHaccp').checked = false; } });
-      if (document.getElementById('certRegen')?.checked) chips.push({ label: 'Regenerative', reset: () => { document.getElementById('certRegen').checked = false; } });
-      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
-        const el = document.getElementById('day' + d);
-        if (el?.checked) chips.push({ label: d, reset: () => { el.checked = false; } });
-      });
-      if (document.getElementById('gradePremium')?.checked) chips.push({ label: 'Premium', reset: () => { document.getElementById('gradePremium').checked = false; } });
-      if (document.getElementById('gradeStandard')?.checked) chips.push({ label: 'Standard', reset: () => { document.getElementById('gradeStandard').checked = false; } });
-      if (document.getElementById('gradeSurplus')?.checked) chips.push({ label: 'Surplus', reset: () => { document.getElementById('gradeSurplus').checked = false; } });
-      if (document.getElementById('packLoose')?.checked) chips.push({ label: 'Loose', reset: () => { document.getElementById('packLoose').checked = false; } });
-      if (document.getElementById('packCase')?.checked) chips.push({ label: 'Case', reset: () => { document.getElementById('packCase').checked = false; } });
-      if (document.getElementById('packPallet')?.checked) chips.push({ label: 'Pallet', reset: () => { document.getElementById('packPallet').checked = false; } });
-      if (document.getElementById('packBulk')?.checked) chips.push({ label: 'Bulk', reset: () => { document.getElementById('packBulk').checked = false; } });
-      if (document.getElementById('regionKent')?.checked) chips.push({ label: 'Kent', reset: () => { document.getElementById('regionKent').checked = false; } });
-      if (document.getElementById('regionNorfolk')?.checked) chips.push({ label: 'Norfolk', reset: () => { document.getElementById('regionNorfolk').checked = false; } });
-      if (document.getElementById('regionCornwall')?.checked) chips.push({ label: 'Cornwall', reset: () => { document.getElementById('regionCornwall').checked = false; } });
-      if (document.getElementById('regionYorkshire')?.checked) chips.push({ label: 'Yorkshire', reset: () => { document.getElementById('regionYorkshire').checked = false; } });
-      if (document.getElementById('regionMidlands')?.checked) chips.push({ label: 'Midlands', reset: () => { document.getElementById('regionMidlands').checked = false; } });
-      if (document.getElementById('regionSussex')?.checked) chips.push({ label: 'Sussex', reset: () => { document.getElementById('regionSussex').checked = false; } });
-      if (document.getElementById('prodField')?.checked) chips.push({ label: 'Field', reset: () => { document.getElementById('prodField').checked = false; } });
-      if (document.getElementById('prodGreenhouse')?.checked) chips.push({ label: 'Greenhouse', reset: () => { document.getElementById('prodGreenhouse').checked = false; } });
-      if (document.getElementById('prodHydroponic')?.checked) chips.push({ label: 'Hydroponic', reset: () => { document.getElementById('prodHydroponic').checked = false; } });
-      if (document.getElementById('prodPasture')?.checked) chips.push({ label: 'Pasture', reset: () => { document.getElementById('prodPasture').checked = false; } });
-      if (document.getElementById('storAmbient')?.checked) chips.push({ label: 'Ambient', reset: () => { document.getElementById('storAmbient').checked = false; } });
-      if (document.getElementById('storChilled')?.checked) chips.push({ label: 'Chilled', reset: () => { document.getElementById('storChilled').checked = false; } });
-      if (document.getElementById('storFrozen')?.checked) chips.push({ label: 'Frozen', reset: () => { document.getElementById('storFrozen').checked = false; } });
-      const minStock = +document.getElementById('minStockFilter').value;
-      if (minStock > 0) {
-        const opt = document.querySelector(`#minStockFilter option[value="${minStock}"]`);
-        chips.push({ label: `Min stock: ${opt ? opt.textContent : minStock+'+'}`, reset: () => { document.getElementById('minStockFilter').value = '0'; } });
+      if (get('availableToggle')?.classList.contains('on')) {
+        chips.push({ label: 'Available now', reset: () => { const t = get('availableToggle'); if (t) { t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } } });
       }
-      if (document.getElementById('verifiedToggle').classList.contains('on')) {
-        chips.push({ label: 'Verified', reset: () => { const t = document.getElementById('verifiedToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      const maxDist = +(get('distRange')?.value || 100);
+      if (maxDist < 100) {
+        chips.push({ label: `≤ ${maxDist} km`, reset: () => { if (get('distRange')) { get('distRange').value = 100; const dv = get('distValue'); if (dv) dv.textContent = '100'; } } });
       }
-      if (document.getElementById('availableToggle').classList.contains('on')) {
-        chips.push({ label: 'Available now', reset: () => { const t = document.getElementById('availableToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
+      const maxPrice = +(get('priceRange')?.value || 9999);
+      if (maxPrice < 50) {
+        chips.push({ label: `Price ≤ $${maxPrice}`, reset: () => { if (get('priceRange')) get('priceRange').value = 50; } });
       }
-      if (document.getElementById('favoritesToggle').classList.contains('on')) {
-        chips.push({ label: 'Favorites', reset: () => { const t = document.getElementById('favoritesToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
-      }
-      if (document.getElementById('yearRoundToggle').classList.contains('on')) {
-        chips.push({ label: 'Year-round only', reset: () => { const t = document.getElementById('yearRoundToggle'); t.classList.remove('on'); t.setAttribute('aria-checked', 'false'); } });
-      }
-      const minWeekly = +(document.getElementById('minWeeklyCapacity')?.value || 0);
-      if (minWeekly > 0) {
-        chips.push({ label: `≥ ${minWeekly}/wk`, reset: () => { document.getElementById('minWeeklyCapacity').value = ''; } });
-      }
-      if (document.getElementById('contactEmail')?.checked) chips.push({ label: 'Email', reset: () => { document.getElementById('contactEmail').checked = false; } });
-      if (document.getElementById('contactPhone')?.checked) chips.push({ label: 'Phone', reset: () => { document.getElementById('contactPhone').checked = false; } });
-      if (document.getElementById('contactWhatsapp')?.checked) chips.push({ label: 'WhatsApp', reset: () => { document.getElementById('contactWhatsapp').checked = false; } });
-      if (document.getElementById('contactPortal')?.checked) chips.push({ label: 'Portal', reset: () => { document.getElementById('contactPortal').checked = false; } });
-      const maxDist = +document.getElementById('distRange').value;
-      if (maxDist !== 50) {
-        chips.push({ label: `≤ ${maxDist} km`, reset: () => { document.getElementById('distRange').value = 50; document.getElementById('distValue').textContent = '50'; } });
-      }
-      const maxPrice = +document.getElementById('priceRange').value;
-      if (maxPrice !== 10) {
-        chips.push({ label: `Price ≤ $${maxPrice}`, reset: () => { document.getElementById('priceRange').value = 10; } });
-      }
-      const maxMoq = +document.getElementById('moqFilter').value;
+      const maxMoq = +(get('moqFilter')?.value || 9999);
       if (maxMoq < 9999) {
-        chips.push({ label: `MOQ ≤ ${maxMoq}`, reset: () => { document.getElementById('moqFilter').value = '9999'; } });
+        chips.push({ label: `MOQ ≤ ${maxMoq}`, reset: () => { if (get('moqFilter')) get('moqFilter').value = '9999'; } });
       }
-      const maxLead = +document.getElementById('leadTimeFilter').value;
-      if (maxLead < 999) {
-        chips.push({ label: `Lead ≤ ${maxLead}d`, reset: () => { document.getElementById('leadTimeFilter').value = '999'; } });
-      }
-      const maxArr = +document.getElementById('arrivalFilter')?.value || 999;
-      if (maxArr < 999) {
-        chips.push({ label: `Arrives ≤ ${maxArr}d`, reset: () => { document.getElementById('arrivalFilter').value = '999'; } });
-      }
-      const maxDeliveryFee = +document.getElementById('deliveryFeeFilter').value;
-      if (maxDeliveryFee < 9999) {
-        chips.push({ label: `Delivery ≤ $${maxDeliveryFee}`, reset: () => { document.getElementById('deliveryFeeFilter').value = '9999'; } });
-      }
-      const minRating = +document.getElementById('ratingFilter').value;
+      const minRating = +(get('ratingFilter')?.value || 0);
       if (minRating > 0) {
-        chips.push({ label: `Rating ${minRating}+`, reset: () => { document.getElementById('ratingFilter').value = '0'; } });
+        chips.push({ label: `Rating ${minRating}+`, reset: () => { if (get('ratingFilter')) get('ratingFilter').value = '0'; } });
       }
-      const minRel = +(document.getElementById('reliabilityFilter')?.value || 0);
-      if (minRel > 0) {
-        chips.push({ label: `Reliability ${minRel}+`, reset: () => { document.getElementById('reliabilityFilter').value = '0'; } });
-      }
-      const paymentTerms = document.getElementById('paymentFilter').value;
-      if (paymentTerms !== 'any') {
-        const opt = document.querySelector(`#paymentFilter option[value="${paymentTerms}"]`);
-        const label = opt ? opt.textContent : paymentTerms;
-        chips.push({ label: `Terms: ${label}`, reset: () => { document.getElementById('paymentFilter').value = 'any'; } });
-      }
-      const fulfillment = document.getElementById('fulfillmentFilter').value;
-      if (fulfillment !== 'any') {
-        const opt = document.querySelector(`#fulfillmentFilter option[value="${fulfillment}"]`);
-        const label = opt ? opt.textContent : fulfillment;
-        chips.push({ label: `Fulfillment: ${label}`, reset: () => { document.getElementById('fulfillmentFilter').value = 'any'; } });
-      }
-      const maxHarvestDays = +document.getElementById('freshnessFilter').value;
-      if (maxHarvestDays < 999) {
-        const opt = document.querySelector(`#freshnessFilter option[value="${maxHarvestDays}"]`);
-        const label = opt ? opt.textContent : `≤ ${maxHarvestDays}d`;
-        chips.push({ label: `Harvested: ${label}`, reset: () => { document.getElementById('freshnessFilter').value = '999'; } });
-      }
-      const searchVal = document.getElementById('searchInput').value.trim();
+      const searchVal = (get('searchInput')?.value || '').trim();
       if (searchVal) {
-        chips.push({ label: `Search: “${searchVal}”`, reset: () => { document.getElementById('searchInput').value = ''; } });
+        chips.push({ label: `Search: “${searchVal}”`, reset: () => { if (get('searchInput')) get('searchInput').value = ''; } });
       }
 
       const container = document.getElementById('filterChips');
+      if (!container) return;
       if (chips.length === 0) {
         container.classList.remove('visible');
         container.innerHTML = '';
@@ -3428,82 +3025,34 @@
       }
       container.classList.add('visible');
       container.innerHTML = chips.map((c, i) => `
-        <span class="chip">${c.label} <button type="button" data-chip-index="${i}" aria-label="Clear ${c.label}">×</button></span>
-      `).join('') + '<button type="button" class="chip-clear-all" onclick="clearFilters()">Clear all</button>';
-
-      container.querySelectorAll('[data-chip-index]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const idx = +btn.getAttribute('data-chip-index');
-          chips[idx].reset();
-          filterSellers();
-        });
-      });
+        <span class="chip">${c.label} <button type="button" onclick="window._chipResets[${i}](); filterSellers()" aria-label="Remove ${c.label}">×</button></span>
+      `).join('') + (chips.length > 1 ? '<button type="button" class="chip-clear-all" onclick="clearFilters()">Clear all</button>' : '');
+      window._chipResets = chips.map(c => c.reset);
     }
 
+
     function clearFilters() {
-      document.getElementById('categoryFilter').value = 'all';
-      document.getElementById('organicToggle').classList.remove('on');
-      if (document.getElementById('traceableToggle')) document.getElementById('traceableToggle').classList.remove('on');
-      document.getElementById('organicToggle').setAttribute('aria-checked', 'false');
-      if (document.getElementById('certGap')) document.getElementById('certGap').checked = false;
-      if (document.getElementById('certHaccp')) document.getElementById('certHaccp').checked = false;
-      if (document.getElementById('certRegen')) document.getElementById('certRegen').checked = false;
-      if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = false;
-      if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = false;
-      if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = false;
-      if (document.getElementById('packLoose')) document.getElementById('packLoose').checked = false;
-      if (document.getElementById('packCase')) document.getElementById('packCase').checked = false;
-      if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = false;
-      if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = false;
-      if (document.getElementById('regionKent')) document.getElementById('regionKent').checked = false;
-      if (document.getElementById('regionNorfolk')) document.getElementById('regionNorfolk').checked = false;
-      if (document.getElementById('regionCornwall')) document.getElementById('regionCornwall').checked = false;
-      if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = false;
-      if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = false;
-      if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = false;
-      if (document.getElementById('prodField')) document.getElementById('prodField').checked = false;
-      if (document.getElementById('prodGreenhouse')) document.getElementById('prodGreenhouse').checked = false;
-      if (document.getElementById('prodHydroponic')) document.getElementById('prodHydroponic').checked = false;
-      if (document.getElementById('prodPasture')) document.getElementById('prodPasture').checked = false;
-      if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = false;
-      if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = false;
-      if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = false;
-      if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = '0';
-      document.getElementById('verifiedToggle').classList.remove('on');
-      document.getElementById('verifiedToggle').setAttribute('aria-checked', 'false');
-      document.getElementById('distRange').value = 50;
-      document.getElementById('distValue').textContent = 50;
-      document.getElementById('priceRange').value = 10;
-      document.getElementById('searchInput').value = '';
-      document.getElementById('sortBy').value = 'Distance';
-      document.getElementById('moqFilter').value = '9999';
-      document.getElementById('leadTimeFilter').value = '999';
-      if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = '999';
-      document.getElementById('deliveryFeeFilter').value = '9999';
-      document.getElementById('ratingFilter').value = '0';
-      document.getElementById('availableToggle').classList.remove('on');
-      document.getElementById('availableToggle').setAttribute('aria-checked', 'false');
-      document.getElementById('favoritesToggle').classList.remove('on');
-      document.getElementById('favoritesToggle').setAttribute('aria-checked', 'false');
-      document.getElementById('yearRoundToggle').classList.remove('on');
-      document.getElementById('yearRoundToggle').setAttribute('aria-checked', 'false');
-      if (document.getElementById('minWeeklyCapacity')) document.getElementById('minWeeklyCapacity').value = '';
-      ['contactEmail','contactPhone','contactWhatsapp','contactPortal'].forEach(id => {
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      const setOff = (id) => {
         const el = document.getElementById(id);
-        if (el) el.checked = false;
-      });
-      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
-        const el = document.getElementById('day' + d);
-        if (el) el.checked = false;
-      });
-      document.getElementById('paymentFilter').value = 'any';
-      document.getElementById('fulfillmentFilter').value = 'any';
-      document.getElementById('freshnessFilter').value = '999';
+        if (el) { el.classList.remove('on'); el.setAttribute('aria-checked', 'false'); }
+      };
+      setVal('categoryFilter', 'all');
+      setOff('organicToggle');
+      setOff('verifiedToggle');
+      setOff('availableToggle');
+      setVal('distRange', '50');
+      const dv = document.getElementById('distValue');
+      if (dv) dv.textContent = '50';
+      setVal('priceRange', '50');
+      setVal('moqFilter', '9999');
+      setVal('ratingFilter', '0');
+      setVal('searchInput', '');
+      setVal('sortBy', 'Distance');
       filterSellers();
     }
 
-    // Saved Filter Presets
+
     function loadPresets() {
       try { return JSON.parse(localStorage.getItem('farmdirect_presets') || '[]'); }
       catch { return []; }
