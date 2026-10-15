@@ -1,6 +1,7 @@
 /**
  * FarmDirect — load live listings from open API (/api/listings)
- * Merges into window.sellers, ensures coordinates, refreshes map markers.
+ * Uses API as primary source of truth for window.sellers (embedded data is offline fallback).
+ * Ensures coordinates, refreshes map markers to match API data exactly.
  * Also provides publish + delete + update helpers used by the seller portal.
  */
 (function () {
@@ -13,7 +14,13 @@
       s.lat = 51.51;
       s.lng = -0.08;
     }
-    s.coordinates = s.coordinates || { lat: s.lat, lng: s.lng };
+    // Normalize array form used by some client paths to object
+    if (Array.isArray(s.coordinates) && s.coordinates.length >= 2) {
+      s.coordinates = { lat: Number(s.coordinates[0]), lng: Number(s.coordinates[1]) };
+    }
+    s.coordinates = s.coordinates && s.coordinates.lat != null
+      ? s.coordinates
+      : { lat: s.lat, lng: s.lng };
     s._baseLat = s._baseLat != null ? s._baseLat : s.lat;
     s._baseLng = s._baseLng != null ? s._baseLng : s.lng;
     return s;
@@ -48,26 +55,39 @@
     }
   }
 
+  function syncMarkers(list) {
+    if (!window.markers || !window.markerCluster) return;
+    const apiIds = new Set(list.map(function (s) { return s.id; }));
+
+    // Remove markers for listings no longer returned by the API
+    Object.keys(window.markers).forEach(function (idStr) {
+      const id = Number(idStr);
+      if (!apiIds.has(id) && window.markers[id]) {
+        window.markerCluster.removeLayer(window.markers[id]);
+        delete window.markers[id];
+      }
+    });
+
+    // Update existing or add new markers so the map matches API data
+    list.forEach(function (s) {
+      if (window.markers[s.id]) {
+        refreshMarkerPopup(s);
+      } else {
+        addMarker(s);
+      }
+    });
+  }
+
   async function loadFromApi() {
     try {
       const res = await fetch(API, { headers: { Accept: 'application/json' } });
       if (!res.ok) throw new Error('API ' + res.status);
       const data = await res.json();
       const list = (data.listings || []).map(ensureCoords);
-      if (!window.sellers) window.sellers = [];
 
-      list.forEach(function (remote) {
-        const idx = window.sellers.findIndex(function (s) {
-          return s.id === remote.id;
-        });
-        if (idx === -1) {
-          window.sellers.push(remote);
-          addMarker(remote);
-        } else {
-          window.sellers[idx] = Object.assign({}, window.sellers[idx], remote);
-          ensureCoords(window.sellers[idx]);
-        }
-      });
+      // Primary source of truth when API is reachable
+      window.sellers = list;
+      syncMarkers(list);
 
       if (typeof window.filterSellers === 'function') window.filterSellers();
       if (typeof showToast === 'function') {

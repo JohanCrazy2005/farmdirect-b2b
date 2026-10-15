@@ -55,3 +55,18 @@ Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
 - Addresses GitHub issue #11 and keeps the open-source JSON + optional Turso stack.
 
 Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – Migrate sellers to GET /api/listings as primary source (Issue #8)
+
+**What:** On page load, `GET /api/listings` is now the source of truth for `window.sellers`. Embedded sample data is used only when the API is unreachable (offline / file://). Markers are fully synced so the map matches the API response exactly. Coordinates are normalized (array or object → always `{lat, lng}`) and required on every listing.
+
+**Why:** Success criterion #5 and issue #8 require live listings from the open backend as the primary data source, with a working offline fallback. Previous merge logic left markers potentially stale relative to API data.
+
+**How (implemented):**
+- `loadFromApi` replaces `window.sellers` with the API list on success.
+- New `syncMarkers` removes markers for IDs no longer returned, updates position/popup for existing ones, and adds missing markers.
+- `ensureCoords` normalizes both object and array coordinate forms and guarantees `lat`/`lng`/`coordinates`.
+- Network tab shows the GET; markers and list match API data; offline still falls back to embedded sellers.
+- Addresses GitHub issue #8 and GOAL.md success criterion #5. Seed data already consistent.
+
+Open-source stack only (JSON seed + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
