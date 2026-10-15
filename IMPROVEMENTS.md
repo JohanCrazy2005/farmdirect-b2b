@@ -1,3 +1,16 @@
+## 2026-10-15 – Added package.json so Turso/libSQL client is available on Vercel (Issue #9)
+
+**What:** Added a minimal `package.json` declaring `@libsql/client` as a dependency. This lets the existing dynamic `import('@libsql/client')` in the serverless handlers succeed when `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` are set on Vercel.
+
+**Why:** Without the package, the optional Turso path always fell back to JSON + `/tmp`. Installing the open-source client completes durable persistence for POST/PUT/DELETE so writes survive cold starts, matching issue #9 acceptance.
+
+**How (implemented):**
+- `package.json` with `@libsql/client` ^0.14.0 (no other deps).
+- Handlers already use dynamic import only when env vars exist; fallback remains intact.
+- Seed data in `data/listings.json` and schema already require coordinates; no change needed.
+- Addresses the remaining gap in GitHub issue #9 and GOAL.md P10.
+
+Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
 
 ## 2026-10-15 – Documented Turso/libSQL production persistence (Issue #9)
 
