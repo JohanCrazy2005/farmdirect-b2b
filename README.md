@@ -43,7 +43,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist in localStorage and show a “Your listing” badge on map/list.
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
-- **Accessibility** – skip-to-content link, aria-live result announcements & toasts, visible focus styles, basic landmarks
+- **Accessibility** – skip-to-content link, aria-live result announcements & toasts, visible focus styles, basic landmarks; all selects, ARIA switches, range inputs and icon buttons have accessible names; improved muted-text contrast
 - Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
 - **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
 - **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume

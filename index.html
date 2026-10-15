@@ -20,7 +20,7 @@
       --bg: #f8faf9;
       --card: #ffffff;
       --text: #1a1a1a;
-      --muted: #6b7280;
+      --muted: #4b5563;
       --border: #e5e7eb;
       --success: #059669;
       --header-bg: #ffffff;
@@ -1388,7 +1388,7 @@
         <button type="button" class="near-me" id="zoomToResultsBtn" title="Zoom map to currently filtered sellers" onclick="fitMapToFiltered()">
           🔎 Zoom to results
         </button>
-        <select id="mapLayers">
+        <select id="mapLayers" aria-label="Map layer">
           <option value="streets">Streets</option>
           <option value="satellite">Satellite</option>
         </select>
@@ -1411,7 +1411,7 @@
         </h2>
         <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--muted)">
           Sort by:
-          <select id="sortBy" style="border:none;background:transparent;font-weight:500;cursor:pointer;color:var(--text)">
+          <select id="sortBy" aria-label="Sort sellers by" style="border:none;background:transparent;font-weight:500;cursor:pointer;color:var(--text)">
             <option>Distance</option>
             <option>Price: Low to High</option>
             <option>Price: High to Low</option>
@@ -1432,7 +1432,7 @@
           <div class="filter-accordion-body">
             <div class="filter-group">
               <label>Max Distance: <span id="distValue">50</span> km</label>
-              <input type="range" id="distRange" min="5" max="100" value="50" step="5" oninput="document.getElementById('distValue').textContent=this.value; filterSellers()" />
+              <input type="range" id="distRange" min="5" max="100" value="50" step="5" aria-label="Maximum distance in kilometers" oninput="document.getElementById('distValue').textContent=this.value; filterSellers()" />
               <div class="range-labels"><span>5 km</span><span>100 km</span></div>
             </div>
             <div class="filter-group">
@@ -1455,7 +1455,7 @@
           <div class="filter-accordion-body">
             <div class="filter-group">
               <label>Product Category</label>
-              <select id="categoryFilter">
+              <select id="categoryFilter" aria-label="Product category">
                 <option value="all">All Categories</option>
                 <option value="tomatoes">Tomatoes</option>
                 <option value="milk">Milk</option>
@@ -1467,11 +1467,11 @@
             </div>
             <div class="toggle-row">
               <span style="font-size:0.9rem">Organic only</span>
-              <div class="toggle" id="organicToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="organicToggle" role="switch" aria-checked="false" aria-label="Organic only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="toggle-row">
               <span style="font-size:0.9rem">Lot-tracked / Traceable only</span>
-              <div class="toggle" id="traceableToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="traceableToggle" role="switch" aria-checked="false" aria-label="Lot-tracked or Traceable only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="filter-group">
               <label>Required certifications</label>
@@ -1517,11 +1517,11 @@
             </div>
             <div class="toggle-row">
               <span style="font-size:0.9rem">Year-round supply only</span>
-              <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="yearRoundToggle" role="switch" aria-checked="false" aria-label="Year-round only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="filter-group">
               <label>Harvested within</label>
-              <select id="freshnessFilter" onchange="filterSellers()">
+              <select id="freshnessFilter" aria-label="Harvested within" onchange="filterSellers()">
                 <option value="999">Any</option>
                 <option value="1">Today / 1 day</option>
                 <option value="2">≤ 2 days</option>
@@ -1530,7 +1530,7 @@
             </div>
             <div class="filter-group">
               <label>Minimum stock</label>
-              <select id="minStockFilter" onchange="filterSellers()">
+              <select id="minStockFilter" aria-label="Minimum available stock" onchange="filterSellers()">
                 <option value="0">Any</option>
                 <option value="100">100+</option>
                 <option value="500">500+</option>
@@ -1556,7 +1556,7 @@
             </div>
             <div class="filter-group">
               <label>Max MOQ</label>
-              <select id="moqFilter" onchange="filterSellers()">
+              <select id="moqFilter" aria-label="Maximum minimum order quantity" onchange="filterSellers()">
                 <option value="9999">Any</option>
                 <option value="25">≤ 25</option>
                 <option value="50">≤ 50</option>
@@ -1566,7 +1566,7 @@
             </div>
             <div class="filter-group">
               <label>Max Lead Time</label>
-              <select id="leadTimeFilter" onchange="filterSellers()">
+              <select id="leadTimeFilter" aria-label="Maximum lead time" onchange="filterSellers()">
                 <option value="999">Any</option>
                 <option value="1">≤ 1 day</option>
                 <option value="3">≤ 3 days</option>
@@ -1575,7 +1575,7 @@
             </div>
             <div class="filter-group">
               <label>Earliest arrival within</label>
-              <select id="arrivalFilter" onchange="filterSellers()">
+              <select id="arrivalFilter" aria-label="Earliest arrival within" onchange="filterSellers()">
                 <option value="999">Any</option>
                 <option value="2">≤ 2 days</option>
                 <option value="5">≤ 5 days</option>
@@ -1585,7 +1585,7 @@
             </div>
             <div class="filter-group">
               <label>Max Delivery Fee</label>
-              <select id="deliveryFeeFilter" onchange="filterSellers()">
+              <select id="deliveryFeeFilter" aria-label="Maximum delivery fee" onchange="filterSellers()">
                 <option value="9999">Any</option>
                 <option value="40">≤ $40</option>
                 <option value="60">≤ $60</option>
@@ -1594,7 +1594,7 @@
             </div>
             <div class="filter-group">
               <label>Min. rating</label>
-              <select id="ratingFilter" onchange="filterSellers()">
+              <select id="ratingFilter" aria-label="Minimum rating" onchange="filterSellers()">
                 <option value="0">Any</option>
                 <option value="4">4.0+</option>
                 <option value="4.5">4.5+</option>
@@ -1603,7 +1603,7 @@
             </div>
             <div class="filter-group">
               <label>Min. reliability</label>
-              <select id="reliabilityFilter" onchange="filterSellers()">
+              <select id="reliabilityFilter" aria-label="Minimum reliability score" onchange="filterSellers()">
                 <option value="0">Any</option>
                 <option value="70">70+</option>
                 <option value="80">80+</option>
@@ -1612,7 +1612,7 @@
             </div>
             <div class="filter-group">
               <label>Payment terms</label>
-              <select id="paymentFilter" onchange="filterSellers()">
+              <select id="paymentFilter" aria-label="Payment terms" onchange="filterSellers()">
                 <option value="any">Any</option>
                 <option value="due_on_receipt">Due on receipt</option>
                 <option value="net_15">Net 15</option>
@@ -1621,7 +1621,7 @@
             </div>
             <div class="filter-group">
               <label>Fulfillment</label>
-              <select id="fulfillmentFilter" onchange="filterSellers()">
+              <select id="fulfillmentFilter" aria-label="Fulfillment method" onchange="filterSellers()">
                 <option value="any">Any</option>
                 <option value="pickup">Pickup only</option>
                 <option value="delivery">Delivery only</option>
@@ -1637,15 +1637,15 @@
           <div class="filter-accordion-body">
             <div class="toggle-row">
               <span style="font-size:0.9rem">Verified sellers only</span>
-              <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" aria-label="Verified sellers only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="toggle-row">
               <span style="font-size:0.9rem">Available now only</span>
-              <div class="toggle" id="availableToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="availableToggle" role="switch" aria-checked="false" aria-label="Available now only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="toggle-row">
               <span style="font-size:0.9rem">Favorites only</span>
-              <div class="toggle" id="favoritesToggle" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+              <div class="toggle" id="favoritesToggle" role="switch" aria-checked="false" aria-label="Favorites only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
             </div>
             <div class="filter-group">
               <label>Delivery days (any)</label>
@@ -1792,7 +1792,7 @@
       <div class="modal-body">
         <div class="filter-group" style="margin-bottom:1rem">
           <label>Role</label>
-          <select id="loginRole" style="width:100%;padding:0.5rem">
+          <select id="loginRole" aria-label="Login as role" style="width:100%;padding:0.5rem">
             <option value="buyer">Buyer (source products)</option>
             <option value="seller">Seller (list & manage crops)</option>
           </select>
@@ -1818,7 +1818,7 @@
         <div class="filter-group"><label>Farm / Seller name</label><input type="text" id="lpName" placeholder="My Farm" style="width:100%;padding:0.45rem" /></div>
         <div class="filter-group" style="margin-top:0.6rem"><label>Product</label><input type="text" id="lpProduct" placeholder="Tomatoes" style="width:100%;padding:0.45rem" /></div>
         <div class="filter-group" style="margin-top:0.6rem"><label>Category</label>
-          <select id="lpCategory" style="width:100%;padding:0.45rem">
+          <select id="lpCategory" aria-label="Product category for listing" style="width:100%;padding:0.45rem">
             <option value="tomatoes">Tomatoes</option>
             <option value="milk">Milk</option>
             <option value="eggs">Eggs</option>
@@ -2302,7 +2302,7 @@
           </div>
           <div style="color:var(--muted);font-size:0.72rem;margin:0.15rem 0">${when} · ${(rec.summary || '').slice(0, 42)}${(rec.summary || '').length > 42 ? '…' : ''}</div>
           <div style="display:flex;gap:0.25rem;margin-top:0.2rem">
-            <select onchange="updateInquiryStatus(${rec.id}, this.value)" style="flex:1;font-size:0.72rem;padding:0.15rem;border-radius:0.25rem;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+            <select onchange="updateInquiryStatus(${rec.id}, this.value)" aria-label="Inquiry status for this request" style="flex:1;font-size:0.72rem;padding:0.15rem;border-radius:0.25rem;border:1px solid var(--border);background:var(--bg);color:var(--text)">
               <option value="pending"${status==='pending'?' selected':''}>Pending</option>
               <option value="quoted"${status==='quoted'?' selected':''}>Quoted</option>
               <option value="accepted"${status==='accepted'?' selected':''}>Accepted</option>
@@ -3878,7 +3878,7 @@
       list.innerHTML = presets.map(p => `
         <div style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.4rem;background:var(--hover-bg);border-radius:0.375rem">
           <button type="button" onclick="loadPreset('${p.name.replace(/'/g, "\'")}')" style="flex:1;text-align:left;background:none;border:none;color:var(--text);cursor:pointer;font-size:0.85rem">${p.name}</button>
-          <button type="button" onclick="deletePreset('${p.name.replace(/'/g, "\'")}')" title="Delete" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1">&times;</button>
+          <button type="button" onclick="deletePreset('${p.name.replace(/'/g, "\'")}')" aria-label="Delete preset ${p.name.replace(/'/g, "\'")}" title="Delete" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1">&times;</button>
         </div>
       `).join('');
     }
