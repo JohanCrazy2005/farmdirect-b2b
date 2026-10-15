@@ -1,3 +1,16 @@
+## 2026-10-15 – Fixed incomplete sort options in filterSellers (UI bug)
+
+**What:** Completed the sort logic in `filterSellers` so every option in the sort dropdown actually works: Delivery cost, Landed cost (price + delivery), Freshest first, Earliest arrival, and Reliability. Previously only Price and Rating were handled; others silently fell back to Distance.
+
+**Why:** Dropdown options that do nothing are a real UI bug that confuses buyers. The helpers (`estimateDeliveryCost`, `daysUntilArrival`, `getReliabilityScore`, `harvestDaysAgo`) already existed; the sort cases were simply missing after filter simplification.
+
+**How (implemented):**
+- Added the missing `else if` branches inside `filterSellers` using the existing helpers.
+- No new filters, badges, or form fields added.
+- All priority items (P1–P6, P11) were already implemented; this is a polish bugfix.
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Closed Issue #7 (prominent ★ rating on map popups)
 
 **What:** Confirmed `buildPopupHtml` renders ★ X.X (N reviews) near the top of every map popup. Added closing comment and marked acceptance complete.
