@@ -1,3 +1,18 @@
+## 2026-10-15 – Closed Issue #7 (prominent ★ rating on map popups)
+
+**What:** Confirmed `buildPopupHtml` renders ★ X.X (N reviews) near the top of every map popup. Added closing comment and marked acceptance complete.
+
+**Why:** Highest unfinished priority item (P2 #7) was already implemented and deployed; this run closes the loop so the priority queue can advance.
+
+**How (implemented):**
+- Rating line is immediately after the product name in the popup.
+- Null-safe for missing/0 ratings and reviews.
+- Uses CSS variables so it is readable in light and dark mode.
+- No new features, filters, badges, or form fields.
+- Addresses GitHub issue #7 and GOAL.md success criterion #3.
+
+Production deploy already includes the change (earlier commit c8c5099). Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Accessibility fixes for remaining Vercel report issues (Issue #3)
 
 **What:** Addressed remaining axe/Vercel accessibility findings: icon-only buttons now have `aria-label`, dynamic quantity inputs have accessible names, custom ARIA switch toggles are keyboard operable (`tabindex="0"` + Enter/Space), and muted text contrast was improved (light-mode `--muted` darkened to `#374151`).
