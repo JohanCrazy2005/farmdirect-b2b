@@ -3062,119 +3062,125 @@
       localStorage.setItem('farmdirect_presets', JSON.stringify(list));
     }
     function captureFilterState() {
+      const get = (id) => document.getElementById(id);
+      const val = (id, def = '') => { const el = get(id); return el ? el.value : def; };
+      const on = (id) => { const el = get(id); return el ? el.classList.contains('on') : false; };
+      const chk = (id) => { const el = get(id); return el ? !!el.checked : false; };
       return {
-        category: document.getElementById('categoryFilter').value,
-        organic: document.getElementById('organicToggle').classList.contains('on'),
-        traceable: document.getElementById('traceableToggle')?.classList.contains('on') || false,
-        verified: document.getElementById('verifiedToggle').classList.contains('on'),
-        dist: document.getElementById('distRange').value,
-        price: document.getElementById('priceRange').value,
-        search: document.getElementById('searchInput').value,
-        sort: document.getElementById('sortBy').value,
-        moq: document.getElementById('moqFilter').value,
-        leadTime: document.getElementById('leadTimeFilter').value,
-        arrival: document.getElementById('arrivalFilter')?.value || '999',
-        deliveryFee: document.getElementById('deliveryFeeFilter').value,
-        rating: document.getElementById('ratingFilter').value,
-        reliability: document.getElementById('reliabilityFilter')?.value || '0',
-        available: document.getElementById('availableToggle').classList.contains('on'),
-        favorites: document.getElementById('favoritesToggle').classList.contains('on'),
-        yearRound: document.getElementById('yearRoundToggle').classList.contains('on'),
-        minWeekly: document.getElementById('minWeeklyCapacity')?.value || '',
-        contactEmail: document.getElementById('contactEmail')?.checked || false,
-        contactPhone: document.getElementById('contactPhone')?.checked || false,
-        contactWhatsapp: document.getElementById('contactWhatsapp')?.checked || false,
-        contactPortal: document.getElementById('contactPortal')?.checked || false,
-        dayMon: document.getElementById('dayMon')?.checked || false,
-        dayTue: document.getElementById('dayTue')?.checked || false,
-        dayWed: document.getElementById('dayWed')?.checked || false,
-        dayThu: document.getElementById('dayThu')?.checked || false,
-        dayFri: document.getElementById('dayFri')?.checked || false,
-        daySat: document.getElementById('daySat')?.checked || false,
-        daySun: document.getElementById('daySun')?.checked || false,
-        payment: document.getElementById('paymentFilter').value,
-        fulfillment: document.getElementById('fulfillmentFilter').value,
-        freshness: document.getElementById('freshnessFilter').value,
-        gradePremium: document.getElementById('gradePremium')?.checked || false,
-        gradeStandard: document.getElementById('gradeStandard')?.checked || false,
-        gradeSurplus: document.getElementById('gradeSurplus')?.checked || false,
-        packLoose: document.getElementById('packLoose')?.checked || false,
-        packCase: document.getElementById('packCase')?.checked || false,
-        packPallet: document.getElementById('packPallet')?.checked || false,
-        packBulk: document.getElementById('packBulk')?.checked || false,
-        regionKent: document.getElementById('regionKent')?.checked || false,
-        regionNorfolk: document.getElementById('regionNorfolk')?.checked || false,
-        regionCornwall: document.getElementById('regionCornwall')?.checked || false,
-        regionYorkshire: document.getElementById('regionYorkshire')?.checked || false,
-        regionMidlands: document.getElementById('regionMidlands')?.checked || false,
-        regionSussex: document.getElementById('regionSussex')?.checked || false,
-        prodField: document.getElementById('prodField')?.checked || false,
-        prodGreenhouse: document.getElementById('prodGreenhouse')?.checked || false,
-        prodHydroponic: document.getElementById('prodHydroponic')?.checked || false,
-        prodPasture: document.getElementById('prodPasture')?.checked || false,
-        storAmbient: document.getElementById('storAmbient')?.checked || false,
-        storChilled: document.getElementById('storChilled')?.checked || false,
-        storFrozen: document.getElementById('storFrozen')?.checked || false,
-        minStock: document.getElementById('minStockFilter').value
+        category: val('categoryFilter', 'all'),
+        organic: on('organicToggle'),
+        traceable: on('traceableToggle'),
+        verified: on('verifiedToggle'),
+        dist: val('distRange', '50'),
+        price: val('priceRange', '50'),
+        search: val('searchInput', ''),
+        sort: val('sortBy', 'Distance'),
+        moq: val('moqFilter', '9999'),
+        leadTime: val('leadTimeFilter', '999'),
+        arrival: val('arrivalFilter', '999'),
+        deliveryFee: val('deliveryFeeFilter', '9999'),
+        rating: val('ratingFilter', '0'),
+        reliability: val('reliabilityFilter', '0'),
+        available: on('availableToggle'),
+        favorites: on('favoritesToggle'),
+        yearRound: on('yearRoundToggle'),
+        minWeekly: val('minWeeklyCapacity', ''),
+        contactEmail: chk('contactEmail'),
+        contactPhone: chk('contactPhone'),
+        contactWhatsapp: chk('contactWhatsapp'),
+        contactPortal: chk('contactPortal'),
+        dayMon: chk('dayMon'),
+        dayTue: chk('dayTue'),
+        dayWed: chk('dayWed'),
+        dayThu: chk('dayThu'),
+        dayFri: chk('dayFri'),
+        daySat: chk('daySat'),
+        daySun: chk('daySun'),
+        payment: val('paymentFilter', 'any'),
+        fulfillment: val('fulfillmentFilter', 'any'),
+        freshness: val('freshnessFilter', '999'),
+        gradePremium: chk('gradePremium'),
+        gradeStandard: chk('gradeStandard'),
+        gradeSurplus: chk('gradeSurplus'),
+        packLoose: chk('packLoose'),
+        packCase: chk('packCase'),
+        packPallet: chk('packPallet'),
+        packBulk: chk('packBulk'),
+        regionKent: chk('regionKent'),
+        regionNorfolk: chk('regionNorfolk'),
+        regionCornwall: chk('regionCornwall'),
+        regionYorkshire: chk('regionYorkshire'),
+        regionMidlands: chk('regionMidlands'),
+        regionSussex: chk('regionSussex'),
+        prodField: chk('prodField'),
+        prodGreenhouse: chk('prodGreenhouse'),
+        prodHydroponic: chk('prodHydroponic'),
+        prodPasture: chk('prodPasture'),
+        storAmbient: chk('storAmbient'),
+        storChilled: chk('storChilled'),
+        storFrozen: chk('storFrozen'),
+        minStock: val('minStockFilter', '0')
       };
     }
     function applyFilterState(s) {
-      document.getElementById('categoryFilter').value = s.category || 'all';
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
       const setToggle = (id, on) => {
         const el = document.getElementById(id);
+        if (!el) return;
         el.classList.toggle('on', !!on);
-        el.setAttribute('aria-checked', !!on);
+        el.setAttribute('aria-checked', !!on ? 'true' : 'false');
       };
+      const setChk = (id, on) => { const el = document.getElementById(id); if (el) el.checked = !!on; };
+
+      setVal('categoryFilter', s.category || 'all');
       setToggle('organicToggle', s.organic);
       setToggle('traceableToggle', s.traceable);
       setToggle('verifiedToggle', s.verified);
       setToggle('availableToggle', s.available);
       setToggle('favoritesToggle', s.favorites);
       setToggle('yearRoundToggle', s.yearRound);
-      if (document.getElementById('minWeeklyCapacity')) document.getElementById('minWeeklyCapacity').value = s.minWeekly || '';
-      if (document.getElementById('contactEmail')) document.getElementById('contactEmail').checked = !!s.contactEmail;
-      if (document.getElementById('contactPhone')) document.getElementById('contactPhone').checked = !!s.contactPhone;
-      if (document.getElementById('contactWhatsapp')) document.getElementById('contactWhatsapp').checked = !!s.contactWhatsapp;
-      if (document.getElementById('contactPortal')) document.getElementById('contactPortal').checked = !!s.contactPortal;
-      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
-        const el = document.getElementById('day' + d);
-        if (el) el.checked = !!s['day' + d];
-      });
-      document.getElementById('distRange').value = s.dist || 50;
-      document.getElementById('distValue').textContent = s.dist || 50;
-      document.getElementById('priceRange').value = s.price || 10;
-      document.getElementById('searchInput').value = s.search || '';
-      document.getElementById('sortBy').value = s.sort || 'Distance';
-      document.getElementById('moqFilter').value = s.moq || '9999';
-      document.getElementById('leadTimeFilter').value = s.leadTime || '999';
-      if (document.getElementById('arrivalFilter')) document.getElementById('arrivalFilter').value = s.arrival || '999';
-      document.getElementById('deliveryFeeFilter').value = s.deliveryFee || '9999';
-      document.getElementById('ratingFilter').value = s.rating || '0';
-      if (document.getElementById('reliabilityFilter')) document.getElementById('reliabilityFilter').value = s.reliability || '0';
-      document.getElementById('paymentFilter').value = s.payment || 'any';
-      document.getElementById('fulfillmentFilter').value = s.fulfillment || 'any';
-      document.getElementById('freshnessFilter').value = s.freshness || '999';
-      if (document.getElementById('gradePremium')) document.getElementById('gradePremium').checked = !!s.gradePremium;
-      if (document.getElementById('gradeStandard')) document.getElementById('gradeStandard').checked = !!s.gradeStandard;
-      if (document.getElementById('gradeSurplus')) document.getElementById('gradeSurplus').checked = !!s.gradeSurplus;
-      if (document.getElementById('packLoose')) document.getElementById('packLoose').checked = !!s.packLoose;
-      if (document.getElementById('packCase')) document.getElementById('packCase').checked = !!s.packCase;
-      if (document.getElementById('packPallet')) document.getElementById('packPallet').checked = !!s.packPallet;
-      if (document.getElementById('packBulk')) document.getElementById('packBulk').checked = !!s.packBulk;
-      if (document.getElementById('regionKent')) document.getElementById('regionKent').checked = !!s.regionKent;
-      if (document.getElementById('regionNorfolk')) document.getElementById('regionNorfolk').checked = !!s.regionNorfolk;
-      if (document.getElementById('regionCornwall')) document.getElementById('regionCornwall').checked = !!s.regionCornwall;
-      if (document.getElementById('regionYorkshire')) document.getElementById('regionYorkshire').checked = !!s.regionYorkshire;
-      if (document.getElementById('regionMidlands')) document.getElementById('regionMidlands').checked = !!s.regionMidlands;
-      if (document.getElementById('regionSussex')) document.getElementById('regionSussex').checked = !!s.regionSussex;
-      if (document.getElementById('prodField')) document.getElementById('prodField').checked = !!s.prodField;
-      if (document.getElementById('prodGreenhouse')) document.getElementById('prodGreenhouse').checked = !!s.prodGreenhouse;
-      if (document.getElementById('prodHydroponic')) document.getElementById('prodHydroponic').checked = !!s.prodHydroponic;
-      if (document.getElementById('prodPasture')) document.getElementById('prodPasture').checked = !!s.prodPasture;
-      if (document.getElementById('storAmbient')) document.getElementById('storAmbient').checked = !!s.storAmbient;
-      if (document.getElementById('storChilled')) document.getElementById('storChilled').checked = !!s.storChilled;
-      if (document.getElementById('storFrozen')) document.getElementById('storFrozen').checked = !!s.storFrozen;
-      if (document.getElementById('minStockFilter')) document.getElementById('minStockFilter').value = s.minStock || '0';
+      setVal('minWeeklyCapacity', s.minWeekly || '');
+      setChk('contactEmail', s.contactEmail);
+      setChk('contactPhone', s.contactPhone);
+      setChk('contactWhatsapp', s.contactWhatsapp);
+      setChk('contactPortal', s.contactPortal);
+      ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => setChk('day' + d, s['day' + d]));
+      setVal('distRange', s.dist || 50);
+      setText('distValue', s.dist || 50);
+      setVal('priceRange', s.price || 50);
+      setVal('searchInput', s.search || '');
+      setVal('sortBy', s.sort || 'Distance');
+      setVal('moqFilter', s.moq || '9999');
+      setVal('leadTimeFilter', s.leadTime || '999');
+      setVal('arrivalFilter', s.arrival || '999');
+      setVal('deliveryFeeFilter', s.deliveryFee || '9999');
+      setVal('ratingFilter', s.rating || '0');
+      setVal('reliabilityFilter', s.reliability || '0');
+      setVal('paymentFilter', s.payment || 'any');
+      setVal('fulfillmentFilter', s.fulfillment || 'any');
+      setVal('freshnessFilter', s.freshness || '999');
+      setChk('gradePremium', s.gradePremium);
+      setChk('gradeStandard', s.gradeStandard);
+      setChk('gradeSurplus', s.gradeSurplus);
+      setChk('packLoose', s.packLoose);
+      setChk('packCase', s.packCase);
+      setChk('packPallet', s.packPallet);
+      setChk('packBulk', s.packBulk);
+      setChk('regionKent', s.regionKent);
+      setChk('regionNorfolk', s.regionNorfolk);
+      setChk('regionCornwall', s.regionCornwall);
+      setChk('regionYorkshire', s.regionYorkshire);
+      setChk('regionMidlands', s.regionMidlands);
+      setChk('regionSussex', s.regionSussex);
+      setChk('prodField', s.prodField);
+      setChk('prodGreenhouse', s.prodGreenhouse);
+      setChk('prodHydroponic', s.prodHydroponic);
+      setChk('prodPasture', s.prodPasture);
+      setChk('storAmbient', s.storAmbient);
+      setChk('storChilled', s.storChilled);
+      setChk('storFrozen', s.storFrozen);
+      setVal('minStockFilter', s.minStock || '0');
       filterSellers();
     }
 

@@ -26,3 +26,17 @@ Open-source stack only (JSON + SQLite schema + optional Turso). Cycle continues 
 - Addresses GitHub issue #6 and GOAL.md success criterion #2.
 
 Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – Null-safe filterSellers / clearFilters / preset & URL state (Issue #12)
+
+**What:** Made all filter state capture, apply, and clear paths null-safe so missing DOM nodes (after filter simplification) never throw.
+
+**Why:** After removing advanced filters, leftover direct `getElementById(...).value` / `.classList` calls in `captureFilterState` and `applyFilterState` caused console errors when presets or shareable URLs ran. Issue #12 required no throws on minimal filter DOM.
+
+**How (implemented):**
+- `captureFilterState` now uses safe `val` / `on` / `chk` helpers that return defaults when elements are absent.
+- `applyFilterState` guards every setter (`setVal`, `setToggle`, `setChk`, `setText`).
+- `filterSellers` and `clearFilters` already used existence checks; left them intact.
+- Addresses GitHub issue #12. Acceptance: no console errors on missing `traceableToggle`, `regionKent`, etc.; clear still works.
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
