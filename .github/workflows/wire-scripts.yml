@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: wire-scripts
+  cancel-in-progress: true
+
 jobs:
   wire:
     runs-on: ubuntu-latest
@@ -23,6 +27,8 @@ jobs:
               '<script src="cleanup.js"></script>',
               '<script src="listings-api.js"></script>',
           ]
+          if "</body>" not in text:
+              raise SystemExit("No </body> in index.html")
           changed = False
           for tag in tags:
               if tag not in text:
