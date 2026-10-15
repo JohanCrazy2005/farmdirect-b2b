@@ -37,6 +37,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
 - **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
 - **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
+- **Quick Contact + Copy Summary** – Call / Email buttons (tel: & mailto:) and one-click copy of a procurement-ready seller summary (price, MOQ, lead time, delivery days, contact details, shareable link) from cards and the detail drawer
 - **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 - **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist in localStorage and show a “Your listing” badge on map/list.
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
@@ -51,6 +52,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
 - **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
 - **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
+- **Quick Contact + Copy Summary** – Call / Email buttons (tel: & mailto:) and one-click copy of a procurement-ready seller summary (price, MOQ, lead time, delivery days, contact details, shareable link) from cards and the detail drawer
 - **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
 
 ## How to run

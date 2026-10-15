@@ -41,3 +41,17 @@ This completes the basic seller loop: login → publish → manage inventory.
 
 This makes schedule fit immediately scannable for wholesale buyers. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
 
+
+## 2026-10-14 – Quick Contact Links + Copy Seller Summary
+
+**What:** Added one-click Call and Email actions plus a “Copy summary” button that places a clean, procurement-ready text block (price, MOQ, lead time, delivery days, payment terms, contact details and shareable link) on the clipboard. Contact details are shown in the seller drawer and a 📋 button appears on list cards.
+
+**Why:** After discovering a farm, B2B buyers frequently need to call or email immediately to confirm freshness or volume, and they also paste supplier terms into Slack, email threads or internal procurement tools. These shortcuts reduce friction from map/list discovery to first contact and internal approval.
+
+**How (implemented):**
+- Helpers `getSellerPhone`, `getSellerEmail` and `buildSellerSummary` generate consistent mock contact details and a formatted multi-line summary.
+- Drawer actions now include 📞 Call (tel:), ✉️ Email (mailto:) and 📋 Copy summary (clipboard + toast).
+- Contact line added to the drawer body; 📋 button added to seller cards.
+- Fully client-side; works with existing preferred-contact filter, dark mode, share links, RFQ and all other features.
+
+This makes the path from discovery to conversation and internal sharing much faster for restaurant, retail and processor buyers. Cycle continues (2026-10-14 is within the 60-day window from 2026-10-11).
