@@ -1,0 +1,9 @@
+{
+  "name": "farmdirect-b2b",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FarmDirect B2B open-source marketplace prototype (JSON seed + optional Turso/libSQL)",
+  "dependencies": {
+    "@libsql/client": "^0.14.0"
+  }
+}
