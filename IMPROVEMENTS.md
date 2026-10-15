@@ -64,3 +64,20 @@ Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle conti
 **Why:** Dropdown options that do nothing are a real UI bug.
 
 **How (implemented):** Full sort cases using existing helpers. Cycle continues.
+
+## 2026-10-15 – Closed completed UI priority issues (#7, #5, #12, #6, #3)
+
+**What:** Verified all listed UI priorities (P1–P6 + P11) are fully implemented on main and closed the corresponding open GitHub issues.
+
+**Why:** Acceptance criteria for map popup rating, lean filters, null-safe filter state, simplified list form, script wiring, and accessibility fixes were already met in prior commits, but issues remained open. Closing them clears the priority queue for polish-only work.
+
+**How (verified on main @ 714a9e7):**
+- #7: `buildPopupHtml` renders prominent ★ X.X (N reviews) near top, null-safe, CSS-var colored.
+- #5: Filter panel contains only distance, category, organic, verified, available, min rating, max price, max MOQ + search/sort.
+- #12: filterSellers / captureFilterState / applyFilterState use safe getVal/isOn helpers.
+- #6: List form has exactly 7 fields / 3 required (name, product, price).
+- Scripts: `cleanup.js` + `listings-api.js` loaded immediately before `</body>`.
+- #3: aria-labels, keyboard ARIA switches, contrast, live regions present.
+- Badges capped at ≤3 via `getLeanBadges`.
+
+No new filters, badges, or form fields. Production deploy expected from Git push.
