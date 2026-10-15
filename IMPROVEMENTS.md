@@ -1,3 +1,18 @@
+## 2026-10-15 – Wire edit controls in My Listings to PUT /api/listings/[id]
+
+**What:** Enhanced the My Listings modal so sellers can edit price, availableQty, and stockStatus inline and save via the existing PUT API. Coordinates are preserved (never cleared).
+
+**Why:** PUT endpoint and client helper existed, but the UI only offered Remove. Completing the acceptance criteria for issue #11 (map/card reflect new values after save) required a simple edit surface without adding product clutter.
+
+**How (implemented):**
+- `listings-api.js` now patches `openMyListings` to render price/qty/stock inputs + Save button per user listing.
+- Save calls `updateListingToApi` which PUTs, refreshes the seller object, marker popup, and list.
+- Modal refreshes after successful save.
+- No new filters, badges, or form fields on the public listing form.
+- Seed data and coordinates guarantees unchanged.
+
+Closes #11. Open-source stack only. Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Sync Max price live label when applying presets / shareable URL
 
 **What:** `applyFilterState` now updates `#priceValue` whenever it sets `#priceRange` (presets, shareable filter URLs, restore). Previously only the range input and Clear all / chip reset kept the label in sync.
