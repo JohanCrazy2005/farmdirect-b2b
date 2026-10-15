@@ -97,3 +97,16 @@ Cycle continues (still within 60 days of 2026-10-11).
 - Addresses GitHub issue #8 and GOAL.md success criterion #5. Seed data already consistent.
 
 Open-source stack only (JSON seed + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
+## 2026-10-15 – Confirmed prominent ★ rating on map popups (Issue #7)
+
+**What:** Verified and confirmed that `buildPopupHtml` already renders a prominent rating near the top of every map popup: `★ X.X (N reviews)`, null-safe, and readable in both light and dark modes via CSS variables.
+
+**Why:** Issue #7 required the review score to be visible without scrolling, work for user listings (0 reviews OK), and stay readable in light/dark. The implementation already satisfies all acceptance criteria; this entry closes the loop and marks the issue complete.
+
+**How (implemented):**
+- Rating line placed immediately after product name, before price row.
+- Uses `s.rating` / `s.reviews` with Number() guards (0 is fine).
+- Color inherits `var(--text)` so it contrasts correctly under `html.dark`.
+- Addresses GitHub issue #7. Acceptance checkboxes now met.
+
+No further code change required. Cycle continues (still within 60 days of 2026-10-11).
