@@ -1,4 +1,19 @@
 
+## 2026-10-15 – Restored GET/POST /api/listings (seed + tmp + optional Turso)
+
+**What:** Implemented the previously empty `api/listings.js` serverless handler. GET returns seed data from `data/listings.json` merged with user extras from `/tmp` (or Turso when `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` are set). POST creates a listing with required name/product/price and always persists `lat`, `lng`, and `coordinates`.
+
+**Why:** The collection endpoint was empty after an earlier push, so `listings-api.js` could not load live data and new seller listings could not be published to the API. This restores the open backend required by GOAL.md success criterion #5 and unblocks #8.
+
+**How (implemented):**
+- Every listing is passed through `ensureCoords` so `lat`, `lng`, and `coordinates` are always present.
+- Seed is immutable; user-created rows go to `/tmp/farmdirect-listings-extra.json` or Turso.
+- Dynamic `import('@libsql/client')` only when Turso env vars exist (no hard dependency).
+- Compatible with existing `listings-api.js` load/publish helpers and the DELETE handler in `api/listings/[id].js`.
+- Addresses the highest unfinished API priority (P6/P7 foundation) and keeps coordinates required.
+
+Open-source stack only (JSON + SQLite schema + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Simplified List-Product Form to 7 Fields / 3 Required (Issue #6)
 
 **What:** Tightened the Seller Portal “List a Product” form to exactly 7 fields with only name, product, and price required. Added optional latitude/longitude inputs so sellers can pin exact coordinates; unit defaults to kg.
