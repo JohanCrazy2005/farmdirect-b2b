@@ -1,4 +1,18 @@
 
+## 2026-10-15 – Documented Turso/libSQL production persistence (Issue #9)
+
+**What:** Documented the optional Turso/libSQL durable backend in README.md. The existing serverless handlers already support `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` (dynamic `@libsql/client` import, GET returns `source: "turso"`, POST/PUT/DELETE persist there). Added setup steps, env var names, schema note, and fallback behavior.
+
+**Why:** Issue #9 acceptance required documenting the env vars so operators can enable durable writes that survive Vercel cold starts (instead of only `/tmp`). The code path was already present; documentation completes the open-source persistence story.
+
+**How (implemented):**
+- README now has an "Open Backend (Listings API)" section with the full method table.
+- Explicit Turso setup: create DB from `schema.sql`, set the two env vars on Vercel, optionally `npm install @libsql/client`, note that seed stays in JSON and user rows go to Turso when configured.
+- Confirms every listing still receives `lat`/`lng`/`coordinates` via `ensureCoords`.
+- Addresses GitHub issue #9 and GOAL.md success criterion #5.
+
+Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Restored GET/POST /api/listings (seed + tmp + optional Turso)
 
 **What:** Implemented the previously empty `api/listings.js` serverless handler. GET returns seed data from `data/listings.json` merged with user extras from `/tmp` (or Turso when `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` are set). POST creates a listing with required name/product/price and always persists `lat`, `lng`, and `coordinates`.
