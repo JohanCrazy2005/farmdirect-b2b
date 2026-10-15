@@ -1,0 +1,51 @@
+name: Wire frontend scripts
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  wire:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject script tags before </body>
+        run: |
+          python3 << 'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          text = p.read_text(encoding="utf-8")
+          tags = [
+              '<script src="cleanup.js"></script>',
+              '<script src="listings-api.js"></script>',
+          ]
+          changed = False
+          for tag in tags:
+              if tag not in text:
+                  text = text.replace("</body>", f"  {tag}\n</body>", 1)
+                  changed = True
+                  print(f"Wired: {tag}")
+              else:
+                  print(f"Already present: {tag}")
+          if changed:
+              p.write_text(text, encoding="utf-8")
+              print("index.html updated")
+          else:
+              print("No changes needed")
+          PY
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "chore: wire cleanup.js and listings-api.js into index.html"
+            git push
+          fi
