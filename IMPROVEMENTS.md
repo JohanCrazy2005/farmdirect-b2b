@@ -171,3 +171,18 @@ Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
 - Addresses GitHub issue #5 acceptance criteria (panel scannable without scrolling; filterSellers does not throw on removed nodes).
 
 Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+## 2026-10-15 – DELETE /api/listings/[id] + Wire My Listings Remove (Issue #10)
+
+**What:** Added `DELETE /api/listings/:id` serverless route that removes a listing from ephemeral `/tmp` storage and optional Turso/libSQL. Wired the Seller Portal “Remove” button so it calls the API after the local update, keeping map markers and list in sync.
+
+**Why:** Sellers could only remove listings client-side (localStorage + in-memory). A real DELETE endpoint completes the open backend CRUD loop for user listings and matches the product goal of live listings via the API. Coordinates remain required on every surviving listing.
+
+**How (implemented):**
+- New `api/listings/[id].js` handles DELETE (CORS updated to allow DELETE/PUT).
+- Removes matching id from `/tmp/farmdirect-listings-extra.json`.
+- If `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` are set, executes `DELETE FROM listings WHERE id = ?`.
+- Seed `data/listings.json` stays immutable (demo); only user-created extras/Turso rows are deleted.
+- `listings-api.js` exposes `deleteListingFromApi` and overrides `window.removeMyListing` to also hit the API (local removal still happens first for snappy UI).
+- Marker is removed by the original local handler; API call is best-effort and logged on failure.
+
+Addresses GitHub issue #10. Every listing continues to carry lat/lng/coordinates. Cycle continues (still within 60 days of 2026-10-11).

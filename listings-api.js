@@ -1,6 +1,7 @@
 /**
  * FarmDirect — load live listings from open API (/api/listings)
  * Merges into window.sellers, ensures coordinates, refreshes map markers.
+ * Also provides publish + delete helpers used by the seller portal.
  */
 (function () {
   'use strict';
@@ -92,6 +93,20 @@
     }
   };
 
+  window.deleteListingFromApi = async function (id) {
+    try {
+      const res = await fetch(API + '/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error('DELETE ' + res.status);
+      return true;
+    } catch (e) {
+      console.warn('API delete failed (local removal still applied)', e);
+      return false;
+    }
+  };
+
   // Hook cleaned submit to also POST
   const prev = window.submitListProductClean;
   window.submitListProductClean = function () {
@@ -111,6 +126,15 @@
       lng: parseFloat((document.getElementById('lpLng') || {}).value),
     });
   };
+
+  // Wire My Listings remove to also call DELETE API
+  const originalRemove = window.removeMyListing;
+  if (typeof originalRemove === 'function') {
+    window.removeMyListing = function (id) {
+      originalRemove(id);
+      window.deleteListingFromApi(id);
+    };
+  }
 
   function boot() {
     setTimeout(loadFromApi, 400);
