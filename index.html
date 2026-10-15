@@ -2399,13 +2399,7 @@
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
       // Lean badges for popup (≤3) — priority matches product goal
-      const badgeCandidates = [];
-      if (s.verified) badgeCandidates.push('<span class="badge-verified">✓ Verified</span>');
-      if (s.organic) badgeCandidates.push('<span class="badge-organic">Organic</span>');
-      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
-      if (s.stockStatus && s.stockStatus !== 'in_stock') badgeCandidates.push(`<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>`);
-      if (s.isUserListing) badgeCandidates.push('<span class="badge-yours">Your listing</span>');
-      const badges = badgeCandidates.slice(0, 3).join(' ');
+      const badges = getLeanBadges(s);
       const favActive = favorites.has(s.id);
       const favIcon = favActive ? '♥' : '♡';
       const rating = s.rating != null ? Number(s.rating) : 0;
@@ -2569,28 +2563,7 @@
         const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
         const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
         const fulfillLabel = { pickup: 'Pickup', delivery: 'Delivery', both: 'Pickup + Delivery' }[s.fulfillment] || '';
-        const badges = [
-          getGradeBadge(s),
-          getPackBadge(s),
-          getRegionBadge(s),
-          getProductionBadge(s),
-          getStorageBadge(s),
-          getSeasonBadge(s),
-          getCapacityBadge(s),
-          getContactBadge(s),
-          getArrivalBadge(s),
-          getReliabilityBadge(s),
-          getTraceBadge(s),
-          getCertBadges(s),
-          getDeliveryDaysBadge(s),
-          getNextDeliveryBadge(s),
-          s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
-          s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
-          s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
-          s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : '',
-          getNote(s.id) ? '<span class="badge-note">📝 Note</span>' : ''
-        ].filter(Boolean).join(' ');
+        const badges = getLeanBadges(s);
         card.innerHTML = `
           <img class="seller-img" src="${s.img}" alt="${s.product}" loading="lazy" onerror="this.src='https://via.placeholder.com/64?text=${encodeURIComponent(s.emoji)}'" />
           <div class="seller-info">
@@ -2791,6 +2764,21 @@
     function getTraceBadge(s) {
       if (!s.traceable) return '';
       return '<span class="badge-trace" title="Full lot/batch traceability from farm to pack">Lot-tracked</span>';
+    }
+
+    /** Lean badges (≤3) per product goal priority: Verified → Organic → Stock → Your listing → Premium → Lot-tracked */
+    function getLeanBadges(s) {
+      const candidates = [];
+      if (s.verified) candidates.push('<span class="badge-verified">✓ Verified</span>');
+      if (s.organic) candidates.push('<span class="badge-organic">Organic</span>');
+      const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
+      if (s.stockStatus && s.stockStatus !== 'in_stock') {
+        candidates.push(`<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>`);
+      }
+      if (s.isUserListing) candidates.push('<span class="badge-yours">Your listing</span>');
+      if (s.grade === 'premium') candidates.push('<span class="badge-grade premium">Premium</span>');
+      if (s.traceable) candidates.push('<span class="badge-trace" title="Full lot/batch traceability from farm to pack">Lot-tracked</span>');
+      return candidates.slice(0, 3).join(' ');
     }
 
     function getContactBadge(s) {
@@ -3515,27 +3503,7 @@
       const stockLabel = { in_stock: 'In stock', low: 'Low stock', out: 'Out of stock' }[s.stockStatus] || '';
       const payLabel = { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' }[s.paymentTerms] || '';
       const fulfillLabel = { pickup: 'Pickup only', delivery: 'Delivery only', both: 'Pickup + Delivery' }[s.fulfillment] || '';
-      const badges = [
-        getGradeBadge(s),
-        getPackBadge(s),
-        getRegionBadge(s),
-        getProductionBadge(s),
-        getStorageBadge(s),
-        getSeasonBadge(s),
-        getCapacityBadge(s),
-        getContactBadge(s),
-        getReliabilityBadge(s),
-          getTraceBadge(s),
-        getArrivalBadge(s),
-        getCertBadges(s),
-        getDeliveryDaysBadge(s),
-        getNextDeliveryBadge(s),
-        s.verified ? '<span class="badge-verified">✓ Verified</span>' : '',
-        s.stockStatus ? `<span class="badge-stock ${s.stockStatus}">${stockLabel}</span>` : '',
-        (s.availableQty != null) ? `<span class="badge-qty">${s.availableQty.toLocaleString()} ${s.unit || ''} avail</span>` : '',
-        s.paymentTerms ? `<span class="badge-payment">${payLabel}</span>` : '',
-        s.fulfillment ? `<span class="badge-fulfillment">${fulfillLabel}</span>` : ''
-      ].filter(Boolean).join(' ');
+      const badges = getLeanBadges(s);
       document.getElementById('drawerTitle').textContent = s.name;
       document.getElementById('drawerSubtitle').innerHTML = `${s.farm} · ${s.product} ${badges}`;
       const tierHtml = (s.volumeTiers || []).map(t => 

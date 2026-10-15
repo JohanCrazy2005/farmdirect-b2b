@@ -1,3 +1,17 @@
+## 2026-10-15 – Enforced ≤3 lean badges on cards, popups, and drawer (P1 / success criterion #1)
+
+**What:** Introduced shared `getLeanBadges(s)` that returns at most 3 badges in priority order (Verified → Organic → Stock (non-in-stock) → Your listing → Premium → Lot-tracked). Used it in seller cards, map popups, and the seller detail drawer.
+
+**Why:** Product goal and hard constraint require ≤3 badges on each listing card and map popup to keep the UI uncluttered. Cards and drawer previously rendered many extra badges (grade, pack, region, reliability, etc.).
+
+**How (implemented):**
+- New helper `getLeanBadges` centralizes the priority list and `.slice(0, 3)`.
+- `renderSellers`, `buildPopupHtml`, and `openSellerDrawer` now call it.
+- No new badge types or filter fields added.
+- Addresses GOAL.md success criterion #1 and the original #4 intent.
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Added package.json so Turso/libSQL client is available on Vercel (Issue #9)
 
 **What:** Added a minimal `package.json` declaring `@libsql/client` as a dependency. This lets the existing dynamic `import('@libsql/client')` in the serverless handlers succeed when `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` are set on Vercel.
