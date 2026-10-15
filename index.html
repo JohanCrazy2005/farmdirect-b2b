@@ -1595,8 +1595,8 @@
         <button class="modal-close" onclick="closeListProduct()" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="filter-group"><label>Farm / Seller name</label><input type="text" id="lpName" placeholder="My Farm" style="width:100%;padding:0.45rem" /></div>
-        <div class="filter-group" style="margin-top:0.6rem"><label>Product</label><input type="text" id="lpProduct" placeholder="Tomatoes" style="width:100%;padding:0.45rem" /></div>
+        <div class="filter-group"><label>Farm / Seller name <span style="color:#ef4444">*</span></label><input type="text" id="lpName" placeholder="My Farm" required style="width:100%;padding:0.45rem" /></div>
+        <div class="filter-group" style="margin-top:0.6rem"><label>Product <span style="color:#ef4444">*</span></label><input type="text" id="lpProduct" placeholder="Tomatoes" required style="width:100%;padding:0.45rem" /></div>
         <div class="filter-group" style="margin-top:0.6rem"><label>Category</label>
           <select id="lpCategory" aria-label="Product category for listing" style="width:100%;padding:0.45rem">
             <option value="tomatoes">Tomatoes</option>
@@ -1607,12 +1607,13 @@
             <option value="honey">Honey</option>
           </select>
         </div>
-        <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
-          <div class="filter-group" style="flex:1"><label>Price / unit</label><input type="number" id="lpPrice" step="0.01" min="0" value="1.50" style="width:100%;padding:0.45rem" /></div>
-          <div class="filter-group" style="flex:1"><label>Unit</label><input type="text" id="lpUnit" value="kg" style="width:100%;padding:0.45rem" /></div>
-        </div>
+        <div class="filter-group" style="margin-top:0.6rem"><label>Price / unit <span style="color:#ef4444">*</span></label><input type="number" id="lpPrice" step="0.01" min="0" value="1.50" required style="width:100%;padding:0.45rem" /></div>
         <div class="filter-group" style="margin-top:0.6rem"><label>Available qty</label><input type="number" id="lpQty" min="1" value="500" style="width:100%;padding:0.45rem" /></div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.8rem">Listing is added to the map/list for this session only. Refresh to reset sample data.</p>
+        <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
+          <div class="filter-group" style="flex:1"><label>Latitude (optional)</label><input type="number" id="lpLat" step="0.0001" placeholder="51.5074" style="width:100%;padding:0.45rem" /></div>
+          <div class="filter-group" style="flex:1"><label>Longitude (optional)</label><input type="number" id="lpLng" step="0.0001" placeholder="-0.1278" style="width:100%;padding:0.45rem" /></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.8rem">* Required. Unit defaults to kg. Coordinates optional — random near London if omitted. Listing is client-side for this session.</p>
         <button type="button" class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="submitListProduct()">Publish Listing</button>
       </div>
     </div>
@@ -4013,12 +4014,23 @@
       document.getElementById('listProductModal').classList.remove('open');
     }
     function submitListProduct() {
-      const name = (document.getElementById('lpName').value || 'My Farm').trim();
-      const product = (document.getElementById('lpProduct').value || 'Produce').trim();
-      const category = document.getElementById('lpCategory').value;
-      const price = parseFloat(document.getElementById('lpPrice').value) || 1;
-      const unit = (document.getElementById('lpUnit').value || 'kg').trim();
+      const nameEl = document.getElementById('lpName');
+      const productEl = document.getElementById('lpProduct');
+      const priceEl = document.getElementById('lpPrice');
+      const name = (nameEl.value || '').trim();
+      const product = (productEl.value || '').trim();
+      const price = parseFloat(priceEl.value);
+      if (!name || !product || isNaN(price) || price <= 0) {
+        showToast('Name, product, and a positive price are required');
+        return;
+      }
+      const category = document.getElementById('lpCategory').value || 'other';
+      const unit = 'kg';
       const qty = parseInt(document.getElementById('lpQty').value, 10) || 100;
+      const latInput = parseFloat(document.getElementById('lpLat').value);
+      const lngInput = parseFloat(document.getElementById('lpLng').value);
+      const lat = (!isNaN(latInput) && latInput >= -90 && latInput <= 90) ? latInput : 51.51 + (Math.random() - 0.5) * 0.1;
+      const lng = (!isNaN(lngInput) && lngInput >= -180 && lngInput <= 180) ? lngInput : -0.08 + (Math.random() - 0.5) * 0.1;
       const newId = Math.max(...sellers.map(s => s.id), 0) + 1;
       const newSeller = {
         id: newId,
@@ -4044,8 +4056,9 @@
         rating: 0,
         reviews: 0,
         distance: 5,
-        lat: 51.51 + (Math.random() - 0.5) * 0.1,
-        lng: -0.08 + (Math.random() - 0.5) * 0.1,
+        lat: lat,
+        lng: lng,
+        coordinates: [lat, lng],
         color: '#84cc16',
         emoji: '🌱',
         img: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=128&h=128&fit=crop',
