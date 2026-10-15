@@ -20,7 +20,7 @@
       --bg: #f8faf9;
       --card: #ffffff;
       --text: #1a1a1a;
-      --muted: #4b5563;
+      --muted: #374151;
       --border: #e5e7eb;
       --success: #059669;
       --header-bg: #ffffff;
@@ -1443,15 +1443,15 @@
         </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Organic only</span>
-          <div class="toggle" id="organicToggle" role="switch" aria-checked="false" aria-label="Organic only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+          <div class="toggle" id="organicToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Organic only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"></div>
         </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Verified sellers only</span>
-          <div class="toggle" id="verifiedToggle" role="switch" aria-checked="false" aria-label="Verified sellers only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+          <div class="toggle" id="verifiedToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Verified sellers only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"></div>
         </div>
         <div class="toggle-row">
           <span style="font-size:0.9rem">Available now only</span>
-          <div class="toggle" id="availableToggle" role="switch" aria-checked="false" aria-label="Available now only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()"></div>
+          <div class="toggle" id="availableToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Available now only" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on')); filterSellers()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"></div>
         </div>
         <div class="filter-group">
           <label for="ratingFilter">Min. rating</label>
@@ -2182,8 +2182,8 @@
               <div style="font-weight:600;font-size:0.9rem">${s.name}</div>
               <div style="font-size:0.8rem;color:var(--muted)">${s.product} · $${tier.price.toFixed(2)}/${s.unit}</div>
             </div>
-            <input type="number" class="cart-qty" min="1" value="${qty}" onchange="updateCartQty(${id}, this.value)" />
-            <button type="button" class="btn-sm" style="padding:0.25rem 0.5rem" onclick="removeFromCart(${id})">✕</button>
+            <input type="number" class="cart-qty" min="1" value="${qty}" aria-label="Quantity for ${s.name}" onchange="updateCartQty(${id}, this.value)" />
+            <button type="button" class="btn-sm" style="padding:0.25rem 0.5rem" onclick="removeFromCart(${id})" aria-label="Remove ${s.name} from cart">✕</button>
           </div>
         `;
       }
@@ -2406,7 +2406,7 @@
       const reviews = s.reviews != null ? Number(s.reviews) : 0;
       return `
         <div class="popup-card">
-          <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favIcon}</button> <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button> <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="addToInquiry(${s.id}, event)">+ Cart</button></h3>
+          <h3>${s.name} ${badges} <button type="button" class="fav-btn ${favActive ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite" aria-label="Favorite ${s.name}">${favIcon}</button> <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button> <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="addToInquiry(${s.id}, event)">+ Cart</button></h3>
           <div class="product">${s.emoji} ${s.product} · ${s.farm}</div>
           <div class="seller-rating" style="margin:0.25rem 0 0.35rem;font-size:0.95rem;font-weight:600;color:var(--text,#111827);">
             <span class="stars" style="color:#f59e0b;">★</span> ${rating.toFixed(1)} (${reviews} reviews)
@@ -2576,7 +2576,7 @@
             ${tierSummary(s) ? `<div class="seller-meta" style="color:var(--accent);font-weight:500">${tierSummary(s)}</div>` : ''}
             <div class="card-estimator" onclick="event.stopPropagation()">
               <label style="margin:0">Qty</label>
-              <input type="number" min="1" step="1" value="${Math.max(1, s.moq || 1)}" id="cardQty_${s.id}" oninput="updateCardEstimate(${s.id})" onkeydown="event.stopPropagation()">
+              <input type="number" min="1" step="1" value="${Math.max(1, s.moq || 1)}" id="cardQty_${s.id}" aria-label="Quantity for ${s.name}" oninput="updateCardEstimate(${s.id})" onkeydown="event.stopPropagation()">
               <span class="card-est-total" id="cardEst_${s.id}">…</span>
               <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="event.stopPropagation(); openRfqModal(${s.id}, +document.getElementById('cardQty_${s.id}').value)">Quote</button>
               <button type="button" class="btn-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="event.stopPropagation(); openSampleRequest(${s.id})">Sample</button>
@@ -2584,11 +2584,11 @@
           </div>
           <div class="seller-actions">
             <div style="display:flex;align-items:center;gap:0.25rem;">
-              <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite">${favorites.has(s.id) ? '♥' : '♡'}</button>
+              <button type="button" class="fav-btn ${favorites.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleFavorite(${s.id}, event)" title="Favorite" aria-label="Favorite ${s.name}">${favorites.has(s.id) ? '♥' : '♡'}</button>
               <button type="button" class="compare-btn ${compareIds.has(s.id) ? 'active' : ''}" data-id="${s.id}" onclick="toggleCompare(${s.id}, event)">Compare</button>
               <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="event.stopPropagation(); openSellerDrawer(${s.id})" title="View profile">Details</button>
               <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="addToInquiry(${s.id}, event)" title="Add to Inquiry Cart">+ Cart</button>
-              <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="event.stopPropagation(); copySellerSummary(${s.id})" title="Copy seller summary for email or procurement">📋</button>
+              <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="event.stopPropagation(); copySellerSummary(${s.id})" title="Copy seller summary for email or procurement" aria-label="Copy summary for ${s.name}">📋</button>
               <div class="seller-rating">
                 <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
                 <span>${s.rating} (${s.reviews})</span>

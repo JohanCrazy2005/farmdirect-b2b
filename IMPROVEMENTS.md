@@ -1,3 +1,19 @@
+## 2026-10-15 – Accessibility fixes for remaining Vercel report issues (Issue #3)
+
+**What:** Addressed remaining axe/Vercel accessibility findings: icon-only buttons now have `aria-label`, dynamic quantity inputs have accessible names, custom ARIA switch toggles are keyboard operable (`tabindex="0"` + Enter/Space), and muted text contrast was improved (light-mode `--muted` darkened to `#374151`).
+
+**Why:** GitHub issue #3 tracks the Vercel accessibility scan (missing accessible names on selects/forms/buttons, ARIA toggle names, color contrast, appropriate roles). Prior passes added many labels; this closes the remaining gaps so screen-reader and keyboard users can operate filters, cards, cart, and favorites.
+
+**How (implemented):**
+- Card and popup favorite buttons, copy-summary buttons, and cart remove buttons received `aria-label`.
+- Card estimator and cart quantity inputs received `aria-label="Quantity for …"`.
+- Organic / Verified / Available toggles gained `tabindex="0"` and `onkeydown` so they are focusable and activatable by keyboard.
+- Light-mode muted color adjusted for better small-text contrast while staying on-brand.
+- No new product features, filters, badges, or form fields added.
+- Addresses open GitHub issue #3 and GOAL.md P11 / success criterion usability.
+
+Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Enforced ≤3 lean badges on cards, popups, and drawer (P1 / success criterion #1)
 
 **What:** Introduced shared `getLeanBadges(s)` that returns at most 3 badges in priority order (Verified → Organic → Stock (non-in-stock) → Your listing → Premium → Lot-tracked). Used it in seller cards, map popups, and the seller detail drawer.
