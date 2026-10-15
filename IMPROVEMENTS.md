@@ -1,3 +1,18 @@
+## 2026-10-15 – Confirmed API priorities P6–P10 complete and closed issues #9 / #11
+
+**What:** Verified and closed the remaining open API issues (#9 Turso/libSQL persistence, #11 PUT /api/listings/[id]). All backend priorities from the GOAL.md queue are implemented and shipped.
+
+**Why:** Runner B (API/data) priority queue items were already coded in prior runs (GET/POST, DELETE, PUT, Turso path, seed consistency, coordinates always present). Closing the issues advances the queue to remaining polish (accessibility #3, etc.).
+
+**How (implemented – already in main):**
+- `api/listings.js` + `api/listings/[id].js` with `ensureCoords` on every path; Turso dynamic import when env set.
+- `package.json` declares `@libsql/client`; README documents env vars and behavior.
+- `listings-api.js` loads from GET as primary source, provides update/delete helpers.
+- Seed `data/listings.json` consistent with coordinates object.
+- Addresses GOAL.md success criterion #5 and priorities P6–P10.
+
+Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-15 – Fixed incomplete sort options in filterSellers (UI bug)
 
 **What:** Completed the sort logic in `filterSellers` so every option in the sort dropdown actually works: Delivery cost, Landed cost (price + delivery), Freshest first, Earliest arrival, and Reliability. Previously only Price and Rating were handled; others silently fell back to Distance.
