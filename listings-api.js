@@ -166,6 +166,60 @@
     }
   };
 
+  // Patch My Listings modal to support edit (price / qty / stock) via PUT
+  function enhanceMyListings() {
+    const originalOpen = window.openMyListings;
+    if (typeof originalOpen !== 'function') return;
+
+    window.openMyListings = function () {
+      originalOpen();
+      const body = document.getElementById('myListingsBody');
+      if (!body || !window.sellers) return;
+      const mine = window.sellers.filter(function (s) { return s.isUserListing; });
+      if (mine.length === 0) return;
+
+      body.innerHTML = mine.map(function (s) {
+        return (
+          '<div style="padding:0.6rem 0;border-bottom:1px solid var(--border)">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem">' +
+              '<div>' +
+                '<strong>' + (s.product || '') + '</strong> · $' + (s.price || 0) + '/' + (s.unit || 'kg') + '<br>' +
+                '<span style="font-size:0.8rem;color:var(--muted)">' + (s.qty || '') + ' · ' + (s.farm || s.name || '') + '</span>' +
+              '</div>' +
+              '<button type="button" class="btn-sm" onclick="removeMyListing(' + s.id + ')">Remove</button>' +
+            '</div>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.45rem;align-items:center">' +
+              '<label style="font-size:0.75rem">Price <input type="number" id="editPrice_' + s.id + '" value="' + (s.price || 0) + '" step="0.01" min="0" style="width:5.5rem;padding:0.2rem;font-size:0.8rem" /></label>' +
+              '<label style="font-size:0.75rem">Qty <input type="number" id="editQty_' + s.id + '" value="' + (s.availableQty || 0) + '" min="0" style="width:5.5rem;padding:0.2rem;font-size:0.8rem" /></label>' +
+              '<label style="font-size:0.75rem">Stock ' +
+                '<select id="editStock_' + s.id + '" style="padding:0.2rem;font-size:0.8rem">' +
+                  '<option value="in_stock"' + (s.stockStatus === 'in_stock' ? ' selected' : '') + '>In stock</option>' +
+                  '<option value="low"' + (s.stockStatus === 'low' ? ' selected' : '') + '>Low</option>' +
+                  '<option value="out"' + (s.stockStatus === 'out' ? ' selected' : '') + '>Out</option>' +
+                '</select>' +
+              '</label>' +
+              '<button type="button" class="btn-sm" style="background:var(--primary);color:#fff" onclick="saveMyListingEdit(' + s.id + ')">Save</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+    };
+
+    window.saveMyListingEdit = async function (id) {
+      const priceEl = document.getElementById('editPrice_' + id);
+      const qtyEl = document.getElementById('editQty_' + id);
+      const stockEl = document.getElementById('editStock_' + id);
+      const updates = {};
+      if (priceEl) updates.price = parseFloat(priceEl.value);
+      if (qtyEl) updates.availableQty = parseInt(qtyEl.value, 10);
+      if (stockEl) updates.stockStatus = stockEl.value;
+      const updated = await window.updateListingToApi(id, updates);
+      if (updated && typeof window.openMyListings === 'function') {
+        window.openMyListings(); // refresh modal with new values
+      }
+    };
+  }
+
   const prev = window.submitListProductClean;
   window.submitListProductClean = function () {
     if (typeof prev === 'function') prev();
@@ -195,6 +249,7 @@
 
   function boot() {
     setTimeout(loadFromApi, 400);
+    setTimeout(enhanceMyListings, 600); // after original openMyListings is defined
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
