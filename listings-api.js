@@ -1,7 +1,7 @@
 /**
  * FarmDirect — load live listings from open API (/api/listings)
  * Merges into window.sellers, ensures coordinates, refreshes map markers.
- * Also provides publish + delete helpers used by the seller portal.
+ * Also provides publish + delete + update helpers used by the seller portal.
  */
 (function () {
   'use strict';
@@ -34,6 +34,18 @@
     }
     window.markerCluster.addLayer(marker);
     window.markers[s.id] = marker;
+  }
+
+  function refreshMarkerPopup(s) {
+    if (!window.markers || !window.markers[s.id]) return;
+    const marker = window.markers[s.id];
+    if (typeof window.buildPopupHtml === 'function' && marker.bindPopup) {
+      marker.bindPopup(window.buildPopupHtml(s));
+    }
+    // Move marker if coordinates changed
+    if (s.lat != null && s.lng != null && marker.setLatLng) {
+      marker.setLatLng([s.lat, s.lng]);
+    }
   }
 
   async function loadFromApi() {
@@ -103,6 +115,34 @@
     } catch (e) {
       console.warn('API delete failed (local removal still applied)', e);
       return false;
+    }
+  };
+
+  window.updateListingToApi = async function (id, updates) {
+    try {
+      const res = await fetch(API + '/' + encodeURIComponent(id), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(updates || {}),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'PUT failed');
+      const listing = ensureCoords(data.listing);
+
+      if (window.sellers) {
+        const idx = window.sellers.findIndex(function (s) { return s.id === listing.id || s.id == id; });
+        if (idx !== -1) {
+          window.sellers[idx] = Object.assign({}, window.sellers[idx], listing);
+          ensureCoords(window.sellers[idx]);
+          refreshMarkerPopup(window.sellers[idx]);
+        }
+      }
+      if (typeof window.filterSellers === 'function') window.filterSellers();
+      if (typeof showToast === 'function') showToast('Listing updated');
+      return listing;
+    } catch (e) {
+      console.warn('API update failed', e);
+      return null;
     }
   };
 

@@ -40,3 +40,18 @@ Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
 - Addresses GitHub issue #12. Acceptance: no console errors on missing `traceableToggle`, `regionKent`, etc.; clear still works.
 
 Fully client-side. Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – PUT /api/listings/[id] for price/qty/stock (Issue #11)
+
+**What:** Added `PUT /api/listings/:id` that updates `price`, `availableQty`, and `stockStatus` on user listings. Coordinates remain required and are left unchanged unless both `lat` and `lng` are explicitly sent. Client helper `updateListingToApi` applies the result to `window.sellers`, rebinds the map popup, and refreshes the list.
+
+**Why:** Sellers need a way to adjust price, quantity, and stock status after publishing. Issue #11 required validation, reflection on map/card, and coordinate integrity. Seed data stays immutable; only tmp extras or Turso rows are mutable.
+
+**How (implemented):**
+- `api/listings/[id].js` now accepts PUT with field validation (`price >= 0`, `availableQty >= 0`, `stockStatus` in `in_stock|low|out`).
+- Updates write to `/tmp/farmdirect-listings-extra.json` or Turso (`UPDATE ... WHERE id`).
+- Every response listing is passed through `ensureCoords`.
+- `listings-api.js` exposes `window.updateListingToApi(id, updates)` which refreshes local state, marker popup, and calls `filterSellers`.
+- Addresses GitHub issue #11 and keeps the open-source JSON + optional Turso stack.
+
+Cycle continues (still within 60 days of 2026-10-11).
