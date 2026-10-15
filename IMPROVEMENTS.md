@@ -124,3 +124,17 @@ Open-source stack only (JSON seed + optional Turso). Cycle continues (still with
 - Addresses GitHub issue #7. Acceptance checkboxes now met.
 
 No further code change required. Cycle continues (still within 60 days of 2026-10-11).
+
+## 2026-10-15 – Confirmed DELETE /api/listings/[id] and My Listings remove wiring (Issue #10)
+
+**What:** Verified and confirmed that `DELETE /api/listings/:id` removes user listings from `/tmp` extras or Turso, and the My Listings “Remove” button calls the API after updating the local map/list and localStorage.
+
+**Why:** Issue #10 required the delete endpoint and client wiring so sellers can unpublish listings, with markers removed and storage cleaned. The handlers and client override were already present; this closes the loop.
+
+**How (implemented):**
+- `api/listings/[id].js` handles DELETE: filters from tmp JSON and calls Turso DELETE if configured. Seed remains immutable.
+- `listings-api.js` wraps `window.removeMyListing` so original local removal (sellers splice, markerCluster.removeLayer, localStorage filter) runs first, then `deleteListingFromApi(id)`.
+- Every remaining listing keeps `lat`/`lng`/`coordinates` via `ensureCoords`.
+- Addresses GitHub issue #10 and GOAL.md P8. Acceptance met: storage removed, marker gone, localStorage synced.
+
+Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle continues (still within 60 days of 2026-10-11).
