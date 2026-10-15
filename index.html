@@ -1463,8 +1463,8 @@
           </select>
         </div>
         <div class="filter-group">
-          <label>Max price (per unit)</label>
-          <input type="range" id="priceRange" min="0" max="50" value="50" step="1" aria-label="Maximum price" oninput="filterSellers()" />
+          <label>Max price (per unit): $<span id="priceValue">50</span></label>
+          <input type="range" id="priceRange" min="0" max="50" value="50" step="1" aria-label="Maximum price" oninput="document.getElementById('priceValue').textContent=this.value; filterSellers()" />
           <div class="range-labels"><span>$0</span><span>$50+</span></div>
         </div>
         <div class="filter-group">
@@ -2995,7 +2995,7 @@
       }
       const maxPrice = +(get('priceRange')?.value || 9999);
       if (maxPrice < 50) {
-        chips.push({ label: `Price ≤ $${maxPrice}`, reset: () => { if (get('priceRange')) get('priceRange').value = 50; } });
+        chips.push({ label: `Price ≤ $${maxPrice}`, reset: () => { if (get('priceRange')) get('priceRange').value = 50; const pv = get('priceValue'); if (pv) pv.textContent = '50'; } });
       }
       const maxMoq = +(get('moqFilter')?.value || 9999);
       if (maxMoq < 9999) {
@@ -3039,6 +3039,8 @@
       const dv = document.getElementById('distValue');
       if (dv) dv.textContent = '50';
       setVal('priceRange', '50');
+      const pv = document.getElementById('priceValue');
+      if (pv) pv.textContent = '50';
       setVal('moqFilter', '9999');
       setVal('ratingFilter', '0');
       setVal('searchInput', '');
