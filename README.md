@@ -40,7 +40,7 @@ Interactive prototype of a B2B agricultural marketplace connecting farms/sellers
 - **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
 - **Quick Contact + Copy Summary** – Call / Email buttons (tel: & mailto:) and one-click copy of a procurement-ready seller summary (price, MOQ, lead time, delivery days, contact details, shareable link) from cards and the detail drawer
 - **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
-- **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist in localStorage and show a “Your listing” badge on map/list.
+- **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist via the open API (localStorage fallback) and show a “Your listing” badge on map/list.
 - Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
 - **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
 - **Accessibility** – skip-to-content link, aria-live result announcements & toasts, visible focus styles, basic landmarks; all selects, ARIA switches, range inputs and icon buttons have accessible names; improved muted-text contrast
@@ -70,6 +70,41 @@ python3 -m http.server 8080
 Live deployment: https://farmdirect-b2b.vercel.app (or project URL from Vercel dashboard)
 
 GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
+
+## Open Backend (Listings API)
+
+Vercel serverless functions provide the live listings backend required by the product goal. Every listing always has `lat`, `lng`, and `coordinates`.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/listings` | Seed (`data/listings.json`) + user listings. Returns `{ listings, source, count }`. |
+| POST | `/api/listings` | Create listing (requires `name`, `product`, `price` ≥ 0). |
+| PUT | `/api/listings/:id` | Update `price`, `availableQty`, `stockStatus` (coords unchanged unless both lat & lng sent). |
+| DELETE | `/api/listings/:id` | Remove a user listing from storage. |
+
+Source is `"json+tmp"` (ephemeral `/tmp` extras) or `"turso"` when durable storage is configured.
+
+### Optional Turso / libSQL persistence (issue #9)
+
+For durable writes that survive cold starts (instead of ephemeral `/tmp`):
+
+1. Create a Turso database and apply `schema.sql` (SQLite / libSQL compatible; coordinates are NOT NULL).
+2. On Vercel: Project Settings → Environment Variables, add:
+   - `TURSO_DATABASE_URL` (e.g. `libsql://your-db-name.turso.io`)
+   - `TURSO_AUTH_TOKEN`
+3. (Optional but recommended) Add `@libsql/client` so the dynamic import succeeds:
+   ```bash
+   npm init -y && npm install @libsql/client
+   ```
+   Then redeploy. Without the package the API falls back gracefully to JSON + `/tmp`.
+4. Seed: the handler always reads `data/listings.json` as the immutable base. User POSTs go to Turso when configured. You can also INSERT the seed rows once if you prefer a pure Turso source.
+
+When the env vars are set and the client is available:
+- GET returns `source: "turso"`
+- POST inserts and is visible on subsequent GET
+- PUT / DELETE operate on the same store
+
+Open-source stack only: JSON seed + SQLite schema + optional Turso. No proprietary services required.
 
 ## Improvement log
 
