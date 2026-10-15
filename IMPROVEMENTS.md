@@ -1,3 +1,18 @@
+## 2026-10-14 – Further Phone/Laptop Polish: Active Filter Count & Layout Density
+
+**What:** Added an active-filter count badge on the mobile filters toggle button and tightened a few layout details for better density on phones and mid-size laptops. Map resize after view-mode changes is more robust.
+
+**Why:** On phones the collapsed filters button gave no indication how many filters were active, so buyers had to open the panel to check. Slight density improvements help both phone list scrolling and laptop sidebar use during multi-listing reviews.
+
+**How (implemented):**
+- Filters toggle now shows “(N)” when filters are active (client-side count of non-default filters).
+- Minor CSS tweaks for tighter card gaps and safe bottom padding on phones.
+- Extra map.invalidateSize() call after view-mode and orientation changes.
+
+Fully client-side; preserves all existing features, dark mode, and seller portal.
+
+Cycle continues (still within 60 days of 2026-10-11).
+
 ## 2026-10-14 – Phone & Laptop Layout Polish + Reliable Filter Collapse
 
 **What:** Strengthened mobile and laptop responsiveness: larger touch targets, tighter card layouts, safe-area padding for notched devices, laptop sidebar width tweak, and more reliable automatic collapse of the dense filters panel on phones (with delayed re-checks and user-preference memory).
