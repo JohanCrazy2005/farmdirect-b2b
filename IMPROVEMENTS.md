@@ -81,3 +81,17 @@ Open-source stack only (JSON seed + SQLite schema + optional Turso). Cycle conti
 - Badges capped at ≤3 via `getLeanBadges`.
 
 No new filters, badges, or form fields. Production deploy expected from Git push.
+
+## 2026-10-15 – Closed Issue #7: Review score on map popups
+
+**What:** Confirmed and closed GitHub issue #7. Map popups already render a prominent ★ rating near the top.
+
+**Why:** Acceptance criteria (visible without scrolling, works with 0 reviews, light/dark readable) were fully met in prior commits. Closing clears the next priority queue item.
+
+**How (verified):**
+- `buildPopupHtml` places `<div class="seller-rating">★ ${rating.toFixed(1)} (${reviews} reviews)</div>` immediately after the product line.
+- Null-safe defaults (0 / 0).
+- Color uses `var(--text)` so it remains readable in both themes.
+- Comment added on the issue recommending close.
+
+No code changes required. Cycle continues (still within 60 days of 2026-10-11).
