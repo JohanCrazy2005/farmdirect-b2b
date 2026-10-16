@@ -2590,8 +2590,8 @@
               <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="addToInquiry(${s.id}, event)" title="Add to Inquiry Cart">+ Cart</button>
               <button type="button" class="btn-sm" style="padding:0.2rem 0.45rem;font-size:0.75rem" onclick="event.stopPropagation(); copySellerSummary(${s.id})" title="Copy seller summary for email or procurement" aria-label="Copy summary for ${s.name}">📋</button>
               <div class="seller-rating">
-                <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5 - Math.floor(s.rating))}</span>
-                <span>${s.rating} (${s.reviews})</span>
+                <span class="stars">${'★'.repeat(Math.floor(Number(s.rating) || 0))}${'☆'.repeat(5 - Math.floor(Number(s.rating) || 0))}</span>
+                <span>${(Number(s.rating) || 0).toFixed(1)} (${Number(s.reviews) || 0})</span>
               </div>
             </div>
             <button class="btn-sm" onclick="event.stopPropagation(); openRfqModal(${s.id})">Request Quote</button>
@@ -3526,7 +3526,7 @@
         <div class="drawer-meta"><strong>Freshness:</strong> ${freshnessLabel(s.harvestDaysAgo)}</div>
         <div class="drawer-meta"><strong>Delivery days:</strong> ${(s.deliveryDays || []).join(', ') || 'On request'}</div>
         <div class="drawer-meta"><strong>Supply:</strong> ${s.yearRound ? 'Year-round' : 'Seasonal'}</div>
-        <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${s.rating} (${s.reviews} reviews)</div>
+        <div class="drawer-meta"><strong>Distance:</strong> ${s.distance} km · <strong>Rating:</strong> ${(Number(s.rating) || 0).toFixed(1)} (${Number(s.reviews) || 0} reviews)</div>
         <div class="drawer-meta"><strong>Contact:</strong> ${getSellerPhone(s)} · <a href="mailto:${getSellerEmail(s)}">${getSellerEmail(s)}</a></div>
         ${tierHtml ? '<div style="margin-top:0.75rem"><strong>Volume pricing</strong>' + tierHtml + '</div>' : ''}
         <div class="notes-section">

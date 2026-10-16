@@ -138,3 +138,11 @@ Issue closed as completed. Remaining open items (#5, #12, #6, #3) are next in qu
 - Scripts `cleanup.js` + `listings-api.js` loaded before `</body>`; badges ≤3 via `getLeanBadges`; ★ rating on map popups.
 
 No new filters, badges, or form fields. Cycle continues (within 60 days of 2026-10-11).
+
+## 2026-10-16 – Null-safe rating display on seller cards and drawer
+
+**What:** Made star rating and review count on list cards and the seller detail drawer null-safe (defaults to 0 / 0.0), matching the already-safe map popup.
+
+**Why:** `Math.floor(s.rating)` and bare `${s.rating}` throw or render "undefined" when a listing lacks rating/reviews (e.g. newly published user listings). Real UI bug with missing data.
+
+**How:** `Number(s.rating) || 0` / `Number(s.reviews) || 0` and `.toFixed(1)` for consistent display. No new filters, badges, or form fields. All GOAL.md P1–P11 priorities remain complete; no open issues. Cycle continues (within 60 days of 2026-10-11).
