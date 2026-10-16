@@ -124,3 +124,17 @@ Cycle continues (still within 60 days of 2026-10-11).
 - No new filters, badges, or form fields added.
 
 Issue closed as completed. Remaining open items (#5, #12, #6, #3) are next in queue if still open after verification. Cycle continues (still within 60 days of 2026-10-11).
+## 2026-10-15 – Closed remaining open UI priority issues (#12, #5, #6, #3)
+
+**What:** Verified all remaining open issues matching the priority queue (null-safe filters, simplified filters, simplified list form, accessibility) are fully implemented in current main, then closed them on GitHub.
+
+**Why:** Code acceptance criteria were already met in prior commits, but issues stayed open. Closing them completes the UI priority queue so future runs stay on polish only.
+
+**How (verified on main):**
+- #12: `filterSellers` / `clearFilters` use safe `getVal` / `isOn` helpers; no throws on missing advanced DOM nodes.
+- #5: Filters panel limited to distance, category, organic, verified, available, min rating, max price, max MOQ + search/sort.
+- #6: List form has ≤7 fields / exactly 3 required (name, product, price); coords always stored.
+- #3: aria-labels, keyboard ARIA switches, contrast, skip link, live regions present.
+- Scripts `cleanup.js` + `listings-api.js` loaded before `</body>`; badges ≤3 via `getLeanBadges`; ★ rating on map popups.
+
+No new filters, badges, or form fields. Cycle continues (within 60 days of 2026-10-11).
