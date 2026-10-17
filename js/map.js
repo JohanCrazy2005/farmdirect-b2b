@@ -1,6 +1,6 @@
 /**
  * FarmDirect B2B – Leaflet map module
- * Markers, clustering (optional), popup → product card
+ * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
  */
 (function (global) {
   'use strict';
@@ -9,6 +9,16 @@
   let markersLayer;
   let listings = [];
   let selectedId = null;
+
+  const CATEGORY_COLORS = {
+    produce: '#2d6a4f',
+    dairy: '#1d4ed8',
+    eggs: '#d97706',
+    grains: '#92400e',
+    herbs: '#059669',
+    honey: '#f59e0b',
+    default: '#40916c'
+  };
 
   function initMap() {
     const cfg = global.FD_CONFIG || {};
@@ -24,11 +34,27 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Marker cluster if library loaded
+    // Fuller marker cluster support
     if (typeof L.markerClusterGroup === 'function') {
       markersLayer = L.markerClusterGroup({
         showCoverageOnHover: false,
-        maxClusterRadius: 50,
+        maxClusterRadius: 60,
+        spiderfyOnMaxZoom: true,
+        spiderfyDistanceMultiplier: 1.5,
+        disableClusteringAtZoom: 15,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          let size = 'small';
+          if (count >= 10) size = 'large';
+          else if (count >= 5) size = 'medium';
+          return L.divIcon({
+            html: `<div class="cluster-icon cluster-${size}"><span>${count}</span></div>`,
+            className: 'marker-cluster-custom',
+            iconSize: L.point(40, 40),
+            iconAnchor: L.point(20, 20)
+          });
+        }
       });
     } else {
       markersLayer = L.layerGroup();
@@ -42,6 +68,16 @@
     if (markersLayer) markersLayer.clearLayers();
   }
 
+  function makeMarkerIcon(category) {
+    const color = CATEGORY_COLORS[category] || CATEGORY_COLORS.default;
+    return L.divIcon({
+      className: 'category-marker',
+      html: `<div style="background:${color}"></div>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+  }
+
   function renderMarkers(newListings) {
     listings = newListings || [];
     clearMarkers();
@@ -53,6 +89,7 @@
 
       const marker = L.marker([lat, lng], {
         title: listing.headerdescription,
+        icon: makeMarkerIcon(listing.category)
       });
 
       marker.on('click', () => {
@@ -62,7 +99,6 @@
         }
       });
 
-      // Simple popup
       marker.bindPopup(`
         <strong>${escapeHtml(listing.headerdescription)}</strong><br>
         <span>${escapeHtml(listing.category)} · $${listing.price} / ${escapeHtml(listing.units)}</span>
@@ -82,11 +118,6 @@
 
   function selectListing(id) {
     selectedId = id;
-    listings.forEach(l => {
-      if (l._marker) {
-        // Could style selected marker later
-      }
-    });
     if (global.FD_LIST && global.FD_LIST.highlight) {
       global.FD_LIST.highlight(id);
     }
@@ -94,8 +125,11 @@
 
   function flyTo(listing) {
     if (!map || !listing?.location) return;
-    map.flyTo([listing.location.lat, listing.location.long], 14, { duration: 0.6 });
-    if (listing._marker) listing._marker.openPopup();
+    map.flyTo([listing.location.lat, listing.location.long], 15, { duration: 0.6 });
+    if (listing._marker) {
+      // Ensure popup opens even if previously clustered
+      setTimeout(() => listing._marker.openPopup(), 300);
+    }
   }
 
   function escapeHtml(s) {

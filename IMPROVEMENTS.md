@@ -1,3 +1,15 @@
+## 2026-10-17 – P2: fuller marker clustering (custom icons, spiderfy, category markers)
+
+**What:** Upgraded Leaflet marker clustering from basic MarkerClusterGroup to a polished version with custom count-based cluster icons (small/medium/large, primary-colored), category-tinted individual markers, spiderfyOnMaxZoom, disableClusteringAtZoom: 15, zoomToBoundsOnClick, and improved flyTo that opens popups after zoom. Added matching CSS.
+
+**Why:** P1 deploy remains user-action only (commands in README). Completing the remaining P2 clustering item gives a cleaner map experience with seed data while the Worker is undeployed.
+
+**How:** One commit. Updated js/map.js (iconCreateFunction, category divIcons, fuller options), css/main.css (cluster and marker styles), GOAL.md (marked clustering done), IMPROVEMENTS.md.
+
+Next: remaining P2 empty/loading state refinements or user-run deploy, then P3 seller form.
+
+---
+
 ## 2026-10-17 – P2 polish: mobile bottom-sheet, a11y, theme system preference
 
 **What:** Enhanced mobile experience with a collapsible bottom-sheet sidebar, improved accessibility (ARIA attributes, focus-visible rings, keyboard Escape to close overlays, role/button on sidebar header), refined theme handling that respects prefers-color-scheme and persists choice, and a simple options dropdown menu. Removed legacy script tags from index.html.

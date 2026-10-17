@@ -49,7 +49,7 @@ Seed fallback when API offline.
 **Exact commands are in README.md.** Run them after `npx wrangler login`.
 
 ### P2 Polish UI
-- [ ] Marker clustering (library already loaded; basic support added)
+- [x] Marker clustering (library already loaded; fuller custom icons, spiderfy, disable-at-zoom, category markers)
 - [ ] Empty/loading states (basic added)
 - [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
 
@@ -74,4 +74,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P2 mobile/a11y/theme polish.*
+*Last updated: 2026-10-17 – P2 marker clustering refinements.*
