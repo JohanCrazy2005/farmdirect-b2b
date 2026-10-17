@@ -31,7 +31,14 @@
   </header>
 
   <div class="main">
-    <div id="map" role="application" aria-label="Listings map"></div>
+    <div id="map" role="application" aria-label="Listings map">
+      <div id="map-overlay" class="map-overlay">
+        <div class="overlay-content">
+          <div class="spinner" aria-hidden="true"></div>
+          <div>Loading listings…</div>
+        </div>
+      </div>
+    </div>
 
     <!-- Side list panel -->
     <aside class="sidebar" aria-label="Listings list">
@@ -40,7 +47,10 @@
         <span id="list-count" class="count"></span>
       </div>
       <div id="listing-list" class="listing-list" role="list">
-        <div class="loading-state">Loading…</div>
+        <!-- Skeletons shown while loading -->
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-line"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-line"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-line"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div></div>
       </div>
     </aside>
   </div>

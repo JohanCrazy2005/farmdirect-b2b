@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – app bootstrap
  * Theme (system + persisted), options menu, mobile sidebar toggle, a11y hooks
+ * Polished loading / empty state coordination
  */
 (function () {
   'use strict';
@@ -31,6 +32,11 @@
     }
   }
 
+  function hideMapOverlay() {
+    const overlay = document.getElementById('map-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
 
@@ -42,11 +48,14 @@
 
     // Load data (API or seed)
     const statusEl = document.getElementById('data-status');
-    if (statusEl) statusEl.textContent = 'Loading listings…';
+    if (statusEl) statusEl.textContent = 'Loading…';
 
     const result = await (window.FD_API ? FD_API.fetchListings() : Promise.resolve({ listings: [], source: 'none' }));
 
     if (window.FD_LIST) FD_LIST.setListings(result.listings);
+
+    // Hide map loading overlay once data is ready (list.js will re-show if empty)
+    hideMapOverlay();
 
     if (statusEl) {
       const badge = result.source === 'seed'

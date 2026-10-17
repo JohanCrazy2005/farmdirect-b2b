@@ -1,3 +1,15 @@
+## 2026-10-17 – P2: polished empty & loading states
+
+**What:** Replaced basic text loading/empty with skeleton cards in the list, a map loading overlay with spinner, and richer empty states that distinguish “no data at all” from “no filter matches”. Empty list offers a clear-filters button when filters are active. Map overlay reappears with a message when the filtered set is empty.
+
+**Why:** P1 deploy remains user-action only (commands in README). Completing the remaining P2 empty/loading item improves perceived performance and clarity while the Worker is still undeployed and only seed data is available.
+
+**How:** One commit. Updated css/main.css (skeletons, shimmer, map-overlay, improved empty-state), index.html (skeleton placeholders + map overlay), js/list.js (smarter empty rendering + overlay control), js/main.js (hide overlay after fetch), GOAL.md (marked empty/loading done), IMPROVEMENTS.md.
+
+Next: user-run P1 deploy, or move to P3 seller listing form.
+
+---
+
 ## 2026-10-17 – P2: fuller marker clustering (custom icons, spiderfy, category markers)
 
 **What:** Upgraded Leaflet marker clustering from basic MarkerClusterGroup to a polished version with custom count-based cluster icons (small/medium/large, primary-colored), category-tinted individual markers, spiderfyOnMaxZoom, disableClusteringAtZoom: 15, zoomToBoundsOnClick, and improved flyTo that opens popups after zoom. Added matching CSS.

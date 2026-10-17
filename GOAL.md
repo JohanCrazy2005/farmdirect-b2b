@@ -50,7 +50,7 @@ Seed fallback when API offline.
 
 ### P2 Polish UI
 - [x] Marker clustering (library already loaded; fuller custom icons, spiderfy, disable-at-zoom, category markers)
-- [ ] Empty/loading states (basic added)
+- [x] Empty/loading states (skeletons, map overlay, clearer empty UX)
 - [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
 
 ### P3 Seller experience
@@ -74,4 +74,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P2 marker clustering refinements.*
+*Last updated: 2026-10-17 – P2 empty/loading states polished.*
