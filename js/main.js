@@ -1,10 +1,39 @@
 /**
  * FarmDirect B2B – app bootstrap
+ * Theme (system + persisted), options menu, mobile sidebar toggle, a11y hooks
  */
 (function () {
   'use strict';
 
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('fd-theme', theme);
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = isDark ? '☾' : '☀';
+    btn?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  }
+
+  function initTheme() {
+    const stored = localStorage.getItem('fd-theme');
+    if (stored === 'dark' || stored === 'light') {
+      applyTheme(stored);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
+    // Listen for system changes only if no explicit preference
+    if (!stored && window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        applyTheme(e.matches ? 'dark' : 'light');
+      });
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
+
     // Init map
     if (window.FD_MAP) FD_MAP.initMap();
 
@@ -28,24 +57,64 @@
       statusEl.innerHTML = `${result.count} listings ${badge}`;
     }
 
-    // Theme toggle (simple)
+    // Theme toggle
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) {
       themeBtn.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('fd-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        applyTheme(next);
       });
-      if (localStorage.getItem('fd-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
     }
 
-    // Profile / options menu placeholders
+    // Options menu
+    const optionsBtn = document.getElementById('options-btn');
+    const optionsMenu = document.getElementById('options-menu');
+    if (optionsBtn && optionsMenu) {
+      optionsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        optionsMenu.classList.toggle('open');
+        optionsBtn.setAttribute('aria-expanded', optionsMenu.classList.contains('open'));
+      });
+      document.addEventListener('click', () => optionsMenu.classList.remove('open'));
+      optionsMenu.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    // Profile placeholder
     document.getElementById('profile-btn')?.addEventListener('click', () => {
       alert('Profile / seller dashboard coming in P3/P4.');
     });
-    document.getElementById('options-btn')?.addEventListener('click', () => {
-      alert('Options menu: theme, about, deploy status.');
+
+    // Mobile sidebar collapse toggle
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarHeader = document.querySelector('.sidebar-header');
+    if (sidebar && sidebarHeader && window.innerWidth <= 768) {
+      sidebar.classList.add('collapsed');
+      sidebarHeader.setAttribute('role', 'button');
+      sidebarHeader.setAttribute('aria-expanded', 'false');
+      sidebarHeader.setAttribute('tabindex', '0');
+      const toggle = () => {
+        sidebar.classList.toggle('collapsed');
+        const expanded = !sidebar.classList.contains('collapsed');
+        sidebarHeader.setAttribute('aria-expanded', expanded);
+      };
+      sidebarHeader.addEventListener('click', toggle);
+      sidebarHeader.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      });
+    }
+
+    // Escape closes overlays
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('filter-card')?.classList.remove('open');
+        document.getElementById('product-card')?.classList.remove('open');
+        document.getElementById('seller-card')?.classList.remove('open');
+        document.getElementById('options-menu')?.classList.remove('open');
+        document.getElementById('filter-btn')?.classList.remove('active');
+      }
     });
   });
 })();

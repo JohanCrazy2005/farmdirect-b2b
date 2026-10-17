@@ -51,7 +51,7 @@ Seed fallback when API offline.
 ### P2 Polish UI
 - [ ] Marker clustering (library already loaded; basic support added)
 - [ ] Empty/loading states (basic added)
-- [ ] Mobile, a11y, theme
+- [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
 
 ### P3 Seller experience
 - [ ] Add listing form, edit/delete, image upload
@@ -74,4 +74,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – Modular frontend + seed fallback UX.*
+*Last updated: 2026-10-17 – P2 mobile/a11y/theme polish.*

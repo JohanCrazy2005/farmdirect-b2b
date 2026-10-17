@@ -1,3 +1,15 @@
+## 2026-10-17 – P2 polish: mobile bottom-sheet, a11y, theme system preference
+
+**What:** Enhanced mobile experience with a collapsible bottom-sheet sidebar, improved accessibility (ARIA attributes, focus-visible rings, keyboard Escape to close overlays, role/button on sidebar header), refined theme handling that respects prefers-color-scheme and persists choice, and a simple options dropdown menu. Removed legacy script tags from index.html.
+
+**Why:** P1 deploy remains user-action only (commands already in README). This completes the mobile/a11y/theme portion of P2 polish while the Worker stays undeployed. Seed fallback UX continues to work immediately.
+
+**How:** One commit. Updated css/main.css (mobile media query + focus styles + options menu), js/main.js (theme init with system preference, options menu, sidebar toggle, Escape handler), index.html (ARIA, options menu markup, removed old scripts). GOAL.md marked the item done.
+
+Next: remaining P2 (fuller marker clustering refinements) or user-run deploy, then P3 seller form.
+
+---
+
 ## 2026-10-17 – Modular frontend (css/js) + improved seed-fallback UX
 
 **What:** Replaced the monolithic index.html with a clean modular shell and extracted substantial modules under css/ and js/. Implemented transparent top bar, filter card, product + seller cards, side list synced with map, Leaflet + optional marker clustering, and a robust data layer that falls back to data/seed-listings.json when the Worker is not yet deployed.
