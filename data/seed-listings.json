@@ -1,0 +1,80 @@
+[
+  {
+    "id": "seed-1",
+    "location": { "lat": 39.7392, "long": -104.9903 },
+    "visibility": "country",
+    "address": "123 Green Valley Rd, Denver, CO 80202",
+    "sellerid": "seller-greenfield",
+    "category": "produce",
+    "headerdescription": "Organic vine-ripened tomatoes",
+    "price": 1.35,
+    "units": "kg",
+    "description": "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available in bulk for restaurants and retailers.",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-2",
+    "location": { "lat": 39.7555, "long": -104.9903 },
+    "visibility": "province",
+    "address": "456 Riverside Lane, Denver, CO 80205",
+    "sellerid": "seller-riverside",
+    "category": "dairy",
+    "headerdescription": "Fresh pasture-raised milk",
+    "price": 0.68,
+    "units": "liter",
+    "description": "Pasture-based dairy producing fresh milk and cream. Daily delivery available within metro Denver.",
+    "image": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-3",
+    "location": { "lat": 39.7200, "long": -105.0100 },
+    "visibility": "worldwide",
+    "address": "789 Oakwood Farm Rd, Golden, CO 80401",
+    "sellerid": "seller-oakwood",
+    "category": "eggs",
+    "headerdescription": "Free-range organic eggs",
+    "price": 2.10,
+    "units": "dozen",
+    "description": "Free-range poultry farm with daily egg collection. Certified organic.",
+    "image": "https://images.unsplash.com/photo-1582722872448-3b6d1b0c4f1a?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-4",
+    "location": { "lat": 39.7000, "long": -104.9500 },
+    "visibility": "country",
+    "address": "321 Meadowbrook Dr, Aurora, CO 80012",
+    "sellerid": "seller-meadowbrook",
+    "category": "grains",
+    "headerdescription": "Bulk hard red winter wheat",
+    "price": 235.00,
+    "units": "ton",
+    "description": "Large-scale grain grower offering bulk wheat. Pickup preferred.",
+    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-5",
+    "location": { "lat": 39.7600, "long": -105.0200 },
+    "visibility": "province",
+    "address": "555 Hillside Growers, Boulder, CO 80301",
+    "sellerid": "seller-hillside",
+    "category": "herbs",
+    "headerdescription": "Fresh culinary herbs",
+    "price": 8.50,
+    "units": "kg",
+    "description": "Specialty herb grower with greenhouse and field production. Same-day harvest possible.",
+    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-6",
+    "location": { "lat": 39.6800, "long": -104.9200 },
+    "visibility": "worldwide",
+    "address": "999 Beehive Acres, Parker, CO 80134",
+    "sellerid": "seller-beehive",
+    "category": "honey",
+    "headerdescription": "Raw local wildflower honey",
+    "price": 12.00,
+    "units": "kg",
+    "description": "Raw honey from local apiaries. Small-batch, unfiltered.",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300&fit=crop"
+  }
+]

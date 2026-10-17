@@ -1,0 +1,13 @@
+name = "farmdirect-b2b"
+main = "workers/api.js"
+compatibility_date = "2026-10-17"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare D1 binding (already created)
+[[d1_databases]]
+binding = "DB"
+database_name = "b2bistening"
+database_id = "ad22b284-cafd-4f74-a8bc-6205056d38f8"
+
+[vars]
+ENVIRONMENT = "development"

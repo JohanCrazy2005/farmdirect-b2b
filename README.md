@@ -1,111 +1,76 @@
-# FarmDirect B2B – Direct Farm-to-Business Marketplace
+# FarmDirect B2B – Map-first B2B Marketplace (Fresh Start)
 
-Interactive prototype of a B2B agricultural marketplace connecting farms/sellers directly with buyers (restaurants, retailers, processors, etc.).
+Interactive map-first marketplace for agricultural products. Leaflet map + Cloudflare Worker + D1.
 
-## Features (functional)
+## Canonical data shape
 
-- **Collapsible filter groups** – sidebar filters organised into Location / Product & Quality / Commercial / Logistics accordions with active-count badges and session memory
-- **Marker clustering** – nearby sellers group into clusters at wider zooms (Leaflet.markercluster)
-- **RFQ / Request Quote modal** – quantity, delivery date, email, notes; validation + success toast
-- **Near Me** – browser geolocation, Haversine distance recalculation, user marker, saved position
-- **Verified seller badges** + “Verified only” filter
-- **Organic filter**, category, distance, price, search, sort
-- **Dark mode** (persisted in localStorage)
-- **MOQ & Lead Time** – badges on cards/popups + filters for max MOQ and max lead time
-- **Min. rating filter** – Any / 4.0+ / 4.5+ / 4.8+; rating + review count on cards and popups
-- **Supplier Reliability Score** – composite 0–100 badge (rating, reviews, verified, stock, response) + Min. reliability filter and Reliability sort
-- **Lot / Batch Traceability** – “Lot-tracked” badge on cards/popups/drawer + “Traceable only” filter (full chips/presets/URL support)
-- **Availability status** – In stock / Low / Out badges on cards & popups + “Available now only” filter
-- **Payment terms** – badges (Due on receipt / Net 15 / Net 30) on cards & popups + filter select
-- **Fulfillment method** – badges (Pickup / Delivery / Both) on cards & popups + filter select
-- **Volume pricing tiers** – bulk discounts shown on cards/popups + live unit price in RFQ modal
-- **Seller comparison view** – select 2–3 sellers and open a side-by-side comparison table
-- **Active filter chips** – dismissible chips showing current filters with individual clear
-- **Estimated delivery cost** – calculated from distance ($25 base + $0.70/km) shown on cards, popups, and RFQ; plus max delivery fee filter
-- **Private buyer notes** – attach personal notes to sellers (localStorage); shown in drawer + note badge on cards
-- **Quick quantity presets** in RFQ modal (10/25/50/100) for faster bulk inquiries + live tier pricing
-- **Recently viewed** – sidebar list of last 8 sellers opened (drawer/RFQ), persisted, one-click reopen
-- **One-click Reorder** – from Inquiry History, restore qty / notes / date (single) or rebuild cart (combined) and re-open the modal
-- **Inquiry history** – local log of sent RFQs (single + combined) with timestamps, notes indicator, re-open, status tracking (Pending / Quoted / Accepted / Declined), and **Export CSV** of the full history for procurement records
-- **Product grade** – badges (Premium / Standard / Surplus) + filter
-- **Pack format** – badges (Loose / Case / Pallet / Bulk) + filter
-- **Growing region** – badges (Kent / Norfolk / Cornwall / Yorkshire / Midlands / Sussex) + filter
-- **Available stock quantity** – numeric badges on cards/popups/drawer + Minimum stock filter (100+/500+/1,000+)
-- **Production method** – badges (Field / Greenhouse / Hydroponic / Pasture) + filter
-- **Storage / cold chain** – badges (Ambient / Chilled / Frozen) + filter
-- **Year-round supply** – Year-round / Seasonal badges + “Year-round only” filter
-- **Search radius circle** – visualizes the current max-distance filter on the map (centered on your location)
-- **Custom delivery point** – click the map to set a warehouse/kitchen pin; distances and delivery costs update from it
-- **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
-- **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
-- **Quick Contact + Copy Summary** – Call / Email buttons (tel: & mailto:) and one-click copy of a procurement-ready seller summary (price, MOQ, lead time, delivery days, contact details, shareable link) from cards and the detail drawer
-- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
-- **Seller Portal + Manage My Listings** – login, publish crops, then edit price/qty/stock status or unpublish from the My listings tab; listings persist via the open API (localStorage fallback) and show a “Your listing” badge on map/list.
-- Expanded sample data (produce, dairy, eggs, grains, herbs, honey)
-- **Mobile view toggle** – Floating Map / List / Split control on phones (full-height modes + persisted preference)
-- **Accessibility** – skip-to-content link, aria-live result announcements & toasts, visible focus styles, basic landmarks; all selects, ARIA switches, range inputs and icon buttons have accessible names; improved muted-text contrast
-- Responsive layout optimized for phone (collapsible filters, 100dvh, larger touch targets, Map/List/Split, landscape support) and laptop (tuned sidebar widths)
-- **Typical response time** – badges (Replies in 4h / Within 1 day / Within 2 days) on cards/popups/drawer + Max response time filter (4h/24h/48h)
-- **Min. reviews filter** – Any / 10+ / 20+ / 30+ to prioritise sellers with established feedback volume
-- **Reliability score** – composite ★ badge (verified + rating + review volume + response speed) on cards/popups/drawer + sort by reliability + Min. reliability filter (3.0+/3.5+/4.0+/4.5+)
-- **Earliest arrival date** – “Arrives ~15 Oct” badge on cards/popups/drawer based on lead time + “Earliest arrival within” filter + “Earliest arrival” sort
-- **Keyboard accessibility** – Escape closes top overlay (cart / compare / RFQ / drawer) and restores focus; `/` focuses search; Tab focus trap inside modals; proper ARIA on dialogs
-- **Live order cost estimator** – quantity input on each seller card instantly shows tiered unit price + product total + delivery + grand total; “Quote” button pre-fills RFQ with that qty
-- **Request Sample** – one-click sample requests (pre-fills RFQ with qty 5 + “Sample request:” notes); logged in Inquiry History as 🧪 Sample with full reorder/export support
-- **Delivery days** – badges (Mon/Wed/Fri etc.) on cards/popups/drawer + multi-select filter for schedule compatibility
-- **Next available delivery window** – dynamic badge showing the soonest regular delivery day from today (e.g. “Next: tomorrow (Thu)”)
-- **Quick Contact + Copy Summary** – Call / Email buttons (tel: & mailto:) and one-click copy of a procurement-ready seller summary (price, MOQ, lead time, delivery days, contact details, shareable link) from cards and the detail drawer
-- **Deep-linkable seller profiles** – `?seller=<id>` opens the drawer; Share button copies a ready link (filters preserved)
+`location{lat,long}`, `visibility` (worldwide|country|province), `address`, `sellerid`, `category`, `headerdescription`, `price`, `units`, `description`, `image`.
 
-## How to run
+See `schema/listings.schema.json` and `schema/d1-schema.sql`.
 
-Open `index.html` in any modern browser, or serve it:
+## Architecture
+
+Browser (Leaflet) → Worker (`workers/api.js`, binding `DB`) → D1 `b2bistening`.
+
+Seed fallback: `data/seed-listings.json` when API is offline.
+
+## P1 – Deploy & connect D1 (user action required)
+
+The database already exists:
+
+- name: `b2bistening`
+- id: `ad22b284-cafd-4f74-a8bc-6205056d38f8`
+- binding: `DB`
+
+### Exact commands
 
 ```bash
-npx serve .
-# or
-python3 -m http.server 8080
+# 1. Login (once)
+npx wrangler login
+
+# 2. Apply schema to the live D1 database
+npx wrangler d1 execute b2bistening --remote --file=./schema/d1-schema.sql
+
+# 3. (Optional) Seed the database from JSON
+#    You can convert seed-listings.json to INSERT statements or use a small script.
+#    For now, the Worker falls back gracefully if the table is empty.
+
+# 4. Deploy the Worker
+npx wrangler deploy
+
+# 5. Set the frontend API base (after you know the Worker URL)
+#    Edit index.html or js/config.js and set:
+#    window.FD_CONFIG = { API_BASE: 'https://farmdirect-b2b.<your-subdomain>.workers.dev' };
+
+# 6. Verify health
+curl https://farmdirect-b2b.<your-subdomain>.workers.dev/api/v1/health
 ```
 
-Live deployment: https://farmdirect-b2b.vercel.app (or project URL from Vercel dashboard)
+After deploy, the Worker serves:
 
-GitHub: https://github.com/JohanCrazy2005/farmdirect-b2b
+- `GET /api/v1/health`
+- `GET /api/v1/listings`
+- `GET /api/v1/listings/:id`
 
-## Open Backend (Listings API)
+## Local development
 
-Vercel serverless functions provide the live listings backend required by the product goal. Every listing always has `lat`, `lng`, and `coordinates`.
+```bash
+npx wrangler dev
+# Frontend can point API_BASE at http://localhost:8787
+```
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/listings` | Seed (`data/listings.json`) + user listings. Returns `{ listings, source, count }`. |
-| POST | `/api/listings` | Create listing (requires `name`, `product`, `price` ≥ 0). |
-| PUT | `/api/listings/:id` | Update `price`, `availableQty`, `stockStatus` (coords unchanged unless both lat & lng sent). |
-| DELETE | `/api/listings/:id` | Remove a user listing from storage. |
+## Project layout
 
-Source is `"json+tmp"` (ephemeral `/tmp` extras) or `"turso"` when durable storage is configured.
-
-### Optional Turso / libSQL persistence (issue #9)
-
-For durable writes that survive cold starts (instead of ephemeral `/tmp`):
-
-1. Create a Turso database and apply `schema.sql` (SQLite / libSQL compatible; coordinates are NOT NULL).
-2. On Vercel: Project Settings → Environment Variables, add:
-   - `TURSO_DATABASE_URL` (e.g. `libsql://your-db-name.turso.io`)
-   - `TURSO_AUTH_TOKEN`
-3. (Optional but recommended) Add `@libsql/client` so the dynamic import succeeds:
-   ```bash
-   npm init -y && npm install @libsql/client
-   ```
-   Then redeploy. Without the package the API falls back gracefully to JSON + `/tmp`.
-4. Seed: the handler always reads `data/listings.json` as the immutable base. User POSTs go to Turso when configured. You can also INSERT the seed rows once if you prefer a pure Turso source.
-
-When the env vars are set and the client is available:
-- GET returns `source: "turso"`
-- POST inserts and is visible on subsequent GET
-- PUT / DELETE operate on the same store
-
-Open-source stack only: JSON seed + SQLite schema + optional Turso. No proprietary services required.
+```
+schema/          # JSON Schema + D1 SQL
+data/            # seed-listings.json
+workers/         # api.js
+css/             # main.css (coming)
+js/              # map, cards, filters modules (coming)
+index.html       # Leaflet shell
+wrangler.toml
+```
 
 ## Improvement log
 
-See `IMPROVEMENTS.md` for the hourly suggestion history and the implementation pass notes.
+See `IMPROVEMENTS.md`.
