@@ -40,14 +40,18 @@ Seed fallback when API offline.
 ### P0 Foundation (done)
 - [x] JSON Schema, D1 schema+seed, wrangler.toml, Worker API, Leaflet shell, top bar, filter panel, cards, seed fallback
 
-### P1 Deploy & connect D1
+### P1 Deploy & connect D1 (user action required – commands documented)
 - [ ] wrangler deploy
 - [ ] Run d1-schema.sql on live DB
 - [ ] Set FD_CONFIG.API_BASE
 - [ ] Verify /api/v1/health
 
+**Exact commands are in README.md.** Run them after `npx wrangler login`.
+
 ### P2 Polish UI
-- [ ] Marker clustering, empty/loading states, mobile, a11y, theme
+- [ ] Marker clustering (library already loaded; basic support added)
+- [ ] Empty/loading states (basic added)
+- [ ] Mobile, a11y, theme
 
 ### P3 Seller experience
 - [ ] Add listing form, edit/delete, image upload
@@ -70,4 +74,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – Fresh start.*
+*Last updated: 2026-10-17 – Modular frontend + seed fallback UX.*
