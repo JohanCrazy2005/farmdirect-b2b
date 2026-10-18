@@ -1,3 +1,15 @@
+## 2026-10-18 – P5: document CI deploy workflow setup steps
+
+**What:** Added a complete “P5 – CI” section to README.md with exact steps to create the required GitHub Actions secrets (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`) and a ready-to-use `deploy.yml` skeleton that runs `cloudflare/wrangler-action` on push to main. Marked the CI sub-item done in GOAL.md.
+
+**Why:** Highest remaining pure-documentation item in the P5 Production queue after rate limiting, structured logging, custom domain, and R2 notes. Full CI deploy requires user action (API token + repo secrets) after the Worker can be deployed, matching the pattern used for the other P5 items. Documenting the precise steps unblocks automated deploys while manual `npx wrangler deploy` remains valid.
+
+**How:** One commit. Updated `README.md` (new section + yaml skeleton), `GOAL.md` (P5 CI sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy (so the documented rate limiting, logging, R2, custom domain, and CI can be exercised), or any remaining polish if desired.
+
+---
+
 ## 2026-10-18 – P5: document custom domain setup steps
 
 **What:** Added a complete “P5 – Custom domain” section to README.md with exact dashboard (and optional CLI) steps to attach a custom domain to the deployed Worker, update the frontend API_BASE, and verify health. Marked the documentation sub-item done in GOAL.md.

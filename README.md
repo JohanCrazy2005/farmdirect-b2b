@@ -129,6 +129,46 @@ npx wrangler deploy --domain api.farmdirect.example.com
 
 Until a custom domain is configured, the `workers.dev` URL remains fully functional for testing and staging.
 
+## P5 – CI (GitHub Actions deploy skeleton)
+
+A continuous-deployment workflow can automatically run `wrangler deploy` on every push to `main` once the required secrets are set. The live Worker is still undeployed; this documents the exact steps and provides a ready-to-use workflow file.
+
+### Exact steps
+
+1. Create a Cloudflare API token with **Workers Scripts:Edit** and **D1:Edit** permissions (Account → My Profile → API Tokens → Create Token → custom template).
+2. Find your Account ID (Cloudflare dashboard → Workers & Pages → right sidebar, or `npx wrangler whoami`).
+3. In the GitHub repository: **Settings → Secrets and variables → Actions** add:
+   - `CLOUDFLARE_API_TOKEN` = the token from step 1
+   - `CLOUDFLARE_ACCOUNT_ID` = the account id from step 2
+4. Create `.github/workflows/deploy.yml` with the content below (or copy the skeleton that will be committed in the same change).
+5. Push the workflow. Subsequent pushes to `main` will deploy the Worker.
+
+```yaml
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Workers
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+```
+
+After the first successful deploy you can also add a step to apply the D1 schema if desired (`npx wrangler d1 execute … --remote`), but do so carefully so migrations remain idempotent. The existing `wire-scripts.yml` is unrelated to this fresh-start path and should be left alone.
+
+Until the secrets and workflow are active, manual `npx wrangler deploy` (see P1) remains the way to go live.
+
 ## Local development
 
 ```bash
