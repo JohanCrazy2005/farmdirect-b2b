@@ -5,10 +5,17 @@
  *   GET /api/v1/health
  *   GET /api/v1/listings
  *   GET /api/v1/listings/:id
- *   POST /api/v1/listings   (create)
- *   PUT /api/v1/listings/:id (update)
- *   DELETE /api/v1/listings/:id
+ *   POST /api/v1/listings   (create – requires X-Seller-Id matching body.sellerid)
+ *   PUT /api/v1/listings/:id (update – requires ownership)
+ *   DELETE /api/v1/listings/:id (requires ownership)
+ *
+ * Interim auth: X-Seller-Id header (from client dashboard session).
+ * Full Cloudflare Access / JWT verification will replace this after deploy + Access setup.
  */
+
+function getSellerId(request) {
+  return (request.headers.get('X-Seller-Id') || '').trim();
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -21,7 +28,7 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type, X-Seller-Id',
         },
       });
     }
@@ -65,11 +72,20 @@ export default {
       }
 
       if (path === '/api/v1/listings' && request.method === 'POST') {
+        const sellerId = getSellerId(request);
+        if (!sellerId) {
+          return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+        }
+
         let body;
         try {
           body = await request.json();
         } catch {
           return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+        }
+
+        if (body.sellerid !== sellerId) {
+          return Response.json({ error: 'sellerid must match X-Seller-Id' }, { status: 403, headers: corsHeaders });
         }
 
         const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
@@ -154,6 +170,11 @@ export default {
         }
 
         if (request.method === 'PUT') {
+          const sellerId = getSellerId(request);
+          if (!sellerId) {
+            return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+          }
+
           let body;
           try {
             body = await request.json();
@@ -174,9 +195,15 @@ export default {
             return Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
           }
 
-          const existing = await env.DB.prepare('SELECT id FROM listings WHERE id = ?').bind(id).first();
+          const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
           if (!existing) {
             return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+          }
+          if (existing.sellerid !== sellerId) {
+            return Response.json({ error: 'Not authorized to update this listing' }, { status: 403, headers: corsHeaders });
+          }
+          if (body.sellerid !== sellerId) {
+            return Response.json({ error: 'Cannot change sellerid' }, { status: 403, headers: corsHeaders });
           }
 
           const stmt = env.DB.prepare(
@@ -220,9 +247,17 @@ export default {
         }
 
         if (request.method === 'DELETE') {
-          const existing = await env.DB.prepare('SELECT id FROM listings WHERE id = ?').bind(id).first();
+          const sellerId = getSellerId(request);
+          if (!sellerId) {
+            return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+          }
+
+          const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
           if (!existing) {
             return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+          }
+          if (existing.sellerid !== sellerId) {
+            return Response.json({ error: 'Not authorized to delete this listing' }, { status: 403, headers: corsHeaders });
           }
 
           await env.DB.prepare('DELETE FROM listings WHERE id = ?').bind(id).run();

@@ -3,6 +3,7 @@
  * Client-side form matching schema/listings.schema.json.
  * Validates required fields, posts/puts to Worker when API_BASE is set, otherwise shows seed-mode guidance.
  * Image: accepts https URL or local file (resized to data URL).
+ * Prefills sellerid from current dashboard session when available.
  */
 (function (global) {
   'use strict';
@@ -56,8 +57,11 @@
       if (title) title.textContent = 'Add listing';
       if (submitBtn) submitBtn.textContent = 'Create listing';
       form?.reset();
-      const seller = document.getElementById('form-sellerid');
-      if (seller && !seller.value) seller.value = 'seller-demo';
+      const sellerInput = document.getElementById('form-sellerid');
+      const current = (global.FD_DASHBOARD && global.FD_DASHBOARD.getCurrentSeller)
+        ? global.FD_DASHBOARD.getCurrentSeller()
+        : '';
+      if (sellerInput) sellerInput.value = current || 'seller-demo';
     }
   }
 

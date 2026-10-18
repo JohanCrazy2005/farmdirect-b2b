@@ -51,6 +51,13 @@ After deploy, the Worker serves:
 - `GET /api/v1/health`
 - `GET /api/v1/listings`
 - `GET /api/v1/listings/:id`
+- `POST /api/v1/listings` (requires `X-Seller-Id` header matching body.sellerid)
+- `PUT /api/v1/listings/:id` (requires ownership)
+- `DELETE /api/v1/listings/:id` (requires ownership)
+
+### Interim auth (P4)
+
+Mutations currently expect an `X-Seller-Id` header. The frontend attaches it automatically from the seller dashboard session (localStorage). This is a temporary ownership check that will be replaced by Cloudflare Access / JWT validation after Access is configured. Open the profile menu, enter a seller ID, then create/edit/delete.
 
 ## Local development
 
@@ -65,8 +72,8 @@ npx wrangler dev
 schema/          # JSON Schema + D1 SQL
 data/            # seed-listings.json
 workers/         # api.js
-css/             # main.css (coming)
-js/              # map, cards, filters modules (coming)
+css/             # main.css
+js/              # map, cards, filters, form, dashboard, api modules
 index.html       # Leaflet shell
 wrangler.toml
 ```

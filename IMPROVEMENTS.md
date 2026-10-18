@@ -1,3 +1,15 @@
+## 2026-10-17 – P4: interim RLS via X-Seller-Id header on mutations
+
+**What:** Worker now requires and enforces `X-Seller-Id` header for POST/PUT/DELETE. POST requires the header to match `body.sellerid`. PUT/DELETE look up the listing and reject if the header seller does not own it (or if sellerid is changed on update). Client `js/api.js` attaches the header from the current dashboard session. Form prefills sellerid from the session when creating. CORS updated to allow the header. Seed mode remains unaffected (read-only).
+
+**Why:** Highest unfinished code-only item in the P4 Auth queue after the dashboard skeleton. Provides a working ownership check that can be tested the moment the Worker is deployed, and is a clean stepping stone to real Cloudflare Access / JWT verification (the header can later be replaced by validated claims).
+
+**How:** One commit. Updated `workers/api.js` (helper + checks + CORS), `js/api.js` (getAuthHeaders), `js/form.js` (session prefill), `GOAL.md` (P4 sub-item marked), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the RLS can be exercised against live D1, or continue with Cloudflare Access setup notes / P5 rate limiting.
+
+---
+
 ## 2026-10-17 – P4: seller dashboard skeleton (client-side seller session)
 
 **What:** Added a seller dashboard modal opened from the profile icon. Users enter a seller ID (persisted in localStorage) to view only their listings, with Edit / Delete buttons that reuse the existing form and API layer. Works immediately with seed data; delete/edit show the familiar “seed mode is read-only” message until the Worker is deployed. Includes sign-out and a clear note that real Cloudflare Access / JWT / RLS is still pending.

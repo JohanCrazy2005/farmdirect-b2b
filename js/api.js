@@ -2,11 +2,21 @@
  * FarmDirect B2B – data layer with seed fallback
  * Tries live Worker API; falls back to seed-listings.json when offline or undeployed.
  * Includes create / update / delete for the listing form.
+ * Mutations attach X-Seller-Id from the current dashboard session (interim RLS).
  */
 (function (global) {
   'use strict';
 
   const cfg = global.FD_CONFIG || {};
+
+  function getAuthHeaders() {
+    const seller = (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.getCurrentSeller === 'function')
+      ? global.FD_DASHBOARD.getCurrentSeller()
+      : '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (seller) headers['X-Seller-Id'] = seller;
+    return headers;
+  }
 
   async function fetchListings() {
     const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
@@ -66,7 +76,7 @@
     try {
       const res = await fetch(`${apiBase}/api/v1/listings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(listing),
       });
       const data = await res.json().catch(() => ({}));
@@ -90,7 +100,7 @@
     try {
       const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(listing),
       });
       const data = await res.json().catch(() => ({}));
@@ -114,6 +124,7 @@
     try {
       const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
