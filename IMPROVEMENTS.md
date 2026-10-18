@@ -1,3 +1,15 @@
+## 2026-10-18 – chore: remove leftover legacy script tags from index.html (confirmed)
+
+**What:** Removed the two `<script>` tags that still loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These pre-fresh-start files reference non-existent globals (`window.sellers`, `buildPopupHtml`, old modal IDs, etc.) and produced no useful effect while risking console noise. The modular frontend under `js/` and `css/` is now the only client code loaded. (A prior entry claimed this had been done, but the tags remained in the committed `index.html`; this commit actually removes them.)
+
+**Why:** Highest remaining pure-code hygiene item. P1 deploy remains user-only (`wrangler login` + documented commands). Cleaning the script load keeps the fresh-start shell accurate, reduces payload, and avoids any chance of the legacy overlay interfering with the new modules.
+
+**How:** One commit. Updated `index.html` (removed script tags), `GOAL.md` (last-updated note), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. Orphaned legacy files (`cleanup.js`, `listings-api.js`, and other pre-fresh-start artifacts such as `styles.css`, root `schema.sql`, `data/listings.json`, `api/` serverless stubs) can be deleted in a follow-up if desired. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – chore: actually remove leftover legacy script tags from index.html
 
 **What:** Removed the two `<script>` tags that still loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These pre-fresh-start files reference non-existent globals (`window.sellers`, `buildPopupHtml`, old modal IDs, etc.) and produced no useful effect while risking console noise. The modular frontend under `js/` and `css/` is now the only client code loaded.
@@ -208,22 +220,6 @@ Next: remaining P2 empty/loading state refinements or user-run deploy, then P3 s
 
 **Why:** P1 deploy remains user-action only (commands already in README). This completes the mobile/a11y/theme portion of P2 polish while the Worker stays undeployed. Seed fallback UX continues to work immediately.
 
-**How:** One commit. Updated css/main.css (mobile media query + focus styles + options menu), js/main.js (theme init with system preference, options menu, sidebar toggle, Escape handler), index.html (ARIA, options menu markup, removed old scripts). GOAL.md marked the item done.
+**How:** One commit. Updated css/main.css (mobile media query + focus styles + options menu), js/main.js (theme init with system preference, options menu, sidebar toggle, Escape handler), index.html (ARIA, options menu markup, removed old script tags), GOAL.md (P2 mobile/a11y/theme checked), IMPROVEMENTS.md.
 
-Next: remaining P2 (fuller marker clustering refinements) or user-run deploy, then P3 seller form.
-
----
-
-## 2026-10-17 – Modular frontend (css/js) + improved seed-fallback UX
-
-**What:** Replaced the monolithic index.html with a clean modular shell and extracted substantial modules under css/ and js/. Implemented transparent top bar, filter card, product + seller cards, side list synced with map, Leaflet + optional marker clustering, and a robust data layer that falls back to data/seed-listings.json when the Worker is not yet deployed.
-
-**Why:** P1 deploy requires user wrangler login / secrets, so exact commands stay documented in README. Completing the missing frontend files unblocks P2 polish and gives a usable map experience immediately via seed data (Denver-area listings).
-
-**How:** One commit. New files: css/main.css, js/config.js, js/api.js, js/map.js, js/cards.js, js/list.js, js/main.js, slim index.html. Old large index.html replaced. Schema/seed/Worker unchanged. Source badge shows “seed fallback” vs “live API”.
-
-Next: P2 polish (mobile layout refinements, a11y, fuller clustering) or user-run deploy.
-
----
-
-## 2026-10-17 – Fresh-start foundation: schema, seed, wrangler, Worker skeleton + [+1129 bytes at .content[1].resource.text]
+Next: remaining P2 clustering polish or user-run P1 deploy.
