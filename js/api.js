@@ -1,13 +1,15 @@
 /**
- * FarmDirect B2B – data layer with seed fallback
+ * FarmDirect B2B – data layer with seed fallback + interactive demo mode
  * Tries live Worker API; falls back to seed-listings.json when offline or undeployed.
- * Includes create / update / delete for the listing form.
- * Mutations attach X-Seller-Id from the current dashboard session (interim RLS).
+ * In demo/seed mode, mutations persist to localStorage so create/edit/delete work fully
+ * until the Worker is deployed and API_BASE is set.
+ * Mutations attach X-Seller-Id from the current dashboard session (interim RLS) when live.
  */
 (function (global) {
   'use strict';
 
   const cfg = global.FD_CONFIG || {};
+  const DEMO_KEY = 'fd-demo-listings';
 
   function getAuthHeaders() {
     const seller = (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.getCurrentSeller === 'function')
@@ -16,6 +18,45 @@
     const headers = { 'Content-Type': 'application/json' };
     if (seller) headers['X-Seller-Id'] = seller;
     return headers;
+  }
+
+  function loadDemoListings() {
+    try {
+      const raw = localStorage.getItem(DEMO_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function saveDemoListings(listings) {
+    try {
+      localStorage.setItem(DEMO_KEY, JSON.stringify(listings));
+    } catch (err) {
+      console.warn('Could not persist demo listings:', err);
+    }
+  }
+
+  function generateId() {
+    return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
+  async function fetchSeedListings() {
+    const res = await fetch(cfg.SEED_URL || 'data/seed-listings.json');
+    if (!res.ok) throw new Error('Seed fetch failed');
+    const listings = await res.json();
+    return Array.isArray(listings) ? listings : [];
+  }
+
+  async function getDemoOrSeedListings() {
+    const demo = loadDemoListings();
+    if (demo) {
+      return { listings: demo, source: 'demo' };
+    }
+    const seed = await fetchSeedListings();
+    return { listings: seed, source: 'seed' };
   }
 
   async function fetchListings() {
@@ -32,21 +73,19 @@
           };
         }
       } catch (err) {
-        console.warn('API unavailable, falling back to seed:', err.message);
+        console.warn('API unavailable, falling back to seed/demo:', err.message);
       }
     }
-    // Seed fallback
+    // Demo / seed fallback
     try {
-      const res = await fetch(cfg.SEED_URL || 'data/seed-listings.json');
-      if (!res.ok) throw new Error('Seed fetch failed');
-      const listings = await res.json();
+      const { listings, source } = await getDemoOrSeedListings();
       return {
-        listings: Array.isArray(listings) ? listings : [],
-        source: 'seed',
+        listings,
+        source,
         count: listings.length,
       };
     } catch (err) {
-      console.error('Seed fallback failed:', err);
+      console.error('Seed/demo fallback failed:', err);
       return { listings: [], source: 'none', count: 0, error: err.message };
     }
   }
@@ -59,18 +98,26 @@
         if (res.ok) return { listing: await res.json(), source: 'api' };
       } catch (_) {}
     }
-    // Fallback: search in already-loaded or re-fetch seed
     const { listings } = await fetchListings();
     const listing = listings.find(l => l.id === id);
-    return listing ? { listing, source: 'seed' } : { listing: null, source: 'none' };
+    return listing ? { listing, source: 'demo' } : { listing: null, source: 'none' };
   }
 
   async function createListing(listing) {
     const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
     if (!apiBase) {
+      // Interactive demo mode
+      const { listings } = await getDemoOrSeedListings();
+      const newListing = {
+        ...listing,
+        id: listing.id || generateId(),
+      };
+      const updated = [...listings, newListing];
+      saveDemoListings(updated);
       return {
-        ok: false,
-        error: 'Worker not deployed. Set FD_CONFIG.API_BASE after wrangler deploy (see README). Seed mode is read-only.',
+        ok: true,
+        listing: newListing,
+        message: 'Listing created (demo mode – saved locally)',
       };
     }
     try {
@@ -92,9 +139,19 @@
   async function updateListing(id, listing) {
     const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
     if (!apiBase) {
+      const { listings } = await getDemoOrSeedListings();
+      const idx = listings.findIndex(l => l.id === id);
+      if (idx === -1) {
+        return { ok: false, error: 'Listing not found in demo data' };
+      }
+      const updatedListing = { ...listings[idx], ...listing, id };
+      const updated = listings.slice();
+      updated[idx] = updatedListing;
+      saveDemoListings(updated);
       return {
-        ok: false,
-        error: 'Worker not deployed. Set FD_CONFIG.API_BASE after wrangler deploy (see README). Seed mode is read-only.',
+        ok: true,
+        listing: updatedListing,
+        message: 'Listing updated (demo mode – saved locally)',
       };
     }
     try {
@@ -116,10 +173,13 @@
   async function deleteListing(id) {
     const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
     if (!apiBase) {
-      return {
-        ok: false,
-        error: 'Worker not deployed. Set FD_CONFIG.API_BASE after wrangler deploy (see README). Seed mode is read-only.',
-      };
+      const { listings } = await getDemoOrSeedListings();
+      const updated = listings.filter(l => l.id !== id);
+      if (updated.length === listings.length) {
+        return { ok: false, error: 'Listing not found in demo data' };
+      }
+      saveDemoListings(updated);
+      return { ok: true, message: 'Listing deleted (demo mode – saved locally)' };
     }
     try {
       const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}`, {
@@ -136,5 +196,21 @@
     }
   }
 
-  global.FD_API = { fetchListings, fetchListing, createListing, updateListing, deleteListing };
+  function resetDemoListings() {
+    try {
+      localStorage.removeItem(DEMO_KEY);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  global.FD_API = {
+    fetchListings,
+    fetchListing,
+    createListing,
+    updateListing,
+    deleteListing,
+    resetDemoListings,
+  };
 })(window);

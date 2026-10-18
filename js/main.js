@@ -3,8 +3,9 @@
  * Theme (system + persisted), options menu, mobile sidebar toggle, a11y hooks
  * Polished loading / empty state coordination
  * Wires add-listing form and seller dashboard
- * Shows dismissible seed-mode banner when Worker is undeployed
+ * Shows dismissible seed/demo-mode banner when Worker is undeployed
  * Runtime API_BASE override (localStorage) for post-deploy testing
+ * Demo mode reset
  */
 (function () {
   'use strict';
@@ -14,7 +15,7 @@
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('fd-theme', theme);
     const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = isDark ? '☾' : '☀';
+    if (btn) btn.textContent = isDark ? '☽' : '☀';
     btn?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   }
 
@@ -27,7 +28,6 @@
     } else {
       applyTheme('light');
     }
-    // Listen for system changes only if no explicit preference
     if (!stored && window.matchMedia) {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         applyTheme(e.matches ? 'dark' : 'light');
@@ -47,48 +47,42 @@
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
 
-    // Init map
     if (window.FD_MAP) FD_MAP.initMap();
-
-    // Bind filters / list
     if (window.FD_LIST) FD_LIST.bindUI();
-
-    // Bind form
     if (window.FD_FORM) FD_FORM.bindForm();
-
-    // Bind dashboard
     if (window.FD_DASHBOARD) FD_DASHBOARD.bindDashboard();
 
-    // Load data (API or seed)
     const statusEl = document.getElementById('data-status');
     if (statusEl) statusEl.textContent = 'Loading…';
 
     const result = await (window.FD_API ? FD_API.fetchListings() : Promise.resolve({ listings: [], source: 'none' }));
 
     if (window.FD_LIST) FD_LIST.setListings(result.listings);
-
-    // Hide map loading overlay once data is ready (list.js will re-show if empty)
     hideMapOverlay();
 
     if (statusEl) {
-      const badge = result.source === 'seed'
-        ? '<span class="source-badge seed">seed fallback</span>'
-        : result.source === 'api'
-          ? '<span class="source-badge">live API</span>'
-          : '<span class="source-badge">no data</span>';
+      let badge = '<span class="source-badge">no data</span>';
+      if (result.source === 'api') badge = '<span class="source-badge">live API</span>';
+      else if (result.source === 'demo') badge = '<span class="source-badge seed">demo (local)</span>';
+      else if (result.source === 'seed') badge = '<span class="source-badge seed">seed fallback</span>';
       statusEl.innerHTML = `${result.count} listings ${badge}`;
     }
 
-    // Seed-mode banner
+    // Seed/demo-mode banner
     const seedBanner = document.getElementById('seed-banner');
-    if (seedBanner && result.source === 'seed') {
+    if (seedBanner && (result.source === 'seed' || result.source === 'demo')) {
+      const span = seedBanner.querySelector('span');
+      if (span) {
+        span.textContent = result.source === 'demo'
+          ? 'Demo mode: listings saved locally in this browser. Deploy the Worker (see README – P1) for shared live D1 data.'
+          : 'Demo mode: showing seed data. Create/edit/delete will be saved locally. Deploy the Worker (see README – P1) for live D1.';
+      }
       seedBanner.classList.remove('hidden');
       document.getElementById('close-seed-banner')?.addEventListener('click', () => {
         seedBanner.classList.add('hidden');
       });
     }
 
-    // Theme toggle
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) {
       themeBtn.addEventListener('click', () => {
@@ -97,7 +91,6 @@
       });
     }
 
-    // Options menu
     const optionsBtn = document.getElementById('options-btn');
     const optionsMenu = document.getElementById('options-menu');
     if (optionsBtn && optionsMenu) {
@@ -110,7 +103,6 @@
       optionsMenu.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // Options menu actions
     document.getElementById('opt-theme')?.addEventListener('click', () => {
       document.getElementById('theme-btn')?.click();
       optionsMenu?.classList.remove('open');
@@ -119,10 +111,10 @@
     document.getElementById('opt-set-api')?.addEventListener('click', () => {
       const current = getCurrentApiBase();
       const next = prompt('Enter Worker API base URL (e.g. https://farmdirect-b2b.<subdomain>.workers.dev)\nLeave blank to cancel.', current);
-      if (next === null) return; // cancelled
+      if (next === null) return;
       const trimmed = next.trim();
       if (!trimmed) {
-        alert('Empty URL ignored. Use "Clear API base" to force seed mode.');
+        alert('Empty URL ignored. Use "Clear API base" to force seed/demo mode.');
         return;
       }
       if (!/^https?:\/\//i.test(trimmed)) {
@@ -144,10 +136,20 @@
       try {
         localStorage.removeItem('fd-api-base');
         window.FD_CONFIG.API_BASE = '';
-        alert('API base cleared. Reloading to use seed fallback…');
+        alert('API base cleared. Reloading to use seed/demo fallback…');
         location.reload();
       } catch (err) {
         alert('Could not clear localStorage: ' + err.message);
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-reset-demo')?.addEventListener('click', () => {
+      if (!confirm('Reset demo listings to the original seed data? Local changes will be lost.')) return;
+      if (window.FD_API && typeof window.FD_API.resetDemoListings === 'function') {
+        window.FD_API.resetDemoListings();
+        alert('Demo data reset. Reloading…');
+        location.reload();
       }
       optionsMenu?.classList.remove('open');
     });
@@ -157,9 +159,11 @@
       const source = result.source || 'unknown';
       const msg = source === 'api'
         ? `Live API active.\nBase: ${base || '(none)'}`
-        : source === 'seed'
-          ? `Demo / seed fallback active.\nAPI base: ${base || '(not set)'}\nDeploy the Worker (README P1) then use "Set API base" here.`
-          : `No data source.\nAPI base: ${base || '(not set)'}`;
+        : source === 'demo'
+          ? `Interactive demo mode (localStorage).\nAPI base: ${base || '(not set)'}\nCreate/edit/delete saved in this browser. Deploy the Worker (README P1) then use "Set API base".`
+          : source === 'seed'
+            ? `Seed fallback active (no local changes yet).\nAPI base: ${base || '(not set)'}\nDeploy the Worker (README P1) then use "Set API base".`
+            : `No data source.\nAPI base: ${base || '(not set)'}`;
       alert(msg);
       optionsMenu?.classList.remove('open');
     });
@@ -169,17 +173,14 @@
       optionsMenu?.classList.remove('open');
     });
 
-    // Profile → seller dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
       if (window.FD_DASHBOARD) FD_DASHBOARD.openDashboard();
     });
 
-    // Add listing button
     document.getElementById('add-listing-btn')?.addEventListener('click', () => {
       if (window.FD_FORM) FD_FORM.openForm();
     });
 
-    // Mobile sidebar collapse toggle
     const sidebar = document.querySelector('.sidebar');
     const sidebarHeader = document.querySelector('.sidebar-header');
     if (sidebar && sidebarHeader && window.innerWidth <= 768) {
@@ -201,7 +202,6 @@
       });
     }
 
-    // Escape closes overlays
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.getElementById('filter-card')?.classList.remove('open');
