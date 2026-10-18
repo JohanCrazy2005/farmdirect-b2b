@@ -79,6 +79,31 @@ After the Worker is deployed, enable Cloudflare Access to replace the interim `X
 
 Until Access is live, the interim header-based ownership continues to work for testing.
 
+## P5 – R2 durable image storage (user action required after deploy)
+
+Current image handling stores data URLs (or external https URIs) directly in the D1 `image` column. This is fine for the seed/fallback stage but not durable or efficient for production. Move images to Cloudflare R2.
+
+### Exact steps
+
+1. Create an R2 bucket (dashboard or CLI):
+   ```bash
+   npx wrangler r2 bucket create farmdirect-images
+   ```
+2. Add the binding to `wrangler.toml` (then redeploy):
+   ```toml
+   [[r2_buckets]]
+   binding = "IMAGES"
+   bucket_name = "farmdirect-images"
+   ```
+3. Optional: enable public access or custom domain for the bucket so listings can use stable `https://...` URLs.
+4. Update the Worker (`workers/api.js`):
+   - Add a dedicated `POST /api/v1/images` endpoint that accepts multipart form data (or base64), writes to `env.IMAGES.put(...)`, and returns a public URL or signed key.
+   - On listing create/update, store only the R2 URL/key in the `image` field (schema remains `uri`).
+5. Update the client form (`js/form.js`) to upload the resized file to the new endpoint instead of embedding a data URL, then set the returned URL on the listing.
+6. Redeploy: `npx wrangler deploy`.
+
+Until R2 is wired, data URLs continue to work and validate against the schema. Seed data remains unchanged.
+
 ## Local development
 
 ```bash

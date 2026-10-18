@@ -1,3 +1,15 @@
+## 2026-10-18 – P5: document Cloudflare R2 durable image storage setup steps
+
+**What:** Added a complete “P5 – R2 durable image storage” section to README.md with exact CLI/dashboard commands to create a bucket, bind it as `IMAGES` in wrangler.toml, add a Worker upload endpoint, and switch the client form from data URLs to returned R2 URLs. Marked the documentation sub-item done in GOAL.md.
+
+**Why:** Highest remaining pure-code/documentation item in P5 after rate limiting and structured logging. Full R2 wiring requires user action (bucket creation + redeploy) after the Worker is live, matching the pattern used for P1 deploy and P4 Access. Documenting the precise steps unblocks the user while data URLs remain a valid interim that still satisfies the schema.
+
+**How:** One commit. Updated `README.md` (new section), `GOAL.md` (P5 R2 sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy (so rate limiting, logging, and eventual R2 can be exercised), or continue P5 with custom domain / CI skeleton notes.
+
+---
+
 ## 2026-10-18 – P5: basic structured request logging for observability
 
 **What:** Added a `logRequest` helper in `workers/api.js` that emits structured JSON to `console.log` for every request (OPTIONS, rate-limited, success, and error paths). Fields include timestamp, method, path, status, durationMs, ip, sellerId (when present), and optional error/count/listingId. Logs are visible via `wrangler tail` or the Cloudflare Workers dashboard once deployed.
