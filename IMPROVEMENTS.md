@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: Fit all listings control for better demo map navigation
+
+**What:** Added a “Fit all” button (⤢) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the Locate me control: after centering on the user or after filtering, one click restores the full set of listings. Improves exploration of the geographically spread seed data.
+
+**How:** One commit. Updated `index.html` (button), `js/map.js` (fitAll helper using marker cluster bounds or fallback latlngs), `js/main.js` (event binding), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Locate me geolocation control for better demo map UX
 
 **What:** Added a “Locate me” button (⌖) in the top bar. Clicking it requests the browser geolocation, centers the Leaflet map on the user, and drops a temporary blue circle marker with popup. Fully functional in seed/demo mode with no Worker required. Button disables briefly while locating and re-enables on success or error.

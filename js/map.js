@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
- * + geolocation “Locate me” for better undeployed demo UX
+ * + geolocation “Locate me” + Fit all listings for better undeployed demo UX
  */
 (function (global) {
   'use strict';
@@ -167,6 +167,25 @@
     );
   }
 
+  function fitAll() {
+    if (!map || !markersLayer) return;
+    try {
+      const bounds = markersLayer.getBounds ? markersLayer.getBounds() : null;
+      if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+        return;
+      }
+      if (listings.length) {
+        const latlngs = listings
+          .filter(l => l.location && l.location.lat != null && l.location.long != null)
+          .map(l => [l.location.lat, l.location.long]);
+        if (latlngs.length) {
+          map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40], maxZoom: 13 });
+        }
+      }
+    } catch (_) {}
+  }
+
   function escapeHtml(s) {
     if (!s) return '';
     return String(s)
@@ -176,5 +195,5 @@
       .replace(/"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, getMap: () => map };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, getMap: () => map };
 })(window);

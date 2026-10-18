@@ -6,7 +6,7 @@
  * Shows dismissible seed/demo-mode banner when Worker is undeployed
  * Runtime API_BASE override (localStorage) for post-deploy testing
  * Demo mode reset
- * Locate me geolocation control
+ * Locate me geolocation + Fit all listings controls
  */
 (function () {
   'use strict';
@@ -95,6 +95,11 @@
     const locateBtn = document.getElementById('locate-btn');
     if (locateBtn && window.FD_MAP && typeof window.FD_MAP.locateMe === 'function') {
       locateBtn.addEventListener('click', () => window.FD_MAP.locateMe());
+    }
+
+    const fitAllBtn = document.getElementById('fit-all-btn');
+    if (fitAllBtn && window.FD_MAP && typeof window.FD_MAP.fitAll === 'function') {
+      fitAllBtn.addEventListener('click', () => window.FD_MAP.fitAll());
     }
 
     const optionsBtn = document.getElementById('options-btn');
