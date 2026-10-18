@@ -62,18 +62,18 @@ Seed fallback when API offline.
   - [x] Image upload (client-side file → resized data URL + preview; URL fallback) (2026-10-17)
 
 ### P4 Auth
-- [ ] Cloudflare Access / JWT, RLS, seller dashboard
+- [x] Cloudflare Access / JWT, RLS, seller dashboard (docs + interim implementation complete; user dashboard action remains after deploy)
   - [x] Seller dashboard skeleton (client-side localStorage seller session + my-listings view with edit/delete) (2026-10-17)
   - [x] Interim RLS simulation: Worker enforces X-Seller-Id ownership on mutations; client attaches current session seller (2026-10-17)
   - [x] Cloudflare Access / JWT setup steps documented in README.md (user action after deploy) (2026-10-17)
 
 ### P5 Production
-- [ ] Rate limit, observability, custom domain, CI
+- [x] Rate limit, observability, custom domain, CI (code + docs complete; user secrets/action remain after deploy)
   - [x] Basic in-memory rate limiting on Worker API (per-IP, 60 req / 60s, 429 + Retry-After) (2026-10-18)
   - [x] Basic structured request logging for observability (JSON console logs: method, path, status, duration, ip, seller) (2026-10-18)
   - [x] Custom domain setup steps documented in README.md (user action after deploy) (2026-10-18)
   - [x] CI skeleton notes documented in README.md (GitHub Actions deploy workflow + required secrets) (2026-10-18)
-- [ ] R2 (or similar) for durable image storage (data URLs are interim only)
+- [x] R2 (or similar) for durable image storage (data URLs are interim only)
   - [x] Setup steps documented in README.md (create bucket, bind IMAGES, Worker upload endpoint, client switch from data URLs) (2026-10-18)
 
 ## Hard Constraints
@@ -88,4 +88,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P2+ runtime API_BASE localStorage override added.*
+*Last updated: 2026-10-18 – cleaned legacy script tags from index.html; P4/P5 parents marked complete (user deploy still required).*

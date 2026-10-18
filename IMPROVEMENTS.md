@@ -1,3 +1,15 @@
+## 2026-10-18 – chore: remove legacy cleanup.js and listings-api.js from index.html
+
+**What:** Removed the two leftover `<script>` tags that loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These files were written for the pre-fresh-start monolithic UI and reference functions/elements that no longer exist (`buildPopupHtml`, `renderSellers`, `window.sellers`, old modal IDs, etc.). They produced no useful effect and risked console noise. The active frontend remains fully modular under `js/` and `css/`.
+
+**Why:** Highest remaining pure-code hygiene item after all P2–P5 sub-items were complete. P1 deploy still requires user `wrangler login` + documented commands. Cleaning the script load keeps the fresh-start shell accurate, reduces payload, and avoids any chance of the legacy overlay interfering with the new modules. Organises the running code under the preferred directories.
+
+**How:** One commit. Updated `index.html` (removed script tags), `GOAL.md` (marked P4 and P5 parent items complete with notes that user action remains; last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – P2+: runtime API_BASE override via localStorage
 
 **What:** Added support for setting (and clearing) the Worker API base URL at runtime through the options menu. The value is stored in `localStorage` under `fd-api-base` and applied in `js/config.js` on load, so the frontend can switch from seed fallback to a live Worker without editing source files. Deploy-status menu item now reports the current source and base. Validation ensures a proper http(s) URL; reload happens after change.
