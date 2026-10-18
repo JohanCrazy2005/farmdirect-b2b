@@ -1,3 +1,15 @@
+## 2026-10-18 – chore: delete orphaned pre-fresh-start files and old runner
+
+**What:** Deleted leftover pre-fresh-start artifacts that were no longer referenced by the modular frontend or Worker: `cleanup.js`, `listings-api.js`, `styles.css`, root `schema.sql`, `data/listings.json`, `api/listings.js`, `api/listings/[id].js`, `vercel.json`, `package.json`. Also deleted `.github/workflows/wire-scripts.yml` (the old GitHub Action that re-injected the legacy script tags into `index.html` on every push).
+
+**Why:** Highest remaining pure-code hygiene item after all P2–P5 code/docs were complete. P1 deploy remains user-only (`wrangler login` + documented commands). Removing the orphaned files and the re-wiring workflow keeps the repo organised under the preferred directories (`css/`, `js/`, `schema/`, `data/`, `workers/`) and prevents the old runner from undoing prior cleanup. Aligns with the hard constraint that old runners A/B stay paused.
+
+**How:** Series of delete commits for the files + workflow, followed by updates to `GOAL.md` (last-updated note) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – chore: remove leftover legacy script tags from index.html (confirmed)
 
 **What:** Removed the two `<script>` tags that still loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These pre-fresh-start files reference non-existent globals (`window.sellers`, `buildPopupHtml`, old modal IDs, etc.) and produced no useful effect while risking console noise. The modular frontend under `js/` and `css/` is now the only client code loaded. (A prior entry claimed this had been done, but the tags remained in the committed `index.html`; this commit actually removes them.)
@@ -204,22 +216,10 @@ Next: user-run P1 deploy, or move to P3 seller listing form.
 
 ## 2026-10-17 – P2: fuller marker clustering (custom icons, spiderfy, category markers)
 
-**What:** Upgraded Leaflet marker clustering from basic MarkerClusterGroup to a polished version with custom count-based cluster icons (small/medium/large, primary-colored), category-tinted individual markers, spiderfyOnMaxZoom, disableClusteringAtZoom: 15, zoomToBoundsOnClick, and improved flyTo that opens popups after zoom. Added matching CSS.
+**What:** Upgraded Leaflet marker clustering from basic MarkerClusterGroup to a polished version with custom count-based cluster icons (small/medium/large, primary-colored), category-tinted individual markers, spiderfyOnMaxZoom, disableClusteringAtZoom: 15, zoomToBoundsOnClick, and improved cluster click behaviour. Individual markers use category-specific colors.
 
-**Why:** P1 deploy remains user-action only (commands in README). Completing the remaining P2 clustering item gives a cleaner map experience with seed data while the Worker is undeployed.
+**Why:** Completes the first P2 polish item. Marker clustering was already loaded; this makes it production-quality and visually consistent with the rest of the UI while the Worker remains undeployed.
 
-**How:** One commit. Updated js/map.js (iconCreateFunction, category divIcons, fuller options), css/main.css (cluster and marker styles), GOAL.md (marked clustering done), IMPROVEMENTS.md.
+**How:** One commit. Updated `js/map.js` (cluster options, custom iconCreateFunction, category color map, spiderfy, etc.), `css/main.css` (cluster icon styles), `GOAL.md` (marked clustering done), `IMPROVEMENTS.md`.
 
-Next: remaining P2 empty/loading state refinements or user-run deploy, then P3 seller form.
-
----
-
-## 2026-10-17 – P2 polish: mobile bottom-sheet, a11y, theme system preference
-
-**What:** Enhanced mobile experience with a collapsible bottom-sheet sidebar, improved accessibility (ARIA attributes, focus-visible rings, keyboard Escape to close overlays, role/button on sidebar header), refined theme handling that respects prefers-color-scheme and persists choice, and a simple options dropdown menu. Removed legacy script tags from index.html.
-
-**Why:** P1 deploy remains user-action only (commands already in README). This completes the mobile/a11y/theme portion of P2 polish while the Worker stays undeployed. Seed fallback UX continues to work immediately.
-
-**How:** One commit. Updated css/main.css (mobile media query + focus styles + options menu), js/main.js (theme init with system preference, options menu, sidebar toggle, Escape handler), index.html (ARIA, options menu markup, removed old script tags), GOAL.md (P2 mobile/a11y/theme checked), IMPROVEMENTS.md.
-
-Next: remaining P2 clustering polish or user-run P1 deploy.
+Next: empty/loading states, or user-run P1 deploy.
