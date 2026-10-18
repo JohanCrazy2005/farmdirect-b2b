@@ -55,6 +55,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Seed-fallback UX banner (dismissible demo-mode notice pointing to README deploy steps) (2026-10-18)
 - [x] Runtime API_BASE override via localStorage (options menu set/clear for post-deploy testing without source edit) (2026-10-18)
 - [x] Interactive demo mode: localStorage persistence for create/edit/delete while Worker undeployed (2026-10-18)
+- [x] Richer seed data for better demo map experience (more markers, geographic spread, category variety) (2026-10-18)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -89,4 +90,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P2+: interactive demo mode with localStorage persistence so create/edit/delete work fully while Worker is undeployed. P1 deploy still requires user.*
+*Last updated: 2026-10-18 – P2+: richer seed data (10 listings with geographic spread) for better undeployed demo map. P1 deploy still requires user (`npx wrangler login` + README commands).*

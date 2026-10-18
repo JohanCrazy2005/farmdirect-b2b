@@ -76,5 +76,57 @@
     "units": "kg",
     "description": "Raw honey from local apiaries. Small-batch, unfiltered.",
     "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-7",
+    "location": { "lat": 40.0150, "long": -105.2705 },
+    "visibility": "country",
+    "address": "100 Apple Orchard Ln, Boulder, CO 80302",
+    "sellerid": "seller-orchard",
+    "category": "produce",
+    "headerdescription": "Fresh Fuji apples",
+    "price": 1.80,
+    "units": "kg",
+    "description": "Family orchard with late-season Fuji apples. Bulk crates available for grocers.",
+    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-8",
+    "location": { "lat": 39.6400, "long": -104.8800 },
+    "visibility": "province",
+    "address": "222 Cheese Hollow, Castle Rock, CO 80104",
+    "sellerid": "seller-hollow",
+    "category": "dairy",
+    "headerdescription": "Artisan goat cheese",
+    "price": 14.50,
+    "units": "kg",
+    "description": "Small-batch goat cheese from grass-fed herd. Multiple varieties.",
+    "image": "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-9",
+    "location": { "lat": 39.8100, "long": -105.1000 },
+    "visibility": "worldwide",
+    "address": "333 Berry Patch Rd, Westminster, CO 80031",
+    "sellerid": "seller-berry",
+    "category": "produce",
+    "headerdescription": "Organic strawberries",
+    "price": 4.20,
+    "units": "kg",
+    "description": "U-pick or bulk organic strawberries. Peak season June-July.",
+    "image": "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=300&fit=crop"
+  },
+  {
+    "id": "seed-10",
+    "location": { "lat": 39.5500, "long": -104.8000 },
+    "visibility": "country",
+    "address": "444 Grain Elevator Way, Colorado Springs, CO 80903",
+    "sellerid": "seller-elevator",
+    "category": "grains",
+    "headerdescription": "Organic oats",
+    "price": 180.00,
+    "units": "ton",
+    "description": "Certified organic oats in bulk. Available for food processors.",
+    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop"
   }
 ]
