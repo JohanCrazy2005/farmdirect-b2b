@@ -1,3 +1,15 @@
+## 2026-10-17 – P3: edit & delete support for listings
+
+**What:** Extended the listing form to support edit mode (prefill from existing listing, PUT) and added delete from the product card. Worker now exposes `PUT /api/v1/listings/:id` and `DELETE /api/v1/listings/:id` with validation and `updated_at` timestamp. Client `js/api.js` gained `updateListing` and `deleteListing` (seed-mode returns clear read-only message). Product card shows Edit / Delete buttons. Form title and submit button update dynamically. List exposes `getListings` for the edit path.
+
+**Why:** P1 deploy remains user-action only. Completing edit/delete finishes the core CRUD of P3 seller experience (image upload remains). Sellers can now modify or remove listings once the Worker is live; UI is ready and degrades gracefully in seed mode.
+
+**How:** One commit. Updated `workers/api.js` (PUT + DELETE), `js/api.js`, `js/form.js` (edit mode), `js/cards.js` (buttons + handlers), `js/list.js` (`getListings`), `index.html` (form title id), `GOAL.md` (marked edit/delete done), `IMPROVEMENTS.md`.
+
+Next: image upload, or user-run P1 deploy so CRUD can persist to D1.
+
+---
+
 ## 2026-10-17 – P3: add listing form modal + API POST support
 
 **What:** Added a full add-listing form modal (accessible from new + button in the top bar) that collects every required schema field with client-side validation. New `js/form.js` module handles open/close, geolocation helper, validation, and submit. `js/api.js` gained `createListing` which POSTs when `FD_CONFIG.API_BASE` is set, otherwise returns a clear seed-mode message. Worker `workers/api.js` now accepts `POST /api/v1/listings` and inserts into D1 (with basic validation). Form styles added to `css/main.css`. Escape closes the modal.

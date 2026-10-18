@@ -26,10 +26,45 @@
         Category: ${escapeHtml(listing.category)} · Visibility: ${escapeHtml(listing.visibility)}<br>
         Address: ${escapeHtml(listing.address)}
       </div>
-      <button class="icon-btn" style="margin-top:0.75rem;width:auto;padding:0 0.75rem" onclick="FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')">View seller</button>
+      <div style="margin-top:0.75rem;display:flex;gap:0.4rem;flex-wrap:wrap">
+        <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')">View seller</button>
+        <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.editListing('${escapeHtml(listing.id)}')">Edit</button>
+        <button class="icon-btn" style="width:auto;padding:0 0.75rem;color:#dc2626" onclick="FD_CARDS.deleteListing('${escapeHtml(listing.id)}')">Delete</button>
+      </div>
     `;
     el.classList.add('open');
     document.getElementById('seller-card')?.classList.remove('open');
+  }
+
+  function editListing(id) {
+    // Find listing from current list data
+    const listing = (global.FD_LIST && global.FD_LIST.getListings ? global.FD_LIST.getListings() : []).find(l => l.id === id);
+    if (listing && global.FD_FORM) {
+      global.FD_FORM.openForm(listing);
+    } else {
+      alert('Could not load listing for edit');
+    }
+  }
+
+  async function deleteListing(id) {
+    if (!confirm('Delete this listing? This cannot be undone.')) return;
+    if (!global.FD_API || !global.FD_API.deleteListing) {
+      alert('API unavailable');
+      return;
+    }
+    const result = await global.FD_API.deleteListing(id);
+    if (result.ok) {
+      document.getElementById('product-card')?.classList.remove('open');
+      // Refresh
+      if (global.FD_API.fetchListings) {
+        const fresh = await global.FD_API.fetchListings();
+        if (global.FD_LIST && global.FD_LIST.setListings) {
+          global.FD_LIST.setListings(fresh.listings);
+        }
+      }
+    } else {
+      alert(result.error || 'Failed to delete');
+    }
   }
 
   function showSeller(sellerid) {
@@ -49,5 +84,5 @@
     document.getElementById('seller-card')?.classList.remove('open');
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing };
 })(window);

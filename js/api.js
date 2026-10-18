@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – data layer with seed fallback
  * Tries live Worker API; falls back to seed-listings.json when offline or undeployed.
- * Now includes createListing for the add-form.
+ * Includes create / update / delete for the listing form.
  */
 (function (global) {
   'use strict';
@@ -79,5 +79,51 @@
     }
   }
 
-  global.FD_API = { fetchListings, fetchListing, createListing };
+  async function updateListing(id, listing) {
+    const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
+    if (!apiBase) {
+      return {
+        ok: false,
+        error: 'Worker not deployed. Set FD_CONFIG.API_BASE after wrangler deploy (see README). Seed mode is read-only.',
+      };
+    }
+    try {
+      const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(listing),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return { ok: true, listing: data.listing || data, message: 'Listing updated successfully' };
+      }
+      return { ok: false, error: data.error || `HTTP ${res.status}` };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Network error' };
+    }
+  }
+
+  async function deleteListing(id) {
+    const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
+    if (!apiBase) {
+      return {
+        ok: false,
+        error: 'Worker not deployed. Set FD_CONFIG.API_BASE after wrangler deploy (see README). Seed mode is read-only.',
+      };
+    }
+    try {
+      const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return { ok: true, message: 'Listing deleted' };
+      }
+      return { ok: false, error: data.error || `HTTP ${res.status}` };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Network error' };
+    }
+  }
+
+  global.FD_API = { fetchListings, fetchListing, createListing, updateListing, deleteListing };
 })(window);

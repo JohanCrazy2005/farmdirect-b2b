@@ -56,7 +56,7 @@ Seed fallback when API offline.
 ### P3 Seller experience
 - [ ] Add listing form, edit/delete, image upload
   - [x] Add listing form modal + client validation + POST support (2026-10-17)
-  - [ ] Edit / delete existing listings
+  - [x] Edit / delete existing listings (2026-10-17)
   - [ ] Image upload (currently URL only)
 
 ### P4 Auth
@@ -77,4 +77,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P3 add-listing form shipped.*
+*Last updated: 2026-10-17 – P3 edit/delete shipped.*

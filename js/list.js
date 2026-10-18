@@ -16,6 +16,10 @@
     applyFilters();
   }
 
+  function getListings() {
+    return allListings;
+  }
+
   function applyFilters() {
     const q = (activeFilters.q || '').toLowerCase();
     filtered = allListings.filter(l => {
@@ -55,7 +59,7 @@
       if (!allListings.length) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🗽</div>
+            <div class="empty-icon" aria-hidden="true">🇳🇹</div>
             <h4>No listings yet</h4>
             <p>The map is empty. Deploy the Worker or check the seed file.</p>
           </div>`;
@@ -118,7 +122,7 @@
       const msg = !allListings.length
         ? 'No listings available'
         : 'No listings in view';
-      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🗽</div><div>${msg}</div></div>`;
+      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🇳🇹</div><div>${msg}</div></div>`;
       overlay.classList.remove('hidden');
     } else {
       overlay.classList.add('hidden');
@@ -191,5 +195,5 @@
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, select, highlight, applyFilters, bindUI, clearFilters };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters };
 })(window);

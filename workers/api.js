@@ -6,6 +6,8 @@
  *   GET /api/v1/listings
  *   GET /api/v1/listings/:id
  *   POST /api/v1/listings   (create)
+ *   PUT /api/v1/listings/:id (update)
+ *   DELETE /api/v1/listings/:id
  */
 
 export default {
@@ -122,31 +124,111 @@ export default {
       }
 
       const listingMatch = path.match(/^\/api\/v1\/listings\/([^/]+)$/);
-      if (listingMatch && request.method === 'GET') {
+      if (listingMatch) {
         const id = listingMatch[1];
-        const row = await env.DB.prepare(
-          'SELECT id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image FROM listings WHERE id = ?'
-        ).bind(id).first();
 
-        if (!row) {
-          return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+        if (request.method === 'GET') {
+          const row = await env.DB.prepare(
+            'SELECT id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image FROM listings WHERE id = ?'
+          ).bind(id).first();
+
+          if (!row) {
+            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+          }
+
+          const listing = {
+            id: row.id,
+            location: { lat: row.lat, long: row.long },
+            visibility: row.visibility,
+            address: row.address,
+            sellerid: row.sellerid,
+            category: row.category,
+            headerdescription: row.headerdescription,
+            price: row.price,
+            units: row.units,
+            description: row.description,
+            image: row.image,
+          };
+
+          return Response.json(listing, { headers: corsHeaders });
         }
 
-        const listing = {
-          id: row.id,
-          location: { lat: row.lat, long: row.long },
-          visibility: row.visibility,
-          address: row.address,
-          sellerid: row.sellerid,
-          category: row.category,
-          headerdescription: row.headerdescription,
-          price: row.price,
-          units: row.units,
-          description: row.description,
-          image: row.image,
-        };
+        if (request.method === 'PUT') {
+          let body;
+          try {
+            body = await request.json();
+          } catch {
+            return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+          }
 
-        return Response.json(listing, { headers: corsHeaders });
+          const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
+          for (const k of required) {
+            if (body[k] == null || (typeof body[k] === 'string' && !body[k].trim())) {
+              return Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
+            }
+          }
+          if (!body.location?.lat || !body.location?.long) {
+            return Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
+          }
+          if (!['worldwide','country','province'].includes(body.visibility)) {
+            return Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
+          }
+
+          const existing = await env.DB.prepare('SELECT id FROM listings WHERE id = ?').bind(id).first();
+          if (!existing) {
+            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+          }
+
+          const stmt = env.DB.prepare(
+            `UPDATE listings SET
+              lat = ?, long = ?, visibility = ?, address = ?, sellerid = ?, category = ?,
+              headerdescription = ?, price = ?, units = ?, description = ?, image = ?,
+              updated_at = datetime('now')
+             WHERE id = ?`
+          ).bind(
+            Number(body.location.lat),
+            Number(body.location.long),
+            body.visibility,
+            body.address,
+            body.sellerid,
+            body.category,
+            body.headerdescription,
+            Number(body.price),
+            body.units,
+            body.description || '',
+            body.image,
+            id
+          );
+
+          await stmt.run();
+
+          const listing = {
+            id,
+            location: { lat: Number(body.location.lat), long: Number(body.location.long) },
+            visibility: body.visibility,
+            address: body.address,
+            sellerid: body.sellerid,
+            category: body.category,
+            headerdescription: body.headerdescription,
+            price: Number(body.price),
+            units: body.units,
+            description: body.description || '',
+            image: body.image,
+          };
+
+          return Response.json({ listing, message: 'updated' }, { headers: corsHeaders });
+        }
+
+        if (request.method === 'DELETE') {
+          const existing = await env.DB.prepare('SELECT id FROM listings WHERE id = ?').bind(id).first();
+          if (!existing) {
+            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+          }
+
+          await env.DB.prepare('DELETE FROM listings WHERE id = ?').bind(id).run();
+
+          return Response.json({ message: 'deleted', id }, { headers: corsHeaders });
+        }
       }
 
       return Response.json({ error: 'Not found', path }, { status: 404, headers: corsHeaders });
