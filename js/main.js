@@ -6,6 +6,7 @@
  * Shows dismissible seed/demo-mode banner when Worker is undeployed
  * Runtime API_BASE override (localStorage) for post-deploy testing
  * Demo mode reset
+ * Locate me geolocation control
  */
 (function () {
   'use strict';
@@ -15,7 +16,7 @@
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('fd-theme', theme);
     const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = isDark ? '☽' : '☀';
+    if (btn) btn.textContent = isDark ? '☾' : '☀';
     btn?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   }
 
@@ -89,6 +90,11 @@
         const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
         applyTheme(next);
       });
+    }
+
+    const locateBtn = document.getElementById('locate-btn');
+    if (locateBtn && window.FD_MAP && typeof window.FD_MAP.locateMe === 'function') {
+      locateBtn.addEventListener('click', () => window.FD_MAP.locateMe());
     }
 
     const optionsBtn = document.getElementById('options-btn');

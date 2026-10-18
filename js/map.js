@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
+ * + geolocation “Locate me” for better undeployed demo UX
  */
 (function (global) {
   'use strict';
@@ -9,6 +10,7 @@
   let markersLayer;
   let listings = [];
   let selectedId = null;
+  let userMarker = null;
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -132,6 +134,39 @@
     }
   }
 
+  function locateMe() {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by this browser.');
+      return;
+    }
+    const btn = document.getElementById('locate-btn');
+    if (btn) btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        if (userMarker) {
+          map.removeLayer(userMarker);
+        }
+        userMarker = L.circleMarker([lat, lng], {
+          radius: 8,
+          color: '#1d4ed8',
+          fillColor: '#3b82f6',
+          fillOpacity: 0.8,
+          weight: 2
+        }).addTo(map);
+        userMarker.bindPopup('You are here').openPopup();
+        map.flyTo([lat, lng], 12, { duration: 0.8 });
+        if (btn) btn.disabled = false;
+      },
+      (err) => {
+        alert('Could not get your location: ' + (err.message || 'permission denied or unavailable'));
+        if (btn) btn.disabled = false;
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  }
+
   function escapeHtml(s) {
     if (!s) return '';
     return String(s)
@@ -141,5 +176,5 @@
       .replace(/"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, getMap: () => map };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, getMap: () => map };
 })(window);

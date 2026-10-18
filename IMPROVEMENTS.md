@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: Locate me geolocation control for better demo map UX
+
+**What:** Added a “Locate me” button (⌖) in the top bar. Clicking it requests the browser geolocation, centers the Leaflet map on the user, and drops a temporary blue circle marker with popup. Fully functional in seed/demo mode with no Worker required. Button disables briefly while locating and re-enables on success or error.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves exploration of the geographically spread seed listings and makes the undeployed experience more interactive.
+
+**How:** One commit. Updated `index.html` (button), `js/map.js` (locateMe + user marker), `js/main.js` (event binding), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: richer seed data for better demo map experience
 
 **What:** Expanded `data/seed-listings.json` from 6 to 10 listings. Added geographic variety (Boulder apples, Castle Rock cheese, Westminster berries, Colorado Springs oats) while keeping all fields schema-compliant and using realistic Unsplash images. Demo mode and seed fallback now show a denser, more interesting map with clustering opportunities.
