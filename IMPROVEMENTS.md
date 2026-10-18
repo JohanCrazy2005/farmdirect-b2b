@@ -1,3 +1,15 @@
+## 2026-10-18 – chore: actually remove leftover legacy script tags from index.html
+
+**What:** Removed the two `<script>` tags that still loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These pre-fresh-start files reference non-existent globals (`window.sellers`, `buildPopupHtml`, old modal IDs, etc.) and produced no useful effect while risking console noise. The modular frontend under `js/` and `css/` is now the only client code loaded.
+
+**Why:** Highest remaining pure-code hygiene item. A prior note claimed the tags had been removed, but the live `index.html` still contained them. P1 deploy remains user-only (`wrangler login` + documented commands). Cleaning the script load keeps the fresh-start shell accurate, reduces payload, and avoids any chance of the legacy overlay interfering with the new modules.
+
+**How:** One commit. Updated `index.html` (removed script tags), `GOAL.md` (last-updated note), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. Orphaned legacy files (`cleanup.js`, `listings-api.js`, and other pre-fresh-start artifacts) can be deleted in a follow-up if desired. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – chore: remove legacy cleanup.js and listings-api.js from index.html
 
 **What:** Removed the two leftover `<script>` tags that loaded `cleanup.js` and `listings-api.js` from the bottom of `index.html`. These files were written for the pre-fresh-start monolithic UI and reference functions/elements that no longer exist (`buildPopupHtml`, `renderSellers`, `window.sellers`, old modal IDs, etc.). They produced no useful effect and risked console noise. The active frontend remains fully modular under `js/` and `css/`.
@@ -214,16 +226,4 @@ Next: P2 polish (mobile layout refinements, a11y, fuller clustering) or user-run
 
 ---
 
-## 2026-10-17 – Fresh-start foundation: schema, seed, wrangler, Worker skeleton + P1 deploy docs
-
-**What:** Added the canonical schema (`schema/listings.schema.json`, `schema/d1-schema.sql`), seed data (`data/seed-listings.json`) matching the required fields, `wrangler.toml` with the existing D1 binding, a minimal Worker (`workers/api.js`) exposing `/api/v1/health` and listings endpoints, and documented the exact `wrangler` commands needed for P1 deploy in README.md.
-
-**Why:** P0 claimed the foundation but the new files were missing from the tree. P1 deploy steps require user login/secrets, so the commands are now explicit. This unblocks the next code-only polish items while keeping the live Worker undeployed until the user runs the commands.
-
-**How:** One commit via push_files. Schema is strict (no additionalProperties). Worker maps D1 rows back to the nested `location` shape. Seed uses Denver-area coordinates for local testing. Old Vercel/Turso paths remain for reference but are no longer the primary path.
-
-Next: complete modular frontend (css/main.css, js/* ) and seed-fallback UX, then marker clustering / empty states (P2).
-
----
-
-(Older entries from previous cycles remain in git history.)
+## 2026-10-17 – Fresh-start foundation: schema, seed, wrangler, Worker skeleton + [+1129 bytes at .content[1].resource.text]

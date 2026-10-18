@@ -88,4 +88,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – cleaned legacy script tags from index.html; P4/P5 parents marked complete (user deploy still required).*
+*Last updated: 2026-10-18 – actually removed leftover legacy script tags from index.html (cleanup.js, listings-api.js); all P2–P5 items remain complete; P1 deploy still requires user.*
