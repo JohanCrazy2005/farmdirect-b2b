@@ -2,6 +2,7 @@
  * FarmDirect B2B – app bootstrap
  * Theme (system + persisted), options menu, mobile sidebar toggle, a11y hooks
  * Polished loading / empty state coordination
+ * Wires add-listing form
  */
 (function () {
   'use strict';
@@ -45,6 +46,9 @@
 
     // Bind filters / list
     if (window.FD_LIST) FD_LIST.bindUI();
+
+    // Bind form
+    if (window.FD_FORM) FD_FORM.bindForm();
 
     // Load data (API or seed)
     const statusEl = document.getElementById('data-status');
@@ -93,6 +97,11 @@
       alert('Profile / seller dashboard coming in P3/P4.');
     });
 
+    // Add listing button
+    document.getElementById('add-listing-btn')?.addEventListener('click', () => {
+      if (window.FD_FORM) FD_FORM.openForm();
+    });
+
     // Mobile sidebar collapse toggle
     const sidebar = document.querySelector('.sidebar');
     const sidebarHeader = document.querySelector('.sidebar-header');
@@ -122,6 +131,7 @@
         document.getElementById('product-card')?.classList.remove('open');
         document.getElementById('seller-card')?.classList.remove('open');
         document.getElementById('options-menu')?.classList.remove('open');
+        document.getElementById('listing-form-modal')?.classList.remove('open');
         document.getElementById('filter-btn')?.classList.remove('active');
       }
     });

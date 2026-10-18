@@ -1,3 +1,15 @@
+## 2026-10-17 – P3: add listing form modal + API POST support
+
+**What:** Added a full add-listing form modal (accessible from new + button in the top bar) that collects every required schema field with client-side validation. New `js/form.js` module handles open/close, geolocation helper, validation, and submit. `js/api.js` gained `createListing` which POSTs when `FD_CONFIG.API_BASE` is set, otherwise returns a clear seed-mode message. Worker `workers/api.js` now accepts `POST /api/v1/listings` and inserts into D1 (with basic validation). Form styles added to `css/main.css`. Escape closes the modal.
+
+**Why:** P1 deploy remains user-action only. P2 polish is complete. Starting P3 seller experience unblocks sellers from publishing listings once the Worker is live. Form is immediately usable for testing the UI and validation; creation succeeds only after deploy.
+
+**How:** One commit. New file `js/form.js`. Updated `index.html` (button + modal markup + script), `js/api.js`, `js/main.js` (wiring + Escape), `css/main.css` (form modal styles), `workers/api.js` (POST endpoint), `GOAL.md` (P3 partial), `IMPROVEMENTS.md`.
+
+Next: edit/delete listings, or user-run P1 deploy so the form can persist data.
+
+---
+
 ## 2026-10-17 – P2: polished empty & loading states
 
 **What:** Replaced basic text loading/empty with skeleton cards in the list, a map loading overlay with spinner, and richer empty states that distinguish “no data at all” from “no filter matches”. Empty list offers a clear-filters button when filters are active. Map overlay reappears with a message when the filtered set is empty.

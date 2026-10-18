@@ -1,6 +1,7 @@
 /* FarmDirect B2B – main styles
    Map-first layout, transparent top bar, cards, filter panel
    Enhanced mobile + a11y + marker clusters + polished empty/loading
+   + add-listing form modal
 */
 :root {
   --primary: #2d6a4f;
@@ -481,6 +482,89 @@ html.dark .source-badge.seed { background: #78350f; color: #fcd34d; }
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
+/* Add listing form modal */
+.form-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.form-modal.open { display: flex; }
+.form-modal-content {
+  background: var(--card);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.form-modal-content h3 { margin-bottom: 0.75rem; }
+.form-modal-content label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.65rem;
+}
+.form-modal-content input,
+.form-modal-content select,
+.form-modal-content textarea {
+  width: 100%;
+  margin-top: 0.2rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  margin-bottom: 0.65rem;
+}
+.form-row label { flex: 1; margin-bottom: 0; }
+.small-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--hover-bg);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  height: fit-content;
+}
+.primary-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.45rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.primary-btn:hover { background: var(--primary-dark); }
+.form-status {
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  margin: 0.4rem 0;
+  color: var(--muted);
+}
+.form-status.error { color: #dc2626; }
+.form-status.success { color: var(--success); }
+
 /* Mobile bottom sheet */
 @media (max-width: 768px) {
   .sidebar {
@@ -505,4 +589,5 @@ html.dark .source-badge.seed { background: #78350f; color: #fcd34d; }
   .detail-card, .seller-card-overlay { width: calc(100% - 2rem); bottom: calc(42% + 0.5rem); }
   .search-box { max-width: none; }
   .logo { font-size: 1rem; }
+  .form-modal-content { max-width: none; }
 }
