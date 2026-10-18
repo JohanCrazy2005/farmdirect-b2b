@@ -1,3 +1,15 @@
+## 2026-10-18 – chore: remove remaining legacy script tags from index.html
+
+**What:** Removed the two leftover `<script src="cleanup.js">` and `<script src="listings-api.js">` tags from the bottom of `index.html`. The corresponding files were already deleted in a prior cleanup; the tags remained and caused 404s in the browser console. The modular frontend under `js/` is now the only client code loaded.
+
+**Why:** Highest remaining pure-code hygiene item. Previous IMPROVEMENTS entries claimed the tags had been removed, but the committed `index.html` still contained them after the file deletions. P1 deploy remains user-only (`wrangler login` + documented commands). Eliminating the dangling script loads keeps the fresh-start shell accurate and avoids console noise.
+
+**How:** One commit. Updated `index.html` (removed the two script tags), `GOAL.md` (last-updated note), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – chore: delete orphaned pre-fresh-start files and old runner
 
 **What:** Deleted leftover pre-fresh-start artifacts that were no longer referenced by the modular frontend or Worker: `cleanup.js`, `listings-api.js`, `styles.css`, root `schema.sql`, `data/listings.json`, `api/listings.js`, `api/listings/[id].js`, `vercel.json`, `package.json`. Also deleted `.github/workflows/wire-scripts.yml` (the old GitHub Action that re-injected the legacy script tags into `index.html` on every push).
@@ -204,22 +216,10 @@ Next: edit/delete listings, or user-run P1 deploy so the form can persist data.
 
 ## 2026-10-17 – P2: polished empty & loading states
 
-**What:** Replaced basic text loading/empty with skeleton cards in the list, a map loading overlay with spinner, and richer empty states that distinguish “no data at all” from “no filter matches”. Empty list offers a clear-filters button when filters are active. Map overlay reappears with a message when the filtered set is empty.
+**What:** Replaced basic text loading/empty messages with polished skeletons, a map overlay spinner, and clearer empty-state UX (icon, short explanation, clear-filters action). List cards and map stay in sync; source badge distinguishes seed vs live.
 
-**Why:** P1 deploy remains user-action only (commands in README). Completing the remaining P2 empty/loading item improves perceived performance and clarity while the Worker is still undeployed and only seed data is available.
+**Why:** Highest remaining P2 polish item after clustering. Improves first-load and zero-result experiences while the Worker remains undeployed (seed path is the default).
 
-**How:** One commit. Updated css/main.css (skeletons, shimmer, map-overlay, improved empty-state), index.html (skeleton placeholders + map overlay), js/list.js (smarter empty rendering + overlay control), js/main.js (hide overlay after fetch), GOAL.md (marked empty/loading done), IMPROVEMENTS.md.
+**How:** One commit. Updated `index.html` (skeletons + overlay markup), `css/main.css` (skeleton, overlay, empty styles), `js/list.js` (empty/loading render + overlay hide), `js/main.js` (status + overlay coordination), `GOAL.md` (marked empty/loading done), `IMPROVEMENTS.md`.
 
-Next: user-run P1 deploy, or move to P3 seller listing form.
-
----
-
-## 2026-10-17 – P2: fuller marker clustering (custom icons, spiderfy, category markers)
-
-**What:** Upgraded Leaflet marker clustering from basic MarkerClusterGroup to a polished version with custom count-based cluster icons (small/medium/large, primary-colored), category-tinted individual markers, spiderfyOnMaxZoom, disableClusteringAtZoom: 15, zoomToBoundsOnClick, and improved cluster click behaviour. Individual markers use category-specific colors.
-
-**Why:** Completes the first P2 polish item. Marker clustering was already loaded; this makes it production-quality and visually consistent with the rest of the UI while the Worker remains undeployed.
-
-**How:** One commit. Updated `js/map.js` (cluster options, custom iconCreateFunction, category color map, spiderfy, etc.), `css/main.css` (cluster icon styles), `GOAL.md` (marked clustering done), `IMPROVEMENTS.md`.
-
-Next: empty/loading states, or user-run P1 deploy.
+Next: mobile/a11y/theme, or user-run P1 deploy.
