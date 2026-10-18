@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: improve seed-fallback UX with dismissible demo-mode banner
+
+**What:** Added a centered, dismissible banner that appears only when the data source is the seed fallback. It explains that the app is in demo mode and points users to the README P1 deploy steps for live D1 + create/edit/delete. Escape and the × button hide it. Styled for light/dark and mobile.
+
+**Why:** Highest remaining pure-code item after all P5 documentation and Worker rate-limit/logging work. P1 deploy still requires user `wrangler login` + commands (already documented). While the Worker stays undeployed the seed path is the only experience; a clear, non-blocking banner reduces confusion about why mutations are read-only.
+
+**How:** One commit. Updated `index.html` (banner markup), `css/main.css` (styles + mobile tweak), `js/main.js` (show on seed source + close handlers), `GOAL.md` (P2 sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, and eventual R2/custom domain/CI can be exercised.
+
+---
+
 ## 2026-10-18 – P5: document CI deploy workflow setup steps
 
 **What:** Added a complete “P5 – CI” section to README.md with exact steps to create the required GitHub Actions secrets (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`) and a ready-to-use `deploy.yml` skeleton that runs `cloudflare/wrangler-action` on push to main. Marked the CI sub-item done in GOAL.md.

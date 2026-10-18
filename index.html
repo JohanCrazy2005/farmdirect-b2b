@@ -31,6 +31,12 @@
     </div>
   </header>
 
+  <!-- Seed-mode banner (shown when Worker is undeployed) -->
+  <div id="seed-banner" class="seed-banner hidden" role="status" aria-live="polite">
+    <span>Demo mode: showing seed data. Deploy the Worker (see README – P1) for live D1 listings and create/edit/delete.</span>
+    <button id="close-seed-banner" class="close-banner" aria-label="Dismiss demo notice">×</button>
+  </div>
+
   <div class="main">
     <div id="map" role="application" aria-label="Listings map">
       <div id="map-overlay" class="map-overlay">

@@ -52,6 +52,7 @@ Seed fallback when API offline.
 - [x] Marker clustering (library already loaded; fuller custom icons, spiderfy, disable-at-zoom, category markers)
 - [x] Empty/loading states (skeletons, map overlay, clearer empty UX)
 - [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
+- [x] Seed-fallback UX banner (dismissible demo-mode notice pointing to README deploy steps) (2026-10-18)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -86,4 +87,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P5 CI skeleton notes documented.*
+*Last updated: 2026-10-18 – P2+ seed-fallback UX banner added.*

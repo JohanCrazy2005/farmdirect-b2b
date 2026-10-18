@@ -3,6 +3,7 @@
  * Theme (system + persisted), options menu, mobile sidebar toggle, a11y hooks
  * Polished loading / empty state coordination
  * Wires add-listing form and seller dashboard
+ * Shows dismissible seed-mode banner when Worker is undeployed
  */
 (function () {
   'use strict';
@@ -73,6 +74,15 @@
       statusEl.innerHTML = `${result.count} listings ${badge}`;
     }
 
+    // Seed-mode banner
+    const seedBanner = document.getElementById('seed-banner');
+    if (seedBanner && result.source === 'seed') {
+      seedBanner.classList.remove('hidden');
+      document.getElementById('close-seed-banner')?.addEventListener('click', () => {
+        seedBanner.classList.add('hidden');
+      });
+    }
+
     // Theme toggle
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) {
@@ -137,6 +147,7 @@
         document.getElementById('listing-form-modal')?.classList.remove('open');
         document.getElementById('dashboard-modal')?.classList.remove('open');
         document.getElementById('filter-btn')?.classList.remove('active');
+        document.getElementById('seed-banner')?.classList.add('hidden');
       }
     });
   });
