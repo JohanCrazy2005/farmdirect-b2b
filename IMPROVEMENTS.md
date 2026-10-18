@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: runtime API_BASE override via localStorage
+
+**What:** Added support for setting (and clearing) the Worker API base URL at runtime through the options menu. The value is stored in `localStorage` under `fd-api-base` and applied in `js/config.js` on load, so the frontend can switch from seed fallback to a live Worker without editing source files. Deploy-status menu item now reports the current source and base. Validation ensures a proper http(s) URL; reload happens after change.
+
+**Why:** Highest remaining pure-code polish item. P1 deploy still requires user `wrangler login` + commands (already documented in README). Once the user deploys, they need a frictionless way to point the frontend at the new Worker URL for testing create/edit/delete and live data. The override keeps the static `API_BASE` empty by default (seed mode) while enabling post-deploy verification.
+
+**How:** One commit. Updated `js/config.js` (localStorage read), `index.html` (options menu buttons with ids), `js/main.js` (handlers + improved status alert), `GOAL.md` (new P2 sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the override, rate limiting, logging, and eventual R2/custom domain/CI can be exercised.
+
+---
+
 ## 2026-10-18 – P2+: improve seed-fallback UX with dismissible demo-mode banner
 
 **What:** Added a centered, dismissible banner that appears only when the data source is the seed fallback. It explains that the app is in demo mode and points users to the README P1 deploy steps for live D1 + create/edit/delete. Escape and the × button hide it. Styled for light/dark and mobile.

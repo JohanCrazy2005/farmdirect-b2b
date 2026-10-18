@@ -95,9 +95,11 @@
 
   <!-- Options menu -->
   <div id="options-menu" class="options-menu" role="menu" aria-label="Options">
-    <button role="menuitem" onclick="document.getElementById('theme-btn').click(); this.closest('.options-menu').classList.remove('open');">Toggle theme</button>
-    <button role="menuitem" onclick="alert('About FarmDirect B2B – map-first agricultural marketplace.'); this.closest('.options-menu').classList.remove('open');">About</button>
-    <button role="menuitem" onclick="alert('Deploy status: Worker not yet deployed. See README for wrangler commands.'); this.closest('.options-menu').classList.remove('open');">Deploy status</button>
+    <button id="opt-theme" role="menuitem">Toggle theme</button>
+    <button id="opt-set-api" role="menuitem">Set API base…</button>
+    <button id="opt-clear-api" role="menuitem">Clear API base (use seed)</button>
+    <button id="opt-deploy-status" role="menuitem">Deploy status</button>
+    <button id="opt-about" role="menuitem">About</button>
   </div>
 
   <!-- Product detail card -->

@@ -4,6 +4,7 @@
  * Polished loading / empty state coordination
  * Wires add-listing form and seller dashboard
  * Shows dismissible seed-mode banner when Worker is undeployed
+ * Runtime API_BASE override (localStorage) for post-deploy testing
  */
 (function () {
   'use strict';
@@ -37,6 +38,10 @@
   function hideMapOverlay() {
     const overlay = document.getElementById('map-overlay');
     if (overlay) overlay.classList.add('hidden');
+  }
+
+  function getCurrentApiBase() {
+    return (window.FD_CONFIG && window.FD_CONFIG.API_BASE) || '';
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -104,6 +109,65 @@
       document.addEventListener('click', () => optionsMenu.classList.remove('open'));
       optionsMenu.addEventListener('click', (e) => e.stopPropagation());
     }
+
+    // Options menu actions
+    document.getElementById('opt-theme')?.addEventListener('click', () => {
+      document.getElementById('theme-btn')?.click();
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-set-api')?.addEventListener('click', () => {
+      const current = getCurrentApiBase();
+      const next = prompt('Enter Worker API base URL (e.g. https://farmdirect-b2b.<subdomain>.workers.dev)\nLeave blank to cancel.', current);
+      if (next === null) return; // cancelled
+      const trimmed = next.trim();
+      if (!trimmed) {
+        alert('Empty URL ignored. Use "Clear API base" to force seed mode.');
+        return;
+      }
+      if (!/^https?:\/\//i.test(trimmed)) {
+        alert('URL must start with http:// or https://');
+        return;
+      }
+      try {
+        localStorage.setItem('fd-api-base', trimmed);
+        window.FD_CONFIG.API_BASE = trimmed;
+        alert('API base saved. Reloading to use live Worker…');
+        location.reload();
+      } catch (err) {
+        alert('Could not save to localStorage: ' + err.message);
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-clear-api')?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem('fd-api-base');
+        window.FD_CONFIG.API_BASE = '';
+        alert('API base cleared. Reloading to use seed fallback…');
+        location.reload();
+      } catch (err) {
+        alert('Could not clear localStorage: ' + err.message);
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-deploy-status')?.addEventListener('click', () => {
+      const base = getCurrentApiBase();
+      const source = result.source || 'unknown';
+      const msg = source === 'api'
+        ? `Live API active.\nBase: ${base || '(none)'}`
+        : source === 'seed'
+          ? `Demo / seed fallback active.\nAPI base: ${base || '(not set)'}\nDeploy the Worker (README P1) then use "Set API base" here.`
+          : `No data source.\nAPI base: ${base || '(not set)'}`;
+      alert(msg);
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-about')?.addEventListener('click', () => {
+      alert('FarmDirect B2B – map-first agricultural marketplace.\nLeaflet + Cloudflare Workers + D1.\nSee README.md for deploy steps.');
+      optionsMenu?.classList.remove('open');
+    });
 
     // Profile → seller dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {

@@ -53,6 +53,7 @@ Seed fallback when API offline.
 - [x] Empty/loading states (skeletons, map overlay, clearer empty UX)
 - [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
 - [x] Seed-fallback UX banner (dismissible demo-mode notice pointing to README deploy steps) (2026-10-18)
+- [x] Runtime API_BASE override via localStorage (options menu set/clear for post-deploy testing without source edit) (2026-10-18)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -87,4 +88,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P2+ seed-fallback UX banner added.*
+*Last updated: 2026-10-18 – P2+ runtime API_BASE localStorage override added.*
