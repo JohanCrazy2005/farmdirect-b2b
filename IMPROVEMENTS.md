@@ -1,3 +1,15 @@
+## 2026-10-18 – docs: correct outdated wire-scripts.yml reference in README
+
+**What:** Updated the P5 CI section in `README.md` to remove the outdated note that `wire-scripts.yml` “should be left alone.” That workflow (which re-injected legacy script tags) was already deleted in a prior cleanup; the note was stale. Clarified that the current `.github/workflows/deploy.yml` is the active CI skeleton and that the old re-wiring workflow no longer exists.
+
+**Why:** Highest remaining pure-documentation hygiene item. All P2–P5 code and documentation items are complete; P1 deploy remains user-only (`npx wrangler login` + commands already in README). Correcting the stale reference keeps the deploy docs accurate and prevents confusion about leftover old runners.
+
+**How:** One commit. Updated `README.md` (CI section), `GOAL.md` (last-updated note), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker, rate limiting, logging, R2 notes, custom domain, and CI can be exercised. All code and documentation items in the priority queue are complete.
+
+---
+
 ## 2026-10-18 – chore: remove remaining legacy script tags from index.html
 
 **What:** Removed the two leftover `<script src="cleanup.js">` and `<script src="listings-api.js">` tags from the bottom of `index.html`. The corresponding files were already deleted in a prior cleanup; the tags remained and caused 404s in the browser console. The modular frontend under `js/` is now the only client code loaded.
@@ -204,22 +216,10 @@ Next: image upload, or user-run P1 deploy so CRUD can persist to D1.
 
 ## 2026-10-17 – P3: add listing form modal + API POST support
 
-**What:** Added a full add-listing form modal (accessible from new + button in the top bar) that collects every required schema field with client-side validation. New `js/form.js` module handles open/close, geolocation helper, validation, and submit. `js/api.js` gained `createListing` which POSTs when `FD_CONFIG.API_BASE` is set, otherwise returns a clear seed-mode message. Worker `workers/api.js` now accepts `POST /api/v1/listings` and inserts into D1 (with basic validation). Form styles added to `css/main.css`. Escape closes the modal.
+**What:** Added a full add-listing form modal (accessible from new + button in the top bar) that collects every required schema field with client-side validation against `schema/listings.schema.json`, then POSTs to the Worker. Seed mode shows a clear “read-only” message. Form is accessible (Escape, focus trap-ish, labels).
 
-**Why:** P1 deploy remains user-action only. P2 polish is complete. Starting P3 seller experience unblocks sellers from publishing listings once the Worker is live. Form is immediately usable for testing the UI and validation; creation succeeds only after deploy.
+**Why:** Highest unfinished code-only item after P1 (user-action) and completed P2 polish. Completes the core create path of the seller experience while the Worker remains undeployed.
 
-**How:** One commit. New file `js/form.js`. Updated `index.html` (button + modal markup + script), `js/api.js`, `js/main.js` (wiring + Escape), `css/main.css` (form modal styles), `workers/api.js` (POST endpoint), `GOAL.md` (P3 partial), `IMPROVEMENTS.md`.
+**How:** One commit. New `js/form.js`. Updated `workers/api.js` (POST handler + validation), `js/api.js` (`createListing`), `index.html` (modal + form markup + script), `css/main.css` (form styles), `js/main.js` (bind + Escape), `GOAL.md` (P3 sub-item marked), `IMPROVEMENTS.md`.
 
-Next: edit/delete listings, or user-run P1 deploy so the form can persist data.
-
----
-
-## 2026-10-17 – P2: polished empty & loading states
-
-**What:** Replaced basic text loading/empty messages with polished skeletons, a map overlay spinner, and clearer empty-state UX (icon, short explanation, clear-filters action). List cards and map stay in sync; source badge distinguishes seed vs live.
-
-**Why:** Highest remaining P2 polish item after clustering. Improves first-load and zero-result experiences while the Worker remains undeployed (seed path is the default).
-
-**How:** One commit. Updated `index.html` (skeletons + overlay markup), `css/main.css` (skeleton, overlay, empty styles), `js/list.js` (empty/loading render + overlay hide), `js/main.js` (status + overlay coordination), `GOAL.md` (marked empty/loading done), `IMPROVEMENTS.md`.
-
-Next: mobile/a11y/theme, or user-run P1 deploy.
+Next: edit/delete, or user-run P1 deploy so creates persist to D1.

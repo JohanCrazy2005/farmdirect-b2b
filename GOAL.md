@@ -88,4 +88,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – removed remaining legacy script tags from index.html (cleanup.js + listings-api.js no longer loaded). All P2–P5 items remain complete; P1 deploy still requires user.*
+*Last updated: 2026-10-18 – docs: corrected outdated wire-scripts.yml reference in README CI section (workflow already deleted). All P2–P5 items remain complete; P1 deploy still requires user.*

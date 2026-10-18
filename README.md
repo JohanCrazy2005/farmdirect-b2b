@@ -140,8 +140,8 @@ A continuous-deployment workflow can automatically run `wrangler deploy` on ever
 3. In the GitHub repository: **Settings → Secrets and variables → Actions** add:
    - `CLOUDFLARE_API_TOKEN` = the token from step 1
    - `CLOUDFLARE_ACCOUNT_ID` = the account id from step 2
-4. Create `.github/workflows/deploy.yml` with the content below (or copy the skeleton that will be committed in the same change).
-5. Push the workflow. Subsequent pushes to `main` will deploy the Worker.
+4. The deploy workflow already exists at `.github/workflows/deploy.yml` (skeleton committed). Subsequent pushes to `main` will deploy once secrets are set.
+5. Push any change (or trigger manually). Subsequent pushes to `main` will deploy the Worker.
 
 ```yaml
 name: Deploy Worker
@@ -165,7 +165,7 @@ jobs:
           command: deploy
 ```
 
-After the first successful deploy you can also add a step to apply the D1 schema if desired (`npx wrangler d1 execute … --remote`), but do so carefully so migrations remain idempotent. The existing `wire-scripts.yml` is unrelated to this fresh-start path and should be left alone.
+After the first successful deploy you can also add a step to apply the D1 schema if desired (`npx wrangler d1 execute … --remote`), but do so carefully so migrations remain idempotent. The old `wire-scripts.yml` (legacy re-injector) has been removed; only the current deploy workflow remains.
 
 Until the secrets and workflow are active, manual `npx wrangler deploy` (see P1) remains the way to go live.
 
