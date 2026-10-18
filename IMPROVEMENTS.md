@@ -1,3 +1,15 @@
+## 2026-10-17 – P4: seller dashboard skeleton (client-side seller session)
+
+**What:** Added a seller dashboard modal opened from the profile icon. Users enter a seller ID (persisted in localStorage) to view only their listings, with Edit / Delete buttons that reuse the existing form and API layer. Works immediately with seed data; delete/edit show the familiar “seed mode is read-only” message until the Worker is deployed. Includes sign-out and a clear note that real Cloudflare Access / JWT / RLS is still pending.
+
+**Why:** Highest unfinished code-only item after P1 (user-action) and completed P2/P3. Provides a usable seller experience preview and unblocks further auth work without inventing unrelated features or requiring the live Worker.
+
+**How:** One commit. New `js/dashboard.js`. Updated `index.html` (modal markup + script), `js/main.js` (profile button + Escape + bind), `css/main.css` (dashboard list, muted, link-btn styles), `GOAL.md` (P4 sub-item marked), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so CRUD persists, then Cloudflare Access / JWT wiring, or continue P4/P5.
+
+---
+
 ## 2026-10-17 – P3: client-side image upload (file select → resized data URL + preview)
 
 **What:** Extended the listing form to accept a local image file. Client resizes to max 800px (JPEG ~0.75 quality), converts to a data URL (valid schema `uri`), sets the image field, and shows a live preview. External https URL input remains as fallback. Validation now accepts both `https?://` and `data:image/` URIs. No Worker or schema change required.

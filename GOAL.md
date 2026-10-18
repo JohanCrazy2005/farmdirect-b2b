@@ -61,6 +61,7 @@ Seed fallback when API offline.
 
 ### P4 Auth
 - [ ] Cloudflare Access / JWT, RLS, seller dashboard
+  - [x] Seller dashboard skeleton (client-side localStorage seller session + my-listings view with edit/delete) (2026-10-17)
 
 ### P5 Production
 - [ ] Rate limit, observability, custom domain, CI
@@ -78,4 +79,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P3 image upload (client-side) shipped.*
+*Last updated: 2026-10-17 – P4 seller dashboard skeleton shipped.*

@@ -1,7 +1,7 @@
 /* FarmDirect B2B – main styles
    Map-first layout, transparent top bar, cards, filter panel
    Enhanced mobile + a11y + marker clusters + polished empty/loading
-   + add-listing form modal + image preview
+   + add-listing form modal + image preview + seller dashboard
 */
 :root {
   --primary: #2d6a4f;
@@ -253,6 +253,11 @@ html.dark .map-overlay { background: rgba(15,23,42,0.75); }
   color: var(--primary);
   font-size: 0.9rem;
 }
+.listing-info .actions {
+  margin-top: 0.4rem;
+  display: flex;
+  gap: 0.4rem;
+}
 
 /* Skeleton loading cards */
 .skeleton-card {
@@ -482,7 +487,7 @@ html.dark .source-badge.seed { background: #78350f; color: #fcd34d; }
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
-/* Add listing form modal */
+/* Add listing form modal + dashboard */
 .form-modal {
   position: fixed;
   inset: 0;
@@ -573,6 +578,25 @@ html.dark .source-badge.seed { background: #78350f; color: #fcd34d; }
   margin: 0.4rem 0;
   border: 1px solid var(--border);
 }
+
+/* Dashboard-specific */
+.dashboard-list {
+  margin: 0.75rem 0;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.muted { color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.muted.small { font-size: 0.8rem; margin-top: 0.75rem; }
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+  padding: 0;
+}
+.link-btn:hover { color: var(--primary); }
 
 /* Mobile bottom sheet */
 @media (max-width: 768px) {
