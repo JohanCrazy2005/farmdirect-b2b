@@ -14,6 +14,9 @@
  *
  * Rate limiting: simple per-IP in-memory window (60 requests / 60s). Per-isolate only;
  * for production-scale use Durable Objects or KV. Returns 429 with Retry-After when exceeded.
+ *
+ * Observability: structured JSON logs to console for every request (method, path, status,
+ * duration, ip, seller when present). Visible in Cloudflare Workers logs / wrangler tail.
  */
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -46,20 +49,34 @@ function getSellerId(request) {
   return (request.headers.get('X-Seller-Id') || '').trim();
 }
 
+function logRequest(entry) {
+  console.log(JSON.stringify({
+    ts: new Date().toISOString(),
+    service: 'farmdirect-b2b',
+    ...entry,
+  }));
+}
+
 export default {
   async fetch(request, env, ctx) {
+    const start = Date.now();
     const url = new URL(request.url);
     const path = url.pathname;
+    const method = request.method;
+    const ip = getClientIp(request);
+    const sellerId = getSellerId(request);
 
     // CORS for frontend
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
+      const res = new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, X-Seller-Id',
         },
       });
+      logRequest({ method, path, status: 204, durationMs: Date.now() - start, ip, type: 'cors' });
+      return res;
     }
 
     const corsHeaders = {
@@ -68,10 +85,9 @@ export default {
     };
 
     // Basic rate limit (skip OPTIONS)
-    const ip = getClientIp(request);
     const rl = checkRateLimit(ip);
     if (!rl.allowed) {
-      return Response.json(
+      const res = Response.json(
         { error: 'Rate limit exceeded', retryAfter: rl.retryAfter },
         {
           status: 429,
@@ -83,6 +99,8 @@ export default {
           },
         }
       );
+      logRequest({ method, path, status: 429, durationMs: Date.now() - start, ip, sellerId: sellerId || null, rateLimited: true });
+      return res;
     }
     // Attach remaining for successful responses (optional observability)
     corsHeaders['X-RateLimit-Limit'] = String(RATE_LIMIT_MAX);
@@ -90,7 +108,7 @@ export default {
 
     try {
       if (path === '/api/v1/health' && request.method === 'GET') {
-        return Response.json({
+        const res = Response.json({
           status: 'ok',
           service: 'farmdirect-b2b',
           database: 'b2bistening',
@@ -98,6 +116,8 @@ export default {
           rateLimit: { windowSec: 60, max: RATE_LIMIT_MAX, remaining: rl.remaining },
           timestamp: new Date().toISOString(),
         }, { headers: corsHeaders });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null });
+        return res;
       }
 
       if (path === '/api/v1/listings' && request.method === 'GET') {
@@ -119,37 +139,51 @@ export default {
           image: row.image,
         }));
 
-        return Response.json({ listings, count: listings.length, source: 'd1' }, { headers: corsHeaders });
+        const res = Response.json({ listings, count: listings.length, source: 'd1' }, { headers: corsHeaders });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null, count: listings.length });
+        return res;
       }
 
       if (path === '/api/v1/listings' && request.method === 'POST') {
-        const sellerId = getSellerId(request);
-        if (!sellerId) {
-          return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+        const sellerIdHdr = getSellerId(request);
+        if (!sellerIdHdr) {
+          const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+          logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, error: 'missing_seller' });
+          return res;
         }
 
         let body;
         try {
           body = await request.json();
         } catch {
-          return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+          const res = Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'invalid_json' });
+          return res;
         }
 
-        if (body.sellerid !== sellerId) {
-          return Response.json({ error: 'sellerid must match X-Seller-Id' }, { status: 403, headers: corsHeaders });
+        if (body.sellerid !== sellerIdHdr) {
+          const res = Response.json({ error: 'sellerid must match X-Seller-Id' }, { status: 403, headers: corsHeaders });
+          logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'seller_mismatch' });
+          return res;
         }
 
         const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
         for (const k of required) {
           if (body[k] == null || (typeof body[k] === 'string' && !body[k].trim())) {
-            return Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
+            const res = Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
+            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: `missing_${k}` });
+            return res;
           }
         }
         if (!body.location?.lat || !body.location?.long) {
-          return Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
+          const res = Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
+          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'missing_location' });
+          return res;
         }
         if (!['worldwide','country','province'].includes(body.visibility)) {
-          return Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
+          const res = Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
+          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'invalid_visibility' });
+          return res;
         }
 
         const id = crypto.randomUUID();
@@ -187,7 +221,9 @@ export default {
           image: body.image,
         };
 
-        return Response.json({ listing, message: 'created' }, { status: 201, headers: corsHeaders });
+        const res = Response.json({ listing, message: 'created' }, { status: 201, headers: corsHeaders });
+        logRequest({ method, path, status: 201, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+        return res;
       }
 
       const listingMatch = path.match(/^\/api\/v1\/listings\/([^/]+)$/);
@@ -200,7 +236,9 @@ export default {
           ).bind(id).first();
 
           if (!row) {
-            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerId || null, listingId: id });
+            return res;
           }
 
           const listing = {
@@ -217,44 +255,62 @@ export default {
             image: row.image,
           };
 
-          return Response.json(listing, { headers: corsHeaders });
+          const res = Response.json(listing, { headers: corsHeaders });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null, listingId: id });
+          return res;
         }
 
         if (request.method === 'PUT') {
-          const sellerId = getSellerId(request);
-          if (!sellerId) {
-            return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+          const sellerIdHdr = getSellerId(request);
+          if (!sellerIdHdr) {
+            const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+            logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, listingId: id, error: 'missing_seller' });
+            return res;
           }
 
           let body;
           try {
             body = await request.json();
           } catch {
-            return Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+            const res = Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
+            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'invalid_json' });
+            return res;
           }
 
           const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
           for (const k of required) {
             if (body[k] == null || (typeof body[k] === 'string' && !body[k].trim())) {
-              return Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
+              const res = Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
+              logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: `missing_${k}` });
+              return res;
             }
           }
           if (!body.location?.lat || !body.location?.long) {
-            return Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
+            const res = Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
+            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'missing_location' });
+            return res;
           }
           if (!['worldwide','country','province'].includes(body.visibility)) {
-            return Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
+            const res = Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
+            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'invalid_visibility' });
+            return res;
           }
 
           const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
           if (!existing) {
-            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+            return res;
           }
-          if (existing.sellerid !== sellerId) {
-            return Response.json({ error: 'Not authorized to update this listing' }, { status: 403, headers: corsHeaders });
+          if (existing.sellerid !== sellerIdHdr) {
+            const res = Response.json({ error: 'Not authorized to update this listing' }, { status: 403, headers: corsHeaders });
+            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'not_owner' });
+            return res;
           }
-          if (body.sellerid !== sellerId) {
-            return Response.json({ error: 'Cannot change sellerid' }, { status: 403, headers: corsHeaders });
+          if (body.sellerid !== sellerIdHdr) {
+            const res = Response.json({ error: 'Cannot change sellerid' }, { status: 403, headers: corsHeaders });
+            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'seller_change' });
+            return res;
           }
 
           const stmt = env.DB.prepare(
@@ -294,33 +350,47 @@ export default {
             image: body.image,
           };
 
-          return Response.json({ listing, message: 'updated' }, { headers: corsHeaders });
+          const res = Response.json({ listing, message: 'updated' }, { headers: corsHeaders });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+          return res;
         }
 
         if (request.method === 'DELETE') {
-          const sellerId = getSellerId(request);
-          if (!sellerId) {
-            return Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+          const sellerIdHdr = getSellerId(request);
+          if (!sellerIdHdr) {
+            const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
+            logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, listingId: id, error: 'missing_seller' });
+            return res;
           }
 
           const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
           if (!existing) {
-            return Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
+            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+            return res;
           }
-          if (existing.sellerid !== sellerId) {
-            return Response.json({ error: 'Not authorized to delete this listing' }, { status: 403, headers: corsHeaders });
+          if (existing.sellerid !== sellerIdHdr) {
+            const res = Response.json({ error: 'Not authorized to delete this listing' }, { status: 403, headers: corsHeaders });
+            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'not_owner' });
+            return res;
           }
 
           await env.DB.prepare('DELETE FROM listings WHERE id = ?').bind(id).run();
 
-          return Response.json({ message: 'deleted', id }, { headers: corsHeaders });
+          const res = Response.json({ message: 'deleted', id }, { headers: corsHeaders });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+          return res;
         }
       }
 
-      return Response.json({ error: 'Not found', path }, { status: 404, headers: corsHeaders });
+      const res = Response.json({ error: 'Not found', path }, { status: 404, headers: corsHeaders });
+      logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerId || null });
+      return res;
     } catch (err) {
       console.error(err);
-      return Response.json({ error: 'Internal error', message: err.message }, { status: 500, headers: corsHeaders });
+      const res = Response.json({ error: 'Internal error', message: err.message }, { status: 500, headers: corsHeaders });
+      logRequest({ method, path, status: 500, durationMs: Date.now() - start, ip, sellerId: sellerId || null, error: err.message });
+      return res;
     }
   },
 };

@@ -1,3 +1,15 @@
+## 2026-10-18 – P5: basic structured request logging for observability
+
+**What:** Added a `logRequest` helper in `workers/api.js` that emits structured JSON to `console.log` for every request (OPTIONS, rate-limited, success, and error paths). Fields include timestamp, method, path, status, durationMs, ip, sellerId (when present), and optional error/count/listingId. Logs are visible via `wrangler tail` or the Cloudflare Workers dashboard once deployed.
+
+**Why:** Highest remaining pure-code item in P5 after rate limiting. Provides immediate request-level observability without external services, while the Worker remains undeployed. Complements the existing rate-limit headers and health endpoint.
+
+**How:** One commit. Updated `workers/api.js` (log helper + calls on all response paths), `GOAL.md` (P5 sub-item marked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so logging and rate limiting can be observed live, or continue P5 with R2 notes / custom domain / CI skeleton.
+
+---
+
 ## 2026-10-18 – P5: basic in-memory rate limiting on Worker API
 
 **What:** Added a simple per-IP rate limiter to `workers/api.js` (60 requests per 60-second window). Uses an in-memory Map keyed by CF-Connecting-IP (or X-Forwarded-For). Returns 429 with Retry-After and rate-limit headers when exceeded. Health endpoint now reports remaining quota. OPTIONS requests are exempt. Per-isolate only (suitable for the current stage; production scale should move to Durable Objects or KV).
