@@ -69,6 +69,7 @@ Seed fallback when API offline.
 - [ ] Rate limit, observability, custom domain, CI
   - [x] Basic in-memory rate limiting on Worker API (per-IP, 60 req / 60s, 429 + Retry-After) (2026-10-18)
   - [x] Basic structured request logging for observability (JSON console logs: method, path, status, duration, ip, seller) (2026-10-18)
+  - [x] Custom domain setup steps documented in README.md (user action after deploy) (2026-10-18)
 - [ ] R2 (or similar) for durable image storage (data URLs are interim only)
   - [x] Setup steps documented in README.md (create bucket, bind IMAGES, Worker upload endpoint, client switch from data URLs) (2026-10-18)
 
@@ -84,4 +85,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P5 R2 durable image storage setup steps documented.*
+*Last updated: 2026-10-18 – P5 custom domain setup steps documented.*

@@ -1,3 +1,15 @@
+## 2026-10-18 – P5: document custom domain setup steps
+
+**What:** Added a complete “P5 – Custom domain” section to README.md with exact dashboard (and optional CLI) steps to attach a custom domain to the deployed Worker, update the frontend API_BASE, and verify health. Marked the documentation sub-item done in GOAL.md.
+
+**Why:** Highest remaining pure-documentation item in P5 after rate limiting, structured logging, and R2 notes. Full custom domain requires user action (domain on Cloudflare + dashboard/CLI) after the Worker is live, matching the pattern used for P1 deploy, P4 Access, and P5 R2. Documenting the precise steps unblocks the user while the workers.dev URL remains a valid interim.
+
+**How:** One commit. Updated `README.md` (new section), `GOAL.md` (P5 custom domain sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy (so rate limiting, logging, R2, and custom domain can be exercised), or continue P5 with CI skeleton notes.
+
+---
+
 ## 2026-10-18 – P5: document Cloudflare R2 durable image storage setup steps
 
 **What:** Added a complete “P5 – R2 durable image storage” section to README.md with exact CLI/dashboard commands to create a bucket, bind it as `IMAGES` in wrangler.toml, add a Worker upload endpoint, and switch the client form from data URLs to returned R2 URLs. Marked the documentation sub-item done in GOAL.md.

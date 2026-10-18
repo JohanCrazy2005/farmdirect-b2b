@@ -104,6 +104,31 @@ Current image handling stores data URLs (or external https URIs) directly in the
 
 Until R2 is wired, data URLs continue to work and validate against the schema. Seed data remains unchanged.
 
+## P5 – Custom domain (user action required after deploy)
+
+After the Worker is deployed to a `workers.dev` URL, attach a custom domain for a production-ready API endpoint.
+
+### Exact steps
+
+1. Ensure the domain is on Cloudflare (add it via the dashboard if needed; DNS must be managed by Cloudflare).
+2. In the Cloudflare dashboard, go to **Workers & Pages** → your Worker (`farmdirect-b2b`) → **Settings** → **Domains & Routes**.
+3. Click **Add Custom Domain** and enter the desired hostname (e.g. `api.farmdirect.example.com` or `farmdirect.example.com`).
+4. Cloudflare automatically creates the necessary DNS records. Wait for the certificate to provision (usually a few minutes).
+5. (Optional) Enable Cloudflare Access on the custom domain if using the P4 auth flow.
+6. Update the frontend API base in `js/config.js` (or the inline config in `index.html`):
+   ```js
+   window.FD_CONFIG = { API_BASE: 'https://api.farmdirect.example.com' };
+   ```
+7. Verify: `curl https://api.farmdirect.example.com/api/v1/health`
+
+Alternatively, after the domain is on Cloudflare you can use the CLI (confirm current syntax with `npx wrangler deploy --help`):
+
+```bash
+npx wrangler deploy --domain api.farmdirect.example.com
+```
+
+Until a custom domain is configured, the `workers.dev` URL remains fully functional for testing and staging.
+
 ## Local development
 
 ```bash
