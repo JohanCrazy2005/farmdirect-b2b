@@ -54,16 +54,17 @@ Seed fallback when API offline.
 - [x] Mobile, a11y, theme (bottom-sheet sidebar, ARIA, system preference, options menu)
 
 ### P3 Seller experience
-- [ ] Add listing form, edit/delete, image upload
+- [x] Add listing form, edit/delete, image upload
   - [x] Add listing form modal + client validation + POST support (2026-10-17)
   - [x] Edit / delete existing listings (2026-10-17)
-  - [ ] Image upload (currently URL only)
+  - [x] Image upload (client-side file → resized data URL + preview; URL fallback) (2026-10-17)
 
 ### P4 Auth
 - [ ] Cloudflare Access / JWT, RLS, seller dashboard
 
 ### P5 Production
 - [ ] Rate limit, observability, custom domain, CI
+- [ ] R2 (or similar) for durable image storage (data URLs are interim only)
 
 ## Hard Constraints
 
@@ -77,4 +78,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P3 edit/delete shipped.*
+*Last updated: 2026-10-17 – P3 image upload (client-side) shipped.*

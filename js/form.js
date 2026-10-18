@@ -2,6 +2,7 @@
  * FarmDirect B2B – listing form (create + edit)
  * Client-side form matching schema/listings.schema.json.
  * Validates required fields, posts/puts to Worker when API_BASE is set, otherwise shows seed-mode guidance.
+ * Image: accepts https URL or local file (resized to data URL).
  */
 (function (global) {
   'use strict';
@@ -25,7 +26,9 @@
     const title = document.getElementById('form-title');
     const submitBtn = form?.querySelector('button[type="submit"]');
     const status = document.getElementById('form-status');
+    const preview = document.getElementById('image-preview');
     if (status) status.textContent = '';
+    if (preview) { preview.src = ''; preview.style.display = 'none'; }
 
     if (listing && listing.id) {
       // Edit mode
@@ -43,6 +46,10 @@
       form.units.value = listing.units || '';
       form.description.value = listing.description || '';
       form.image.value = listing.image || '';
+      if (listing.image && preview) {
+        preview.src = listing.image;
+        preview.style.display = 'block';
+      }
     } else {
       // Create mode
       editingId = null;
@@ -73,6 +80,65 @@
     );
   }
 
+  function resizeImageToDataUrl(file, maxDim = 800, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        try {
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Could not load image'));
+      };
+      img.src = url;
+    });
+  }
+
+  async function handleImageFile(e) {
+    const file = e.target.files?.[0];
+    const status = document.getElementById('form-status');
+    const preview = document.getElementById('image-preview');
+    const urlInput = document.querySelector('#listing-form input[name="image"]');
+    if (!file || !urlInput) return;
+    if (!file.type.startsWith('image/')) {
+      if (status) { status.textContent = 'Please choose an image file'; status.className = 'form-status error'; }
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      if (status) { status.textContent = 'Image too large (max ~8 MB before resize)'; status.className = 'form-status error'; }
+      return;
+    }
+    if (status) { status.textContent = 'Processing image…'; status.className = 'form-status'; }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file);
+      urlInput.value = dataUrl;
+      if (preview) {
+        preview.src = dataUrl;
+        preview.style.display = 'block';
+      }
+      if (status) { status.textContent = 'Image ready (resized)'; status.className = 'form-status success'; }
+    } catch (err) {
+      if (status) { status.textContent = err.message || 'Image processing failed'; status.className = 'form-status error'; }
+    }
+  }
+
   function validate(data) {
     const errors = [];
     if (!data.location?.lat || isNaN(data.location.lat) || data.location.lat < -90 || data.location.lat > 90) errors.push('Valid latitude required');
@@ -84,7 +150,10 @@
     if (!data.headerdescription?.trim() || data.headerdescription.length > 120) errors.push('Header description required (max 120 chars)');
     if (data.price == null || isNaN(data.price) || data.price < 0) errors.push('Price must be >= 0');
     if (!data.units?.trim()) errors.push('Units required');
-    if (!data.image?.trim() || !/^https?:\/\//.test(data.image)) errors.push('Valid image URL required');
+    const img = data.image?.trim() || '';
+    if (!img || !( /^https?:\/\//.test(img) || /^data:image\//.test(img) )) {
+      errors.push('Valid image URL or uploaded image required');
+    }
     return errors;
   }
 
@@ -151,6 +220,8 @@
     if (form) form.addEventListener('submit', handleSubmit);
     const locBtn = document.getElementById('use-location-btn');
     if (locBtn) locBtn.addEventListener('click', useCurrentLocation);
+    const fileInput = document.getElementById('image-file');
+    if (fileInput) fileInput.addEventListener('change', handleImageFile);
     document.getElementById('close-form-btn')?.addEventListener('click', closeForm);
     // Close on backdrop click
     document.getElementById('listing-form-modal')?.addEventListener('click', (e) => {

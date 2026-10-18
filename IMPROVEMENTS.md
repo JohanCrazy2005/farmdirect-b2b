@@ -1,3 +1,15 @@
+## 2026-10-17 – P3: client-side image upload (file select → resized data URL + preview)
+
+**What:** Extended the listing form to accept a local image file. Client resizes to max 800px (JPEG ~0.75 quality), converts to a data URL (valid schema `uri`), sets the image field, and shows a live preview. External https URL input remains as fallback. Validation now accepts both `https?://` and `data:image/` URIs. No Worker or schema change required.
+
+**Why:** Completes the remaining P3 seller-experience item (image upload). P1 deploy is still user-only. Data URLs keep the solution self-contained and immediately testable with seed fallback; production should move images to R2 (noted in GOAL P5).
+
+**How:** One commit. Updated `js/form.js` (resizeImageToDataUrl, file handler, validation, preview in openForm), `index.html` (file input + preview img), `css/main.css` (`.image-preview`), `GOAL.md` (marked image upload done), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so CRUD + images persist to D1, or P4 auth.
+
+---
+
 ## 2026-10-17 – P3: edit & delete support for listings
 
 **What:** Extended the listing form to support edit mode (prefill from existing listing, PUT) and added delete from the product card. Worker now exposes `PUT /api/v1/listings/:id` and `DELETE /api/v1/listings/:id` with validation and `updated_at` timestamp. Client `js/api.js` gained `updateListing` and `deleteListing` (seed-mode returns clear read-only message). Product card shows Edit / Delete buttons. Form title and submit button update dynamically. List exposes `getListings` for the edit path.
