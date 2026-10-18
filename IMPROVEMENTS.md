@@ -1,3 +1,15 @@
+## 2026-10-17 – P4: Cloudflare Access / JWT setup steps documented
+
+**What:** Added a complete “P4 – Cloudflare Access / JWT setup” section to README.md with exact dashboard steps, secret commands (`TEAM_DOMAIN`, `POLICY_AUD`), and notes on replacing the interim `X-Seller-Id` check with real JWT validation in the Worker. Marked the documentation sub-item done in GOAL.md.
+
+**Why:** Highest remaining code-adjacent item in the P4 queue. Full Cloudflare Access requires user dashboard action and secrets after deploy (same pattern as P1). Documenting the precise steps unblocks the user and keeps the interim header-based RLS as a working fallback until Access is enabled.
+
+**How:** One commit. Updated `README.md` (new section), `GOAL.md` (P4 sub-item checked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy + Access setup, or move to P5 (rate limiting / observability) as the next pure code item.
+
+---
+
 ## 2026-10-17 – P4: interim RLS via X-Seller-Id header on mutations
 
 **What:** Worker now requires and enforces `X-Seller-Id` header for POST/PUT/DELETE. POST requires the header to match `body.sellerid`. PUT/DELETE look up the listing and reject if the header seller does not own it (or if sellerid is changed on update). Client `js/api.js` attaches the header from the current dashboard session. Form prefills sellerid from the session when creating. CORS updated to allow the header. Seed mode remains unaffected (read-only).

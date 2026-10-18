@@ -59,6 +59,26 @@ After deploy, the Worker serves:
 
 Mutations currently expect an `X-Seller-Id` header. The frontend attaches it automatically from the seller dashboard session (localStorage). This is a temporary ownership check that will be replaced by Cloudflare Access / JWT validation after Access is configured. Open the profile menu, enter a seller ID, then create/edit/delete.
 
+## P4 – Cloudflare Access / JWT setup (user action required after deploy)
+
+After the Worker is deployed, enable Cloudflare Access to replace the interim `X-Seller-Id` check with real identity.
+
+### Exact steps
+
+1. In the Cloudflare dashboard, go to **Workers & Pages** → your Worker → **Settings** → **Domains & Routes**.
+2. For the `workers.dev` URL (or custom domain), click **Enable Cloudflare Access**.
+3. Optionally click **Manage Cloudflare Access** to set policies (e.g. allow specific emails or groups).
+4. Note the **AUD** (audience) tag and your team domain (`https://<team>.cloudflareaccess.com`).
+5. Set Worker environment variables / secrets:
+   ```bash
+   npx wrangler secret put TEAM_DOMAIN   # e.g. https://yourteam.cloudflareaccess.com
+   npx wrangler secret put POLICY_AUD    # the AUD tag from the Access application
+   ```
+6. In `workers/api.js`, add JWT validation (using `jose` or `ctx.access` where available) on mutation routes, extracting the authenticated seller identity (e.g. email or custom claim) and enforcing ownership instead of the `X-Seller-Id` header.
+7. Redeploy: `npx wrangler deploy`.
+
+Until Access is live, the interim header-based ownership continues to work for testing.
+
 ## Local development
 
 ```bash

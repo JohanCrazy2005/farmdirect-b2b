@@ -63,6 +63,7 @@ Seed fallback when API offline.
 - [ ] Cloudflare Access / JWT, RLS, seller dashboard
   - [x] Seller dashboard skeleton (client-side localStorage seller session + my-listings view with edit/delete) (2026-10-17)
   - [x] Interim RLS simulation: Worker enforces X-Seller-Id ownership on mutations; client attaches current session seller (2026-10-17)
+  - [x] Cloudflare Access / JWT setup steps documented in README.md (user action after deploy) (2026-10-17)
 
 ### P5 Production
 - [ ] Rate limit, observability, custom domain, CI
@@ -80,4 +81,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P4 interim RLS (X-Seller-Id) shipped.*
+*Last updated: 2026-10-17 – P4 Cloudflare Access setup steps documented.*
