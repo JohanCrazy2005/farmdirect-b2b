@@ -67,6 +67,7 @@ Seed fallback when API offline.
 
 ### P5 Production
 - [ ] Rate limit, observability, custom domain, CI
+  - [x] Basic in-memory rate limiting on Worker API (per-IP, 60 req / 60s, 429 + Retry-After) (2026-10-18)
 - [ ] R2 (or similar) for durable image storage (data URLs are interim only)
 
 ## Hard Constraints
@@ -81,4 +82,4 @@ Seed fallback when API offline.
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-17 – P4 Cloudflare Access setup steps documented.*
+*Last updated: 2026-10-18 – P5 basic rate limiting added to Worker.*

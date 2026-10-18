@@ -1,3 +1,15 @@
+## 2026-10-18 – P5: basic in-memory rate limiting on Worker API
+
+**What:** Added a simple per-IP rate limiter to `workers/api.js` (60 requests per 60-second window). Uses an in-memory Map keyed by CF-Connecting-IP (or X-Forwarded-For). Returns 429 with Retry-After and rate-limit headers when exceeded. Health endpoint now reports remaining quota. OPTIONS requests are exempt. Per-isolate only (suitable for the current stage; production scale should move to Durable Objects or KV).
+
+**Why:** Highest remaining pure-code item after P4 documentation (user-action for Access). Completes the rate-limit portion of P5 Production while the live Worker is still undeployed. Protects the D1-backed endpoints from abuse once deployed and gives immediate feedback via headers.
+
+**How:** One commit. Updated `workers/api.js` (rateStore + checkRateLimit + early 429 + header injection), `GOAL.md` (P5 sub-item marked + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so rate limiting and RLS can be exercised, or continue P5 with basic observability logging / R2 notes.
+
+---
+
 ## 2026-10-17 – P4: Cloudflare Access / JWT setup steps documented
 
 **What:** Added a complete “P4 – Cloudflare Access / JWT setup” section to README.md with exact dashboard steps, secret commands (`TEAM_DOMAIN`, `POLICY_AUD`), and notes on replacing the interim `X-Seller-Id` check with real JWT validation in the Worker. Marked the documentation sub-item done in GOAL.md.

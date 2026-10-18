@@ -11,7 +11,36 @@
  *
  * Interim auth: X-Seller-Id header (from client dashboard session).
  * Full Cloudflare Access / JWT verification will replace this after deploy + Access setup.
+ *
+ * Rate limiting: simple per-IP in-memory window (60 requests / 60s). Per-isolate only;
+ * for production-scale use Durable Objects or KV. Returns 429 with Retry-After when exceeded.
  */
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 60;
+const rateStore = new Map(); // ip -> { count, resetAt }
+
+function getClientIp(request) {
+  return request.headers.get('CF-Connecting-IP')
+    || request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim()
+    || 'unknown';
+}
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  let entry = rateStore.get(ip);
+  if (!entry || now >= entry.resetAt) {
+    entry = { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+    rateStore.set(ip, entry);
+    return { allowed: true, remaining: RATE_LIMIT_MAX - 1 };
+  }
+  entry.count += 1;
+  if (entry.count > RATE_LIMIT_MAX) {
+    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    return { allowed: false, retryAfter };
+  }
+  return { allowed: true, remaining: RATE_LIMIT_MAX - entry.count };
+}
 
 function getSellerId(request) {
   return (request.headers.get('X-Seller-Id') || '').trim();
@@ -38,6 +67,27 @@ export default {
       'Content-Type': 'application/json',
     };
 
+    // Basic rate limit (skip OPTIONS)
+    const ip = getClientIp(request);
+    const rl = checkRateLimit(ip);
+    if (!rl.allowed) {
+      return Response.json(
+        { error: 'Rate limit exceeded', retryAfter: rl.retryAfter },
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            'Retry-After': String(rl.retryAfter),
+            'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      );
+    }
+    // Attach remaining for successful responses (optional observability)
+    corsHeaders['X-RateLimit-Limit'] = String(RATE_LIMIT_MAX);
+    corsHeaders['X-RateLimit-Remaining'] = String(rl.remaining);
+
     try {
       if (path === '/api/v1/health' && request.method === 'GET') {
         return Response.json({
@@ -45,6 +95,7 @@ export default {
           service: 'farmdirect-b2b',
           database: 'b2bistening',
           binding: 'DB',
+          rateLimit: { windowSec: 60, max: RATE_LIMIT_MAX, remaining: rl.remaining },
           timestamp: new Date().toISOString(),
         }, { headers: corsHeaders });
       }
