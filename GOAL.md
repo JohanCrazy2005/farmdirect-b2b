@@ -66,6 +66,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Deep-linkable listings via URL hash (#listing=<id> opens card + flies to marker; copy-link button; works in seed/demo) (2026-10-19)
 - [x] Richer seller profile card (lists other listings by the same sellerid from current data; clickable to open product; fully client-side for demo) (2026-10-19)
 - [x] Units filter in filter card (select for kg/liter/dozen/ton matching seed data; fully client-side for demo) (2026-10-19)
+- [x] Min price filter in filter card (complements max price; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -100,4 +101,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Units filter in filter card. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Min price filter in filter card. P1 deploy still requires user (`npx wrangler login` + README commands).*

@@ -5,13 +5,14 @@
  * + general Sort control (distance / price / name) in filter card
  * + distance radius filter after Locate me (client-side, demo friendly)
  * + units filter (schema field; seed/demo friendly)
+ * + min price filter (complements max price; seed/demo friendly)
  */
 (function (global) {
   'use strict';
 
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '', units: '' };
+  let activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '' };
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
 
@@ -62,6 +63,8 @@
   function applyFilters() {
     const q = (activeFilters.q || '').toLowerCase();
     const radiusKm = activeFilters.radius ? Number(activeFilters.radius) : null;
+    const minP = activeFilters.minPrice ? Number(activeFilters.minPrice) : null;
+    const maxP = activeFilters.maxPrice ? Number(activeFilters.maxPrice) : null;
 
     let next = allListings.filter(l => {
       if (q && !(
@@ -72,7 +75,9 @@
       )) return false;
       if (activeFilters.category && l.category !== activeFilters.category) return false;
       if (activeFilters.visibility && l.visibility !== activeFilters.visibility) return false;
-      if (activeFilters.maxPrice && Number(l.price) > Number(activeFilters.maxPrice)) return false;
+      const price = Number(l.price);
+      if (minP != null && price < minP) return false;
+      if (maxP != null && price > maxP) return false;
       if (activeFilters.units && l.units !== activeFilters.units) return false;
       if (radiusKm != null && userLatLng && l.location) {
         const d = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
@@ -113,7 +118,7 @@
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.minPrice || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units);
   }
 
   function formatDistance(km) {
@@ -216,18 +221,20 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '', units: '' };
+    activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '' };
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
-    const price = document.getElementById('filter-maxprice');
+    const minPrice = document.getElementById('filter-minprice');
+    const maxPrice = document.getElementById('filter-maxprice');
     const sort = document.getElementById('filter-sort');
     const radius = document.getElementById('filter-radius');
     const units = document.getElementById('filter-units');
     if (search) search.value = '';
     if (cat) cat.value = '';
     if (vis) vis.value = '';
-    if (price) price.value = '';
+    if (minPrice) minPrice.value = '';
+    if (maxPrice) maxPrice.value = '';
     if (sort) sort.value = '';
     if (radius) radius.value = '';
     if (units) units.value = '';
@@ -257,9 +264,16 @@
         applyFilters();
       });
     }
-    const price = document.getElementById('filter-maxprice');
-    if (price) {
-      price.addEventListener('input', e => {
+    const minPrice = document.getElementById('filter-minprice');
+    if (minPrice) {
+      minPrice.addEventListener('input', e => {
+        activeFilters.minPrice = e.target.value;
+        applyFilters();
+      });
+    }
+    const maxPrice = document.getElementById('filter-maxprice');
+    if (maxPrice) {
+      maxPrice.addEventListener('input', e => {
         activeFilters.maxPrice = e.target.value;
         applyFilters();
       });
