@@ -5,6 +5,7 @@
  * + image lightbox: click product photo to enlarge (fully client-side, demo friendly)
  * + directions button: opens external maps with listing coordinates (seed/demo friendly)
  * + copy address button: copies listing address to clipboard (seed/demo friendly)
+ * + distance label in product card when Locate me has been used (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -16,6 +17,26 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\"/g, '&quot;');
+  }
+
+  // Haversine distance in km (matches list.js for consistency)
+  function distanceKm(lat1, lng1, lat2, lng2) {
+    if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) return Infinity;
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function formatDistance(km) {
+    if (!isFinite(km)) return '';
+    if (km < 1) return `${Math.round(km * 1000)} m`;
+    if (km < 10) return `${km.toFixed(1)} km`;
+    return `${Math.round(km)} km`;
   }
 
   function showProduct(listing) {
@@ -36,11 +57,24 @@
     const addrBtn = listing.address
       ? `<button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.copyAddress('${escapeHtml(listing.address).replace(/'/g, "\\'")}')\">Copy address</button>`
       : '';
+
+    // Distance if Locate me has been used
+    let distHtml = '';
+    const user = (global.FD_MAP && typeof global.FD_MAP.getUserLatLng === 'function') ? global.FD_MAP.getUserLatLng() : null;
+    if (user && lat != null && lng != null) {
+      const km = distanceKm(user.lat, user.lng, lat, lng);
+      const formatted = formatDistance(km);
+      if (formatted) {
+        distHtml = `<div class=\"distance\" style=\"font-size:0.85rem;color:var(--accent);margin:0.35rem 0\">📍 ${formatted} away</div>`;
+      }
+    }
+
     el.innerHTML = `
       <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);\">×</button>
       <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" class=\"product-image\" onerror=\"this.style.display='none'\" onclick=\"FD_CARDS.openLightbox(this.src, this.alt)\">
       <h3>${escapeHtml(listing.headerdescription)}</h3>
       <div class=\"price\">$${Number(listing.price).toFixed(2)} <span style=\"font-weight:400;color:var(--muted)\">/ ${escapeHtml(listing.units)}</span></div>
+      ${distHtml}
       <p style=\"margin:0.5rem 0;font-size:0.9rem\">${escapeHtml(listing.description)}</p>
       <div style=\"font-size:0.8rem;color:var(--muted)\">
         Category: ${escapeHtml(listing.category)} · Visibility: ${escapeHtml(listing.visibility)}<br>

@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Distance in product card after Locate me for better demo UX
+
+**What:** After a successful Locate me, opening a product detail card now shows a compact distance label (e.g. “📍 2.4 km away”) under the price. Uses the same haversine calculation as the list panel. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the existing distance sort, list labels, and radius filter so the product card itself reinforces proximity when exploring seed listings.
+
+**How:** One commit. Updated `js/cards.js` (distanceKm + formatDistance helpers, conditional distHtml in showProduct using FD_MAP.getUserLatLng), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Fix HTML escaping in list panel for safer seed/demo rendering
 
 **What:** Corrected the `escapeHtml` (and `escapeAttr`) helpers in `js/list.js`. Previously the replacements were identity operations (`&` → `&`, `<` → `<`, etc.), so any `&`, `<`, `>`, or `"` in a seed listing’s headerdescription, category, or units would produce broken or unsafe HTML in the sidebar cards. Now uses proper entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`). Fully client-side; works in pure seed/demo mode with no Worker.
