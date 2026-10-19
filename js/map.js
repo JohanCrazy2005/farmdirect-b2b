@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
- * + geolocation “Locate me” + Fit all listings for better undeployed demo UX
+ * + geolocation “Locate me” + Fit all listings + distance sort for better undeployed demo UX
  */
 (function (global) {
   'use strict';
@@ -11,6 +11,7 @@
   let listings = [];
   let selectedId = null;
   let userMarker = null;
+  let userLatLng = null;
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -145,6 +146,7 @@
       (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+        userLatLng = { lat, lng };
         if (userMarker) {
           map.removeLayer(userMarker);
         }
@@ -158,6 +160,10 @@
         userMarker.bindPopup('You are here').openPopup();
         map.flyTo([lat, lng], 12, { duration: 0.8 });
         if (btn) btn.disabled = false;
+        // Trigger distance sort in list panel
+        if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
+          global.FD_LIST.sortByDistance(lat, lng);
+        }
       },
       (err) => {
         alert('Could not get your location: ' + (err.message || 'permission denied or unavailable'));
@@ -189,11 +195,11 @@
   function escapeHtml(s) {
     if (!s) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, getMap: () => map };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, getMap: () => map, getUserLatLng: () => userLatLng };
 })(window);
