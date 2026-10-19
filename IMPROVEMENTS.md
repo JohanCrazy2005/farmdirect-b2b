@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Copy address button in product card for better demo UX
+
+**What:** Added a “Copy address” button to the product detail card. It copies the listing’s address string to the clipboard (with fallback alert). Appears only when an address is present. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements Directions and Copy link so buyers can quickly grab the physical address of a seed listing for offline notes or other maps without manually selecting text.
+
+**How:** One commit. Updated `js/cards.js` (Copy address button in showProduct + copyAddress helper), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Directions button in product card for better demo map UX
 
 **What:** Added a “Directions” button to the product detail card. It opens Google Maps directions to the listing’s lat/long coordinates in a new tab. Appears only when location data is present. Fully client-side; works in pure seed/demo mode with no Worker.
