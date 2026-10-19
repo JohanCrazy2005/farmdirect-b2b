@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Richer seller profile card for better demo seller discovery
+
+**What:** The seller profile card now lists all other listings by the same `sellerid` from the currently loaded data (seed, demo localStorage, or live). Each item is clickable and opens the corresponding product card. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the existing product card and deep-links so buyers can explore a seller’s full set of offerings without leaving the undeployed experience.
+
+**How:** One commit. Updated `js/cards.js` (showSeller now filters current listings and renders clickable mini-cards), `css/main.css` (seller-listings + seller-listing-item styles + max-height on cards), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Deep-linkable listings via URL hash for better demo sharing
 
 **What:** Opening a product card now updates the browser URL to `#listing=<id>`. On page load (after seed or demo data is ready), if the hash matches a listing the app automatically selects it in the list, flies the map to the marker, and opens the product card. The product card includes a “Copy link” button. Closing the card (or Escape) clears the hash. Fully client-side; works in pure seed/demo mode with no Worker.

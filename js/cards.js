@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – product & seller cards
  * + deep-link support: opening a card updates #listing=<id>; copy-link button
+ * + richer seller profile: lists other listings by the same sellerid from current data (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -25,7 +26,7 @@
       }
     }
     el.innerHTML = `
-      <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);">×</button>
+      <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);\">×</button>
       <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" onerror=\"this.style.display='none'\">
       <h3>${escapeHtml(listing.headerdescription)}</h3>
       <div class=\"price\">$${Number(listing.price).toFixed(2)} <span style=\"font-weight:400;color:var(--muted)\">/ ${escapeHtml(listing.units)}</span></div>
@@ -87,15 +88,42 @@
   }
 
   function showSeller(sellerid) {
-    // Minimal seller card from listing data (no separate sellers table yet)
     const el = document.getElementById('seller-card');
     if (!el) return;
+    const all = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
+    const bySeller = all.filter(l => l.sellerid === sellerid);
+    const count = bySeller.length;
+    const listHtml = bySeller.length
+      ? bySeller.map(l => `
+          <div class=\"seller-listing-item\" data-id=\"${escapeHtml(l.id)}\">
+            <img src=\"${escapeHtml(l.image)}\" alt=\"\" onerror=\"this.style.display='none'\">
+            <div>
+              <strong>${escapeHtml(l.headerdescription)}</strong>
+              <div class=\"meta\">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)} · ${escapeHtml(l.category)}</div>
+            </div>
+          </div>
+        `).join('')
+      : '<p class=\"muted\">No other listings found for this seller in the current data.</p>';
+
     el.innerHTML = `
       <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.seller-card-overlay').classList.remove('open')\">×</button>
       <h3>Seller ${escapeHtml(sellerid)}</h3>
-      <p style=\"font-size:0.9rem;color:var(--muted)\">Seller profile details will appear here once the sellers table is populated.</p>
+      <p class=\"muted\" style=\"margin-bottom:0.75rem\">${count} listing${count === 1 ? '' : 's'} in current view (seed/demo or live).</p>
+      <div class=\"seller-listings\">${listHtml}</div>
     `;
     el.classList.add('open');
+
+    // Wire clicks on seller listing items to open the product card
+    el.querySelectorAll('.seller-listing-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.dataset.id;
+        const listing = bySeller.find(l => l.id === id);
+        if (listing) {
+          showProduct(listing);
+          el.classList.remove('open');
+        }
+      });
+    });
   }
 
   function hideAll() {
