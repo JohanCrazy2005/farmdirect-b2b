@@ -4,6 +4,7 @@
    + add-listing form modal + image preview + seller dashboard
    + seed-mode banner + deploy-guide modal
    + distance labels after Locate me
+   + category legend on map
 */
 :root {
   --primary: #2d6a4f;
@@ -231,6 +232,38 @@ html.dark .map-overlay { background: rgba(15,23,42,0.75); }
   margin: 0 auto 0.75rem;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Category legend */
+.map-legend {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.78rem;
+  box-shadow: var(--shadow);
+  line-height: 1.4;
+  max-width: 140px;
+}
+.map-legend strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.82rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0;
+  text-transform: capitalize;
+}
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid white;
+  box-shadow: 0 0 0 1px var(--border);
+  flex-shrink: 0;
+}
 
 /* Side list panel */
 .sidebar {
@@ -694,4 +727,5 @@ html.dark .deploy-commands {
   .logo { font-size: 1rem; }
   .form-modal-content { max-width: none; }
   .seed-banner { top: 3.8rem; max-width: 92%; font-size: 0.8rem; }
+  .map-legend { font-size: 0.72rem; padding: 0.4rem 0.55rem; max-width: 120px; }
 }

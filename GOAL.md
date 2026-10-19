@@ -62,6 +62,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Sort control in filter card (Default / Distance / Price low-high / Price high-low / Name A–Z; distance requires Locate me; fully client-side for demo) (2026-10-18)
 - [x] In-app deploy commands modal (seed-banner + options menu; exact P1 steps + copy button; improves undeployed UX) (2026-10-18)
 - [x] Distance radius filter after Locate me (max-km input in filter card + translucent circle on map; fully client-side for demo) (2026-10-18)
+- [x] Category legend on map (bottom-left control explaining colored markers by category; fully client-side for demo) (2026-10-18)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -96,4 +97,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-18 – P2+: Distance radius filter after Locate me for better seed/demo map UX. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-18 – P2+: Category legend on map for better seed/demo marker understanding. P1 deploy still requires user (`npx wrangler login` + README commands).*

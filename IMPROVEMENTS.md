@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: Category legend on map for better demo marker UX
+
+**What:** Added a compact bottom-left Leaflet control that lists the known categories with their colored swatches (produce, dairy, eggs, grains, herbs, honey). Matches the existing category marker colors. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the category-colored markers so buyers can immediately understand what the dots mean without guessing, improving the undeployed map exploration experience.
+
+**How:** One commit. Updated `js/map.js` (addLegend helper using CATEGORY_COLORS, called from initMap), `css/main.css` (map-legend + swatch styles, mobile tweak), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Distance radius filter after Locate me for better demo map UX
 
 **What:** Added a “Max distance (km)” number input to the filter card. After Locate me, listings farther than the entered radius are hidden from both the sidebar and the map. A translucent dashed circle is drawn on the map around the user. Clear filters resets it. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -48,7 +60,7 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ## 2026-10-18 – P2+: Fit all listings control for better demo map navigation
 
-**What:** Added a “Fit all” button (🔚) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
+**What:** Added a “Fit all” button (😚) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the Locate me control: after centering on the user or after filtering, one click restores the full set of listings. Improves exploration of the geographically spread seed data.
 

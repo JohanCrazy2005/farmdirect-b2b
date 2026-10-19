@@ -3,6 +3,7 @@
  * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
  * + geolocation “Locate me” + Fit all listings + distance sort for better undeployed demo UX
  * + radius circle after Locate me + radius filter
+ * + category legend control (explains colored markers; demo-friendly)
  */
 (function (global) {
   'use strict';
@@ -66,7 +67,24 @@
     }
     map.addLayer(markersLayer);
 
+    addLegend();
+
     return map;
+  }
+
+  function addLegend() {
+    if (!map) return;
+    const legend = L.control({ position: 'bottomleft' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'map-legend');
+      const items = Object.entries(CATEGORY_COLORS)
+        .filter(([k]) => k !== 'default')
+        .map(([cat, color]) => `<div class="legend-item"><span class="legend-swatch" style="background:${color}"></span>${escapeHtml(cat)}</div>`)
+        .join('');
+      div.innerHTML = `<strong>Categories</strong>${items}`;
+      return div;
+    };
+    legend.addTo(map);
   }
 
   function clearMarkers() {
@@ -214,10 +232,10 @@
   function escapeHtml(s) {
     if (!s) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng };
