@@ -7,6 +7,7 @@
  * Runtime API_BASE override (localStorage) for post-deploy testing
  * Demo mode reset
  * Locate me geolocation + Fit all listings controls
+ * In-app deploy guide modal for seed/demo UX
  */
 (function () {
   'use strict';
@@ -43,6 +44,14 @@
 
   function getCurrentApiBase() {
     return (window.FD_CONFIG && window.FD_CONFIG.API_BASE) || '';
+  }
+
+  function openDeployGuide() {
+    document.getElementById('deploy-guide-modal')?.classList.add('open');
+  }
+
+  function closeDeployGuide() {
+    document.getElementById('deploy-guide-modal')?.classList.remove('open');
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -83,6 +92,31 @@
         seedBanner.classList.add('hidden');
       });
     }
+
+    document.getElementById('open-deploy-guide')?.addEventListener('click', openDeployGuide);
+    document.getElementById('opt-deploy-guide')?.addEventListener('click', () => {
+      openDeployGuide();
+      document.getElementById('options-menu')?.classList.remove('open');
+    });
+    document.getElementById('close-deploy-guide')?.addEventListener('click', closeDeployGuide);
+    document.getElementById('deploy-guide-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'deploy-guide-modal') closeDeployGuide();
+    });
+
+    document.getElementById('copy-deploy-commands')?.addEventListener('click', async () => {
+      const pre = document.querySelector('#deploy-guide-modal pre');
+      if (!pre) return;
+      const text = pre.innerText || pre.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copy-deploy-commands');
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1800);
+      } catch (_) {
+        alert('Could not copy automatically. Select the commands and copy manually.');
+      }
+    });
 
     const themeBtn = document.getElementById('theme-btn');
     if (themeBtn) {
@@ -221,6 +255,7 @@
         document.getElementById('options-menu')?.classList.remove('open');
         document.getElementById('listing-form-modal')?.classList.remove('open');
         document.getElementById('dashboard-modal')?.classList.remove('open');
+        document.getElementById('deploy-guide-modal')?.classList.remove('open');
         document.getElementById('filter-btn')?.classList.remove('active');
         document.getElementById('seed-banner')?.classList.add('hidden');
       }

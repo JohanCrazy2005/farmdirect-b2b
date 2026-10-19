@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: In-app deploy commands modal for better seed/demo UX
+
+**What:** Added a “View deploy steps” link on the seed/demo banner and in the options menu. Opens a modal with the exact P1 wrangler commands (login, d1 execute, deploy, API base, health check) plus a Copy button. Escape and click-outside close the modal. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Users in the undeployed experience can now see and copy the precise next steps without leaving the app or hunting in the README.
+
+**How:** One commit. Updated `index.html` (banner button + deploy-guide modal), `css/main.css` (banner flex + pre styles), `js/main.js` (open/close/copy handlers + Escape), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Sort control in filter card for better demo list UX
 
 **What:** Added a “Sort by” select to the filter card (Default, Distance after Locate me, Price low→high, Price high→low, Name A–Z). Selecting Distance without a prior Locate me prompts the user. Distance labels still appear on cards only when distance sort is active. Clear filters resets the sort. Fully client-side; works in pure seed/demo mode with no Worker.

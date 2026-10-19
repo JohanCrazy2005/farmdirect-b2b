@@ -36,6 +36,7 @@
   <!-- Seed/demo-mode banner (shown when Worker is undeployed) -->
   <div id="seed-banner" class="seed-banner hidden" role="status" aria-live="polite">
     <span>Demo mode: showing seed data. Deploy the Worker (see README – P1) for live D1 listings and create/edit/delete.</span>
+    <button id="open-deploy-guide" class="link-btn" type="button">View deploy steps</button>
     <button id="close-seed-banner" class="close-banner" aria-label="Dismiss demo notice">×</button>
   </div>
 
@@ -112,6 +113,7 @@
     <button id="opt-clear-api" role="menuitem">Clear API base (use seed/demo)</button>
     <button id="opt-reset-demo" role="menuitem">Reset demo listings</button>
     <button id="opt-deploy-status" role="menuitem">Deploy status</button>
+    <button id="opt-deploy-guide" role="menuitem">View deploy steps</button>
     <button id="opt-about" role="menuitem">About</button>
   </div>
 
@@ -120,6 +122,28 @@
 
   <!-- Seller profile card -->
   <div id="seller-card" class="seller-card-overlay" role="dialog" aria-label="Seller profile" aria-modal="false"></div>
+
+  <!-- Deploy guide modal (P1 commands for undeployed demo) -->
+  <div id="deploy-guide-modal" class="form-modal" role="dialog" aria-label="Deploy steps" aria-modal="true">
+    <div class="form-modal-content">
+      <button id="close-deploy-guide" class="close-btn" aria-label="Close">×</button>
+      <h3>Deploy the Worker (P1)</h3>
+      <p class="muted">The live Worker is not yet deployed. Run these commands after <code>npx wrangler login</code>:</p>
+      <pre class="deploy-commands"><code>npx wrangler login
+
+npx wrangler d1 execute b2bistening --remote --file=./schema/d1-schema.sql
+
+npx wrangler deploy
+
+# Then set API base (options menu or js/config.js):
+# window.FD_CONFIG = { API_BASE: 'https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev' };
+
+# Verify:
+curl https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev/api/v1/health</code></pre>
+      <p class="muted small">Full details are in README.md. After deploy, use “Set API base” in the options menu.</p>
+      <button type="button" id="copy-deploy-commands" class="primary-btn">Copy commands</button>
+    </div>
+  </div>
 
   <!-- Add / edit listing form modal -->
   <div id="listing-form-modal" class="form-modal" role="dialog" aria-label="Listing form" aria-modal="true">
