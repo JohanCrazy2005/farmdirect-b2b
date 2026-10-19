@@ -1,6 +1,18 @@
+## 2026-10-18 – P2+: Distance sort after Locate me for better demo exploration
+
+**What:** After a successful “Locate me”, the sidebar list reorders by straight-line distance to the user and shows a compact distance label (m or km) on each listing card. Filters continue to apply; the sort sticks until page reload or clear. Fully client-side and works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements Locate me + Fit all: users can now quickly see the nearest seed listings (Colorado-focused) after centering the map on themselves.
+
+**How:** One set of commits. Updated `js/map.js` (expose user coords + call sort), `js/list.js` (haversine, sort, distance labels), `css/main.css` (distance style), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Fit all listings control for better demo map navigation
 
-**What:** Added a “Fit all” button (⤢) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
+**What:** Added a “Fit all” button (🔚) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the Locate me control: after centering on the user or after filtering, one click restores the full set of listings. Improves exploration of the geographically spread seed data.
 
@@ -12,7 +24,7 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ## 2026-10-18 – P2+: Locate me geolocation control for better demo map UX
 
-**What:** Added a “Locate me” button (⌖) in the top bar. Clicking it requests the browser geolocation, centers the Leaflet map on the user, and drops a temporary blue circle marker with popup. Fully functional in seed/demo mode with no Worker required. Button disables briefly while locating and re-enables on success or error.
+**What:** Added a “Locate me” button (📍) in the top bar. Clicking it requests the browser geolocation, centers the Leaflet map on the user, and drops a temporary blue circle marker with popup. Fully functional in seed/demo mode with no Worker required. Button disables briefly while locating and re-enables on success or error.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves exploration of the geographically spread seed listings and makes the undeployed experience more interactive.
 
