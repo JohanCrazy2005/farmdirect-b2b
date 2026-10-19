@@ -3,6 +3,7 @@
    Enhanced mobile + a11y + marker clusters + polished empty/loading
    + add-listing form modal + image preview + seller dashboard
    + seed-mode banner
+   + distance labels after Locate me
 */
 :root {
   --primary: #2d6a4f;
@@ -291,6 +292,12 @@ html.dark .map-overlay { background: rgba(15,23,42,0.75); }
   font-weight: 600;
   color: var(--primary);
   font-size: 0.9rem;
+}
+.listing-info .distance {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 0.15rem;
 }
 .listing-info .actions {
   margin-top: 0.4rem;
