@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Deep-linkable listings via URL hash for better demo sharing
+
+**What:** Opening a product card now updates the browser URL to `#listing=<id>`. On page load (after seed or demo data is ready), if the hash matches a listing the app automatically selects it in the list, flies the map to the marker, and opens the product card. The product card includes a “Copy link” button. Closing the card (or Escape) clears the hash. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Makes individual seed listings shareable and bookmarkable, improving the undeployed exploration and demo experience without inventing new features.
+
+**How:** One commit. Updated `js/cards.js` (hash update on showProduct, copyListingLink, clear on close/delete), `js/main.js` (tryOpenDeepLink after fetchListings + Escape clear), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Category legend on map for better demo marker UX
 
 **What:** Added a compact bottom-left Leaflet control that lists the known categories with their colored swatches (produce, dairy, eggs, grains, herbs, honey). Matches the existing category marker colors. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -60,7 +72,7 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ## 2026-10-18 – P2+: Fit all listings control for better demo map navigation
 
-**What:** Added a “Fit all” button (😚) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
+**What:** Added a “Fit all” button (👀) in the top bar next to Locate me. Clicking it resets the Leaflet map view to fit all currently rendered markers (respects active filters). Fully functional in seed/demo mode with no Worker required.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the Locate me control: after centering on the user or after filtering, one click restores the full set of listings. Improves exploration of the geographically spread seed data.
 

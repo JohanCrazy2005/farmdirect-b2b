@@ -8,6 +8,7 @@
  * Demo mode reset
  * Locate me geolocation + Fit all listings controls
  * In-app deploy guide modal for seed/demo UX
+ * Deep-link support: #listing=<id> auto-opens card + flies to marker on load
  */
 (function () {
   'use strict';
@@ -54,6 +55,26 @@
     document.getElementById('deploy-guide-modal')?.classList.remove('open');
   }
 
+  function tryOpenDeepLink(listings) {
+    const hash = location.hash || '';
+    const m = hash.match(/^#listing=(.+)$/);
+    if (!m || !listings || !listings.length) return;
+    const id = decodeURIComponent(m[1]);
+    const listing = listings.find(l => l.id === id);
+    if (listing) {
+      if (window.FD_LIST && window.FD_LIST.select) {
+        window.FD_LIST.select(id);
+      }
+      if (window.FD_MAP && window.FD_MAP.flyTo) {
+        window.FD_MAP.flyTo(listing);
+      }
+      if (window.FD_CARDS && window.FD_CARDS.showProduct) {
+        // showProduct will re-set the hash; fine
+        window.FD_CARDS.showProduct(listing);
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
 
@@ -70,11 +91,14 @@
     if (window.FD_LIST) FD_LIST.setListings(result.listings);
     hideMapOverlay();
 
+    // Deep link after data is ready (seed/demo or live)
+    tryOpenDeepLink(result.listings);
+
     if (statusEl) {
-      let badge = '<span class="source-badge">no data</span>';
-      if (result.source === 'api') badge = '<span class="source-badge">live API</span>';
-      else if (result.source === 'demo') badge = '<span class="source-badge seed">demo (local)</span>';
-      else if (result.source === 'seed') badge = '<span class="source-badge seed">seed fallback</span>';
+      let badge = '<span class=\"source-badge\">no data</span>';
+      if (result.source === 'api') badge = '<span class=\"source-badge\">live API</span>';
+      else if (result.source === 'demo') badge = '<span class=\"source-badge seed\">demo (local)</span>';
+      else if (result.source === 'seed') badge = '<span class=\"source-badge seed\">seed fallback</span>';
       statusEl.innerHTML = `${result.count} listings ${badge}`;
     }
 
@@ -159,7 +183,7 @@
       if (next === null) return;
       const trimmed = next.trim();
       if (!trimmed) {
-        alert('Empty URL ignored. Use "Clear API base" to force seed/demo mode.');
+        alert('Empty URL ignored. Use \"Clear API base\" to force seed/demo mode.');
         return;
       }
       if (!/^https?:\/\//i.test(trimmed)) {
@@ -205,9 +229,9 @@
       const msg = source === 'api'
         ? `Live API active.\nBase: ${base || '(none)'}`
         : source === 'demo'
-          ? `Interactive demo mode (localStorage).\nAPI base: ${base || '(not set)'}\nCreate/edit/delete saved in this browser. Deploy the Worker (README P1) then use "Set API base".`
+          ? `Interactive demo mode (localStorage).\nAPI base: ${base || '(not set)'}\nCreate/edit/delete saved in this browser. Deploy the Worker (README P1) then use \"Set API base\".`
           : source === 'seed'
-            ? `Seed fallback active (no local changes yet).\nAPI base: ${base || '(not set)'}\nDeploy the Worker (README P1) then use "Set API base".`
+            ? `Seed fallback active (no local changes yet).\nAPI base: ${base || '(not set)'}\nDeploy the Worker (README P1) then use \"Set API base\".`
             : `No data source.\nAPI base: ${base || '(not set)'}`;
       alert(msg);
       optionsMenu?.classList.remove('open');
@@ -258,6 +282,10 @@
         document.getElementById('deploy-guide-modal')?.classList.remove('open');
         document.getElementById('filter-btn')?.classList.remove('active');
         document.getElementById('seed-banner')?.classList.add('hidden');
+        // Clear deep-link hash on Escape close of product card
+        if (location.hash.startsWith('#listing=')) {
+          history.replaceState(null, '', location.pathname + location.search);
+        }
       }
     });
   });
