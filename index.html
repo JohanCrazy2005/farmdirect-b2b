@@ -92,6 +92,16 @@
       <label for="filter-maxprice">Max price</label>
       <input id="filter-maxprice" type="number" min="0" step="0.01" placeholder="No limit" />
     </div>
+    <div class="filter-group">
+      <label for="filter-sort">Sort by</label>
+      <select id="filter-sort">
+        <option value="">Default</option>
+        <option value="distance">Distance (after Locate me)</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
     <button id="clear-filters" class="clear-filters">Clear filters</button>
   </div>
 

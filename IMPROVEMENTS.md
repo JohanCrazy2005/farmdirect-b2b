@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: Sort control in filter card for better demo list UX
+
+**What:** Added a “Sort by” select to the filter card (Default, Distance after Locate me, Price low→high, Price high→low, Name A–Z). Selecting Distance without a prior Locate me prompts the user. Distance labels still appear on cards only when distance sort is active. Clear filters resets the sort. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Builds on Locate me + distance labels so buyers can also order by price or name without reloading. Improves scan-and-compare in the undeployed experience.
+
+**How:** One commit. Updated `index.html` (sort select in filter card), `js/list.js` (general sort modes, auto-set on Locate me, distance-label gating, clear reset), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: Distance sort after Locate me for better demo exploration
 
 **What:** After a successful “Locate me”, the sidebar list reorders by straight-line distance to the user and shows a compact distance label (m or km) on each listing card. Filters continue to apply; the sort sticks until page reload or clear. Fully client-side and works in pure seed/demo mode with no Worker.

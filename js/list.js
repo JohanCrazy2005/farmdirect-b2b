@@ -2,16 +2,16 @@
  * FarmDirect B2B – filters & list panel
  * Improved empty & loading states
  * + distance sort after geolocation (seed/demo friendly)
+ * + general Sort control (distance / price / name) in filter card
  */
 (function (global) {
   'use strict';
 
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '' };
+  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '' };
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
-  let sortByDistanceActive = false;
 
   function setListings(listings) {
     allListings = listings || [];
@@ -36,9 +36,30 @@
     return R * c;
   }
 
+  function applySort(items) {
+    const mode = activeFilters.sort;
+    if (!mode || !items.length) return items;
+
+    const sorted = items.slice();
+    if (mode === 'distance' && userLatLng) {
+      sorted.sort((a, b) => {
+        const da = distanceKm(userLatLng.lat, userLatLng.lng, a.location?.lat, a.location?.long);
+        const db = distanceKm(userLatLng.lat, userLatLng.lng, b.location?.lat, b.location?.long);
+        return da - db;
+      });
+    } else if (mode === 'price-asc') {
+      sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (mode === 'price-desc') {
+      sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (mode === 'name') {
+      sorted.sort((a, b) => (a.headerdescription || '').localeCompare(b.headerdescription || '', undefined, { sensitivity: 'base' }));
+    }
+    return sorted;
+  }
+
   function applyFilters() {
     const q = (activeFilters.q || '').toLowerCase();
-    filtered = allListings.filter(l => {
+    let next = allListings.filter(l => {
       if (q && !(
         (l.headerdescription || '').toLowerCase().includes(q) ||
         (l.description || '').toLowerCase().includes(q) ||
@@ -51,13 +72,7 @@
       return true;
     });
 
-    if (sortByDistanceActive && userLatLng) {
-      filtered.sort((a, b) => {
-        const da = distanceKm(userLatLng.lat, userLatLng.lng, a.location?.lat, a.location?.long);
-        const db = distanceKm(userLatLng.lat, userLatLng.lng, b.location?.lat, b.location?.long);
-        return da - db;
-      });
-    }
+    filtered = applySort(next);
 
     renderList();
     if (global.FD_MAP && global.FD_MAP.renderMarkers) {
@@ -69,18 +84,24 @@
 
   function sortByDistance(lat, lng) {
     userLatLng = { lat, lng };
-    sortByDistanceActive = true;
+    activeFilters.sort = 'distance';
+    const sortSel = document.getElementById('filter-sort');
+    if (sortSel) sortSel.value = 'distance';
     applyFilters();
   }
 
   function clearDistanceSort() {
-    sortByDistanceActive = false;
     userLatLng = null;
+    if (activeFilters.sort === 'distance') {
+      activeFilters.sort = '';
+      const sortSel = document.getElementById('filter-sort');
+      if (sortSel) sortSel.value = '';
+    }
     applyFilters();
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort);
   }
 
   function formatDistance(km) {
@@ -121,9 +142,11 @@
       return;
     }
 
+    const showDistance = activeFilters.sort === 'distance' && userLatLng;
+
     container.innerHTML = filtered.map(l => {
       let distHtml = '';
-      if (sortByDistanceActive && userLatLng && l.location) {
+      if (showDistance && l.location) {
         const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
         distHtml = `<div class="distance">${formatDistance(km)}</div>`;
       }
@@ -181,15 +204,17 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', maxPrice: '' };
+    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '' };
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
     const price = document.getElementById('filter-maxprice');
+    const sort = document.getElementById('filter-sort');
     if (search) search.value = '';
     if (cat) cat.value = '';
     if (vis) vis.value = '';
     if (price) price.value = '';
+    if (sort) sort.value = '';
     applyFilters();
     document.getElementById('filter-card')?.classList.remove('open');
   }
@@ -220,6 +245,18 @@
     if (price) {
       price.addEventListener('input', e => {
         activeFilters.maxPrice = e.target.value;
+        applyFilters();
+      });
+    }
+    const sort = document.getElementById('filter-sort');
+    if (sort) {
+      sort.addEventListener('change', e => {
+        activeFilters.sort = e.target.value;
+        if (activeFilters.sort === 'distance' && !userLatLng) {
+          alert('Use the Locate me button first to enable distance sorting.');
+          e.target.value = '';
+          activeFilters.sort = '';
+        }
         applyFilters();
       });
     }
