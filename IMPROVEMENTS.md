@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Image lightbox in product card for better demo photo UX
+
+**What:** Clicking the product image in the detail card now opens a full-screen lightbox with the enlarged photo. Close via the × button, Escape key, or click on the dark overlay. Fully client-side; works in pure seed/demo mode with no Worker. Cursor indicates zoom-in on the card image.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Product photos are a key part of the marketplace demo; enlarging them improves inspection of seed listings without leaving the undeployed experience.
+
+**How:** One commit. Updated `index.html` (lightbox modal), `css/main.css` (lightbox styles + product-image cursor), `js/cards.js` (openLightbox/closeLightbox + clickable image in showProduct), `js/main.js` (Escape + click-outside wiring), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Min price filter in filter card for better demo list UX
 
 **What:** Added a Min price number input to the filter card (complements the existing Max price). Listings below the entered minimum are hidden from both the sidebar and the map. Clear filters resets it. Fully client-side; works in pure seed/demo mode with no Worker. Matches the schema `price` field.

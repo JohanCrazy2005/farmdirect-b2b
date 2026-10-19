@@ -6,6 +6,7 @@
    + distance labels after Locate me
    + category legend on map
    + richer seller card listings list
+   + product image lightbox
 */
 :root {
   --primary: #2d6a4f;
@@ -469,6 +470,7 @@ html.dark .map-overlay { background: rgba(15,23,42,0.75); }
   width: 32px;
   height: 32px;
 }
+.product-image { cursor: zoom-in; }
 
 /* Seller listings inside seller card */
 .seller-listings {
@@ -742,6 +744,40 @@ html.dark .deploy-commands {
   padding: 0;
 }
 .link-btn:hover { color: var(--primary); }
+
+/* Image lightbox */
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.image-lightbox.open { display: flex; }
+.image-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.image-lightbox .close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.image-lightbox .close-btn:hover { background: rgba(255,255,255,0.3); }
 
 /* Mobile bottom sheet */
 @media (max-width: 768px) {

@@ -9,6 +9,7 @@
  * Locate me geolocation + Fit all listings controls
  * In-app deploy guide modal for seed/demo UX
  * Deep-link support: #listing=<id> auto-opens card + flies to marker on load
+ * Image lightbox close on Escape / click-outside
  */
 (function () {
   'use strict';
@@ -140,6 +141,14 @@
       } catch (_) {
         alert('Could not copy automatically. Select the commands and copy manually.');
       }
+    });
+
+    // Image lightbox wiring
+    document.getElementById('close-lightbox')?.addEventListener('click', () => {
+      window.FD_CARDS?.closeLightbox();
+    });
+    document.getElementById('image-lightbox')?.addEventListener('click', (e) => {
+      if (e.target.id === 'image-lightbox') window.FD_CARDS?.closeLightbox();
     });
 
     const themeBtn = document.getElementById('theme-btn');
@@ -280,6 +289,7 @@
         document.getElementById('listing-form-modal')?.classList.remove('open');
         document.getElementById('dashboard-modal')?.classList.remove('open');
         document.getElementById('deploy-guide-modal')?.classList.remove('open');
+        document.getElementById('image-lightbox')?.classList.remove('open');
         document.getElementById('filter-btn')?.classList.remove('active');
         document.getElementById('seed-banner')?.classList.add('hidden');
         // Clear deep-link hash on Escape close of product card

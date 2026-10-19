@@ -2,6 +2,7 @@
  * FarmDirect B2B – product & seller cards
  * + deep-link support: opening a card updates #listing=<id>; copy-link button
  * + richer seller profile: lists other listings by the same sellerid from current data (seed/demo friendly)
+ * + image lightbox: click product photo to enlarge (fully client-side, demo friendly)
  */
 (function (global) {
   'use strict';
@@ -27,7 +28,7 @@
     }
     el.innerHTML = `
       <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);\">×</button>
-      <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" onerror=\"this.style.display='none'\">
+      <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" class=\"product-image\" onerror=\"this.style.display='none'\" onclick=\"FD_CARDS.openLightbox(this.src, this.alt)\">
       <h3>${escapeHtml(listing.headerdescription)}</h3>
       <div class=\"price\">$${Number(listing.price).toFixed(2)} <span style=\"font-weight:400;color:var(--muted)\">/ ${escapeHtml(listing.units)}</span></div>
       <p style=\"margin:0.5rem 0;font-size:0.9rem\">${escapeHtml(listing.description)}</p>
@@ -44,6 +45,19 @@
     `;
     el.classList.add('open');
     document.getElementById('seller-card')?.classList.remove('open');
+  }
+
+  function openLightbox(src, alt) {
+    const lb = document.getElementById('image-lightbox');
+    const img = document.getElementById('lightbox-img');
+    if (!lb || !img || !src) return;
+    img.src = src;
+    img.alt = alt || 'Listing image';
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('image-lightbox')?.classList.remove('open');
   }
 
   function copyListingLink(id) {
@@ -129,7 +143,8 @@
   function hideAll() {
     document.getElementById('product-card')?.classList.remove('open');
     document.getElementById('seller-card')?.classList.remove('open');
+    closeLightbox();
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox };
 })(window);
