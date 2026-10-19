@@ -4,13 +4,14 @@
  * + distance sort after geolocation (seed/demo friendly)
  * + general Sort control (distance / price / name) in filter card
  * + distance radius filter after Locate me (client-side, demo friendly)
+ * + units filter (schema field; seed/demo friendly)
  */
 (function (global) {
   'use strict';
 
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '' };
+  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '', units: '' };
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
 
@@ -72,6 +73,7 @@
       if (activeFilters.category && l.category !== activeFilters.category) return false;
       if (activeFilters.visibility && l.visibility !== activeFilters.visibility) return false;
       if (activeFilters.maxPrice && Number(l.price) > Number(activeFilters.maxPrice)) return false;
+      if (activeFilters.units && l.units !== activeFilters.units) return false;
       if (radiusKm != null && userLatLng && l.location) {
         const d = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
         if (d > radiusKm) return false;
@@ -111,7 +113,7 @@
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units);
   }
 
   function formatDistance(km) {
@@ -133,18 +135,18 @@
     if (!filtered.length) {
       if (!allListings.length) {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🗺️</div>
+          <div class=\"empty-state\">
+            <div class=\"empty-icon\" aria-hidden=\"true\">🗺️</div>
             <h4>No listings yet</h4>
             <p>The map is empty. Deploy the Worker or check the seed file.</p>
           </div>`;
       } else {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🔍</div>
+          <div class=\"empty-state\">
+            <div class=\"empty-icon\" aria-hidden=\"true\">🔍</div>
             <h4>No matches</h4>
             <p>No listings match your current filters.</p>
-            ${hasActiveFilters() ? '<button type="button" id="empty-clear">Clear filters</button>' : ''}
+            ${hasActiveFilters() ? '<button type=\"button\" id=\"empty-clear\">Clear filters</button>' : ''}
           </div>`;
         const btn = document.getElementById('empty-clear');
         if (btn) btn.addEventListener('click', clearFilters);
@@ -158,15 +160,15 @@
       let distHtml = '';
       if (showDistance && l.location) {
         const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
-        distHtml = `<div class="distance">${formatDistance(km)}</div>`;
+        distHtml = `<div class=\"distance\">${formatDistance(km)}</div>`;
       }
       return `
-      <div class="listing-card" data-id="${escapeAttr(l.id)}" onclick="FD_LIST.select('${escapeAttr(l.id)}')" role="listitem" tabindex="0">
-        <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
-        <div class="listing-info">
+      <div class=\"listing-card\" data-id=\"${escapeAttr(l.id)}\" onclick=\"FD_LIST.select('${escapeAttr(l.id)}')\" role=\"listitem\" tabindex=\"0\">
+        <img src=\"${escapeAttr(l.image)}\" alt=\"\" onerror=\"this.style.background='var(--hover-bg)'\">
+        <div class=\"listing-info\">
           <h3>${escapeHtml(l.headerdescription)}</h3>
-          <div class="meta">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
-          <div class="price">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
+          <div class=\"meta\">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
+          <div class=\"price\">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
           ${distHtml}
         </div>
       </div>
@@ -188,7 +190,7 @@
     document.querySelectorAll('.listing-card').forEach(el => {
       el.classList.toggle('active', el.dataset.id === id);
     });
-    const el = document.querySelector(`.listing-card[data-id="${CSS.escape(id)}"]`);
+    const el = document.querySelector(`.listing-card[data-id=\"${CSS.escape(id)}\"]`);
     if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
@@ -206,7 +208,7 @@
       const msg = !allListings.length
         ? 'No listings available'
         : 'No listings in view';
-      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🗺️</div><div>${msg}</div></div>`;
+      overlay.innerHTML = `<div class=\"overlay-content\"><div class=\"empty-icon\" style=\"font-size:1.6rem;margin-bottom:0.4rem\">🗺️</div><div>${msg}</div></div>`;
       overlay.classList.remove('hidden');
     } else {
       overlay.classList.add('hidden');
@@ -214,19 +216,21 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '' };
+    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '', units: '' };
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
     const price = document.getElementById('filter-maxprice');
     const sort = document.getElementById('filter-sort');
     const radius = document.getElementById('filter-radius');
+    const units = document.getElementById('filter-units');
     if (search) search.value = '';
     if (cat) cat.value = '';
     if (vis) vis.value = '';
     if (price) price.value = '';
     if (sort) sort.value = '';
     if (radius) radius.value = '';
+    if (units) units.value = '';
     applyFilters();
     document.getElementById('filter-card')?.classList.remove('open');
   }
@@ -257,6 +261,13 @@
     if (price) {
       price.addEventListener('input', e => {
         activeFilters.maxPrice = e.target.value;
+        applyFilters();
+      });
+    }
+    const units = document.getElementById('filter-units');
+    if (units) {
+      units.addEventListener('change', e => {
+        activeFilters.units = e.target.value;
         applyFilters();
       });
     }
@@ -305,7 +316,7 @@
       .replace(/&/g, '&')
       .replace(/</g, '<')
       .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/\"/g, '\"');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 

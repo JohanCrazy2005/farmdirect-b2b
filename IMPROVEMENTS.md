@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Units filter in filter card for better demo list UX
+
+**What:** Added a Units select to the filter card (Any / kg / liter / dozen / ton). Selecting a unit hides non-matching listings from both the sidebar and the map. Clear filters resets it. Fully client-side; works in pure seed/demo mode with no Worker. Matches the schema `units` field and the variety present in seed-listings.json.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements existing category/visibility/price/radius filters so buyers can focus on specific packaging units without leaving the undeployed experience.
+
+**How:** One commit. Updated `index.html` (units select in filter card), `js/list.js` (units in activeFilters, filter logic, clear + bind), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Richer seller profile card for better demo seller discovery
 
 **What:** The seller profile card now lists all other listings by the same `sellerid` from the currently loaded data (seed, demo localStorage, or live). Each item is clickable and opens the corresponding product card. Fully client-side; works in pure seed/demo mode with no Worker.
