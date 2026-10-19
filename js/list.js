@@ -8,13 +8,14 @@
  * + min price filter (complements max price; seed/demo friendly)
  * + clear-search button in top bar (seed/demo friendly)
  * + proper HTML escaping in list cards (prevents broken markup from special chars in seed data)
+ * + favorites: heart toggle, localStorage, Favorites-only filter (seed/demo friendly)
  */
 (function (global) {
   'use strict';
 
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '' };
+  let activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
 
@@ -26,6 +27,40 @@
 
   function getListings() {
     return allListings;
+  }
+
+  function getFavorites() {
+    try {
+      const raw = localStorage.getItem('fd-favorites');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function isFavorite(id) {
+    return getFavorites().includes(id);
+  }
+
+  function toggleFavorite(id) {
+    if (!id) return false;
+    let favs = getFavorites();
+    const idx = favs.indexOf(id);
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+    } else {
+      favs.push(id);
+    }
+    try {
+      localStorage.setItem('fd-favorites', JSON.stringify(favs));
+    } catch (e) {
+      console.warn('Could not save favorites', e);
+    }
+    applyFilters();
+    if (global.FD_CARDS && typeof global.FD_CARDS.updateFavoriteButton === 'function') {
+      global.FD_CARDS.updateFavoriteButton(id);
+    }
+    return favs.includes(id);
   }
 
   // Haversine distance in km
@@ -67,6 +102,7 @@
     const radiusKm = activeFilters.radius ? Number(activeFilters.radius) : null;
     const minP = activeFilters.minPrice ? Number(activeFilters.minPrice) : null;
     const maxP = activeFilters.maxPrice ? Number(activeFilters.maxPrice) : null;
+    const favs = activeFilters.favoritesOnly ? getFavorites() : null;
 
     let next = allListings.filter(l => {
       if (q && !(
@@ -81,6 +117,7 @@
       if (minP != null && price < minP) return false;
       if (maxP != null && price > maxP) return false;
       if (activeFilters.units && l.units !== activeFilters.units) return false;
+      if (favs && !favs.includes(l.id)) return false;
       if (radiusKm != null && userLatLng && l.location) {
         const d = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
         if (d > radiusKm) return false;
@@ -121,7 +158,7 @@
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.minPrice || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.minPrice || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units || activeFilters.favoritesOnly);
   }
 
   function formatDistance(km) {
@@ -170,8 +207,11 @@
         const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
         distHtml = `<div class="distance">${formatDistance(km)}</div>`;
       }
+      const fav = isFavorite(l.id);
+      const heart = `<button class="favorite-btn${fav ? ' active' : ''}" type="button" aria-label="${fav ? 'Remove from favorites' : 'Add to favorites'}" onclick="event.stopPropagation(); FD_LIST.toggleFavorite('${escapeAttr(l.id)}')">${fav ? '♥' : '♡'}</button>`;
       return `
       <div class="listing-card" data-id="${escapeAttr(l.id)}" onclick="FD_LIST.select('${escapeAttr(l.id)}')" role="listitem" tabindex="0">
+        ${heart}
         <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
         <div class="listing-info">
           <h3>${escapeHtml(l.headerdescription)}</h3>
@@ -239,7 +279,7 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '' };
+    activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
@@ -248,6 +288,7 @@
     const sort = document.getElementById('filter-sort');
     const radius = document.getElementById('filter-radius');
     const units = document.getElementById('filter-units');
+    const favsOnly = document.getElementById('filter-favorites');
     if (search) search.value = '';
     if (cat) cat.value = '';
     if (vis) vis.value = '';
@@ -256,6 +297,7 @@
     if (sort) sort.value = '';
     if (radius) radius.value = '';
     if (units) units.value = '';
+    if (favsOnly) favsOnly.checked = false;
     applyFilters();
     document.getElementById('filter-card')?.classList.remove('open');
   }
@@ -333,6 +375,13 @@
         applyFilters();
       });
     }
+    const favsOnly = document.getElementById('filter-favorites');
+    if (favsOnly) {
+      favsOnly.addEventListener('change', e => {
+        activeFilters.favoritesOnly = e.target.checked;
+        applyFilters();
+      });
+    }
     const clear = document.getElementById('clear-filters');
     if (clear) {
       clear.addEventListener('click', clearFilters);
@@ -356,5 +405,5 @@
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch, toggleFavorite, isFavorite, getFavorites };
 })(window);

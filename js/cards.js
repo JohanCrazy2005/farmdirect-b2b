@@ -8,6 +8,7 @@
  * + distance label in product card when Locate me has been used (seed/demo friendly)
  * + coordinates display + copy button (shows lat/long; copies to clipboard; seed/demo friendly)
  * + share button: uses Web Share API when available, falls back to copy link (seed/demo friendly)
+ * + favorites: heart toggle button in product card (localStorage; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -65,6 +66,10 @@
     const shareBtn = listing.id
       ? `<button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.shareListing('${escapeHtml(listing.id)}')">Share</button>`
       : '';
+    const isFav = (global.FD_LIST && typeof global.FD_LIST.isFavorite === 'function') ? global.FD_LIST.isFavorite(listing.id) : false;
+    const favBtn = listing.id
+      ? `<button class="icon-btn favorite-product-btn${isFav ? ' active' : ''}" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.toggleFavorite('${escapeHtml(listing.id)}')">${isFav ? '♥ Favorited' : '♡ Favorite'}</button>`
+      : '';
 
     // Distance if Locate me has been used
     let distHtml = '';
@@ -97,6 +102,7 @@
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')">View seller</button>
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.copyListingLink('${escapeHtml(listing.id)}')">Copy link</button>
         ${shareBtn}
+        ${favBtn}
         ${dirBtn}
         ${addrBtn}
         ${coordsBtn}
@@ -106,6 +112,22 @@
     `;
     el.classList.add('open');
     document.getElementById('seller-card')?.classList.remove('open');
+  }
+
+  function toggleFavorite(id) {
+    if (!global.FD_LIST || typeof global.FD_LIST.toggleFavorite !== 'function') return;
+    const nowFav = global.FD_LIST.toggleFavorite(id);
+    updateFavoriteButton(id, nowFav);
+  }
+
+  function updateFavoriteButton(id, isFav) {
+    const card = document.getElementById('product-card');
+    if (!card || !card.classList.contains('open')) return;
+    const btn = card.querySelector('.favorite-product-btn');
+    if (!btn) return;
+    const isNow = isFav != null ? isFav : (global.FD_LIST && global.FD_LIST.isFavorite ? global.FD_LIST.isFavorite(id) : false);
+    btn.classList.toggle('active', isNow);
+    btn.innerHTML = isNow ? '♥ Favorited' : '♡ Favorite';
   }
 
   function openLightbox(src, alt) {
@@ -255,5 +277,5 @@
     closeLightbox();
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress, copyCoordinates, shareListing };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress, copyCoordinates, shareListing, toggleFavorite, updateFavoriteButton };
 })(window);
