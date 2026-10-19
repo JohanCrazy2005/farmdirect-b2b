@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Toast notifications for non-blocking feedback (copy/share/warnings)
+
+**What:** Added a lightweight toast system (`js/toast.js`) that shows temporary non-blocking messages at the bottom of the screen. Replaced most `alert()` calls in product cards (copy link, address, coordinates, share success, delete success/error) and filter warnings (distance sort/radius requiring Locate me) with toasts. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves the undeployed demo UX by avoiding modal alerts that interrupt the map experience when copying details or triggering filter preconditions.
+
+**How:** One commit. Added `js/toast.js`, toast container in `index.html`, styles in `css/main.css`, updated `js/cards.js` and `js/list.js` to use toasts, `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Favorites (heart toggle + localStorage + Favorites-only filter) for better demo UX
 
 **What:** Added client-side Favorites. Heart button (♡/♥) on product detail card and on each list card (absolute top-right, stops propagation so it doesn’t open the card). Persists listing IDs in localStorage under `fd-favorites`. Filter card has a “Favorites only” checkbox that filters the list + map. Toggle updates both the open product card button and the list immediately. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -33,4 +45,3 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ---
-

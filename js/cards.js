@@ -9,6 +9,7 @@
  * + coordinates display + copy button (shows lat/long; copies to clipboard; seed/demo friendly)
  * + share button: uses Web Share API when available, falls back to copy link (seed/demo friendly)
  * + favorites: heart toggle button in product card (localStorage; seed/demo friendly)
+ * + toast notifications for copy/share feedback (non-blocking; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -40,6 +41,14 @@
     if (km < 1) return `${Math.round(km * 1000)} m`;
     if (km < 10) return `${km.toFixed(1)} km`;
     return `${Math.round(km)} km`;
+  }
+
+  function showToast(msg, type) {
+    if (global.FD_TOAST && typeof global.FD_TOAST.show === 'function') {
+      global.FD_TOAST.show(msg, type);
+    } else {
+      console.log(msg);
+    }
   }
 
   function showProduct(listing) {
@@ -146,9 +155,9 @@
   function copyListingLink(id) {
     const url = location.origin + location.pathname + location.search + '#listing=' + encodeURIComponent(id);
     navigator.clipboard.writeText(url).then(() => {
-      alert('Listing link copied to clipboard!');
+      showToast('Listing link copied!', 'success');
     }).catch(() => {
-      alert('Could not copy automatically. URL: ' + url);
+      showToast('Could not copy. URL: ' + url, 'error');
     });
   }
 
@@ -157,18 +166,20 @@
     const title = 'FarmDirect listing';
     const text = 'Check out this listing on FarmDirect B2B';
     if (navigator.share) {
-      navigator.share({ title, text, url }).catch(() => {
-        // User cancelled or share failed – silent fallback is fine
+      navigator.share({ title, text, url }).then(() => {
+        showToast('Shared!', 'success');
+      }).catch(() => {
+        // User cancelled – no toast needed
       });
     } else {
-      // Fallback to copy link (works everywhere, including pure seed/demo)
+      // Fallback to copy link
       copyListingLink(id);
     }
   }
 
   function openDirections(lat, lng) {
     if (lat == null || lng == null) {
-      alert('No location available for directions.');
+      showToast('No location available for directions.', 'error');
       return;
     }
     const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}`;
@@ -177,26 +188,26 @@
 
   function copyAddress(address) {
     if (!address) {
-      alert('No address available.');
+      showToast('No address available.', 'error');
       return;
     }
     navigator.clipboard.writeText(address).then(() => {
-      alert('Address copied to clipboard!');
+      showToast('Address copied!', 'success');
     }).catch(() => {
-      alert('Could not copy automatically. Address: ' + address);
+      showToast('Could not copy. Address: ' + address, 'error');
     });
   }
 
   function copyCoordinates(lat, lng) {
     if (lat == null || lng == null) {
-      alert('No coordinates available.');
+      showToast('No coordinates available.', 'error');
       return;
     }
     const text = `${lat}, ${lng}`;
     navigator.clipboard.writeText(text).then(() => {
-      alert('Coordinates copied to clipboard!');
+      showToast('Coordinates copied!', 'success');
     }).catch(() => {
-      alert('Could not copy automatically. Coordinates: ' + text);
+      showToast('Could not copy. Coordinates: ' + text, 'error');
     });
   }
 
@@ -206,20 +217,21 @@
     if (listing && global.FD_FORM) {
       global.FD_FORM.openForm(listing);
     } else {
-      alert('Could not load listing for edit');
+      showToast('Could not load listing for edit', 'error');
     }
   }
 
   async function deleteListing(id) {
     if (!confirm('Delete this listing? This cannot be undone.')) return;
     if (!global.FD_API || !global.FD_API.deleteListing) {
-      alert('API unavailable');
+      showToast('API unavailable', 'error');
       return;
     }
     const result = await global.FD_API.deleteListing(id);
     if (result.ok) {
       document.getElementById('product-card')?.classList.remove('open');
       history.replaceState(null, '', location.pathname + location.search);
+      showToast('Listing deleted', 'success');
       // Refresh
       if (global.FD_API.fetchListings) {
         const fresh = await global.FD_API.fetchListings();
@@ -228,7 +240,7 @@
         }
       }
     } else {
-      alert(result.error || 'Failed to delete');
+      showToast(result.error || 'Failed to delete', 'error');
     }
   }
 
