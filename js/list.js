@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – filters & list panel
  * Improved empty & loading states
+ * + distance sort after geolocation (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -9,6 +10,8 @@
   let filtered = [];
   let activeFilters = { q: '', category: '', visibility: '', maxPrice: '' };
   let hasLoaded = false;
+  let userLatLng = null; // {lat, lng} after Locate me
+  let sortByDistanceActive = false;
 
   function setListings(listings) {
     allListings = listings || [];
@@ -18,6 +21,19 @@
 
   function getListings() {
     return allListings;
+  }
+
+  // Haversine distance in km
+  function distanceKm(lat1, lng1, lat2, lng2) {
+    if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) return Infinity;
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   }
 
   function applyFilters() {
@@ -34,6 +50,15 @@
       if (activeFilters.maxPrice && Number(l.price) > Number(activeFilters.maxPrice)) return false;
       return true;
     });
+
+    if (sortByDistanceActive && userLatLng) {
+      filtered.sort((a, b) => {
+        const da = distanceKm(userLatLng.lat, userLatLng.lng, a.location?.lat, a.location?.long);
+        const db = distanceKm(userLatLng.lat, userLatLng.lng, b.location?.lat, b.location?.long);
+        return da - db;
+      });
+    }
+
     renderList();
     if (global.FD_MAP && global.FD_MAP.renderMarkers) {
       global.FD_MAP.renderMarkers(filtered);
@@ -42,8 +67,27 @@
     updateMapOverlay();
   }
 
+  function sortByDistance(lat, lng) {
+    userLatLng = { lat, lng };
+    sortByDistanceActive = true;
+    applyFilters();
+  }
+
+  function clearDistanceSort() {
+    sortByDistanceActive = false;
+    userLatLng = null;
+    applyFilters();
+  }
+
   function hasActiveFilters() {
     return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice);
+  }
+
+  function formatDistance(km) {
+    if (!isFinite(km)) return '';
+    if (km < 1) return `${Math.round(km * 1000)} m`;
+    if (km < 10) return `${km.toFixed(1)} km`;
+    return `${Math.round(km)} km`;
   }
 
   function renderList() {
@@ -59,7 +103,7 @@
       if (!allListings.length) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🇳🇹</div>
+            <div class="empty-icon" aria-hidden="true">🗺️</div>
             <h4>No listings yet</h4>
             <p>The map is empty. Deploy the Worker or check the seed file.</p>
           </div>`;
@@ -77,16 +121,23 @@
       return;
     }
 
-    container.innerHTML = filtered.map(l => `
+    container.innerHTML = filtered.map(l => {
+      let distHtml = '';
+      if (sortByDistanceActive && userLatLng && l.location) {
+        const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
+        distHtml = `<div class="distance">${formatDistance(km)}</div>`;
+      }
+      return `
       <div class="listing-card" data-id="${escapeAttr(l.id)}" onclick="FD_LIST.select('${escapeAttr(l.id)}')" role="listitem" tabindex="0">
         <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
         <div class="listing-info">
           <h3>${escapeHtml(l.headerdescription)}</h3>
           <div class="meta">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
           <div class="price">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
+          ${distHtml}
         </div>
       </div>
-    `).join('');
+    `; }).join('');
   }
 
   function select(id) {
@@ -122,7 +173,7 @@
       const msg = !allListings.length
         ? 'No listings available'
         : 'No listings in view';
-      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🇳🇹</div><div>${msg}</div></div>`;
+      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🗺️</div><div>${msg}</div></div>`;
       overlay.classList.remove('hidden');
     } else {
       overlay.classList.add('hidden');
@@ -188,12 +239,12 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort };
 })(window);
