@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Clear-search button in top bar for better demo search UX
+
+**What:** Added a circular × clear button inside the top search box. It appears only when the search input has text and clears the query (and re-filters the map + list) with one click. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves the search experience when exploring seed listings so users can quickly reset a query without manually deleting text.
+
+**How:** One commit. Updated `index.html` (clear button in search-box), `css/main.css` (clear-search styles + adjusted input padding), `js/list.js` (visibility toggle + clearSearch handler + bind), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Image lightbox in product card for better demo photo UX
 
 **What:** Clicking the product image in the detail card now opens a full-screen lightbox with the enlarged photo. Close via the × button, Escape key, or click on the dark overlay. Fully client-side; works in pure seed/demo mode with no Worker. Cursor indicates zoom-in on the card image.

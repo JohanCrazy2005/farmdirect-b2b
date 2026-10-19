@@ -68,6 +68,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Units filter in filter card (select for kg/liter/dozen/ton matching seed data; fully client-side for demo) (2026-10-19)
 - [x] Min price filter in filter card (complements max price; fully client-side for demo) (2026-10-19)
 - [x] Image lightbox in product card (click photo to enlarge; Escape/click-outside close; fully client-side for demo) (2026-10-19)
+- [x] Clear-search button in top bar (appears when query present; one-click reset of search; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -102,4 +103,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Image lightbox in product card. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Clear-search button in top bar. P1 deploy still requires user (`npx wrangler login` + README commands).*

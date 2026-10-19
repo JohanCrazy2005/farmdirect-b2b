@@ -6,6 +6,7 @@
  * + distance radius filter after Locate me (client-side, demo friendly)
  * + units filter (schema field; seed/demo friendly)
  * + min price filter (complements max price; seed/demo friendly)
+ * + clear-search button in top bar (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -97,6 +98,7 @@
     }
     updateCount();
     updateMapOverlay();
+    updateClearSearchVisibility();
   }
 
   function sortByDistance(lat, lng) {
@@ -220,6 +222,21 @@
     }
   }
 
+  function updateClearSearchVisibility() {
+    const btn = document.getElementById('clear-search');
+    if (!btn) return;
+    const hasQ = !!(activeFilters.q && activeFilters.q.trim());
+    if (hasQ) btn.removeAttribute('hidden');
+    else btn.setAttribute('hidden', '');
+  }
+
+  function clearSearch() {
+    activeFilters.q = '';
+    const search = document.getElementById('search-input');
+    if (search) search.value = '';
+    applyFilters();
+  }
+
   function clearFilters() {
     activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '' };
     const search = document.getElementById('search-input');
@@ -249,6 +266,10 @@
         activeFilters.q = e.target.value;
         applyFilters();
       });
+    }
+    const clearSearchBtn = document.getElementById('clear-search');
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', clearSearch);
     }
     const cat = document.getElementById('filter-category');
     if (cat) {
@@ -334,5 +355,5 @@
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch };
 })(window);
