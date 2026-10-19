@@ -2,6 +2,7 @@
  * FarmDirect B2B – Leaflet map module
  * Markers + fuller clustering (custom icons, spiderfy, zoom behavior)
  * + geolocation “Locate me” + Fit all listings + distance sort for better undeployed demo UX
+ * + radius circle after Locate me + radius filter
  */
 (function (global) {
   'use strict';
@@ -12,6 +13,7 @@
   let selectedId = null;
   let userMarker = null;
   let userLatLng = null;
+  let radiusCircle = null;
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -135,6 +137,23 @@
     }
   }
 
+  function setRadiusCircle(km) {
+    if (radiusCircle) {
+      map.removeLayer(radiusCircle);
+      radiusCircle = null;
+    }
+    if (userLatLng && km > 0) {
+      radiusCircle = L.circle([userLatLng.lat, userLatLng.lng], {
+        radius: km * 1000,
+        color: '#1d4ed8',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.08,
+        weight: 1.5,
+        dashArray: '4 4'
+      }).addTo(map);
+    }
+  }
+
   function locateMe() {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by this browser.');
@@ -201,5 +220,5 @@
       .replace(/"/g, '"');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, getMap: () => map, getUserLatLng: () => userLatLng };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng };
 })(window);

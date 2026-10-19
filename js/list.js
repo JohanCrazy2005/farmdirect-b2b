@@ -3,13 +3,14 @@
  * Improved empty & loading states
  * + distance sort after geolocation (seed/demo friendly)
  * + general Sort control (distance / price / name) in filter card
+ * + distance radius filter after Locate me (client-side, demo friendly)
  */
 (function (global) {
   'use strict';
 
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '' };
+  let activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '' };
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
 
@@ -59,6 +60,8 @@
 
   function applyFilters() {
     const q = (activeFilters.q || '').toLowerCase();
+    const radiusKm = activeFilters.radius ? Number(activeFilters.radius) : null;
+
     let next = allListings.filter(l => {
       if (q && !(
         (l.headerdescription || '').toLowerCase().includes(q) ||
@@ -69,6 +72,10 @@
       if (activeFilters.category && l.category !== activeFilters.category) return false;
       if (activeFilters.visibility && l.visibility !== activeFilters.visibility) return false;
       if (activeFilters.maxPrice && Number(l.price) > Number(activeFilters.maxPrice)) return false;
+      if (radiusKm != null && userLatLng && l.location) {
+        const d = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
+        if (d > radiusKm) return false;
+      }
       return true;
     });
 
@@ -77,6 +84,9 @@
     renderList();
     if (global.FD_MAP && global.FD_MAP.renderMarkers) {
       global.FD_MAP.renderMarkers(filtered);
+    }
+    if (global.FD_MAP && typeof global.FD_MAP.setRadiusCircle === 'function') {
+      global.FD_MAP.setRadiusCircle(radiusKm && userLatLng ? radiusKm : 0);
     }
     updateCount();
     updateMapOverlay();
@@ -101,7 +111,7 @@
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius);
   }
 
   function formatDistance(km) {
@@ -204,17 +214,19 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '' };
+    activeFilters = { q: '', category: '', visibility: '', maxPrice: '', sort: '', radius: '' };
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
     const price = document.getElementById('filter-maxprice');
     const sort = document.getElementById('filter-sort');
+    const radius = document.getElementById('filter-radius');
     if (search) search.value = '';
     if (cat) cat.value = '';
     if (vis) vis.value = '';
     if (price) price.value = '';
     if (sort) sort.value = '';
+    if (radius) radius.value = '';
     applyFilters();
     document.getElementById('filter-card')?.classList.remove('open');
   }
@@ -256,6 +268,20 @@
           alert('Use the Locate me button first to enable distance sorting.');
           e.target.value = '';
           activeFilters.sort = '';
+        }
+        applyFilters();
+      });
+    }
+    const radius = document.getElementById('filter-radius');
+    if (radius) {
+      radius.addEventListener('input', e => {
+        const val = e.target.value;
+        if (val && !userLatLng) {
+          alert('Use the Locate me button first to enable distance filtering.');
+          e.target.value = '';
+          activeFilters.radius = '';
+        } else {
+          activeFilters.radius = val;
         }
         applyFilters();
       });

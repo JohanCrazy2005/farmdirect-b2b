@@ -1,3 +1,15 @@
+## 2026-10-18 – P2+: Distance radius filter after Locate me for better demo map UX
+
+**What:** Added a “Max distance (km)” number input to the filter card. After Locate me, listings farther than the entered radius are hidden from both the sidebar and the map. A translucent dashed circle is drawn on the map around the user. Clear filters resets it. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements Locate me + distance sort: buyers can now focus on nearby seed listings (Colorado-focused) without leaving the app.
+
+**How:** One commit. Updated `index.html` (radius input in filter card), `js/list.js` (radius in activeFilters, haversine filter, bind + clear), `js/map.js` (setRadiusCircle helper), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-18 – P2+: In-app deploy commands modal for better seed/demo UX
 
 **What:** Added a “View deploy steps” link on the seed/demo banner and in the options menu. Opens a modal with the exact P1 wrangler commands (login, d1 execute, deploy, API base, health check) plus a Copy button. Escape and click-outside close the modal. Fully client-side; works in pure seed/demo mode.
