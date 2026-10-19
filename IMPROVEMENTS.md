@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Coordinates display + copy button in product card for better demo UX
+
+**What:** Product detail card now shows the listing’s lat/long coordinates (formatted to 5 decimal places) under the address, and includes a “Copy coordinates” button that copies “lat, long” to the clipboard (with fallback alert). Appears only when location data is present. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements Directions, Copy address, and distance labels so buyers can quickly grab exact coordinates of a seed listing for external maps, notes, or sharing without manually reading or selecting text.
+
+**How:** One commit. Updated `js/cards.js` (coords display in showProduct + copyCoordinates helper), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Distance in product card after Locate me for better demo UX
 
 **What:** After a successful Locate me, opening a product detail card now shows a compact distance label (e.g. “📍 2.4 km away”) under the price. Uses the same haversine calculation as the list panel. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -12,7 +24,7 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ## 2026-10-19 – P2+: Fix HTML escaping in list panel for safer seed/demo rendering
 
-**What:** Corrected the `escapeHtml` (and `escapeAttr`) helpers in `js/list.js`. Previously the replacements were identity operations (`&` → `&`, `<` → `<`, etc.), so any `&`, `<`, `>`, or `"` in a seed listing’s headerdescription, category, or units would produce broken or unsafe HTML in the sidebar cards. Now uses proper entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`). Fully client-side; works in pure seed/demo mode with no Worker.
+**What:** Corrected the `escapeHtml` (and `escapeAttr`) helpers in `js/list.js`. Previously the replacements were identity operations (`&` → `&`, `<` → `<`, etc.), so any `&`, `<`, `>`, or `\"` in a seed listing’s headerdescription, category, or units would produce broken or unsafe HTML in the sidebar cards. Now uses proper entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`). Fully client-side; works in pure seed/demo mode with no Worker.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Prevents rendering glitches (or potential markup injection) when exploring seed listings that contain special characters, improving the undeployed experience.
 

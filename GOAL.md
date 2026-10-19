@@ -73,6 +73,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Copy address button in product card (copies listing address to clipboard; fully client-side for demo) (2026-10-19)
 - [x] Fix HTML escaping in list panel (correct &amp; &lt; &gt; &quot; escaping so special characters in seed descriptions render safely; fully client-side for demo) (2026-10-19)
 - [x] Distance in product card after Locate me (shows km/m away in detail card; fully client-side for demo) (2026-10-19)
+- [x] Coordinates display + copy button in product card (shows lat/long; copies to clipboard; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -107,4 +108,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Distance in product card after Locate me. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Coordinates display + copy button in product card. P1 deploy still requires user (`npx wrangler login` + README commands).*

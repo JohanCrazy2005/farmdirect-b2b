@@ -6,6 +6,7 @@
  * + directions button: opens external maps with listing coordinates (seed/demo friendly)
  * + copy address button: copies listing address to clipboard (seed/demo friendly)
  * + distance label in product card when Locate me has been used (seed/demo friendly)
+ * + coordinates display + copy button (shows lat/long; copies to clipboard; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -57,6 +58,9 @@
     const addrBtn = listing.address
       ? `<button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.copyAddress('${escapeHtml(listing.address).replace(/'/g, "\\'")}')\">Copy address</button>`
       : '';
+    const coordsBtn = (lat != null && lng != null)
+      ? `<button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.copyCoordinates(${lat}, ${lng})\">Copy coordinates</button>`
+      : '';
 
     // Distance if Locate me has been used
     let distHtml = '';
@@ -69,6 +73,10 @@
       }
     }
 
+    const coordsHtml = (lat != null && lng != null)
+      ? `<div style=\"font-size:0.8rem;color:var(--muted);margin-top:0.25rem\">Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>`
+      : '';
+
     el.innerHTML = `
       <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);\">×</button>
       <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" class=\"product-image\" onerror=\"this.style.display='none'\" onclick=\"FD_CARDS.openLightbox(this.src, this.alt)\">
@@ -79,12 +87,14 @@
       <div style=\"font-size:0.8rem;color:var(--muted)\">
         Category: ${escapeHtml(listing.category)} · Visibility: ${escapeHtml(listing.visibility)}<br>
         Address: ${escapeHtml(listing.address)}
+        ${coordsHtml}
       </div>
       <div style=\"margin-top:0.75rem;display:flex;gap:0.4rem;flex-wrap:wrap\">
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')\">View seller</button>
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.copyListingLink('${escapeHtml(listing.id)}')\">Copy link</button>
         ${dirBtn}
         ${addrBtn}
+        ${coordsBtn}
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.editListing('${escapeHtml(listing.id)}')\">Edit</button>
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem;color:#dc2626\" onclick=\"FD_CARDS.deleteListing('${escapeHtml(listing.id)}')\">Delete</button>
       </div>
@@ -133,6 +143,19 @@
       alert('Address copied to clipboard!');
     }).catch(() => {
       alert('Could not copy automatically. Address: ' + address);
+    });
+  }
+
+  function copyCoordinates(lat, lng) {
+    if (lat == null || lng == null) {
+      alert('No coordinates available.');
+      return;
+    }
+    const text = `${lat}, ${lng}`;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Coordinates copied to clipboard!');
+    }).catch(() => {
+      alert('Could not copy automatically. Coordinates: ' + text);
     });
   }
 
@@ -213,5 +236,5 @@
     closeLightbox();
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress, copyCoordinates };
 })(window);
