@@ -3,6 +3,7 @@
  * + deep-link support: opening a card updates #listing=<id>; copy-link button
  * + richer seller profile: lists other listings by the same sellerid from current data (seed/demo friendly)
  * + image lightbox: click product photo to enlarge (fully client-side, demo friendly)
+ * + directions button: opens external maps with listing coordinates (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -26,6 +27,11 @@
         history.replaceState(null, '', newHash);
       }
     }
+    const lat = listing.location?.lat;
+    const lng = listing.location?.long;
+    const dirBtn = (lat != null && lng != null)
+      ? `<button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.openDirections(${lat}, ${lng})\">Directions</button>`
+      : '';
     el.innerHTML = `
       <button class=\"close-btn\" aria-label=\"Close\" onclick=\"this.closest('.detail-card').classList.remove('open'); history.replaceState(null, '', location.pathname + location.search);\">×</button>
       <img src=\"${escapeHtml(listing.image)}\" alt=\"${escapeHtml(listing.headerdescription)}\" class=\"product-image\" onerror=\"this.style.display='none'\" onclick=\"FD_CARDS.openLightbox(this.src, this.alt)\">
@@ -39,6 +45,7 @@
       <div style=\"margin-top:0.75rem;display:flex;gap:0.4rem;flex-wrap:wrap\">
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')\">View seller</button>
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.copyListingLink('${escapeHtml(listing.id)}')\">Copy link</button>
+        ${dirBtn}
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem\" onclick=\"FD_CARDS.editListing('${escapeHtml(listing.id)}')\">Edit</button>
         <button class=\"icon-btn\" style=\"width:auto;padding:0 0.75rem;color:#dc2626\" onclick=\"FD_CARDS.deleteListing('${escapeHtml(listing.id)}')\">Delete</button>
       </div>
@@ -67,6 +74,15 @@
     }).catch(() => {
       alert('Could not copy automatically. URL: ' + url);
     });
+  }
+
+  function openDirections(lat, lng) {
+    if (lat == null || lng == null) {
+      alert('No location available for directions.');
+      return;
+    }
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}`;
+    window.open(url, '_blank', 'noopener');
   }
 
   function editListing(id) {
@@ -146,5 +162,5 @@
     closeLightbox();
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections };
 })(window);

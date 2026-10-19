@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Directions button in product card for better demo map UX
+
+**What:** Added a “Directions” button to the product detail card. It opens Google Maps directions to the listing’s lat/long coordinates in a new tab. Appears only when location data is present. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the map-first design so buyers can quickly get turn-by-turn directions to a seed listing without leaving the undeployed experience or copying coordinates.
+
+**How:** One commit. Updated `js/cards.js` (Directions button in showProduct + openDirections helper using Google Maps URL), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Clear-search button in top bar for better demo search UX
 
 **What:** Added a circular × clear button inside the top search box. It appears only when the search input has text and clears the query (and re-filters the map + list) with one click. Fully client-side; works in pure seed/demo mode with no Worker.
