@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Fix HTML escaping in list panel for safer seed/demo rendering
+
+**What:** Corrected the `escapeHtml` (and `escapeAttr`) helpers in `js/list.js`. Previously the replacements were identity operations (`&` → `&`, `<` → `<`, etc.), so any `&`, `<`, `>`, or `"` in a seed listing’s headerdescription, category, or units would produce broken or unsafe HTML in the sidebar cards. Now uses proper entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`). Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Prevents rendering glitches (or potential markup injection) when exploring seed listings that contain special characters, improving the undeployed experience.
+
+**How:** One commit. Updated `js/list.js` (fixed escape helpers + comment), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Copy address button in product card for better demo UX
 
 **What:** Added a “Copy address” button to the product detail card. It copies the listing’s address string to the clipboard (with fallback alert). Appears only when an address is present. Fully client-side; works in pure seed/demo mode with no Worker.
