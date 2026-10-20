@@ -10,6 +10,7 @@
  * + share button: uses Web Share API when available, falls back to copy link (seed/demo friendly)
  * + favorites: heart toggle button in product card (localStorage; seed/demo friendly)
  * + toast notifications for copy/share feedback (non-blocking; seed/demo friendly)
+ * + copy listing JSON button: pretty-printed JSON to clipboard for individual demo sharing/export (seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -75,6 +76,9 @@
     const shareBtn = listing.id
       ? `<button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.shareListing('${escapeHtml(listing.id)}')">Share</button>`
       : '';
+    const jsonBtn = listing.id
+      ? `<button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.copyListingJson('${escapeHtml(listing.id)}')">Copy JSON</button>`
+      : '';
     const isFav = (global.FD_LIST && typeof global.FD_LIST.isFavorite === 'function') ? global.FD_LIST.isFavorite(listing.id) : false;
     const favBtn = listing.id
       ? `<button class="icon-btn favorite-product-btn${isFav ? ' active' : ''}" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.toggleFavorite('${escapeHtml(listing.id)}')">${isFav ? '♥ Favorited' : '♡ Favorite'}</button>`
@@ -111,6 +115,7 @@
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')">View seller</button>
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.copyListingLink('${escapeHtml(listing.id)}')">Copy link</button>
         ${shareBtn}
+        ${jsonBtn}
         ${favBtn}
         ${dirBtn}
         ${addrBtn}
@@ -174,6 +179,24 @@
     } else {
       // Fallback to copy link
       copyListingLink(id);
+    }
+  }
+
+  function copyListingJson(id) {
+    const listing = (global.FD_LIST && global.FD_LIST.getListings ? global.FD_LIST.getListings() : []).find(l => l.id === id);
+    if (!listing) {
+      showToast('Could not find listing to copy', 'error');
+      return;
+    }
+    try {
+      const json = JSON.stringify(listing, null, 2);
+      navigator.clipboard.writeText(json).then(() => {
+        showToast('Listing JSON copied!', 'success');
+      }).catch(() => {
+        showToast('Could not copy JSON', 'error');
+      });
+    } catch (err) {
+      showToast('Failed to serialize listing: ' + err.message, 'error');
     }
   }
 
@@ -289,5 +312,5 @@
     closeLightbox();
   }
 
-  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress, copyCoordinates, shareListing, toggleFavorite, updateFavoriteButton };
+  global.FD_CARDS = { showProduct, showSeller, hideAll, editListing, deleteListing, copyListingLink, openLightbox, closeLightbox, openDirections, copyAddress, copyCoordinates, shareListing, copyListingJson, toggleFavorite, updateFavoriteButton };
 })(window);

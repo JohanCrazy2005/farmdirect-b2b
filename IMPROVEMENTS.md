@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Copy listing JSON button in product card for better demo sharing/export UX
+
+**What:** Added a “Copy JSON” button to the product detail card. It finds the current listing and copies a pretty-printed (2-space) JSON representation of the full listing object to the clipboard, with a toast on success or error. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the full demo-data export/import by letting users grab a single listing’s schema-compliant JSON for sharing, pasting into custom demo sets, or external tools without inventing new features.
+
+**How:** One commit. Updated `js/cards.js` (button in showProduct + copyListingJson helper that uses FD_LIST.getListings + JSON.stringify + clipboard + toast), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Demo data export/import for better seed/demo UX
 
 **What:** Added Export demo data and Import demo data… options in the menu. Export downloads the current localStorage demo listings (or seed if none yet) as pretty-printed JSON. Import accepts a JSON file of listings, validates basic required schema fields (location lat/long, visibility, address, sellerid, category, headerdescription, price, units), assigns missing IDs, saves to localStorage, and reloads. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -67,5 +79,3 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 **How:** One commit. Updated `js/cards.js` (coords display in showProduct + copyCoordinates helper), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
 
 Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
-
----
