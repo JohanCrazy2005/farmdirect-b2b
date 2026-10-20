@@ -71,7 +71,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Clear-search button in top bar (appears when query present; one-click reset of search; fully client-side for demo) (2026-10-19)
 - [x] Directions button in product card (opens Google Maps directions to listing lat/long; fully client-side for demo) (2026-10-19)
 - [x] Copy address button in product card (copies listing address to clipboard; fully client-side for demo) (2026-10-19)
-- [x] Fix HTML escaping in list panel (correct &amp; &lt; &gt; &quot; escaping so special characters in seed descriptions render safely; fully client-side for demo) (2026-10-19)
+- [x] Fix HTML escaping in list panel (correct & < > " escaping so special characters in seed descriptions render safely; fully client-side for demo) (2026-10-19)
 - [x] Distance in product card after Locate me (shows km/m away in detail card; fully client-side for demo) (2026-10-19)
 - [x] Coordinates display + copy button in product card (shows lat/long; copies to clipboard; fully client-side for demo) (2026-10-19)
 - [x] Share button in product card (Web Share API when available, falls back to copy link; fully client-side for demo) (2026-10-19)
@@ -85,6 +85,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Clear favorites option in options menu (one-click clear of localStorage favorites with confirmation + toast; fully client-side for demo) (2026-10-19)
 - [x] Persist filter/search state in localStorage (category, visibility, price, sort, radius, units, favorites-only, search query survive reloads; fully client-side for demo) (2026-10-20)
 - [x] Export filtered view as JSON (options menu downloads current filtered listings; complements full demo export; fully client-side for demo) (2026-10-20)
+- [x] Shareable filter links via URL query params (options menu copies current view link; restores filters/search on load; fully client-side for demo) (2026-10-20)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -119,4 +120,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-20 – P2+: Export filtered view as JSON. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-20 – P2+: Shareable filter links. P1 deploy still requires user (`npx wrangler login` + README commands).*
