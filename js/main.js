@@ -10,6 +10,7 @@
  * In-app deploy guide modal for seed/demo UX
  * Deep-link support: #listing=<id> auto-opens card + flies to marker on load
  * Image lightbox close on Escape / click-outside
+ * Demo data export/import (options menu; fully client-side for seed/demo UX)
  */
 (function () {
   'use strict';
@@ -231,6 +232,66 @@
       }
       optionsMenu?.classList.remove('open');
     });
+
+    document.getElementById('opt-export-demo')?.addEventListener('click', async () => {
+      if (window.FD_API && typeof window.FD_API.exportDemoData === 'function') {
+        const result = await window.FD_API.exportDemoData();
+        if (result.ok) {
+          if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+            window.FD_TOAST.show(`Exported ${result.count} listings`, 'success');
+          } else {
+            alert(`Exported ${result.count} listings`);
+          }
+        } else {
+          if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+            window.FD_TOAST.show(result.error || 'Export failed', 'error');
+          } else {
+            alert(result.error || 'Export failed');
+          }
+        }
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    const importInput = document.getElementById('import-demo-file');
+    document.getElementById('opt-import-demo')?.addEventListener('click', () => {
+      if (importInput) importInput.click();
+      optionsMenu?.classList.remove('open');
+    });
+    if (importInput) {
+      importInput.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const data = JSON.parse(text);
+          if (window.FD_API && typeof window.FD_API.importDemoData === 'function') {
+            const result = window.FD_API.importDemoData(data);
+            if (result.ok) {
+              if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+                window.FD_TOAST.show(`Imported ${result.count} listings. Reloading…`, 'success');
+              } else {
+                alert(`Imported ${result.count} listings. Reloading…`);
+              }
+              setTimeout(() => location.reload(), 900);
+            } else {
+              if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+                window.FD_TOAST.show(result.error || 'Import failed', 'error');
+              } else {
+                alert(result.error || 'Import failed');
+              }
+            }
+          }
+        } catch (err) {
+          if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+            window.FD_TOAST.show('Invalid JSON file: ' + err.message, 'error');
+          } else {
+            alert('Invalid JSON: ' + err.message);
+          }
+        }
+        importInput.value = '';
+      });
+    }
 
     document.getElementById('opt-deploy-status')?.addEventListener('click', () => {
       const base = getCurrentApiBase();

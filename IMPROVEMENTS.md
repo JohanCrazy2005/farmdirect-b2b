@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Demo data export/import for better seed/demo UX
+
+**What:** Added Export demo data and Import demo data… options in the menu. Export downloads the current localStorage demo listings (or seed if none yet) as pretty-printed JSON. Import accepts a JSON file of listings, validates basic required schema fields (location lat/long, visibility, address, sellerid, category, headerdescription, price, units), assigns missing IDs, saves to localStorage, and reloads. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves the undeployed demo experience by letting users back up custom listings they create/edit, share demo data, or load alternative seed sets without losing work on reset or browser clear.
+
+**How:** One commit. Updated `js/api.js` (exportDemoData + importDemoData with validation + generateId), `index.html` (menu buttons + hidden file input), `js/main.js` (wiring with toasts + file reader), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Distance filter precondition toasts (complete non-blocking warnings for Locate me)
 
 **What:** Replaced the remaining `alert()` calls in the filter card (distance sort and radius filter) with non-blocking toasts. When a user selects Distance sort or enters a radius without first using Locate me, a toast warns them and resets the control instead of blocking with a modal. Fully client-side; works in pure seed/demo mode.

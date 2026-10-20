@@ -4,6 +4,7 @@
  * In demo/seed mode, mutations persist to localStorage so create/edit/delete work fully
  * until the Worker is deployed and API_BASE is set.
  * Mutations attach X-Seller-Id from the current dashboard session (interim RLS) when live.
+ * + demo data export/import (download/upload JSON of localStorage listings; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -205,6 +206,42 @@
     }
   }
 
+  async function exportDemoData() {
+    try {
+      const { listings } = await getDemoOrSeedListings();
+      const json = JSON.stringify(listings, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'farmdirect-demo-listings.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return { ok: true, count: listings.length };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Export failed' };
+    }
+  }
+
+  function importDemoData(listings) {
+    if (!Array.isArray(listings) || listings.length === 0) {
+      return { ok: false, error: 'Invalid data: expected non-empty array of listings' };
+    }
+    const required = ['location', 'visibility', 'address', 'sellerid', 'category', 'headerdescription', 'price', 'units'];
+    for (const l of listings) {
+      if (!l || typeof l !== 'object') return { ok: false, error: 'Invalid listing object' };
+      for (const f of required) {
+        if (l[f] == null) return { ok: false, error: `Missing required field: ${f}` };
+      }
+      if (l.location.lat == null || l.location.long == null) return { ok: false, error: 'Invalid location (lat/long required)' };
+    }
+    const withIds = listings.map(l => ({ ...l, id: l.id || generateId() }));
+    saveDemoListings(withIds);
+    return { ok: true, count: withIds.length };
+  }
+
   global.FD_API = {
     fetchListings,
     fetchListing,
@@ -212,5 +249,7 @@
     updateListing,
     deleteListing,
     resetDemoListings,
+    exportDemoData,
+    importDemoData,
   };
 })(window);

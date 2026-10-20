@@ -136,6 +136,8 @@
     <button id="opt-set-api" role="menuitem">Set API base…</button>
     <button id="opt-clear-api" role="menuitem">Clear API base (use seed/demo)</button>
     <button id="opt-reset-demo" role="menuitem">Reset demo listings</button>
+    <button id="opt-export-demo" role="menuitem">Export demo data</button>
+    <button id="opt-import-demo" role="menuitem">Import demo data…</button>
     <button id="opt-deploy-status" role="menuitem">Deploy status</button>
     <button id="opt-deploy-guide" role="menuitem">View deploy steps</button>
     <button id="opt-about" role="menuitem">About</button>
@@ -223,6 +225,9 @@ curl https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev/api/v1/health</code></
 
   <!-- Toast container for non-blocking feedback (copy, share, warnings; demo-friendly) -->
   <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Hidden file input for demo data import -->
+  <input id="import-demo-file" type="file" accept=".json,application/json" style="display:none" />
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
