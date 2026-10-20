@@ -77,6 +77,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Share button in product card (Web Share API when available, falls back to copy link; fully client-side for demo) (2026-10-19)
 - [x] Favorites (heart toggle in product card + list items; localStorage persistence; Favorites only filter; fully client-side for demo) (2026-10-19)
 - [x] Toast notifications (non-blocking feedback for copy/share/warnings instead of alert(); fully client-side for demo) (2026-10-19)
+- [x] Distance filter precondition toasts (replace remaining alert() for Locate me required on sort/radius; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -111,4 +112,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Toast notifications for non-blocking feedback. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Distance filter precondition toasts (complete non-blocking warnings). P1 deploy still requires user (`npx wrangler login` + README commands).*

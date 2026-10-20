@@ -9,6 +9,7 @@
  * + clear-search button in top bar (seed/demo friendly)
  * + proper HTML escaping in list cards (prevents broken markup from special chars in seed data)
  * + favorites: heart toggle, localStorage, Favorites-only filter (seed/demo friendly)
+ * + toast notifications for distance sort/radius precondition warnings (non-blocking; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -61,6 +62,14 @@
       global.FD_CARDS.updateFavoriteButton(id);
     }
     return favs.includes(id);
+  }
+
+  function showToast(msg, type) {
+    if (global.FD_TOAST && typeof global.FD_TOAST.show === 'function') {
+      global.FD_TOAST.show(msg, type);
+    } else {
+      console.log(msg);
+    }
   }
 
   // Haversine distance in km
@@ -354,7 +363,7 @@
       sort.addEventListener('change', e => {
         activeFilters.sort = e.target.value;
         if (activeFilters.sort === 'distance' && !userLatLng) {
-          alert('Use the Locate me button first to enable distance sorting.');
+          showToast('Use the Locate me button first to enable distance sorting.', 'warning');
           e.target.value = '';
           activeFilters.sort = '';
         }
@@ -366,7 +375,7 @@
       radius.addEventListener('input', e => {
         const val = e.target.value;
         if (val && !userLatLng) {
-          alert('Use the Locate me button first to enable distance filtering.');
+          showToast('Use the Locate me button first to enable distance filtering.', 'warning');
           e.target.value = '';
           activeFilters.radius = '';
         } else {

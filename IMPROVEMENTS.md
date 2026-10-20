@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Distance filter precondition toasts (complete non-blocking warnings for Locate me)
+
+**What:** Replaced the remaining `alert()` calls in the filter card (distance sort and radius filter) with non-blocking toasts. When a user selects Distance sort or enters a radius without first using Locate me, a toast warns them and resets the control instead of blocking with a modal. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Finishes the toast migration started earlier so filter precondition checks no longer interrupt the map experience.
+
+**How:** One commit. Updated `js/list.js` (added showToast helper, swapped the two alert() calls), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Toast notifications for non-blocking feedback (copy/share/warnings)
 
 **What:** Added a lightweight toast system (`js/toast.js`) that shows temporary non-blocking messages at the bottom of the screen. Replaced most `alert()` calls in product cards (copy link, address, coordinates, share success, delete success/error) and filter warnings (distance sort/radius requiring Locate me) with toasts. Fully client-side; works in pure seed/demo mode with no Worker.
