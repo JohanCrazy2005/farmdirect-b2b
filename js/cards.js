@@ -12,6 +12,7 @@
  * + toast notifications for copy/share feedback (non-blocking; seed/demo friendly)
  * + copy listing JSON button: pretty-printed JSON to clipboard for individual demo sharing/export (seed/demo friendly)
  * + copy product summary button: human-readable text to clipboard for easy chat/email sharing (seed/demo friendly)
+ * + RFQ / Request for Quote button (opens demo form; localStorage + toast; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -87,6 +88,9 @@
     const favBtn = listing.id
       ? `<button class="icon-btn favorite-product-btn${isFav ? ' active' : ''}" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.toggleFavorite('${escapeHtml(listing.id)}')">${isFav ? '♥ Favorited' : '♡ Favorite'}</button>`
       : '';
+    const rfqBtn = listing.id
+      ? `<button class="icon-btn" style="width:auto;padding:0 0.75rem;background:var(--accent);color:white" onclick="FD_RFQ.open('${escapeHtml(listing.id)}')">Request quote</button>`
+      : '';
 
     // Distance if Locate me has been used
     let distHtml = '';
@@ -116,6 +120,7 @@
         ${coordsHtml}
       </div>
       <div style="margin-top:0.75rem;display:flex;gap:0.4rem;flex-wrap:wrap">
+        ${rfqBtn}
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.showSeller('${escapeHtml(listing.sellerid)}')">View seller</button>
         <button class="icon-btn" style="width:auto;padding:0 0.75rem" onclick="FD_CARDS.copyListingLink('${escapeHtml(listing.id)}')">Copy link</button>
         ${shareBtn}

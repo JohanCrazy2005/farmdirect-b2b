@@ -4,6 +4,7 @@
    + seed/demo banner, deploy guide, toasts, chips, etc.
    + marker hover highlight for list-map sync
    + map popup styles for richer marker content
+   + RFQ modal reuses form-modal (demo-friendly)
 */
 
 :root {

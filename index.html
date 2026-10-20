@@ -244,6 +244,23 @@ curl https://farmdirect-b2b.<subdomain>.workers.dev/api/v1/health</code></pre>
     </div>
   </div>
 
+  <!-- RFQ / Request for Quote modal (demo-friendly) -->
+  <div id="rfq-modal" class="form-modal" role="dialog" aria-label="Request for quote" aria-modal="true">
+    <div class="form-modal-content">
+      <button id="close-rfq" class="close-btn" aria-label="Close">×</button>
+      <h3 id="rfq-title">Request quote</h3>
+      <p class="muted small">Demo mode: inquiry is stored locally and a toast confirms. After Worker deploy this can notify the seller.</p>
+      <form id="rfq-form">
+        <label>Your name <input name="name" type="text" required placeholder="Alex Buyer" /></label>
+        <label>Email <input name="email" type="email" required placeholder="alex@business.com" /></label>
+        <label>Quantity <input name="quantity" type="text" required placeholder="e.g. 100 kg" /></label>
+        <label>Message <textarea name="message" rows="3" placeholder="Delivery preferences, timing, etc."></textarea></label>
+        <div id="rfq-status" class="form-status" role="status"></div>
+        <button type="submit" class="primary-btn">Send request</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Seller dashboard modal (P4 starter) -->
   <div id="dashboard-modal" class="form-modal" role="dialog" aria-label="Seller dashboard" aria-modal="true">
     <div class="form-modal-content">
@@ -274,6 +291,7 @@ curl https://farmdirect-b2b.<subdomain>.workers.dev/api/v1/health</code></pre>
   <script src="js/list.js"></script>
   <script src="js/form.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/rfq.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

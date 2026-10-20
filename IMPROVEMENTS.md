@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: RFQ / Request for Quote modal on product cards (demo B2B flow)
+
+**What:** Added a “Request quote” button on the product detail card that opens a simple modal form (name, email, quantity, message). Submitting validates the fields, stores the inquiry in localStorage (`fd-rfqs`), shows a success toast, and closes the modal. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Completes a core B2B buyer action in the undeployed demo so users can practice requesting quotes on seed listings without a live backend.
+
+**How:** One commit. New substantial `js/rfq.js` module (open/close/submit + localStorage + toast + Escape/backdrop close). Updated `js/cards.js` (RFQ button + header comment), `index.html` (modal markup + script include), `css/main.css` (comment only; reuses existing form-modal), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback (and eventually notify sellers of RFQs).
+
+---
+
 ## 2026-10-20 – P2+: Locate me polish — toasts, accuracy circle, clear-location control (seed/demo UX)
 
 **What:** Improved the Locate me geolocation flow for the undeployed demo. Success and error paths now use non-blocking toasts instead of `alert()`. On success a translucent accuracy circle is drawn around the user marker (when accuracy is reasonable). A new top-bar clear-location button (✕) appears only while a location is active; clicking it removes the user marker, accuracy circle, radius circle, and resets distance sort/radius filters in the list. Fully client-side; works in pure seed/demo mode.
@@ -12,7 +24,7 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 
 ## 2026-10-20 – P2+: Fix HTML escaping in map popups & legend + richer marker popups (seed/demo safety & UX)
 
-**What:** Corrected the broken `escapeHtml` in `js/map.js` (previously replaced `&`/`</`/`>`/`"` with the characters themselves instead of entities). Marker popups and the category legend now safely escape user/seed content. Popups were also enriched to show formatted price, seller, address, visibility, and a short hint, with matching CSS. Fully client-side; works in pure seed/demo mode.
+**What:** Corrected the broken `escapeHtml` in `js/map.js` (previously replaced `&`/`</`/`>`/`\"` with the characters themselves instead of entities). Marker popups and the category legend now safely escape user/seed content. Popups were also enriched to show formatted price, seller, address, visibility, and a short hint, with matching CSS. Fully client-side; works in pure seed/demo mode.
 
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The broken escaping was a latent XSS/rendering risk in map popups (and legend) even with seed data; richer popups improve map-first scanning without opening the full product card.
 
