@@ -13,11 +13,13 @@
  * + clear all favorites (options menu; localStorage; seed/demo friendly)
  * + persist filter/search state in localStorage (survives reloads; seed/demo friendly)
  * + export filtered view as JSON (options menu; downloads current filtered listings; seed/demo friendly)
+ * + shareable filter links via URL query params (options menu copies current view; restores on load; seed/demo friendly)
  */
 (function (global) {
   'use strict';
 
   const FILTER_KEY = 'fd-filters';
+  const FILTER_PARAMS = ['q', 'category', 'visibility', 'minPrice', 'maxPrice', 'sort', 'radius', 'units', 'favoritesOnly'];
 
   let allListings = [];
   let filtered = [];
@@ -45,6 +47,49 @@
       localStorage.setItem(FILTER_KEY, JSON.stringify(activeFilters));
     } catch (e) {
       console.warn('Could not persist filters', e);
+    }
+  }
+
+  function syncFiltersToURL() {
+    try {
+      const url = new URL(location.href);
+      FILTER_PARAMS.forEach(k => url.searchParams.delete(k));
+      if (activeFilters.q) url.searchParams.set('q', activeFilters.q);
+      if (activeFilters.category) url.searchParams.set('category', activeFilters.category);
+      if (activeFilters.visibility) url.searchParams.set('visibility', activeFilters.visibility);
+      if (activeFilters.minPrice) url.searchParams.set('minPrice', activeFilters.minPrice);
+      if (activeFilters.maxPrice) url.searchParams.set('maxPrice', activeFilters.maxPrice);
+      if (activeFilters.sort) url.searchParams.set('sort', activeFilters.sort);
+      if (activeFilters.radius) url.searchParams.set('radius', activeFilters.radius);
+      if (activeFilters.units) url.searchParams.set('units', activeFilters.units);
+      if (activeFilters.favoritesOnly) url.searchParams.set('favoritesOnly', '1');
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (e) {
+      console.warn('Could not sync filters to URL', e);
+    }
+  }
+
+  function loadFiltersFromURL() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const hasAny = FILTER_PARAMS.some(k => params.has(k));
+      if (!hasAny) return false;
+      if (params.has('q')) activeFilters.q = params.get('q') || '';
+      if (params.has('category')) activeFilters.category = params.get('category') || '';
+      if (params.has('visibility')) activeFilters.visibility = params.get('visibility') || '';
+      if (params.has('minPrice')) activeFilters.minPrice = params.get('minPrice') || '';
+      if (params.has('maxPrice')) activeFilters.maxPrice = params.get('maxPrice') || '';
+      if (params.has('sort')) activeFilters.sort = params.get('sort') || '';
+      if (params.has('radius')) activeFilters.radius = params.get('radius') || '';
+      if (params.has('units')) activeFilters.units = params.get('units') || '';
+      if (params.has('favoritesOnly')) {
+        const v = (params.get('favoritesOnly') || '').toLowerCase();
+        activeFilters.favoritesOnly = ['1', 'true', 'yes'].includes(v);
+      }
+      return true;
+    } catch (e) {
+      console.warn('Could not load filters from URL', e);
+      return false;
     }
   }
 
@@ -194,6 +239,7 @@
     updateMapOverlay();
     updateClearSearchVisibility();
     saveFilters();
+    syncFiltersToURL();
   }
 
   function sortByDistance(lat, lng) {
@@ -382,6 +428,9 @@
   }
 
   function bindUI() {
+    if (loadFiltersFromURL()) {
+      // URL params take precedence over localStorage for shareable links
+    }
     restoreFilterUI();
 
     const search = document.getElementById('search-input');
@@ -503,10 +552,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/\"/g, '"');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
