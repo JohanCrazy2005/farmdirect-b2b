@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Category and units selects in listing form for better consistency with filters and seed data
+
+**What:** Replaced free-text inputs for category and units in the add/edit listing form with `<select>` dropdowns. Options match the known values used in the filter card and seed-listings.json (produce/dairy/eggs/grains/herbs/honey for category; kg/liter/dozen/ton for units). Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Free-text fields allowed typos or values that wouldn't match filters, reducing demo data quality. Selects enforce consistency with the canonical categories/units already present in the UI and seed.
+
+**How:** One commit. Updated `index.html` (form selects), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Copy listing JSON button in product card for better demo sharing/export UX
 
 **What:** Added a “Copy JSON” button to the product detail card. It finds the current listing and copies a pretty-printed (2-space) JSON representation of the full listing object to the clipboard, with a toast on success or error. Fully client-side; works in pure seed/demo mode with no Worker.
@@ -77,5 +89,3 @@ Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
 **Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements Directions, Copy address, and distance labels so buyers can quickly grab exact coordinates of a seed listing for external maps, notes, or sharing without manually reading or selecting text.
 
 **How:** One commit. Updated `js/cards.js` (coords display in showProduct + copyCoordinates helper), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
-
-Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.

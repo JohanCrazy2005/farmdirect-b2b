@@ -80,6 +80,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Distance filter precondition toasts (replace remaining alert() for Locate me required on sort/radius; fully client-side for demo) (2026-10-19)
 - [x] Demo data export/import (options menu; download/upload JSON of localStorage demo listings; fully client-side for better seed/demo UX) (2026-10-19)
 - [x] Copy listing JSON button in product card (pretty-printed JSON to clipboard for individual demo sharing/export; fully client-side for seed/demo) (2026-10-19)
+- [x] Category and units selects in listing form (dropdowns matching filter/seed values instead of free text; prevents mismatches; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -114,4 +115,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Copy listing JSON button in product card (individual demo export). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Category and units selects in listing form (consistency with filters/seed). P1 deploy still requires user (`npx wrangler login` + README commands).*

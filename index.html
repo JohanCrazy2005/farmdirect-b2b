@@ -191,11 +191,29 @@ curl https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev/api/v1/health</code></
         </label>
         <label>Address <input name="address" type="text" required placeholder="123 Farm Rd, Denver, CO" /></label>
         <label>Seller ID <input id="form-sellerid" name="sellerid" type="text" required placeholder="seller-demo" /></label>
-        <label>Category <input name="category" type="text" required placeholder="produce" /></label>
+        <label>Category
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="produce">Produce</option>
+            <option value="dairy">Dairy</option>
+            <option value="eggs">Eggs</option>
+            <option value="grains">Grains</option>
+            <option value="herbs">Herbs</option>
+            <option value="honey">Honey</option>
+          </select>
+        </label>
         <label>Header description <input name="headerdescription" type="text" required maxlength="120" placeholder="Fresh organic tomatoes" /></label>
         <div class="form-row">
           <label>Price <input name="price" type="number" min="0" step="0.01" required placeholder="2.50" /></label>
-          <label>Units <input name="units" type="text" required placeholder="lb" /></label>
+          <label>Units
+            <select name="units" required>
+              <option value="">Select units</option>
+              <option value="kg">kg</option>
+              <option value="liter">liter</option>
+              <option value="dozen">dozen</option>
+              <option value="ton">ton</option>
+            </select>
+          </label>
         </div>
         <label>Description <textarea name="description" rows="2" placeholder="Optional longer description"></textarea></label>
         <label>Image
