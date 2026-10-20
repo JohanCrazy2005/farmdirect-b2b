@@ -138,6 +138,7 @@
     <button id="opt-reset-demo" role="menuitem">Reset demo listings</button>
     <button id="opt-export-demo" role="menuitem">Export demo data</button>
     <button id="opt-export-filtered" role="menuitem">Export filtered view</button>
+    <button id="opt-copy-filter-link" role="menuitem">Copy filter link</button>
     <button id="opt-import-demo" role="menuitem">Import demo data…</button>
     <button id="opt-clear-favorites" role="menuitem">Clear favorites</button>
     <button id="opt-deploy-status" role="menuitem">Deploy status</button>
@@ -164,10 +165,10 @@ npx wrangler d1 execute b2bistening --remote --file=./schema/d1-schema.sql
 npx wrangler deploy
 
 # Then set API base (options menu or js/config.js):
-# window.FD_CONFIG = { API_BASE: 'https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev' };
+# window.FD_CONFIG = { API_BASE: 'https://farmdirect-b2b.<subdomain>.workers.dev' };
 
 # Verify:
-curl https://farmdirect-b2b.&lt;subdomain&gt;.workers.dev/api/v1/health</code></pre>
+curl https://farmdirect-b2b.<subdomain>.workers.dev/api/v1/health</code></pre>
       <p class="muted small">Full details are in README.md. After deploy, use “Set API base” in the options menu.</p>
       <button type="button" id="copy-deploy-commands" class="primary-btn">Copy commands</button>
     </div>
