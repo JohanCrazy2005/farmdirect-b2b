@@ -12,6 +12,7 @@
  * Image lightbox close on Escape / click-outside
  * Demo data export/import (options menu; fully client-side for seed/demo UX)
  * Clear favorites (options menu; fully client-side for seed/demo UX)
+ * Export filtered view (options menu; downloads current filtered listings as JSON; seed/demo friendly)
  */
 (function () {
   'use strict';
@@ -250,6 +251,13 @@
             alert(result.error || 'Export failed');
           }
         }
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-export-filtered')?.addEventListener('click', () => {
+      if (window.FD_LIST && typeof window.FD_LIST.exportFiltered === 'function') {
+        window.FD_LIST.exportFiltered();
       }
       optionsMenu?.classList.remove('open');
     });

@@ -12,6 +12,7 @@
  * + toast notifications for distance sort/radius precondition warnings (non-blocking; seed/demo friendly)
  * + clear all favorites (options menu; localStorage; seed/demo friendly)
  * + persist filter/search state in localStorage (survives reloads; seed/demo friendly)
+ * + export filtered view as JSON (options menu; downloads current filtered listings; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -235,18 +236,18 @@
     if (!filtered.length) {
       if (!allListings.length) {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🗺️</div>
+          <div class=\"empty-state\">
+            <div class=\"empty-icon\" aria-hidden=\"true\">🗺️</div>
             <h4>No listings yet</h4>
             <p>The map is empty. Deploy the Worker or check the seed file.</p>
           </div>`;
       } else {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">🔍</div>
+          <div class=\"empty-state\">
+            <div class=\"empty-icon\" aria-hidden=\"true\">🔍</div>
             <h4>No matches</h4>
             <p>No listings match your current filters.</p>
-            ${hasActiveFilters() ? '<button type="button" id="empty-clear">Clear filters</button>' : ''}
+            ${hasActiveFilters() ? '<button type=\"button\" id=\"empty-clear\">Clear filters</button>' : ''}
           </div>`;
         const btn = document.getElementById('empty-clear');
         if (btn) btn.addEventListener('click', clearFilters);
@@ -260,18 +261,18 @@
       let distHtml = '';
       if (showDistance && l.location) {
         const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
-        distHtml = `<div class="distance">${formatDistance(km)}</div>`;
+        distHtml = `<div class=\"distance\">${formatDistance(km)}</div>`;
       }
       const fav = isFavorite(l.id);
-      const heart = `<button class="favorite-btn${fav ? ' active' : ''}" type="button" aria-label="${fav ? 'Remove from favorites' : 'Add to favorites'}" onclick="event.stopPropagation(); FD_LIST.toggleFavorite('${escapeAttr(l.id)}')">${fav ? '♥' : '♡'}</button>`;
+      const heart = `<button class=\"favorite-btn${fav ? ' active' : ''}\" type=\"button\" aria-label=\"${fav ? 'Remove from favorites' : 'Add to favorites'}\" onclick=\"event.stopPropagation(); FD_LIST.toggleFavorite('${escapeAttr(l.id)}')\">${fav ? '♥' : '♡'}</button>`;
       return `
-      <div class="listing-card" data-id="${escapeAttr(l.id)}" onclick="FD_LIST.select('${escapeAttr(l.id)}')" role="listitem" tabindex="0">
+      <div class=\"listing-card\" data-id=\"${escapeAttr(l.id)}\" onclick=\"FD_LIST.select('${escapeAttr(l.id)}')\" role=\"listitem\" tabindex=\"0\">
         ${heart}
-        <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
-        <div class="listing-info">
+        <img src=\"${escapeAttr(l.image)}\" alt=\"\" onerror=\"this.style.background='var(--hover-bg)'\">
+        <div class=\"listing-info\">
           <h3>${escapeHtml(l.headerdescription)}</h3>
-          <div class="meta">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
-          <div class="price">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
+          <div class=\"meta\">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
+          <div class=\"price\">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
           ${distHtml}
         </div>
       </div>
@@ -293,7 +294,7 @@
     document.querySelectorAll('.listing-card').forEach(el => {
       el.classList.toggle('active', el.dataset.id === id);
     });
-    const el = document.querySelector(`.listing-card[data-id="${CSS.escape(id)}"]`);
+    const el = document.querySelector(`.listing-card[data-id=\"${CSS.escape(id)}\"]`);
     if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
@@ -311,7 +312,7 @@
       const msg = !allListings.length
         ? 'No listings available'
         : 'No listings in view';
-      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🗺️</div><div>${msg}</div></div>`;
+      overlay.innerHTML = `<div class=\"overlay-content\"><div class=\"empty-icon\" style=\"font-size:1.6rem;margin-bottom:0.4rem\">🗺️</div><div>${msg}</div></div>`;
       overlay.classList.remove('hidden');
     } else {
       overlay.classList.add('hidden');
@@ -475,15 +476,39 @@
     }
   }
 
+  function exportFiltered() {
+    if (!filtered || !filtered.length) {
+      showToast('No listings in the current filtered view to export.', 'warning');
+      return { ok: false, count: 0 };
+    }
+    try {
+      const json = JSON.stringify(filtered, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'farmdirect-filtered-listings.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Exported ${filtered.length} filtered listings`, 'success');
+      return { ok: true, count: filtered.length };
+    } catch (err) {
+      showToast('Export failed: ' + (err.message || 'unknown error'), 'error');
+      return { ok: false, error: err.message };
+    }
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch, toggleFavorite, isFavorite, getFavorites, clearFavorites };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch, toggleFavorite, isFavorite, getFavorites, clearFavorites, exportFiltered };
 })(window);

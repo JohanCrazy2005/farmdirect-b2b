@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Export filtered view as JSON for better demo sharing of current results
+
+**What:** Added an “Export filtered view” item to the options menu. It downloads the currently filtered (and sorted) listings as pretty-printed JSON (`farmdirect-filtered-listings.json`). Shows a toast on success or if the filtered set is empty. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the full demo-data export by letting users share or save only the subset that matches their current search/filters/favorites/distance, making demo exploration and subset sharing easier.
+
+**How:** One commit. Updated `js/list.js` (exportFiltered helper that stringifies the internal `filtered` array + download + toast), `index.html` (menu button), `js/main.js` (wiring), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Persist filter/search state in localStorage for better seed/demo UX
 
 **What:** Filter and search state (category, visibility, min/max price, sort, radius, units, favorites-only checkbox, and search query) is now saved to localStorage under `fd-filters`. On load, the UI controls are restored and filters re-applied automatically. Clear filters removes the key. Fully client-side; works in pure seed/demo mode with no Worker.
