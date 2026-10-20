@@ -4,6 +4,7 @@
  * active filter chips, keyboard navigation, list-map hover highlight sync,
  * distance sort after Locate me, localStorage + URL query param persistence,
  * export filtered view, favorites (localStorage). Fully client-side for seed/demo.
+ * Empty-state clear filters button when no matches.
  */
 (function (global) {
   'use strict';
@@ -33,10 +34,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function loadFavorites() {
@@ -277,7 +278,9 @@
           <div class="empty-icon">🌾</div>
           <div>No listings match your filters</div>
           <div style="font-size:0.8rem;margin-top:0.35rem">Try adjusting search or filters</div>
+          <button type="button" id="empty-clear-filters" class="clear-filters" style="margin-top:0.75rem">Clear filters</button>
         </div>`;
+      document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
       return;
     }
 

@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Empty-state clear filters button (better demo UX when no matches)
+
+**What:** Enhanced the sidebar empty state (shown when filters/search produce zero listings). Added a prominent “Clear filters” button that resets all filters/search in one click and re-renders the list + map. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). With many filters available, buyers can easily reach a zero-result state; a one-click recovery improves the undeployed demo experience without opening the filter card.
+
+**How:** One commit. Updated `js/list.js` (empty HTML + click listener calling `clearAllFilters`), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Restore complete list.js (critical fix for all sidebar/filter features)
 
 **What:** Replaced the broken `js/list.js` (which contained only the literal string `$(cat /tmp/list.js)`) with a full, substantial module. Restores every previously implemented P2 feature: filtering (category/visibility/price/units/seller/sort/radius/favorites/in-view), active removable filter chips, keyboard navigation (arrows + Enter), list-map hover highlight sync, distance sort + labels after Locate me, localStorage + shareable URL query-param persistence, dynamic seller select, map-view bounds filter with live pan/zoom updates, export filtered view, favorites (heart toggle + localStorage), clear favorites, and proper interfaces for `map.js` / `cards.js` / `main.js`.
