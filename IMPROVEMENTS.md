@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Restore complete list.js (critical fix for all sidebar/filter features)
+
+**What:** Replaced the broken `js/list.js` (which contained only the literal string `$(cat /tmp/list.js)`) with a full, substantial module. Restores every previously implemented P2 feature: filtering (category/visibility/price/units/seller/sort/radius/favorites/in-view), active removable filter chips, keyboard navigation (arrows + Enter), list-map hover highlight sync, distance sort + labels after Locate me, localStorage + shareable URL query-param persistence, dynamic seller select, map-view bounds filter with live pan/zoom updates, export filtered view, favorites (heart toggle + localStorage), clear favorites, and proper interfaces for `map.js` / `cards.js` / `main.js`.
+
+**Why:** Highest remaining pure-code item. The file had been corrupted to a 19-byte stub, breaking the entire side list, filters, chips, keyboard a11y, hover sync, and map integration even in pure seed/demo mode. P1 remains blocked on user (`npx wrangler login` + README deploy commands). This restores a working map-first demo.
+
+**How:** One commit. Full rewrite of `js/list.js` (~18 KB) implementing `FD_LIST` API (`bindUI`, `setListings`, `getListings`, `select`, `highlight`, `sortByDistance`, `isFavorite`, `toggleFavorite`, `clearFavorites`, `exportFiltered`, `applyFilters`). Updated `IMPROVEMENTS.md` and `GOAL.md` last-updated line.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: List-map hover highlight sync (map-first polish for seed/demo)
 
 **What:** Added bidirectional hover highlighting between the sidebar listing cards and Leaflet markers. Hovering a list card scales and highlights the corresponding map marker (and raises its z-index). Hovering a marker highlights the matching list card (scrolls it into view). Fully client-side; works in pure seed/demo mode with no Worker.
