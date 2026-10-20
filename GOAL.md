@@ -86,6 +86,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Persist filter/search state in localStorage (category, visibility, price, sort, radius, units, favorites-only, search query survive reloads; fully client-side for demo) (2026-10-20)
 - [x] Export filtered view as JSON (options menu downloads current filtered listings; complements full demo export; fully client-side for demo) (2026-10-20)
 - [x] Shareable filter links via URL query params (options menu copies current view link; restores filters/search on load; fully client-side for demo) (2026-10-20)
+- [x] Seller filter in filter card (select of unique sellerids from current data; fully client-side for demo) (2026-10-20)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -120,4 +121,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-20 – P2+: Shareable filter links. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-20 – P2+: Seller filter. P1 deploy still requires user (`npx wrangler login` + README commands).*

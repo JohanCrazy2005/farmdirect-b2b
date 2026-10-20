@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Seller filter in filter card for better demo browsing by supplier
+
+**What:** Added a Seller select to the filter card. It is dynamically populated with the unique `sellerid` values from the current listings (seed, demo, or live). Selecting a seller filters the list and map to that supplier only. The choice is persisted in localStorage, reflected in the shareable URL query param (`?seller=…`), and cleared with Clear filters. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements category/units/price filters by letting buyers quickly focus on a specific supplier’s offerings in the undeployed demo, which is especially useful for B2B exploration of the seed data.
+
+**How:** One commit. Updated `index.html` (new filter group), `js/list.js` (FILTER_PARAMS + default + URL sync/load + applyFilters check + hasActiveFilters + clear/restore UI + updateSellerOptions helper that rebuilds the select from unique sellerids + change listener + call on setListings), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Shareable filter links via URL query params for better demo sharing of current view
 
 **What:** Current filter/search state (query, category, visibility, min/max price, sort, radius, units, favorites-only) is now reflected in the page URL as query parameters. On load, any such parameters override the localStorage filters and restore the UI + results. Options menu gains a “Copy filter link” button that copies the current URL (with filters) to the clipboard and shows a toast. Fully client-side; works in pure seed/demo mode with no Worker. Preserves existing #listing= deep links.

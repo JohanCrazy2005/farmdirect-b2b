@@ -14,12 +14,13 @@
  * + persist filter/search state in localStorage (survives reloads; seed/demo friendly)
  * + export filtered view as JSON (options menu; downloads current filtered listings; seed/demo friendly)
  * + shareable filter links via URL query params (options menu copies current view; restores on load; seed/demo friendly)
+ * + sellerid filter in filter card (select populated from current data; fully client-side for demo)
  */
 (function (global) {
   'use strict';
 
   const FILTER_KEY = 'fd-filters';
-  const FILTER_PARAMS = ['q', 'category', 'visibility', 'minPrice', 'maxPrice', 'sort', 'radius', 'units', 'favoritesOnly'];
+  const FILTER_PARAMS = ['q', 'category', 'visibility', 'minPrice', 'maxPrice', 'sort', 'radius', 'units', 'favoritesOnly', 'seller'];
 
   let allListings = [];
   let filtered = [];
@@ -39,7 +40,7 @@
   }
 
   function defaultFilters() {
-    return { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
+    return { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false, seller: '' };
   }
 
   function saveFilters() {
@@ -63,6 +64,7 @@
       if (activeFilters.radius) url.searchParams.set('radius', activeFilters.radius);
       if (activeFilters.units) url.searchParams.set('units', activeFilters.units);
       if (activeFilters.favoritesOnly) url.searchParams.set('favoritesOnly', '1');
+      if (activeFilters.seller) url.searchParams.set('seller', activeFilters.seller);
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     } catch (e) {
       console.warn('Could not sync filters to URL', e);
@@ -86,6 +88,7 @@
         const v = (params.get('favoritesOnly') || '').toLowerCase();
         activeFilters.favoritesOnly = ['1', 'true', 'yes'].includes(v);
       }
+      if (params.has('seller')) activeFilters.seller = params.get('seller') || '';
       return true;
     } catch (e) {
       console.warn('Could not load filters from URL', e);
@@ -96,6 +99,7 @@
   function setListings(listings) {
     allListings = listings || [];
     hasLoaded = true;
+    updateSellerOptions();
     applyFilters();
   }
 
@@ -218,6 +222,7 @@
       if (minP != null && price < minP) return false;
       if (maxP != null && price > maxP) return false;
       if (activeFilters.units && l.units !== activeFilters.units) return false;
+      if (activeFilters.seller && l.sellerid !== activeFilters.seller) return false;
       if (favs && !favs.includes(l.id)) return false;
       if (radiusKm != null && userLatLng && l.location) {
         const d = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
@@ -261,7 +266,7 @@
   }
 
   function hasActiveFilters() {
-    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.minPrice || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units || activeFilters.favoritesOnly);
+    return !!(activeFilters.q || activeFilters.category || activeFilters.visibility || activeFilters.minPrice || activeFilters.maxPrice || activeFilters.sort || activeFilters.radius || activeFilters.units || activeFilters.favoritesOnly || activeFilters.seller);
   }
 
   function formatDistance(km) {
@@ -282,18 +287,18 @@
     if (!filtered.length) {
       if (!allListings.length) {
         container.innerHTML = `
-          <div class=\"empty-state\">
-            <div class=\"empty-icon\" aria-hidden=\"true\">🗺️</div>
+          <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">🗺️</div>
             <h4>No listings yet</h4>
             <p>The map is empty. Deploy the Worker or check the seed file.</p>
           </div>`;
       } else {
         container.innerHTML = `
-          <div class=\"empty-state\">
-            <div class=\"empty-icon\" aria-hidden=\"true\">🔍</div>
+          <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">🔍</div>
             <h4>No matches</h4>
             <p>No listings match your current filters.</p>
-            ${hasActiveFilters() ? '<button type=\"button\" id=\"empty-clear\">Clear filters</button>' : ''}
+            ${hasActiveFilters() ? '<button type="button" id="empty-clear">Clear filters</button>' : ''}
           </div>`;
         const btn = document.getElementById('empty-clear');
         if (btn) btn.addEventListener('click', clearFilters);
@@ -307,18 +312,18 @@
       let distHtml = '';
       if (showDistance && l.location) {
         const km = distanceKm(userLatLng.lat, userLatLng.lng, l.location.lat, l.location.long);
-        distHtml = `<div class=\"distance\">${formatDistance(km)}</div>`;
+        distHtml = `<div class="distance">${formatDistance(km)}</div>`;
       }
       const fav = isFavorite(l.id);
-      const heart = `<button class=\"favorite-btn${fav ? ' active' : ''}\" type=\"button\" aria-label=\"${fav ? 'Remove from favorites' : 'Add to favorites'}\" onclick=\"event.stopPropagation(); FD_LIST.toggleFavorite('${escapeAttr(l.id)}')\">${fav ? '♥' : '♡'}</button>`;
+      const heart = `<button class="favorite-btn${fav ? ' active' : ''}" type="button" aria-label="${fav ? 'Remove from favorites' : 'Add to favorites'}" onclick="event.stopPropagation(); FD_LIST.toggleFavorite('${escapeAttr(l.id)}')">${fav ? '♥' : '♡'}</button>`;
       return `
-      <div class=\"listing-card\" data-id=\"${escapeAttr(l.id)}\" onclick=\"FD_LIST.select('${escapeAttr(l.id)}')\" role=\"listitem\" tabindex=\"0\">
+      <div class="listing-card" data-id="${escapeAttr(l.id)}" onclick="FD_LIST.select('${escapeAttr(l.id)}')" role="listitem" tabindex="0">
         ${heart}
-        <img src=\"${escapeAttr(l.image)}\" alt=\"\" onerror=\"this.style.background='var(--hover-bg)'\">
-        <div class=\"listing-info\">
+        <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
+        <div class="listing-info">
           <h3>${escapeHtml(l.headerdescription)}</h3>
-          <div class=\"meta\">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
-          <div class=\"price\">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
+          <div class="meta">${escapeHtml(l.category)} · ${escapeHtml(l.visibility)}</div>
+          <div class="price">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)}</div>
           ${distHtml}
         </div>
       </div>
@@ -340,7 +345,7 @@
     document.querySelectorAll('.listing-card').forEach(el => {
       el.classList.toggle('active', el.dataset.id === id);
     });
-    const el = document.querySelector(`.listing-card[data-id=\"${CSS.escape(id)}\"]`);
+    const el = document.querySelector(`.listing-card[data-id="${CSS.escape(id)}"]`);
     if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
@@ -358,7 +363,7 @@
       const msg = !allListings.length
         ? 'No listings available'
         : 'No listings in view';
-      overlay.innerHTML = `<div class=\"overlay-content\"><div class=\"empty-icon\" style=\"font-size:1.6rem;margin-bottom:0.4rem\">🗺️</div><div>${msg}</div></div>`;
+      overlay.innerHTML = `<div class="overlay-content"><div class="empty-icon" style="font-size:1.6rem;margin-bottom:0.4rem">🗺️</div><div>${msg}</div></div>`;
       overlay.classList.remove('hidden');
     } else {
       overlay.classList.add('hidden');
@@ -380,6 +385,23 @@
     applyFilters();
   }
 
+  function updateSellerOptions() {
+    const sel = document.getElementById('filter-seller');
+    if (!sel) return;
+    const current = activeFilters.seller || '';
+    const sellers = [...new Set(allListings.map(l => l.sellerid).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    const opts = ['<option value="">Any</option>'].concat(
+      sellers.map(s => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`)
+    );
+    sel.innerHTML = opts.join('');
+    if (sellers.includes(current)) {
+      sel.value = current;
+    } else {
+      sel.value = '';
+      if (current) activeFilters.seller = '';
+    }
+  }
+
   function clearFilters() {
     activeFilters = defaultFilters();
     try { localStorage.removeItem(FILTER_KEY); } catch {}
@@ -391,6 +413,7 @@
     const sort = document.getElementById('filter-sort');
     const radius = document.getElementById('filter-radius');
     const units = document.getElementById('filter-units');
+    const seller = document.getElementById('filter-seller');
     const favsOnly = document.getElementById('filter-favorites');
     if (search) search.value = '';
     if (cat) cat.value = '';
@@ -400,6 +423,7 @@
     if (sort) sort.value = '';
     if (radius) radius.value = '';
     if (units) units.value = '';
+    if (seller) seller.value = '';
     if (favsOnly) favsOnly.checked = false;
     applyFilters();
     document.getElementById('filter-card')?.classList.remove('open');
@@ -414,6 +438,7 @@
     const sort = document.getElementById('filter-sort');
     const radius = document.getElementById('filter-radius');
     const units = document.getElementById('filter-units');
+    const seller = document.getElementById('filter-seller');
     const favsOnly = document.getElementById('filter-favorites');
     if (search) search.value = activeFilters.q || '';
     if (cat) cat.value = activeFilters.category || '';
@@ -423,6 +448,7 @@
     if (sort) sort.value = activeFilters.sort || '';
     if (radius) radius.value = activeFilters.radius || '';
     if (units) units.value = activeFilters.units || '';
+    if (seller) seller.value = activeFilters.seller || '';
     if (favsOnly) favsOnly.checked = !!activeFilters.favoritesOnly;
     updateClearSearchVisibility();
   }
@@ -476,6 +502,13 @@
     if (units) {
       units.addEventListener('change', e => {
         activeFilters.units = e.target.value;
+        applyFilters();
+      });
+    }
+    const seller = document.getElementById('filter-seller');
+    if (seller) {
+      seller.addEventListener('change', e => {
+        activeFilters.seller = e.target.value;
         applyFilters();
       });
     }
@@ -552,10 +585,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/\"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
