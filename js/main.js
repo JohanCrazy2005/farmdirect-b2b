@@ -13,6 +13,7 @@
  * Demo data export/import (options menu; fully client-side for seed/demo UX)
  * Clear favorites (options menu; fully client-side for seed/demo UX)
  * Export filtered view (options menu; downloads current filtered listings as JSON; seed/demo friendly)
+ * Shareable filter links (options menu copies current URL with filter query params; seed/demo friendly)
  */
 (function () {
   'use strict';
@@ -258,6 +259,24 @@
     document.getElementById('opt-export-filtered')?.addEventListener('click', () => {
       if (window.FD_LIST && typeof window.FD_LIST.exportFiltered === 'function') {
         window.FD_LIST.exportFiltered();
+      }
+      optionsMenu?.classList.remove('open');
+    });
+
+    document.getElementById('opt-copy-filter-link')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+          window.FD_TOAST.show('Filter link copied', 'success');
+        } else {
+          alert('Filter link copied');
+        }
+      } catch (err) {
+        if (window.FD_TOAST && typeof window.FD_TOAST.show === 'function') {
+          window.FD_TOAST.show('Could not copy link', 'error');
+        } else {
+          alert('Could not copy link');
+        }
       }
       optionsMenu?.classList.remove('open');
     });
