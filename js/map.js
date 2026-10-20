@@ -6,6 +6,7 @@
  * + category legend control (explains colored markers; demo-friendly)
  * + optional fitBounds skip so “only in view” filter does not loop
  * + list-map hover highlight sync (hovering marker highlights list card and vice versa; improves map-first exploration in seed/demo)
+ * + correct HTML escaping in popups and legend + richer popup content (price, seller, address, visibility)
  */
 (function (global) {
   'use strict';
@@ -158,9 +159,22 @@
         clearMarkerHighlight();
       });
 
+      const price = Number(listing.price);
+      const priceStr = isNaN(price) ? '' : `$${price.toFixed(2)} / ${escapeHtml(listing.units || '')}`;
+      const addr = listing.address ? `<div class="popup-meta">${escapeHtml(listing.address)}</div>` : '';
+      const vis = listing.visibility ? `<div class="popup-meta">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
+      const seller = listing.sellerid ? `<div class="popup-meta">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
+
       marker.bindPopup(`
-        <strong>${escapeHtml(listing.headerdescription)}</strong><br>
-        <span>${escapeHtml(listing.category)} · $${listing.price} / ${escapeHtml(listing.units)}</span>
+        <div class="map-popup">
+          <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong>
+          <div class="popup-price">${priceStr}</div>
+          <div class="popup-meta">${escapeHtml(listing.category || '')}</div>
+          ${seller}
+          ${addr}
+          ${vis}
+          <div class="popup-hint">Click marker or list item for full details</div>
+        </div>
       `);
 
       markersLayer.addLayer(marker);
@@ -266,12 +280,12 @@
   }
 
   function escapeHtml(s) {
-    if (!s) return '';
+    if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight };

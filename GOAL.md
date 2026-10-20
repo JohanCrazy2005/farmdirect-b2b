@@ -93,6 +93,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] List-map hover highlight sync (hovering a sidebar card scales/highlights its map marker and vice versa; improves map-first exploration in seed/demo mode) (2026-10-20)
 - [x] Restore complete list.js after stub corruption (full filters/chips/keyboard/hover/favorites/export/map-view/distance; seed/demo ready) (2026-10-20)
 - [x] Empty-state clear filters button (sidebar empty view has one-click Clear filters when no matches; fully client-side for demo) (2026-10-20)
+- [x] Fix HTML escaping in map popups & legend + richer marker popups (correct & < > \" entities; show price/seller/address/visibility/hint; fully client-side for demo) (2026-10-20)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -127,4 +128,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-20 – P2+: Empty-state clear filters button. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-20 – P2+: Fix HTML escaping in map popups & legend + richer marker popups. P1 deploy still requires user (`npx wrangler login` + README commands).*

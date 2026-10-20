@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Fix HTML escaping in map popups & legend + richer marker popups (seed/demo safety & UX)
+
+**What:** Corrected the broken `escapeHtml` in `js/map.js` (previously replaced `&`/`</`/`>`/`"` with the characters themselves instead of entities). Marker popups and the category legend now safely escape user/seed content. Popups were also enriched to show formatted price, seller, address, visibility, and a short hint, with matching CSS. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The broken escaping was a latent XSS/rendering risk in map popups (and legend) even with seed data; richer popups improve map-first scanning without opening the full product card.
+
+**How:** One commit. Updated `js/map.js` (proper `escapeHtml` + richer `bindPopup` HTML), `css/main.css` (`.map-popup` / `.popup-price` / `.popup-meta` / `.popup-hint` styles), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Empty-state clear filters button (better demo UX when no matches)
 
 **What:** Enhanced the sidebar empty state (shown when filters/search produce zero listings). Added a prominent “Clear filters” button that resets all filters/search in one click and re-renders the list + map. Fully client-side; works in pure seed/demo mode.
