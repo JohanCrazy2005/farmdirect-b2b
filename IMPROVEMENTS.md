@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Shareable filter links via URL query params for better demo sharing of current view
+
+**What:** Current filter/search state (query, category, visibility, min/max price, sort, radius, units, favorites-only) is now reflected in the page URL as query parameters. On load, any such parameters override the localStorage filters and restore the UI + results. Options menu gains a “Copy filter link” button that copies the current URL (with filters) to the clipboard and shows a toast. Fully client-side; works in pure seed/demo mode with no Worker. Preserves existing #listing= deep links.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements localStorage persistence and filtered-JSON export by letting users share an exact filtered/sorted/search view of the demo map via a link, so recipients see the same subset without manual re-filtering.
+
+**How:** One commit. Updated `js/list.js` (syncFiltersToURL + loadFiltersFromURL helpers; call sync at end of applyFilters; apply URL overrides in bindUI), `index.html` (new menu button), `js/main.js` (copy-link wiring with toast), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Export filtered view as JSON for better demo sharing of current results
 
 **What:** Added an “Export filtered view” item to the options menu. It downloads the currently filtered (and sorted) listings as pretty-printed JSON (`farmdirect-filtered-listings.json`). Shows a toast on success or if the filtered set is empty. Fully client-side; works in pure seed/demo mode with no Worker.
