@@ -11,6 +11,7 @@
  * Deep-link support: #listing=<id> auto-opens card + flies to marker on load
  * Image lightbox close on Escape / click-outside
  * Demo data export/import (options menu; fully client-side for seed/demo UX)
+ * Clear favorites (options menu; fully client-side for seed/demo UX)
  */
 (function () {
   'use strict';
@@ -292,6 +293,14 @@
         importInput.value = '';
       });
     }
+
+    document.getElementById('opt-clear-favorites')?.addEventListener('click', () => {
+      if (!confirm('Clear all favorites? This cannot be undone.')) return;
+      if (window.FD_LIST && typeof window.FD_LIST.clearFavorites === 'function') {
+        window.FD_LIST.clearFavorites();
+      }
+      optionsMenu?.classList.remove('open');
+    });
 
     document.getElementById('opt-deploy-status')?.addEventListener('click', () => {
       const base = getCurrentApiBase();

@@ -1,3 +1,15 @@
+## 2026-10-19 – P2+: Clear favorites option in options menu for better demo UX
+
+**What:** Added a “Clear favorites” item to the options menu. It confirms, then removes the localStorage `fd-favorites` key, re-applies filters (so any Favorites-only view updates), refreshes any open product card heart button, and shows a success toast. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the existing favorites feature by giving a one-click way to reset bookmarks without manually un-hearting each listing or clearing site data.
+
+**How:** One commit. Updated `js/list.js` (clearFavorites helper that removes the key + applyFilters + toast + open-card refresh), `index.html` (menu button), `js/main.js` (wiring with confirm), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Copy product summary button in product card for better demo sharing UX
 
 **What:** Added a “Copy summary” button to the product detail card. It builds a clean multi-line human-readable summary (header, price/units, category, visibility, address, coordinates, description, seller) and copies it to the clipboard, with a toast on success or error. Fully client-side; works in pure seed/demo mode with no Worker.

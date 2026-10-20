@@ -82,6 +82,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Copy listing JSON button in product card (pretty-printed JSON to clipboard for individual demo sharing/export; fully client-side for seed/demo) (2026-10-19)
 - [x] Category and units selects in listing form (dropdowns matching filter/seed values instead of free text; prevents mismatches; fully client-side for demo) (2026-10-19)
 - [x] Copy product summary button in product card (human-readable text to clipboard for easy sharing; fully client-side for demo) (2026-10-19)
+- [x] Clear favorites option in options menu (one-click clear of localStorage favorites with confirmation + toast; fully client-side for demo) (2026-10-19)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -116,4 +117,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-19 – P2+: Copy product summary button in product card (human-readable text for sharing). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-19 – P2+: Clear favorites option in options menu. P1 deploy still requires user (`npx wrangler login` + README commands).*

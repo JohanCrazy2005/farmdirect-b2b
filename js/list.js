@@ -10,6 +10,7 @@
  * + proper HTML escaping in list cards (prevents broken markup from special chars in seed data)
  * + favorites: heart toggle, localStorage, Favorites-only filter (seed/demo friendly)
  * + toast notifications for distance sort/radius precondition warnings (non-blocking; seed/demo friendly)
+ * + clear all favorites (options menu; localStorage; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -62,6 +63,27 @@
       global.FD_CARDS.updateFavoriteButton(id);
     }
     return favs.includes(id);
+  }
+
+  function clearFavorites() {
+    try {
+      localStorage.removeItem('fd-favorites');
+    } catch (e) {
+      console.warn('Could not clear favorites', e);
+    }
+    applyFilters();
+    if (global.FD_CARDS && typeof global.FD_CARDS.updateFavoriteButton === 'function') {
+      // Force refresh of any open product card favorite button
+      const openCard = document.getElementById('product-card');
+      if (openCard && openCard.classList.contains('open')) {
+        const btn = openCard.querySelector('.favorite-product-btn');
+        if (btn) {
+          btn.classList.remove('active');
+          btn.innerHTML = '♡ Favorite';
+        }
+      }
+    }
+    showToast('Favorites cleared', 'success');
   }
 
   function showToast(msg, type) {
@@ -414,5 +436,5 @@
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
-  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch, toggleFavorite, isFavorite, getFavorites };
+  global.FD_LIST = { setListings, getListings, select, highlight, applyFilters, bindUI, clearFilters, sortByDistance, clearDistanceSort, clearSearch, toggleFavorite, isFavorite, getFavorites, clearFavorites };
 })(window);
