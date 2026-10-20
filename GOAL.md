@@ -96,6 +96,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Fix HTML escaping in map popups & legend + richer marker popups (correct & < > \" entities; show price/seller/address/visibility/hint; fully client-side for demo) (2026-10-20)
 - [x] Locate me polish: toasts instead of alerts, accuracy circle, clear-location top-bar button (hides when no location; fully client-side for demo) (2026-10-20)
 - [x] RFQ / Request for Quote modal in product card (simple form: name, email, quantity, message; demo stores in localStorage + toast; fully client-side for seed/demo) (2026-10-20)
+- [x] Restore frontend shell (index.html + js/main.js + js/rfq.js) so the map-first seed/demo experience loads end-to-end (2026-10-20)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -130,4 +131,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-20 – P2+: RFQ / Request for Quote modal (demo localStorage + toast). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-20 – P2+: Restore frontend shell (index.html + main.js + rfq.js) so seed/demo loads. P1 deploy still requires user (`npx wrangler login` + README commands).*
