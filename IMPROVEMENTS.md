@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Persist filter/search state in localStorage for better seed/demo UX
+
+**What:** Filter and search state (category, visibility, min/max price, sort, radius, units, favorites-only checkbox, and search query) is now saved to localStorage under `fd-filters`. On load, the UI controls are restored and filters re-applied automatically. Clear filters removes the key. Fully client-side; works in pure seed/demo mode with no Worker.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves the undeployed demo experience by remembering the buyer’s last filter set across page reloads or browser restarts, so demo exploration does not reset every time.
+
+**How:** One commit. Updated `js/list.js` (load/save helpers, restoreFilterUI on bind, save on every applyFilters, clear on clearFilters), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-19 – P2+: Clear favorites option in options menu for better demo UX
 
 **What:** Added a “Clear favorites” item to the options menu. It confirms, then removes the localStorage `fd-favorites` key, re-applies filters (so any Favorites-only view updates), refreshes any open product card heart button, and shows a success toast. Fully client-side; works in pure seed/demo mode with no Worker.

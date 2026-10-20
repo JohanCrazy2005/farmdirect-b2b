@@ -11,15 +11,41 @@
  * + favorites: heart toggle, localStorage, Favorites-only filter (seed/demo friendly)
  * + toast notifications for distance sort/radius precondition warnings (non-blocking; seed/demo friendly)
  * + clear all favorites (options menu; localStorage; seed/demo friendly)
+ * + persist filter/search state in localStorage (survives reloads; seed/demo friendly)
  */
 (function (global) {
   'use strict';
 
+  const FILTER_KEY = 'fd-filters';
+
   let allListings = [];
   let filtered = [];
-  let activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
+  let activeFilters = loadFilters();
   let hasLoaded = false;
   let userLatLng = null; // {lat, lng} after Locate me
+
+  function loadFilters() {
+    try {
+      const raw = localStorage.getItem(FILTER_KEY);
+      if (!raw) return defaultFilters();
+      const parsed = JSON.parse(raw);
+      return Object.assign(defaultFilters(), parsed);
+    } catch {
+      return defaultFilters();
+    }
+  }
+
+  function defaultFilters() {
+    return { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
+  }
+
+  function saveFilters() {
+    try {
+      localStorage.setItem(FILTER_KEY, JSON.stringify(activeFilters));
+    } catch (e) {
+      console.warn('Could not persist filters', e);
+    }
+  }
 
   function setListings(listings) {
     allListings = listings || [];
@@ -73,7 +99,6 @@
     }
     applyFilters();
     if (global.FD_CARDS && typeof global.FD_CARDS.updateFavoriteButton === 'function') {
-      // Force refresh of any open product card favorite button
       const openCard = document.getElementById('product-card');
       if (openCard && openCard.classList.contains('open')) {
         const btn = openCard.querySelector('.favorite-product-btn');
@@ -94,7 +119,6 @@
     }
   }
 
-  // Haversine distance in km
   function distanceKm(lat1, lng1, lat2, lng2) {
     if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) return Infinity;
     const R = 6371;
@@ -168,6 +192,7 @@
     updateCount();
     updateMapOverlay();
     updateClearSearchVisibility();
+    saveFilters();
   }
 
   function sortByDistance(lat, lng) {
@@ -204,7 +229,6 @@
     if (!container) return;
 
     if (!hasLoaded) {
-      // Still loading – skeletons already in HTML
       return;
     }
 
@@ -281,7 +305,7 @@
   function updateMapOverlay() {
     const overlay = document.getElementById('map-overlay');
     if (!overlay) return;
-    if (!hasLoaded) return; // main.js controls initial hide
+    if (!hasLoaded) return;
 
     if (!filtered.length) {
       const msg = !allListings.length
@@ -310,7 +334,8 @@
   }
 
   function clearFilters() {
-    activeFilters = { q: '', category: '', visibility: '', minPrice: '', maxPrice: '', sort: '', radius: '', units: '', favoritesOnly: false };
+    activeFilters = defaultFilters();
+    try { localStorage.removeItem(FILTER_KEY); } catch {}
     const search = document.getElementById('search-input');
     const cat = document.getElementById('filter-category');
     const vis = document.getElementById('filter-visibility');
@@ -333,7 +358,31 @@
     document.getElementById('filter-card')?.classList.remove('open');
   }
 
+  function restoreFilterUI() {
+    const search = document.getElementById('search-input');
+    const cat = document.getElementById('filter-category');
+    const vis = document.getElementById('filter-visibility');
+    const minPrice = document.getElementById('filter-minprice');
+    const maxPrice = document.getElementById('filter-maxprice');
+    const sort = document.getElementById('filter-sort');
+    const radius = document.getElementById('filter-radius');
+    const units = document.getElementById('filter-units');
+    const favsOnly = document.getElementById('filter-favorites');
+    if (search) search.value = activeFilters.q || '';
+    if (cat) cat.value = activeFilters.category || '';
+    if (vis) vis.value = activeFilters.visibility || '';
+    if (minPrice) minPrice.value = activeFilters.minPrice || '';
+    if (maxPrice) maxPrice.value = activeFilters.maxPrice || '';
+    if (sort) sort.value = activeFilters.sort || '';
+    if (radius) radius.value = activeFilters.radius || '';
+    if (units) units.value = activeFilters.units || '';
+    if (favsOnly) favsOnly.checked = !!activeFilters.favoritesOnly;
+    updateClearSearchVisibility();
+  }
+
   function bindUI() {
+    restoreFilterUI();
+
     const search = document.getElementById('search-input');
     if (search) {
       search.addEventListener('input', e => {
