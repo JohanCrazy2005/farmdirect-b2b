@@ -7,6 +7,7 @@
  * + optional fitBounds skip so “only in view” filter does not loop
  * + list-map hover highlight sync (hovering marker highlights list card and vice versa; improves map-first exploration in seed/demo)
  * + correct HTML escaping in popups and legend + richer popup content (price, seller, address, visibility)
+ * + Locate me polish: toasts instead of alerts, accuracy circle, clear-location control (seed/demo)
  */
 (function (global) {
   'use strict';
@@ -16,6 +17,7 @@
   let listings = [];
   let selectedId = null;
   let userMarker = null;
+  let userAccuracyCircle = null;
   let userLatLng = null;
   let radiusCircle = null;
 
@@ -222,21 +224,32 @@
     }
   }
 
+  function showToast(msg, type) {
+    if (global.FD_TOAST && typeof global.FD_TOAST.show === 'function') {
+      global.FD_TOAST.show(msg, type || 'info');
+    } else {
+      // Fallback only if toast module missing
+      console.log(msg);
+    }
+  }
+
   function locateMe() {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
+      showToast('Geolocation is not supported by this browser.', 'error');
       return;
     }
     const btn = document.getElementById('locate-btn');
     if (btn) btn.disabled = true;
+    showToast('Getting your location…', 'info');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy; // meters
         userLatLng = { lat, lng };
-        if (userMarker) {
-          map.removeLayer(userMarker);
-        }
+        if (userMarker) map.removeLayer(userMarker);
+        if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+
         userMarker = L.circleMarker([lat, lng], {
           radius: 8,
           color: '#1d4ed8',
@@ -245,19 +258,57 @@
           weight: 2
         }).addTo(map);
         userMarker.bindPopup('You are here').openPopup();
+
+        if (accuracy && accuracy > 0 && accuracy < 50000) {
+          userAccuracyCircle = L.circle([lat, lng], {
+            radius: accuracy,
+            color: '#3b82f6',
+            fillColor: '#93c5fd',
+            fillOpacity: 0.12,
+            weight: 1,
+            dashArray: '3 6'
+          }).addTo(map);
+        }
+
         map.flyTo([lat, lng], 12, { duration: 0.8 });
         if (btn) btn.disabled = false;
+        showToast('Located you' + (accuracy ? ` (±${Math.round(accuracy)} m)` : ''), 'success');
+
         // Trigger distance sort in list panel
         if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
           global.FD_LIST.sortByDistance(lat, lng);
         }
       },
       (err) => {
-        alert('Could not get your location: ' + (err.message || 'permission denied or unavailable'));
+        const msg = err.code === 1 ? 'Location permission denied' :
+                    err.code === 2 ? 'Location unavailable' :
+                    err.code === 3 ? 'Location request timed out' :
+                    (err.message || 'Could not get your location');
+        showToast(msg, 'error');
         if (btn) btn.disabled = false;
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
+  }
+
+  function clearLocation() {
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
+    }
+    if (userAccuracyCircle) {
+      map.removeLayer(userAccuracyCircle);
+      userAccuracyCircle = null;
+    }
+    userLatLng = null;
+    if (radiusCircle) {
+      map.removeLayer(radiusCircle);
+      radiusCircle = null;
+    }
+    if (global.FD_LIST && typeof global.FD_LIST.clearDistance === 'function') {
+      global.FD_LIST.clearDistance();
+    }
+    showToast('Location cleared', 'info');
   }
 
   function fitAll() {
@@ -288,5 +339,5 @@
       .replace(/"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight };
 })(window);

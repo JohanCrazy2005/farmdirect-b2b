@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Locate me polish — toasts, accuracy circle, clear-location control (seed/demo UX)
+
+**What:** Improved the Locate me geolocation flow for the undeployed demo. Success and error paths now use non-blocking toasts instead of `alert()`. On success a translucent accuracy circle is drawn around the user marker (when accuracy is reasonable). A new top-bar clear-location button (✕) appears only while a location is active; clicking it removes the user marker, accuracy circle, radius circle, and resets distance sort/radius filters in the list. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The previous Locate me still used blocking alerts on failure and left no easy way to dismiss the temporary user location and distance mode, which cluttered the map-first demo experience.
+
+**How:** One commit. Updated `js/map.js` (toasts + accuracy circle + `clearLocation` export), `js/list.js` (`clearDistance` method that clears userLatLng, distance sort, and radius), `index.html` (new `#clear-location-btn`), `js/main.js` (button wiring + visibility updates), `GOAL.md` (new completed P2 item + last-updated), `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Fix HTML escaping in map popups & legend + richer marker popups (seed/demo safety & UX)
 
 **What:** Corrected the broken `escapeHtml` in `js/map.js` (previously replaced `&`/`</`/`>`/`"` with the characters themselves instead of entities). Marker popups and the category legend now safely escape user/seed content. Popups were also enriched to show formatted price, seller, address, visibility, and a short hint, with matching CSS. Fully client-side; works in pure seed/demo mode.

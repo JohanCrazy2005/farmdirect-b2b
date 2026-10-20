@@ -5,6 +5,7 @@
  * distance sort after Locate me, localStorage + URL query param persistence,
  * export filtered view, favorites (localStorage). Fully client-side for seed/demo.
  * Empty-state clear filters button when no matches.
+ * + clearDistance support for Locate me clear-location control
  */
 (function (global) {
   'use strict';
@@ -408,6 +409,15 @@
     applyFilters();
   }
 
+  function clearDistance() {
+    userLatLng = null;
+    const sortEl = document.getElementById('filter-sort');
+    if (sortEl && sortEl.value === 'distance') sortEl.value = '';
+    const radiusEl = document.getElementById('filter-radius');
+    if (radiusEl) radiusEl.value = '';
+    applyFilters();
+  }
+
   function updateCount() {
     const el = document.getElementById('list-count');
     if (el) el.textContent = `${filtered.length} of ${allListings.length}`;
@@ -532,6 +542,7 @@
     select,
     highlight,
     sortByDistance,
+    clearDistance,
     isFavorite,
     toggleFavorite,
     clearFavorites,

@@ -14,6 +14,7 @@
  * Clear favorites (options menu; fully client-side for seed/demo UX)
  * Export filtered view (options menu; downloads current filtered listings as JSON; seed/demo friendly)
  * Shareable filter links (options menu copies current URL with filter query params; seed/demo friendly)
+ * + Locate me polish wiring: clear-location button visibility + handler (seed/demo)
  */
 (function () {
   'use strict';
@@ -23,7 +24,7 @@
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('fd-theme', theme);
     const btn = document.getElementById('theme-btn');
-    if (btn) btn.textContent = isDark ? '☾' : '☀';
+    if (btn) btn.textContent = isDark ? '☽' : '☀';
     btn?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   }
 
@@ -80,6 +81,13 @@
     }
   }
 
+  function updateClearLocationVisibility() {
+    const btn = document.getElementById('clear-location-btn');
+    if (!btn || !window.FD_MAP || typeof window.FD_MAP.getUserLatLng !== 'function') return;
+    const loc = window.FD_MAP.getUserLatLng();
+    btn.hidden = !loc;
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
 
@@ -100,10 +108,10 @@
     tryOpenDeepLink(result.listings);
 
     if (statusEl) {
-      let badge = '<span class=\"source-badge\">no data</span>';
-      if (result.source === 'api') badge = '<span class=\"source-badge\">live API</span>';
-      else if (result.source === 'demo') badge = '<span class=\"source-badge seed\">demo (local)</span>';
-      else if (result.source === 'seed') badge = '<span class=\"source-badge seed\">seed fallback</span>';
+      let badge = '<span class="source-badge">no data</span>';
+      if (result.source === 'api') badge = '<span class="source-badge">live API</span>';
+      else if (result.source === 'demo') badge = '<span class="source-badge seed">demo (local)</span>';
+      else if (result.source === 'seed') badge = '<span class="source-badge seed">seed fallback</span>';
       statusEl.innerHTML = `${result.count} listings ${badge}`;
     }
 
@@ -165,7 +173,20 @@
 
     const locateBtn = document.getElementById('locate-btn');
     if (locateBtn && window.FD_MAP && typeof window.FD_MAP.locateMe === 'function') {
-      locateBtn.addEventListener('click', () => window.FD_MAP.locateMe());
+      locateBtn.addEventListener('click', () => {
+        window.FD_MAP.locateMe();
+        // Visibility updates after geolocation callback; poll briefly
+        setTimeout(updateClearLocationVisibility, 500);
+        setTimeout(updateClearLocationVisibility, 2000);
+      });
+    }
+
+    const clearLocBtn = document.getElementById('clear-location-btn');
+    if (clearLocBtn && window.FD_MAP && typeof window.FD_MAP.clearLocation === 'function') {
+      clearLocBtn.addEventListener('click', () => {
+        window.FD_MAP.clearLocation();
+        updateClearLocationVisibility();
+      });
     }
 
     const fitAllBtn = document.getElementById('fit-all-btn');
@@ -395,5 +416,8 @@
         }
       }
     });
+
+    // Periodic check so clear button appears after async locate
+    setInterval(updateClearLocationVisibility, 1500);
   });
 })();
