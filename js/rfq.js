@@ -2,6 +2,7 @@
  * FarmDirect B2B – RFQ / Request for Quote modal
  * Simple form (name, email, quantity, message). Stores in localStorage (fd-rfqs) + toast.
  * Fully client-side; works in pure seed/demo mode.
+ * + getAll() for seller dashboard inbox.
  */
 (function (global) {
   'use strict';
@@ -10,6 +11,15 @@
 
   function showToast(msg, type) {
     if (global.FD_TOAST) global.FD_TOAST.show(msg, type || 'info');
+  }
+
+  function getAll() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (_) {
+      return [];
+    }
   }
 
   function open(listingId) {
@@ -51,8 +61,7 @@
     };
 
     try {
-      const raw = localStorage.getItem(KEY);
-      const list = raw ? JSON.parse(raw) : [];
+      const list = getAll();
       list.push(inquiry);
       localStorage.setItem(KEY, JSON.stringify(list));
     } catch (_) {}
@@ -60,6 +69,10 @@
     if (status) { status.textContent = 'Request saved (demo)'; status.className = 'form-status success'; }
     showToast('Quote request saved locally', 'success');
     setTimeout(close, 900);
+  }
+
+  function clearAll() {
+    localStorage.removeItem(KEY);
   }
 
   function bind() {
@@ -73,5 +86,5 @@
     });
   }
 
-  global.FD_RFQ = { open, close, bind };
+  global.FD_RFQ = { open, close, bind, getAll, clearAll };
 })(window);
