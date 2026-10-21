@@ -14,6 +14,7 @@
  * + wires search suggestions typeahead.
  * + wires fullscreen map toggle.
  * + wires GeoJSON export of filtered listings.
+ * + wires compare listings modal.
  */
 (function (global) {
   'use strict';
@@ -263,6 +264,7 @@
     if (global.FD_SEARCH && global.FD_SEARCH.bind) global.FD_SEARCH.bind();
     if (global.FD_FULLSCREEN && global.FD_FULLSCREEN.bind) global.FD_FULLSCREEN.bind();
     if (global.FD_GEOJSON && global.FD_GEOJSON.bind) global.FD_GEOJSON.bind();
+    if (global.FD_COMPARE && global.FD_COMPARE.bind) global.FD_COMPARE.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();
