@@ -10,6 +10,7 @@
    + seller directory modal styles
    + map base-layer control styles
    + search suggestions dropdown
+   + fullscreen map mode (CSS fallback)
 */
 
 :root {
@@ -369,10 +370,26 @@ html.dark .leaflet-control-layers-toggle {
   font-size: 0.8rem;
 }
 
+/* Fullscreen map CSS fallback */
+body.map-fullscreen .main {
+  position: fixed;
+  inset: 0;
+  padding-top: var(--topbar-h);
+  z-index: 900;
+  background: var(--bg);
+}
+body.map-fullscreen .sidebar {
+  display: none;
+}
+body.map-fullscreen #map {
+  height: calc(100vh - var(--topbar-h));
+}
+
 @media (max-width: 720px) {
   .sidebar { position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); border-radius: 1rem 1rem 0 0; z-index: 800; }
   .main { flex-direction: column; }
   #map { height: 60vh; }
   .filter-card, .detail-card, .seller-card-overlay { left: 0.5rem; right: 0.5rem; width: auto; }
   .search-suggestions { max-height: 240px; }
+  body.map-fullscreen .sidebar { display: none; }
 }

@@ -12,6 +12,7 @@
  * + wires map base-layer switcher.
  * + wires CSV export of filtered listings.
  * + wires search suggestions typeahead.
+ * + wires fullscreen map toggle.
  */
 (function (global) {
   'use strict';
@@ -259,6 +260,7 @@
     if (global.FD_SELLERS && global.FD_SELLERS.bind) global.FD_SELLERS.bind();
     if (global.FD_CSV && global.FD_CSV.bind) global.FD_CSV.bind();
     if (global.FD_SEARCH && global.FD_SEARCH.bind) global.FD_SEARCH.bind();
+    if (global.FD_FULLSCREEN && global.FD_FULLSCREEN.bind) global.FD_FULLSCREEN.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();
