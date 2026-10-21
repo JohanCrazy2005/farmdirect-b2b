@@ -100,6 +100,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] RFQ inbox in seller dashboard (shows incoming quote requests for the seller's listings from localStorage; clear button; fully client-side for seed/demo) (2026-10-20)
 - [x] Fix HTML escaping in seller dashboard (correct & < > \" entities in listings + RFQ inbox; fully client-side for demo) (2026-10-20)
 - [x] RFQ count badge on profile icon (red badge shows pending quote count for current seller session; updates on submit/clear/login/logout/data load; fully client-side for seed/demo) (2026-10-20)
+- [x] My quote requests buyer view (options menu modal lists locally stored RFQs with listing titles; clear button; fully client-side for seed/demo) (2026-10-20)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -134,4 +135,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-20 – P2+: RFQ count badge on profile icon for current seller. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-20 – P2+: My quote requests buyer view (options menu). P1 deploy still requires user (`npx wrangler login` + README commands).*

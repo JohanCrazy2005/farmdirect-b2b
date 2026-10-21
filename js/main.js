@@ -3,6 +3,7 @@
  * Wires map, list, cards, form, dashboard, RFQ, options menu, seed banner,
  * theme, deep links, and data loading (API or seed/demo fallback).
  * + refreshes RFQ badge after data load.
+ * + wires buyer My quote requests view.
  */
 (function (global) {
   'use strict';
@@ -100,6 +101,12 @@
     document.getElementById('clear-favorites-btn')?.addEventListener('click', () => {
       if (confirm('Clear all favorites?')) {
         if (global.FD_LIST && global.FD_LIST.clearFavorites) global.FD_LIST.clearFavorites();
+      }
+    });
+
+    document.getElementById('my-rfqs-btn')?.addEventListener('click', () => {
+      if (global.FD_RFQ && typeof global.FD_RFQ.openMyRfqs === 'function') {
+        global.FD_RFQ.openMyRfqs();
       }
     });
 

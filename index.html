@@ -125,6 +125,7 @@
     <button id="export-filtered-btn">Export filtered view</button>
     <button id="copy-view-link-btn">Copy shareable view link</button>
     <button id="clear-favorites-btn">Clear favorites</button>
+    <button id="my-rfqs-btn">My quote requests</button>
     <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
@@ -225,6 +226,17 @@ npx wrangler deploy
 # Then set API_BASE in options menu or js/config.js
 curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pre>
       <button id="copy-deploy-btn" class="primary-btn">Copy commands</button>
+    </div>
+  </div>
+
+  <!-- My RFQs (buyer) modal -->
+  <div id="my-rfqs-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-my-rfqs-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>My quote requests</h3>
+      <p class="muted small">Quotes you submitted in this demo (stored locally).</p>
+      <div id="my-rfqs-list"></div>
+      <button id="clear-my-rfqs-btn" class="clear-filters" style="margin-top:1rem">Clear all</button>
     </div>
   </div>
 

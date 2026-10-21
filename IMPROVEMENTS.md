@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: My quote requests buyer view (seed/demo UX)
+
+**What:** Added a "My quote requests" button in the options menu that opens a modal listing every quote request stored in localStorage (`fd-rfqs`). Each entry shows the matching listing title (looked up from current data), quantity, message, and timestamp. A clear button removes all RFQs. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Sellers already see incoming RFQs in the dashboard; buyers in the undeployed demo can now review the quotes they submitted, completing the request loop without a live Worker.
+
+**How:** One commit. Updated `index.html` (options button + modal). Updated `js/rfq.js` (`openMyRfqs` / `renderMyRfqs` + clear handler + Escape close). Updated `js/main.js` (wire button). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: RFQ count badge on profile icon (seed/demo UX)
 
 **What:** Added a small red badge on the top-bar profile icon that shows the number of incoming quote requests for the currently signed-in seller session. The badge appears only when a seller is logged in and has at least one RFQ matching their listings; it updates immediately on RFQ submit, clear, login, logout, and after data load. Fully client-side; works in pure seed/demo mode.

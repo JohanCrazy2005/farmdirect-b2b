@@ -4,6 +4,7 @@
  * Fully client-side; works in pure seed/demo mode.
  * + getAll() for seller dashboard inbox.
  * + notifies dashboard badge on submit.
+ * + buyer "My quote requests" view (options menu; lists all local RFQs with listing titles).
  */
 (function (global) {
   'use strict';
@@ -12,6 +13,15 @@
 
   function showToast(msg, type) {
     if (global.FD_TOAST) global.FD_TOAST.show(msg, type || 'info');
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function getAll() {
@@ -79,16 +89,72 @@
     localStorage.removeItem(KEY);
   }
 
+  function openMyRfqs() {
+    const modal = document.getElementById('my-rfqs-modal');
+    if (!modal) return;
+    renderMyRfqs();
+    modal.classList.add('open');
+  }
+
+  function closeMyRfqs() {
+    document.getElementById('my-rfqs-modal')?.classList.remove('open');
+  }
+
+  function renderMyRfqs() {
+    const container = document.getElementById('my-rfqs-list');
+    if (!container) return;
+    const rfqs = getAll().slice().reverse();
+    const listings = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
+
+    if (!rfqs.length) {
+      container.innerHTML = '<div class="empty-state"><p>No quote requests yet. Open a product card and click Request quote.</p></div>';
+      return;
+    }
+
+    container.innerHTML = rfqs.map(r => {
+      const listing = listings.find(l => l.id === r.listingId);
+      const title = listing ? listing.headerdescription : (r.listingId || 'Unknown listing');
+      const when = r.created ? new Date(r.created).toLocaleString() : '';
+      return `
+        <div class="listing-card" style="margin-bottom:0.5rem">
+          <div class="listing-info" style="padding:0.4rem">
+            <h3 style="font-size:0.95rem">${escapeHtml(title)}</h3>
+            <div class="meta">To seller · Qty: ${escapeHtml(r.quantity)}</div>
+            ${r.message ? `<p style="margin:0.25rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
+            <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
   function bind() {
     document.getElementById('rfq-form')?.addEventListener('submit', handleSubmit);
     document.getElementById('close-rfq-btn')?.addEventListener('click', close);
     document.getElementById('rfq-modal')?.addEventListener('click', (e) => {
       if (e.target.id === 'rfq-modal') close();
     });
+
+    document.getElementById('close-my-rfqs-btn')?.addEventListener('click', closeMyRfqs);
+    document.getElementById('my-rfqs-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'my-rfqs-modal') closeMyRfqs();
+    });
+    document.getElementById('clear-my-rfqs-btn')?.addEventListener('click', () => {
+      if (!confirm('Clear all quote requests?')) return;
+      clearAll();
+      renderMyRfqs();
+      if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.updateRfqBadge === 'function') {
+        global.FD_DASHBOARD.updateRfqBadge();
+      }
+      showToast('Quote requests cleared', 'info');
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') {
+        close();
+        closeMyRfqs();
+      }
     });
   }
 
-  global.FD_RFQ = { open, close, bind, getAll, clearAll };
+  global.FD_RFQ = { open, close, bind, getAll, clearAll, openMyRfqs };
 })(window);
