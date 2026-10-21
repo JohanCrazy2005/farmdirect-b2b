@@ -126,6 +126,7 @@
     <button id="copy-view-link-btn">Copy shareable view link</button>
     <button id="clear-favorites-btn">Clear favorites</button>
     <button id="my-rfqs-btn">My quote requests</button>
+    <button id="recent-btn">Recently viewed</button>
     <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
@@ -240,6 +241,17 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
     </div>
   </div>
 
+  <!-- Recently viewed modal -->
+  <div id="recent-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-recent-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Recently viewed</h3>
+      <p class="muted small">Last listings you opened (stored locally in this browser).</p>
+      <div id="recent-list"></div>
+      <button id="clear-recent-btn" class="clear-filters" style="margin-top:1rem">Clear recent</button>
+    </div>
+  </div>
+
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Map overlay for loading -->
@@ -261,6 +273,7 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
   <script src="js/form.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/rfq.js"></script>
+  <script src="js/recent.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
