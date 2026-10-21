@@ -2,6 +2,7 @@
  * FarmDirect B2B – main bootstrap
  * Wires map, list, cards, form, dashboard, RFQ, options menu, seed banner,
  * theme, deep links, and data loading (API or seed/demo fallback).
+ * + refreshes RFQ badge after data load.
  */
 (function (global) {
   'use strict';
@@ -190,6 +191,9 @@
       if (hash.startsWith('#listing=')) {
         const id = decodeURIComponent(hash.slice(9));
         if (global.FD_LIST && global.FD_LIST.select) global.FD_LIST.select(id);
+      }
+      if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.updateRfqBadge === 'function') {
+        global.FD_DASHBOARD.updateRfqBadge();
       }
     } catch (err) {
       showToast('Failed to load listings: ' + err.message, 'error');

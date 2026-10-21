@@ -5,6 +5,7 @@
    + marker hover highlight for list-map sync
    + map popup styles for richer marker content
    + RFQ modal reuses form-modal (demo-friendly)
+   + RFQ badge on profile icon
 */
 
 :root {
@@ -50,9 +51,29 @@ html.dark .top-bar { background: rgba(15,23,42,0.85); }
 .clear-search { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #64748b; padding: 0.2rem; }
 
 .header-actions { display: flex; gap: 0.25rem; }
-.icon-btn { background: none; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); }
+.icon-btn { position: relative; background: none; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); }
 .icon-btn:hover { background: var(--hover-bg); }
 .icon-btn:focus-visible { outline: 2px solid var(--accent); }
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #dc2626;
+  color: white;
+  border-radius: 999px;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+  pointer-events: none;
+}
+.badge[hidden] { display: none; }
 
 .seed-banner {
   position: absolute; top: var(--topbar-h); left: 0; right: 0; z-index: 999;

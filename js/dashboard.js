@@ -4,6 +4,7 @@
  * Full Cloudflare Access / JWT / RLS pending Worker deploy + user setup.
  * + RFQ inbox: shows incoming quote requests for the seller's listings (localStorage demo).
  * + correct HTML escaping for listings and RFQ content (seed/demo safety).
+ * + RFQ count badge on profile icon (updates live in demo mode).
  */
 (function (global) {
   'use strict';
@@ -19,6 +20,29 @@
       localStorage.setItem(STORAGE_KEY, id.trim());
     } else {
       localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  function updateRfqBadge() {
+    const badge = document.getElementById('rfq-badge');
+    if (!badge) return;
+    const seller = getCurrentSeller();
+    if (!seller) {
+      badge.hidden = true;
+      badge.textContent = '';
+      return;
+    }
+    const all = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
+    const mine = all.filter(l => l.sellerid === seller);
+    const myIds = new Set(mine.map(l => l.id));
+    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
+    const count = allRfqs.filter(r => myIds.has(r.listingId)).length;
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+      badge.textContent = '';
     }
   }
 
@@ -39,7 +63,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
@@ -70,6 +94,7 @@
         if (val) {
           setCurrentSeller(val);
           renderDashboard();
+          updateRfqBadge();
         }
       });
       const input = document.getElementById('seller-id-input');
@@ -79,6 +104,7 @@
           if (e.key === 'Enter') document.getElementById('login-btn')?.click();
         });
       }
+      updateRfqBadge();
       return;
     }
 
@@ -142,6 +168,7 @@
               const result = await global.FD_API.fetchListings();
               if (global.FD_LIST) global.FD_LIST.setListings(result.listings);
               renderDashboard();
+              updateRfqBadge();
             } else {
               alert(res.error || 'Delete failed (seed mode is read-only)');
             }
@@ -180,6 +207,7 @@
           localStorage.setItem('fd-rfqs', JSON.stringify(remaining));
         } catch (_) {}
         renderDashboard();
+        updateRfqBadge();
         if (global.FD_TOAST) global.FD_TOAST.show('RFQs cleared', 'info');
       });
     }
@@ -187,7 +215,10 @@
     document.getElementById('logout-btn')?.addEventListener('click', () => {
       setCurrentSeller('');
       renderDashboard();
+      updateRfqBadge();
     });
+
+    updateRfqBadge();
   }
 
   function bindDashboard() {
@@ -195,7 +226,8 @@
     document.getElementById('dashboard-modal')?.addEventListener('click', (e) => {
       if (e.target.id === 'dashboard-modal') closeDashboard();
     });
+    updateRfqBadge();
   }
 
-  global.FD_DASHBOARD = { openDashboard, closeDashboard, bindDashboard, getCurrentSeller };
+  global.FD_DASHBOARD = { openDashboard, closeDashboard, bindDashboard, getCurrentSeller, updateRfqBadge };
 })(window);

@@ -3,6 +3,7 @@
  * Simple form (name, email, quantity, message). Stores in localStorage (fd-rfqs) + toast.
  * Fully client-side; works in pure seed/demo mode.
  * + getAll() for seller dashboard inbox.
+ * + notifies dashboard badge on submit.
  */
 (function (global) {
   'use strict';
@@ -68,6 +69,9 @@
 
     if (status) { status.textContent = 'Request saved (demo)'; status.className = 'form-status success'; }
     showToast('Quote request saved locally', 'success');
+    if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.updateRfqBadge === 'function') {
+      global.FD_DASHBOARD.updateRfqBadge();
+    }
     setTimeout(close, 900);
   }
 

@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: RFQ count badge on profile icon (seed/demo UX)
+
+**What:** Added a small red badge on the top-bar profile icon that shows the number of incoming quote requests for the currently signed-in seller session. The badge appears only when a seller is logged in and has at least one RFQ matching their listings; it updates immediately on RFQ submit, clear, login, logout, and after data load. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Sellers in the undeployed demo can now see at a glance that they have pending inquiries without opening the dashboard, tightening the B2B request loop.
+
+**How:** One commit. Updated `index.html` (badge span inside profile button). Updated `css/main.css` (absolute-positioned `.badge` styles + relative `.icon-btn`). Updated `js/dashboard.js` (`updateRfqBadge` that counts matching RFQs + calls from render/login/clear/logout/bind). Updated `js/rfq.js` (call badge update after successful submit). Updated `js/main.js` (refresh badge after listings load). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Fix HTML escaping in seller dashboard (listings + RFQ inbox)
 
 **What:** Corrected the broken `escapeHtml` in `js/dashboard.js` (previously replaced `&`/`</`/`>`/`\"` with the characters themselves instead of entities). Dashboard listings and the RFQ inbox now safely escape titles, seller IDs, names, emails, quantities, messages, and timestamps. Fully client-side; works in pure seed/demo mode.
