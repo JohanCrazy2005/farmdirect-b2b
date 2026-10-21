@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Complete frontend module wiring & options UI
+
+**What:** Updated `index.html` to load every existing `js/` module in dependency order (config, toast, api, map, layers, list, cards, form, dashboard, rfq, recent, shortcuts, stats, sellers, csv, search, fullscreen, geojson, compare, main) and expanded the options menu, filter card, toast container, deploy modal skeleton, and supporting structure. All prior polish features (stats, sellers, CSV/GeoJSON export, search typeahead, fullscreen, layers, favorites, RFQ, recent, theme, etc.) are now loadable and interactive in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code item while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Completes the missing frontend files so the undeployed demo fully exercises the designed map-first UI and all modules without inventing new product features.
+
+**How:** One commit. Updated `index.html` (scripts + UI). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: GeoJSON export of filtered listings
 
 **What:** Added a substantial `js/geojson.js` module and options-menu button that downloads the currently filtered listings as a GeoJSON FeatureCollection (Point features with schema properties: id, sellerid, category, headerdescription, price, units, visibility, address, description, image). Complements existing JSON and CSV exports. Fully client-side; works in pure seed/demo mode.
