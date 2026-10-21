@@ -8,6 +8,7 @@
  * + wires copy map view link (#map=lat,lng,zoom).
  * + wires keyboard shortcuts module.
  * + wires listing statistics modal.
+ * + wires seller directory modal.
  */
 (function (global) {
   'use strict';
@@ -136,6 +137,12 @@
       }
     });
 
+    document.getElementById('sellers-btn')?.addEventListener('click', () => {
+      if (global.FD_SELLERS && typeof global.FD_SELLERS.open === 'function') {
+        global.FD_SELLERS.open();
+      }
+    });
+
     document.getElementById('reset-demo-btn')?.addEventListener('click', () => {
       if (confirm('Reset demo data to seed? Local changes will be lost.')) {
         if (global.FD_API && global.FD_API.resetDemoListings) {
@@ -245,6 +252,7 @@
     if (global.FD_RECENT && global.FD_RECENT.bind) global.FD_RECENT.bind();
     if (global.FD_SHORTCUTS && global.FD_SHORTCUTS.bind) global.FD_SHORTCUTS.bind();
     if (global.FD_STATS && global.FD_STATS.bind) global.FD_STATS.bind();
+    if (global.FD_SELLERS && global.FD_SELLERS.bind) global.FD_SELLERS.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();

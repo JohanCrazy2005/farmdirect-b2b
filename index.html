@@ -130,6 +130,7 @@
     <button id="recent-btn">Recently viewed</button>
     <button id="shortcuts-btn">Keyboard shortcuts</button>
     <button id="stats-btn">Listing statistics</button>
+    <button id="sellers-btn">Seller directory</button>
     <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
@@ -284,6 +285,16 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
     </div>
   </div>
 
+  <!-- Seller directory modal -->
+  <div id="sellers-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-sellers-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Seller directory</h3>
+      <p class="muted small">Unique sellers in the current catalog (seed/demo or live). Click to filter listings.</p>
+      <div id="sellers-content"></div>
+    </div>
+  </div>
+
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Map overlay for loading -->
@@ -308,6 +319,7 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
   <script src="js/recent.js"></script>
   <script src="js/shortcuts.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/sellers.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
