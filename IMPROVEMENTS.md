@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: GeoJSON export of filtered listings
+
+**What:** Added a substantial `js/geojson.js` module and options-menu button that downloads the currently filtered listings as a GeoJSON FeatureCollection (Point features with schema properties: id, sellerid, category, headerdescription, price, units, visibility, address, description, image). Complements existing JSON and CSV exports. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves data portability for GIS/map consumers of the current view in the undeployed demo without inventing new product features.
+
+**How:** One commit series. New `js/geojson.js`. Updated `index.html` (options button + script tag). Updated `js/main.js` (wire bind call + comment). Updated `js/list.js` (expose `getFiltered()`). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Fullscreen map toggle
 
 **What:** Added a substantial `js/fullscreen.js` module and top-bar button that toggles the map into fullscreen (Fullscreen API with CSS class fallback). Sidebar hides in fullscreen for pure map focus. Esc exits. Fully client-side; works in pure seed/demo mode.
