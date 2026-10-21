@@ -5,6 +5,7 @@
  * + getAll() for seller dashboard inbox.
  * + notifies dashboard badge on submit.
  * + buyer "My quote requests" view (options menu; lists all local RFQs with listing titles).
+ * + each buyer RFQ can open the matching product card (closes modal; works in seed/demo).
  */
 (function (global) {
   'use strict';
@@ -100,6 +101,25 @@
     document.getElementById('my-rfqs-modal')?.classList.remove('open');
   }
 
+  function openListingFromRfq(listingId) {
+    if (!listingId) {
+      showToast('No listing associated with this request', 'error');
+      return;
+    }
+    const listings = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) {
+      showToast('Listing no longer available in current data', 'error');
+      return;
+    }
+    closeMyRfqs();
+    if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
+      global.FD_LIST.select(listingId);
+    } else if (global.FD_CARDS && typeof global.FD_CARDS.showProduct === 'function') {
+      global.FD_CARDS.showProduct(listing);
+    }
+  }
+
   function renderMyRfqs() {
     const container = document.getElementById('my-rfqs-list');
     if (!container) return;
@@ -115,16 +135,25 @@
       const listing = listings.find(l => l.id === r.listingId);
       const title = listing ? listing.headerdescription : (r.listingId || 'Unknown listing');
       const when = r.created ? new Date(r.created).toLocaleString() : '';
+      const viewBtn = r.listingId
+        ? '<button type="button" class="icon-btn" style="width:auto;padding:0 0.75rem;margin-top:0.4rem" data-listing="' + escapeHtml(r.listingId) + '">View listing</button>'
+        : '';
       return `
         <div class="listing-card" style="margin-bottom:0.5rem">
           <div class="listing-info" style="padding:0.4rem">
             <h3 style="font-size:0.95rem">${escapeHtml(title)}</h3>
             <div class="meta">To seller · Qty: ${escapeHtml(r.quantity)}</div>
-            ${r.message ? `<p style="margin:0.25rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
+            ${r.message ? '<p style="margin:0.25rem 0;font-size:0.85rem">' + escapeHtml(r.message) + '</p>' : ''}
             <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
+            ${viewBtn}
           </div>
         </div>`;
     }).join('');
+
+    // Wire view buttons
+    container.querySelectorAll('button[data-listing]').forEach(btn => {
+      btn.addEventListener('click', () => openListingFromRfq(btn.dataset.listing));
+    });
   }
 
   function bind() {
