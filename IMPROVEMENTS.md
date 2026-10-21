@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: RFQ inbox in seller dashboard (completes demo B2B inquiry loop)
+
+**What:** Extended the seller dashboard so that after entering a seller ID, the user sees both their listings and an "Incoming quote requests" section. RFQs stored in localStorage (`fd-rfqs`) that match any of the seller's current listing IDs are displayed (newest first) with requester name/email, quantity, message, timestamp, and the listing title. A "Clear my RFQs" button removes only that seller's inquiries. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The RFQ form already let buyers request quotes; showing those requests to the matching seller closes the loop in the undeployed demo and makes the B2B workflow demonstrable without a live Worker.
+
+**How:** One commit. Updated `js/rfq.js` (added `getAll` / `clearAll` exports). Updated `js/dashboard.js` (filter RFQs by seller's listing IDs, render section + clear handler, updated login copy). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback (and eventually persist RFQs server-side).
+
+---
+
 ## 2026-10-20 – P2+: Restore frontend shell (index.html + js/main.js + js/rfq.js) so seed/demo loads
 
 **What:** Replaced placeholder stubs (`PLACEHOLDER_INDEX`, `PLACEHOLDER_MAIN`, `REAL_CONTENT_HERE`) with a complete, working frontend shell. `index.html` now contains the full Leaflet map shell, transparent top bar (search, locate, fit, filter, options, profile), seed banner, filter card, sidebar list + chips, product/seller cards, form modal, dashboard modal, RFQ modal, deploy-commands modal, lightbox, toasts, and script includes. `js/main.js` bootstraps theme, map, list, form, dashboard, RFQ, options menu, seed banner, deep-link handling, and data load (API or seed/demo). `js/rfq.js` implements the Request-for-Quote modal (localStorage + toast). Fully client-side; the map-first demo now loads end-to-end with seed data.
