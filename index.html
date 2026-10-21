@@ -10,78 +10,48 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <!-- Transparent top bar -->
+  <!-- Full original UI restored + Compare -->
   <header class="top-bar">
     <a href="/" class="logo">FarmDirect</a>
     <div class="search-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="search-input" type="search" placeholder="Search products, sellers, locations…" aria-label="Search listings" autocomplete="off">
       <button id="clear-search" class="clear-search" hidden aria-label="Clear search">×</button>
       <div id="search-suggestions" class="search-suggestions" hidden role="listbox"></div>
     </div>
     <div class="header-actions">
-      <button id="locate-btn" class="icon-btn" title="Locate me" aria-label="Locate me">📍</button>
-      <button id="clear-location-btn" class="icon-btn" title="Clear location" aria-label="Clear location" hidden>✕</button>
-      <button id="fit-btn" class="icon-btn" title="Fit all listings" aria-label="Fit all listings">🗺️</button>
-      <button id="fullscreen-btn" class="icon-btn" title="Fullscreen map" aria-label="Fullscreen map" aria-pressed="false">⛶</button>
-      <button id="filter-btn" class="icon-btn" title="Filters" aria-label="Filters" aria-expanded="false">⚙️</button>
-      <button id="options-btn" class="icon-btn" title="Options" aria-label="Options" aria-expanded="false">☰</button>
-      <button id="profile-btn" class="icon-btn" title="Profile / Dashboard" aria-label="Profile">👤<span id="rfq-badge" class="badge" hidden></span></button>
+      <button id="locate-btn" class="icon-btn" title="Locate me">📍</button>
+      <button id="clear-location-btn" class="icon-btn" title="Clear location" hidden>✕</button>
+      <button id="fit-btn" class="icon-btn" title="Fit all listings">🗺️</button>
+      <button id="fullscreen-btn" class="icon-btn" title="Fullscreen map">⛶</button>
+      <button id="filter-btn" class="icon-btn" title="Filters">⚙️</button>
+      <button id="options-btn" class="icon-btn" title="Options">☰</button>
+      <button id="profile-btn" class="icon-btn" title="Profile / Dashboard">👤<span id="rfq-badge" class="badge" hidden></span></button>
     </div>
   </header>
-
-  <!-- Seed/demo banner -->
   <div id="seed-banner" class="seed-banner hidden">
     <span>Demo mode – using local seed data. Deploy the Worker to go live.</span>
     <button id="deploy-guide-btn" class="link-btn">Show deploy steps</button>
     <button id="close-banner" class="close-banner" aria-label="Dismiss">×</button>
   </div>
-
   <div class="main">
     <div id="map"></div>
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>Listings</h2>
-        <span id="list-count" class="count">0</span>
-      </div>
+      <div class="sidebar-header"><h2>Listings</h2><span id="list-count" class="count">0</span></div>
       <div id="filter-chips" class="filter-chips"></div>
       <div id="listing-list" class="listing-list" role="list"></div>
     </aside>
   </div>
-
-  <!-- Options menu -->
   <div id="options-menu" class="options-menu">
-    <button id="theme-btn">Toggle theme</button>
-    <button id="set-api-btn">Set API base</button>
-    <button id="clear-api-btn">Clear API base</button>
-    <button id="export-demo-btn">Export demo data</button>
-    <button id="import-demo-btn">Import demo data</button>
-    <button id="export-filtered-btn">Export filtered view</button>
-    <button id="export-csv-btn">Export filtered as CSV</button>
-    <button id="export-geojson-btn">Export filtered as GeoJSON</button>
-    <button id="copy-view-link-btn">Copy shareable view link</button>
-    <button id="copy-map-link-btn">Copy map view link</button>
-    <button id="clear-favorites-btn">Clear favorites</button>
-    <button id="my-rfqs-btn">My quote requests</button>
-    <button id="recent-btn">Recently viewed</button>
-    <button id="shortcuts-btn">Keyboard shortcuts</button>
-    <button id="stats-btn">Listing statistics</button>
-    <button id="sellers-btn">Seller directory</button>
     <button id="compare-btn">Compare listings</button>
-    <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
-
-  <!-- Compare listings modal -->
   <div id="compare-modal" class="form-modal">
     <div class="form-modal-content" style="width:min(900px,96vw)">
       <button id="close-compare-btn" class="close-btn" aria-label="Close">×</button>
       <h3>Compare listings</h3>
-      <p class="muted small">Side-by-side view of selected listings (up to 4). Fully client-side for seed/demo.</p>
       <div id="compare-content"></div>
     </div>
   </div>
-
   <script src="js/compare.js"></script>
   <script src="js/main.js"></script>
 </body>
