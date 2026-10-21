@@ -10,6 +10,7 @@
  * + Locate me polish: toasts instead of alerts, accuracy circle, clear-location control (seed/demo)
  * + Persist map view (center + zoom) in localStorage so reloads resume the last explored area (fully client-side for seed/demo)
  * + Shareable map view via URL hash (#map=lat,lng,zoom) – copy button + restore on load (overrides localStorage; fully client-side for seed/demo)
+ * + Persist Locate me location in localStorage (marker + accuracy + distance sort restored on reload; fully client-side for seed/demo)
  */
 (function (global) {
   'use strict';
@@ -25,6 +26,7 @@
   let skipInitialFit = false;
 
   const MAP_VIEW_KEY = 'fd-map-view';
+  const USER_LOC_KEY = 'fd-user-location';
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -72,6 +74,69 @@
       return { lat, lng, zoom };
     }
     return null;
+  }
+
+  function loadSavedLocation() {
+    try {
+      const raw = localStorage.getItem(USER_LOC_KEY);
+      if (!raw) return null;
+      const v = JSON.parse(raw);
+      if (typeof v.lat === 'number' && typeof v.lng === 'number' && isFinite(v.lat) && isFinite(v.lng)) {
+        return v;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function saveLocation(lat, lng, accuracy) {
+    try {
+      localStorage.setItem(USER_LOC_KEY, JSON.stringify({
+        lat, lng, accuracy: accuracy || null, ts: Date.now()
+      }));
+    } catch (_) {}
+  }
+
+  function clearSavedLocation() {
+    try { localStorage.removeItem(USER_LOC_KEY); } catch (_) {}
+  }
+
+  function restoreLocation() {
+    const saved = loadSavedLocation();
+    if (!saved || !map) return;
+    const { lat, lng, accuracy } = saved;
+    userLatLng = { lat, lng };
+
+    if (userMarker) map.removeLayer(userMarker);
+    if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+
+    userMarker = L.circleMarker([lat, lng], {
+      radius: 8,
+      color: '#1d4ed8',
+      fillColor: '#3b82f6',
+      fillOpacity: 0.8,
+      weight: 2
+    }).addTo(map);
+    userMarker.bindPopup('You are here (restored)').openPopup();
+
+    if (accuracy && accuracy > 0 && accuracy < 50000) {
+      userAccuracyCircle = L.circle([lat, lng], {
+        radius: accuracy,
+        color: '#3b82f6',
+        fillColor: '#93c5fd',
+        fillOpacity: 0.12,
+        weight: 1,
+        dashArray: '3 6'
+      }).addTo(map);
+    }
+
+    const clearBtn = document.getElementById('clear-location-btn');
+    if (clearBtn) clearBtn.removeAttribute('hidden');
+
+    // Restore distance sort if list is ready
+    if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
+      // Delay slightly so list has data
+      setTimeout(() => global.FD_LIST.sortByDistance(lat, lng), 300);
+    }
   }
 
   function initMap() {
@@ -134,6 +199,9 @@
 
     // Persist on user pan/zoom (also captures Locate me / Fit all / flyTo)
     map.on('moveend', saveView);
+
+    // Restore previous Locate me if present (after map is ready)
+    setTimeout(restoreLocation, 100);
 
     return map;
   }
@@ -337,6 +405,9 @@
         if (btn) btn.disabled = false;
         showToast('Located you' + (accuracy ? ` (±${Math.round(accuracy)} m)` : ''), 'success');
 
+        // Persist for reload continuity
+        saveLocation(lat, lng, accuracy);
+
         // Trigger distance sort in list panel
         if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
           global.FD_LIST.sortByDistance(lat, lng);
@@ -368,6 +439,9 @@
       map.removeLayer(radiusCircle);
       radiusCircle = null;
     }
+    clearSavedLocation();
+    const clearBtn = document.getElementById('clear-location-btn');
+    if (clearBtn) clearBtn.setAttribute('hidden', '');
     if (global.FD_LIST && typeof global.FD_LIST.clearDistance === 'function') {
       global.FD_LIST.clearDistance();
     }

@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Persist Locate me location in localStorage
+
+**What:** After a successful Locate me, the user’s latitude, longitude, and accuracy are saved to localStorage (`fd-user-location`). On reload the blue “you are here” marker, accuracy circle, clear-location button, and distance sort are restored automatically (no new geolocation prompt). Clearing the location also removes the saved data. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the already-persisted map view — longer demo exploration sessions now keep both the map region and the buyer’s location context across reloads.
+
+**How:** One commit. Updated `js/map.js` (load/save/restore helpers, call on successful locateMe and clearLocation, delayed restore after init). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Shareable map view via URL hash (#map=lat,lng,zoom)
 
 **What:** Options menu now has a “Copy map view link” button that copies a URL containing the current map center + zoom as `#map=lat,lng,zoom`. On load, if the hash matches that pattern the map restores exactly that view (preferring it over localStorage), then persists it. Fully client-side; works in pure seed/demo mode.
