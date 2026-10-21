@@ -128,6 +128,7 @@
     <button id="clear-favorites-btn">Clear favorites</button>
     <button id="my-rfqs-btn">My quote requests</button>
     <button id="recent-btn">Recently viewed</button>
+    <button id="shortcuts-btn">Keyboard shortcuts</button>
     <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
@@ -253,6 +254,25 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
     </div>
   </div>
 
+  <!-- Keyboard shortcuts modal -->
+  <div id="shortcuts-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-shortcuts-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Keyboard shortcuts</h3>
+      <p class="muted small">Faster exploration in the seed/demo (ignored while typing in fields).</p>
+      <ul style="margin:0.75rem 0;padding-left:1.2rem;font-size:0.9rem;line-height:1.6">
+        <li><kbd>/</kbd> or <kbd>s</kbd> — Focus search</li>
+        <li><kbd>l</kbd> — Locate me</li>
+        <li><kbd>f</kbd> — Fit all listings</li>
+        <li><kbd>x</kbd> — Clear location</li>
+        <li><kbd>?</kbd> or <kbd>h</kbd> — Show this help</li>
+        <li><kbd>Esc</kbd> — Close cards, menus, and modals</li>
+        <li>Arrow keys / Enter — Navigate listing cards (when focused)</li>
+      </ul>
+      <p class="muted small">Works fully client-side while the Worker is undeployed.</p>
+    </div>
+  </div>
+
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Map overlay for loading -->
@@ -275,6 +295,7 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
   <script src="js/dashboard.js"></script>
   <script src="js/rfq.js"></script>
   <script src="js/recent.js"></script>
+  <script src="js/shortcuts.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

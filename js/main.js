@@ -6,6 +6,7 @@
  * + wires buyer My quote requests view.
  * + wires recently viewed modal.
  * + wires copy map view link (#map=lat,lng,zoom).
+ * + wires keyboard shortcuts module.
  */
 (function (global) {
   'use strict';
@@ -235,6 +236,7 @@
     if (global.FD_DASHBOARD && global.FD_DASHBOARD.bindDashboard) global.FD_DASHBOARD.bindDashboard();
     if (global.FD_RFQ && global.FD_RFQ.bind) global.FD_RFQ.bind();
     if (global.FD_RECENT && global.FD_RECENT.bind) global.FD_RECENT.bind();
+    if (global.FD_SHORTCUTS && global.FD_SHORTCUTS.bind) global.FD_SHORTCUTS.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();
