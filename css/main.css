@@ -8,6 +8,7 @@
    + RFQ badge on profile icon
    + listing statistics modal styles
    + seller directory modal styles
+   + map base-layer control styles
 */
 
 :root {
@@ -313,6 +314,24 @@ html.dark .filter-chip {
 .seller-meta { font-size: 0.85rem; margin: 0.15rem 0; }
 .seller-address { font-size: 0.75rem; margin-bottom: 0.4rem; }
 .view-seller-btn { margin-top: 0.25rem; }
+
+/* Map base-layer control polish */
+.leaflet-control-layers {
+  border: 1px solid var(--border) !important;
+  border-radius: 0.4rem !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--text) !important;
+}
+.leaflet-control-layers-toggle {
+  background-color: var(--card) !important;
+}
+html.dark .leaflet-control-layers-toggle {
+  filter: invert(1) hue-rotate(180deg);
+}
+.leaflet-control-layers-list {
+  font-size: 0.8rem;
+}
 
 @media (max-width: 720px) {
   .sidebar { position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); border-radius: 1rem 1rem 0 0; z-index: 800; }

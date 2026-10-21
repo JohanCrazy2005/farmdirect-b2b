@@ -9,6 +9,7 @@
  * + wires keyboard shortcuts module.
  * + wires listing statistics modal.
  * + wires seller directory modal.
+ * + wires map base-layer switcher.
  */
 (function (global) {
   'use strict';
@@ -245,6 +246,7 @@
   function init() {
     initTheme();
     if (global.FD_MAP && global.FD_MAP.initMap) global.FD_MAP.initMap();
+    if (global.FD_LAYERS && global.FD_LAYERS.bind) global.FD_LAYERS.bind();
     if (global.FD_LIST && global.FD_LIST.bindUI) global.FD_LIST.bindUI();
     if (global.FD_FORM && global.FD_FORM.bindForm) global.FD_FORM.bindForm();
     if (global.FD_DASHBOARD && global.FD_DASHBOARD.bindDashboard) global.FD_DASHBOARD.bindDashboard();

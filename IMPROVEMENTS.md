@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Map base-layer switcher
+
+**What:** Added a substantial `js/layers.js` module that replaces the hardcoded OSM tiles with a Leaflet base-layer control (OpenStreetMap, Carto Light, Carto Dark, Esri Satellite). Choice persists in localStorage. Auto-prefers dark tiles when the theme is dark (unless the user has explicitly chosen a layer). Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves the map-first exploration experience in the undeployed demo without inventing new product features.
+
+**How:** One commit. New `js/layers.js`. Updated `index.html` (script tag). Updated `js/main.js` (wire bind call + comment). Updated `css/main.css` (control theming). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Seller directory modal
 
 **What:** Added a substantial `js/sellers.js` module and options-menu button that opens a seller directory modal. It groups current listings by sellerid, showing listing count, categories, average price, and a sample address. A “View listings” button sets the seller filter and closes the modal. Fully client-side; works in pure seed/demo mode.

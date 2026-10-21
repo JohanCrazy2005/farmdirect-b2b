@@ -110,6 +110,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Keyboard shortcuts + help modal (options menu; / or s focus search, l locate, f fit-all, x clear location, ? help, Esc close; fully client-side for seed/demo) (2026-10-21)
 - [x] Listing statistics modal (options menu; totals, unique sellers, price range/avg, breakdowns by category/visibility/units; fully client-side for seed/demo) (2026-10-21)
 - [x] Seller directory modal (options menu; unique sellers with listing counts, categories, avg price; click to filter by seller; fully client-side for seed/demo) (2026-10-21)
+- [x] Map base-layer switcher (Leaflet control: OSM / light / dark / satellite; persists choice; auto-prefers dark tiles with theme; fully client-side for seed/demo) (2026-10-21)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -144,4 +145,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-21 – P2+: Seller directory modal. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Map base-layer switcher. P1 deploy still requires user (`npx wrangler login` + README commands).*
