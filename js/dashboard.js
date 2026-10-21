@@ -3,6 +3,7 @@
  * Temporary client-side "session" via localStorage sellerid.
  * Full Cloudflare Access / JWT / RLS pending Worker deploy + user setup.
  * + RFQ inbox: shows incoming quote requests for the seller's listings (localStorage demo).
+ * + correct HTML escaping for listings and RFQ content (seed/demo safety).
  */
 (function (global) {
   'use strict';
@@ -35,10 +36,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
@@ -162,7 +163,7 @@
           <div class="listing-card">
             <div class="listing-info" style="padding:0.5rem">
               <h3 style="font-size:0.95rem">${escapeHtml(title)}</h3>
-              <div class="meta">From ${escapeHtml(r.name)} <${escapeHtml(r.email)}> · Qty: ${escapeHtml(r.quantity)}</div>
+              <div class="meta">From ${escapeHtml(r.name)} &lt;${escapeHtml(r.email)}&gt; · Qty: ${escapeHtml(r.quantity)}</div>
               ${r.message ? `<p style="margin:0.3rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
               <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
             </div>

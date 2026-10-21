@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Fix HTML escaping in seller dashboard (listings + RFQ inbox)
+
+**What:** Corrected the broken `escapeHtml` in `js/dashboard.js` (previously replaced `&`/`</`/`>`/`\"` with the characters themselves instead of entities). Dashboard listings and the RFQ inbox now safely escape titles, seller IDs, names, emails, quantities, messages, and timestamps. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The broken escaping was a latent XSS/rendering risk in the seller dashboard even with seed data and localStorage RFQs; aligning it with the already-fixed list/map/cards modules improves safety and consistency for the undeployed demo.
+
+**How:** One commit. Updated `js/dashboard.js` (proper `escapeHtml` + header note). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: RFQ inbox in seller dashboard (completes demo B2B inquiry loop)
 
 **What:** Extended the seller dashboard so that after entering a seller ID, the user sees both their listings and an "Incoming quote requests" section. RFQs stored in localStorage (`fd-rfqs`) that match any of the seller's current listing IDs are displayed (newest first) with requester name/email, quantity, message, timestamp, and the listing title. A "Clear my RFQs" button removes only that seller's inquiries. Fully client-side; works in pure seed/demo mode.
