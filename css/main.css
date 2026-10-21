@@ -9,6 +9,7 @@
    + listing statistics modal styles
    + seller directory modal styles
    + map base-layer control styles
+   + search suggestions dropdown
 */
 
 :root {
@@ -52,6 +53,41 @@ html.dark .top-bar { background: rgba(15,23,42,0.85); }
 .search-box input { width: 100%; padding: 0.45rem 2.2rem 0.45rem 2.2rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); font-size: 0.9rem; }
 .search-box input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .clear-search { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #64748b; padding: 0.2rem; }
+
+/* Search suggestions typeahead */
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  z-index: 1200;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.search-suggestions[hidden] { display: none; }
+.suggestion-item {
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover,
+.suggestion-item.active {
+  background: var(--hover-bg);
+}
+.suggestion-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.suggestion-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.1rem;
+}
 
 .header-actions { display: flex; gap: 0.25rem; }
 .icon-btn { position: relative; background: none; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); }
@@ -338,4 +374,5 @@ html.dark .leaflet-control-layers-toggle {
   .main { flex-direction: column; }
   #map { height: 60vh; }
   .filter-card, .detail-card, .seller-card-overlay { left: 0.5rem; right: 0.5rem; width: auto; }
+  .search-suggestions { max-height: 240px; }
 }

@@ -11,6 +11,7 @@
  * + wires seller directory modal.
  * + wires map base-layer switcher.
  * + wires CSV export of filtered listings.
+ * + wires search suggestions typeahead.
  */
 (function (global) {
   'use strict';
@@ -257,6 +258,7 @@
     if (global.FD_STATS && global.FD_STATS.bind) global.FD_STATS.bind();
     if (global.FD_SELLERS && global.FD_SELLERS.bind) global.FD_SELLERS.bind();
     if (global.FD_CSV && global.FD_CSV.bind) global.FD_CSV.bind();
+    if (global.FD_SEARCH && global.FD_SEARCH.bind) global.FD_SEARCH.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();

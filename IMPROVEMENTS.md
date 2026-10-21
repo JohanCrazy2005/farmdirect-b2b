@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Search suggestions typeahead
+
+**What:** Added a substantial `js/search.js` module that attaches to the top-bar search. As you type (≥2 chars, debounced), it shows up to 8 matching listings (title, category, seller, price). Click or keyboard (arrows + Enter) opens the product card and flies to the marker. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Improves discovery and speed of the map-first search experience in the undeployed demo without inventing new product features.
+
+**How:** One commit. New `js/search.js`. Updated `index.html` (suggestions container + script tag + autocomplete="off"). Updated `js/main.js` (wire bind call + comment). Updated `css/main.css` (dropdown styles + mobile note). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: CSV export of filtered listings
 
 **What:** Added a substantial `js/csv.js` module and options-menu button that downloads the currently filtered listings as a properly escaped CSV (id, sellerid, category, headerdescription, price, units, visibility, address, lat, long, description, image). Complements the existing JSON export. Fully client-side; works in pure seed/demo mode.
