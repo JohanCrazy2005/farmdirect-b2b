@@ -5,6 +5,7 @@
  * + refreshes RFQ badge after data load.
  * + wires buyer My quote requests view.
  * + wires recently viewed modal.
+ * + wires copy map view link (#map=lat,lng,zoom).
  */
 (function (global) {
   'use strict';
@@ -97,6 +98,16 @@
       const url = location.href;
       navigator.clipboard.writeText(url).then(() => showToast('View link copied', 'success'))
         .catch(() => showToast('Could not copy link', 'error'));
+    });
+
+    document.getElementById('copy-map-link-btn')?.addEventListener('click', () => {
+      if (global.FD_MAP && typeof global.FD_MAP.getMapViewLink === 'function') {
+        const url = global.FD_MAP.getMapViewLink();
+        navigator.clipboard.writeText(url).then(() => showToast('Map view link copied', 'success'))
+          .catch(() => showToast('Could not copy map link', 'error'));
+      } else {
+        showToast('Map not ready', 'error');
+      }
     });
 
     document.getElementById('clear-favorites-btn')?.addEventListener('click', () => {

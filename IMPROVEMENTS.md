@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Shareable map view via URL hash (#map=lat,lng,zoom)
+
+**What:** Options menu now has a “Copy map view link” button that copies a URL containing the current map center + zoom as `#map=lat,lng,zoom`. On load, if the hash matches that pattern the map restores exactly that view (preferring it over localStorage), then persists it. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Complements the existing filter deep-links and persisted map view — buyers can now share a precise map region (e.g. after Locate me or filtering) so another session or colleague lands on the same view.
+
+**How:** One commit. Updated `js/map.js` (parseMapHash + prefer hash on init, getMapViewLink helper). Updated `index.html` (new options button). Updated `js/main.js` (wire copy button + toast). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Persist map view in localStorage (center + zoom)
 
 **What:** Map now saves its center and zoom to localStorage (`fd-map-view`) on every `moveend` and restores that view on init. The initial auto-fit to all markers is skipped when a saved view exists, so reloads resume exactly where the user left the map. Fit-all, Locate me, and fly-to still work and update the saved view. Fully client-side; works in pure seed/demo mode.

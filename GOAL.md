@@ -105,6 +105,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Clickable RFQs in seller dashboard inbox (View listing button opens product card + flies to marker; fully client-side for seed/demo) (2026-10-20)
 - [x] Recently viewed listings (options menu modal; last 8 product card opens in localStorage; click to reopen + fly; fully client-side for seed/demo) (2026-10-21)
 - [x] Persist map view in localStorage (center + zoom restored on reload so demo sessions resume the last explored area; fully client-side for seed/demo) (2026-10-21)
+- [x] Shareable map view via URL hash (#map=lat,lng,zoom copy button + restore on load; fully client-side for seed/demo) (2026-10-21)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -139,4 +140,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-21 – P2+: Persist map view in localStorage (center + zoom). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Shareable map view via URL hash (#map=lat,lng,zoom). P1 deploy still requires user (`npx wrangler login` + README commands).*

@@ -9,6 +9,7 @@
  * + correct HTML escaping in popups and legend + richer popup content (price, seller, address, visibility)
  * + Locate me polish: toasts instead of alerts, accuracy circle, clear-location control (seed/demo)
  * + Persist map view (center + zoom) in localStorage so reloads resume the last explored area (fully client-side for seed/demo)
+ * + Shareable map view via URL hash (#map=lat,lng,zoom) – copy button + restore on load (overrides localStorage; fully client-side for seed/demo)
  */
 (function (global) {
   'use strict';
@@ -60,6 +61,19 @@
     } catch (_) {}
   }
 
+  function parseMapHash() {
+    const hash = location.hash || '';
+    const m = hash.match(/#map=([+-]?\d*\.?\d+),([+-]?\d*\.?\d+),(\d+(?:\.\d+)?)/);
+    if (!m) return null;
+    const lat = parseFloat(m[1]);
+    const lng = parseFloat(m[2]);
+    const zoom = parseFloat(m[3]);
+    if (isFinite(lat) && isFinite(lng) && isFinite(zoom) && zoom >= 1 && zoom <= 19) {
+      return { lat, lng, zoom };
+    }
+    return null;
+  }
+
   function initMap() {
     const cfg = global.FD_CONFIG || {};
     map = L.map('map', {
@@ -89,7 +103,7 @@
           if (count >= 10) size = 'large';
           else if (count >= 5) size = 'medium';
           return L.divIcon({
-            html: `<div class="cluster-icon cluster-${size}"><span>${count}</span></div>`,
+            html: `<div class=\"cluster-icon cluster-${size}\"><span>${count}</span></div>`,
             className: 'marker-cluster-custom',
             iconSize: L.point(40, 40),
             iconAnchor: L.point(20, 20)
@@ -103,9 +117,17 @@
 
     addLegend();
 
-    // Restore last view for demo continuity (before any auto-fit)
+    // Prefer URL hash map view (shareable deep link), then localStorage, then default
+    const fromHash = parseMapHash();
     const saved = loadSavedView();
-    if (saved) {
+    if (fromHash) {
+      map.setView([fromHash.lat, fromHash.lng], fromHash.zoom);
+      skipInitialFit = true;
+      // Persist so subsequent reloads keep it
+      try {
+        localStorage.setItem(MAP_VIEW_KEY, JSON.stringify(fromHash));
+      } catch (_) {}
+    } else if (saved) {
       map.setView([saved.lat, saved.lng], saved.zoom);
       skipInitialFit = true;
     }
@@ -123,7 +145,7 @@
       const div = L.DomUtil.create('div', 'map-legend');
       const items = Object.entries(CATEGORY_COLORS)
         .filter(([k]) => k !== 'default')
-        .map(([cat, color]) => `<div class="legend-item"><span class="legend-swatch" style="background:${color}"></span>${escapeHtml(cat)}</div>`)
+        .map(([cat, color]) => `<div class=\"legend-item\"><span class=\"legend-swatch\" style=\"background:${color}\"></span>${escapeHtml(cat)}</div>`)
         .join('');
       div.innerHTML = `<strong>Categories</strong>${items}`;
       return div;
@@ -139,7 +161,7 @@
     const color = CATEGORY_COLORS[category] || CATEGORY_COLORS.default;
     return L.divIcon({
       className: 'category-marker',
-      html: `<div style="background:${color}"></div>`,
+      html: `<div style=\"background:${color}\"></div>`,
       iconSize: [18, 18],
       iconAnchor: [9, 9]
     });
@@ -202,19 +224,19 @@
 
       const price = Number(listing.price);
       const priceStr = isNaN(price) ? '' : `$${price.toFixed(2)} / ${escapeHtml(listing.units || '')}`;
-      const addr = listing.address ? `<div class="popup-meta">${escapeHtml(listing.address)}</div>` : '';
-      const vis = listing.visibility ? `<div class="popup-meta">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
-      const seller = listing.sellerid ? `<div class="popup-meta">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
+      const addr = listing.address ? `<div class=\"popup-meta\">${escapeHtml(listing.address)}</div>` : '';
+      const vis = listing.visibility ? `<div class=\"popup-meta\">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
+      const seller = listing.sellerid ? `<div class=\"popup-meta\">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
 
       marker.bindPopup(`
-        <div class="map-popup">
+        <div class=\"map-popup\">
           <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong>
-          <div class="popup-price">${priceStr}</div>
-          <div class="popup-meta">${escapeHtml(listing.category || '')}</div>
+          <div class=\"popup-price\">${priceStr}</div>
+          <div class=\"popup-meta\">${escapeHtml(listing.category || '')}</div>
           ${seller}
           ${addr}
           ${vis}
-          <div class="popup-hint">Click marker or list item for full details</div>
+          <div class=\"popup-hint\">Click marker or list item for full details</div>
         </div>
       `);
 
@@ -371,6 +393,14 @@
     } catch (_) {}
   }
 
+  function getMapViewLink() {
+    if (!map) return location.href;
+    const c = map.getCenter();
+    const z = map.getZoom();
+    const base = location.origin + location.pathname + location.search;
+    return base + '#map=' + c.lat.toFixed(6) + ',' + c.lng.toFixed(6) + ',' + z;
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -380,5 +410,5 @@
       .replace(/\"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink };
 })(window);
