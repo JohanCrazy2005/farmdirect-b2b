@@ -2,6 +2,7 @@
  * FarmDirect B2B – seller dashboard (P4 starter)
  * Temporary client-side "session" via localStorage sellerid.
  * Full Cloudflare Access / JWT / RLS pending Worker deploy + user setup.
+ * + RFQ inbox: shows incoming quote requests for the seller's listings (localStorage demo).
  */
 (function (global) {
   'use strict';
@@ -31,6 +32,16 @@
     document.getElementById('dashboard-modal')?.classList.remove('open');
   }
 
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+  function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
   function renderDashboard() {
     const content = document.getElementById('dashboard-content');
     if (!content) return;
@@ -38,11 +49,15 @@
     const seller = getCurrentSeller();
     const all = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
     const mine = seller ? all.filter(l => l.sellerid === seller) : [];
+    const myIds = new Set(mine.map(l => l.id));
+
+    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
+    const myRfqs = allRfqs.filter(r => myIds.has(r.listingId));
 
     if (!seller) {
       content.innerHTML = `
         <h3>Seller dashboard</h3>
-        <p class="muted">Enter a seller ID to view and manage your listings.<br>Temporary client session – Cloudflare Access / JWT coming after deploy.</p>
+        <p class="muted">Enter a seller ID to view and manage your listings and quote requests.<br>Temporary client session – Cloudflare Access / JWT coming after deploy.</p>
         <label>Seller ID
           <input id="seller-id-input" type="text" placeholder="e.g. seller-greenfield" autocomplete="username" />
         </label>
@@ -68,11 +83,15 @@
 
     content.innerHTML = `
       <h3>Dashboard · ${escapeHtml(seller)}</h3>
-      <p class="muted">${mine.length} listing${mine.length === 1 ? '' : 's'} · <button type="button" id="logout-btn" class="link-btn">Sign out</button></p>
+      <p class="muted">${mine.length} listing${mine.length === 1 ? '' : 's'} · ${myRfqs.length} quote request${myRfqs.length === 1 ? '' : 's'} · <button type="button" id="logout-btn" class="link-btn">Sign out</button></p>
+      <h4 style="margin:1rem 0 0.4rem">My listings</h4>
       <div id="my-listings" class="dashboard-list"></div>
-      <p class="muted small">Real authentication (Cloudflare Access + JWT) and row-level security will be added after the Worker is deployed. This is a client-side preview that works with seed data.</p>
+      <h4 style="margin:1.2rem 0 0.4rem">Incoming quote requests</h4>
+      <div id="my-rfqs" class="dashboard-list"></div>
+      <p class="muted small">Real authentication (Cloudflare Access + JWT) and row-level security will be added after the Worker is deployed. This is a client-side preview that works with seed data and localStorage RFQs.</p>
     `;
 
+    // Listings
     const listEl = document.getElementById('my-listings');
     if (!mine.length) {
       listEl.innerHTML = `
@@ -130,6 +149,40 @@
       });
     }
 
+    // RFQs
+    const rfqEl = document.getElementById('my-rfqs');
+    if (!myRfqs.length) {
+      rfqEl.innerHTML = '<div class="empty-state"><p>No quote requests yet. Buyers can request quotes from product cards.</p></div>';
+    } else {
+      rfqEl.innerHTML = myRfqs.slice().reverse().map(r => {
+        const listing = mine.find(l => l.id === r.listingId);
+        const title = listing ? listing.headerdescription : (r.listingId || 'Unknown');
+        const when = r.created ? new Date(r.created).toLocaleString() : '';
+        return `
+          <div class="listing-card">
+            <div class="listing-info" style="padding:0.5rem">
+              <h3 style="font-size:0.95rem">${escapeHtml(title)}</h3>
+              <div class="meta">From ${escapeHtml(r.name)} <${escapeHtml(r.email)}> · Qty: ${escapeHtml(r.quantity)}</div>
+              ${r.message ? `<p style="margin:0.3rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
+              <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
+            </div>
+          </div>
+        `;
+      }).join('') +
+      `<p style="margin-top:0.5rem"><button type="button" id="clear-rfqs-btn" class="small-btn">Clear my RFQs</button></p>`;
+
+      document.getElementById('clear-rfqs-btn')?.addEventListener('click', () => {
+        if (!confirm('Clear all quote requests for your listings?')) return;
+        // Remove only this seller's RFQs
+        const remaining = allRfqs.filter(r => !myIds.has(r.listingId));
+        try {
+          localStorage.setItem('fd-rfqs', JSON.stringify(remaining));
+        } catch (_) {}
+        renderDashboard();
+        if (global.FD_TOAST) global.FD_TOAST.show('RFQs cleared', 'info');
+      });
+    }
+
     document.getElementById('logout-btn')?.addEventListener('click', () => {
       setCurrentSeller('');
       renderDashboard();
@@ -142,16 +195,6 @@
       if (e.target.id === 'dashboard-modal') closeDashboard();
     });
   }
-
-  function escapeHtml(s) {
-    if (s == null) return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-  function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
   global.FD_DASHBOARD = { openDashboard, closeDashboard, bindDashboard, getCurrentSeller };
 })(window);
