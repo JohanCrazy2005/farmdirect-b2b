@@ -129,6 +129,7 @@
     <button id="my-rfqs-btn">My quote requests</button>
     <button id="recent-btn">Recently viewed</button>
     <button id="shortcuts-btn">Keyboard shortcuts</button>
+    <button id="stats-btn">Listing statistics</button>
     <button id="reset-demo-btn">Reset demo data</button>
     <button id="deploy-modal-btn">Show deploy commands</button>
   </div>
@@ -273,6 +274,16 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
     </div>
   </div>
 
+  <!-- Listing statistics modal -->
+  <div id="stats-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-stats-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Listing statistics</h3>
+      <p class="muted small">Summary of the current listings (seed/demo or live).</p>
+      <div id="stats-content"></div>
+    </div>
+  </div>
+
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Map overlay for loading -->
@@ -296,6 +307,7 @@ curl https://farmdirect-b2b.&lt;your-subdomain&gt;.workers.dev/api/v1/health</pr
   <script src="js/rfq.js"></script>
   <script src="js/recent.js"></script>
   <script src="js/shortcuts.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
