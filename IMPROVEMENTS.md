@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Persist map view in localStorage (center + zoom)
+
+**What:** Map now saves its center and zoom to localStorage (`fd-map-view`) on every `moveend` and restores that view on init. The initial auto-fit to all markers is skipped when a saved view exists, so reloads resume exactly where the user left the map. Fit-all, Locate me, and fly-to still work and update the saved view. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Makes longer demo exploration sessions continuous — buyers can pan to a region of interest, reload, and stay there instead of snapping back to the full seed bounds.
+
+**How:** One commit. Updated `js/map.js` (load/save helpers, restore in `initMap`, `moveend` listener, conditional skip of first auto-fit). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Recently viewed listings (options menu modal)
 
 **What:** Added a “Recently viewed” button in the options menu that opens a modal listing the last 8 product cards opened in this browser (stored in localStorage `fd-recent`). Each entry shows a thumbnail, title, price/units and category; clicking it closes the modal and opens the product card (via `FD_LIST.select` or `FD_CARDS.showProduct`), flying to the marker. A clear button resets the list. Fully client-side; works in pure seed/demo mode.

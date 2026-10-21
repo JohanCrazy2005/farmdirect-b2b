@@ -8,6 +8,7 @@
  * + list-map hover highlight sync (hovering marker highlights list card and vice versa; improves map-first exploration in seed/demo)
  * + correct HTML escaping in popups and legend + richer popup content (price, seller, address, visibility)
  * + Locate me polish: toasts instead of alerts, accuracy circle, clear-location control (seed/demo)
+ * + Persist map view (center + zoom) in localStorage so reloads resume the last explored area (fully client-side for seed/demo)
  */
 (function (global) {
   'use strict';
@@ -20,6 +21,9 @@
   let userAccuracyCircle = null;
   let userLatLng = null;
   let radiusCircle = null;
+  let skipInitialFit = false;
+
+  const MAP_VIEW_KEY = 'fd-map-view';
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -30,6 +34,31 @@
     honey: '#f59e0b',
     default: '#40916c'
   };
+
+  function loadSavedView() {
+    try {
+      const raw = localStorage.getItem(MAP_VIEW_KEY);
+      if (!raw) return null;
+      const v = JSON.parse(raw);
+      if (typeof v.lat === 'number' && typeof v.lng === 'number' && typeof v.zoom === 'number' &&
+          isFinite(v.lat) && isFinite(v.lng) && v.zoom >= 1 && v.zoom <= 19) {
+        return v;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function saveView() {
+    if (!map) return;
+    try {
+      const c = map.getCenter();
+      localStorage.setItem(MAP_VIEW_KEY, JSON.stringify({
+        lat: c.lat,
+        lng: c.lng,
+        zoom: map.getZoom()
+      }));
+    } catch (_) {}
+  }
 
   function initMap() {
     const cfg = global.FD_CONFIG || {};
@@ -73,6 +102,16 @@
     map.addLayer(markersLayer);
 
     addLegend();
+
+    // Restore last view for demo continuity (before any auto-fit)
+    const saved = loadSavedView();
+    if (saved) {
+      map.setView([saved.lat, saved.lng], saved.zoom);
+      skipInitialFit = true;
+    }
+
+    // Persist on user pan/zoom (also captures Locate me / Fit all / flyTo)
+    map.on('moveend', saveView);
 
     return map;
   }
@@ -183,12 +222,14 @@
       listing._marker = marker;
     });
 
-    if (options.fit !== false && listings.length && map) {
+    // Auto-fit only on first load when no saved view exists (preserves demo continuity)
+    if (options.fit !== false && listings.length && map && !skipInitialFit) {
       try {
         const bounds = markersLayer.getBounds?.() || L.latLngBounds(listings.map(l => [l.location.lat, l.location.long]));
         if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
       } catch (_) {}
     }
+    skipInitialFit = true;
   }
 
   function selectListing(id) {
@@ -336,7 +377,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight };
