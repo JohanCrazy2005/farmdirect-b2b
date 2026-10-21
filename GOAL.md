@@ -108,6 +108,7 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 - [x] Shareable map view via URL hash (#map=lat,lng,zoom copy button + restore on load; fully client-side for seed/demo) (2026-10-21)
 - [x] Persist Locate me location in localStorage (user marker, accuracy circle, distance sort, and clear button restored on reload; fully client-side for seed/demo) (2026-10-21)
 - [x] Keyboard shortcuts + help modal (options menu; / or s focus search, l locate, f fit-all, x clear location, ? help, Esc close; fully client-side for seed/demo) (2026-10-21)
+- [x] Listing statistics modal (options menu; totals, unique sellers, price range/avg, breakdowns by category/visibility/units; fully client-side for seed/demo) (2026-10-21)
 
 ### P3 Seller experience
 - [x] Add listing form, edit/delete, image upload
@@ -142,4 +143,4 @@ Seed fallback when API offline. Interactive demo mode (localStorage) when Worker
 
 Map markers, search, filters, product card, seller profile, live D1 after deploy, organised folders.
 
-*Last updated: 2026-10-21 – P2+: Keyboard shortcuts + help modal. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Listing statistics modal. P1 deploy still requires user (`npx wrangler login` + README commands).*

@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Listing statistics modal
+
+**What:** Added a substantial `js/stats.js` module and options-menu button that opens a statistics modal. It computes totals, unique sellers, price range and average, plus breakdowns by category, visibility, and units from the current in-memory listings. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Gives buyers a quick overview of the current catalog in the undeployed demo without inventing new product features.
+
+**How:** One commit series. New `js/stats.js`. Updated `index.html` (options button + modal + script tag). Updated `js/main.js` (wire open + bind call). Updated `css/main.css` (stats summary styles). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Keyboard shortcuts + help modal
 
 **What:** Added a substantial `js/shortcuts.js` module and options-menu button that opens a help modal. Global key bindings (ignored while typing in inputs): `/` or `s` focus search, `l` Locate me, `f` Fit all listings, `x` Clear location, `?` or `h` open the shortcuts modal, Escape closes open cards/menus/modals. Fully client-side; works in pure seed/demo mode.
