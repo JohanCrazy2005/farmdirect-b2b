@@ -4,6 +4,7 @@
  * theme, deep links, and data loading (API or seed/demo fallback).
  * + refreshes RFQ badge after data load.
  * + wires buyer My quote requests view.
+ * + wires recently viewed modal.
  */
 (function (global) {
   'use strict';
@@ -107,6 +108,12 @@
     document.getElementById('my-rfqs-btn')?.addEventListener('click', () => {
       if (global.FD_RFQ && typeof global.FD_RFQ.openMyRfqs === 'function') {
         global.FD_RFQ.openMyRfqs();
+      }
+    });
+
+    document.getElementById('recent-btn')?.addEventListener('click', () => {
+      if (global.FD_RECENT && typeof global.FD_RECENT.open === 'function') {
+        global.FD_RECENT.open();
       }
     });
 
@@ -216,6 +223,7 @@
     if (global.FD_FORM && global.FD_FORM.bindForm) global.FD_FORM.bindForm();
     if (global.FD_DASHBOARD && global.FD_DASHBOARD.bindDashboard) global.FD_DASHBOARD.bindDashboard();
     if (global.FD_RFQ && global.FD_RFQ.bind) global.FD_RFQ.bind();
+    if (global.FD_RECENT && global.FD_RECENT.bind) global.FD_RECENT.bind();
     bindOptions();
     bindDeployModal();
     bindSeedBanner();

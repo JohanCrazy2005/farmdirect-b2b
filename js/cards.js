@@ -13,6 +13,7 @@
  * + copy listing JSON button: pretty-printed JSON to clipboard for individual demo sharing/export (seed/demo friendly)
  * + copy product summary button: human-readable text to clipboard for easy chat/email sharing (seed/demo friendly)
  * + RFQ / Request for Quote button (opens demo form; localStorage + toast; seed/demo friendly)
+ * + recently viewed tracking on open (localStorage via FD_RECENT; seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -62,6 +63,10 @@
       const newHash = '#listing=' + encodeURIComponent(listing.id);
       if (location.hash !== newHash) {
         history.replaceState(null, '', newHash);
+      }
+      // Track as recently viewed (seed/demo friendly)
+      if (global.FD_RECENT && typeof global.FD_RECENT.track === 'function') {
+        global.FD_RECENT.track(listing.id);
       }
     }
     const lat = listing.location?.lat;
