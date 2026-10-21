@@ -1,3 +1,15 @@
+## 2026-10-20 – P2+: Clickable RFQs in seller dashboard inbox (open product card)
+
+**What:** Enhanced the seller dashboard Incoming quote requests so each RFQ shows a “View listing” button. Clicking it closes the dashboard and opens the matching product card (via `FD_LIST.select` or `FD_CARDS.showProduct`), flying to the marker when possible. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Sellers can now jump straight from an incoming quote to the listing without leaving the dashboard context, tightening the demo B2B request loop (mirrors the buyer-side clickable RFQs).
+
+**How:** One commit. Updated `js/dashboard.js` (`openListingFromRfq` + “View listing” button + event wiring in RFQ render). Updated `GOAL.md` (new completed P2 item + last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-20 – P2+: Clickable RFQs in buyer My quote requests (open product card)
 
 **What:** Enhanced the buyer “My quote requests” modal so each quote request shows a “View listing” button. Clicking it closes the modal and opens the matching product card (via `FD_LIST.select` or `FD_CARDS.showProduct`), flying to the marker when possible. Fully client-side; works in pure seed/demo mode.

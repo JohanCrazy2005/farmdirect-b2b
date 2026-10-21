@@ -5,6 +5,7 @@
  * + RFQ inbox: shows incoming quote requests for the seller's listings (localStorage demo).
  * + correct HTML escaping for listings and RFQ content (seed/demo safety).
  * + RFQ count badge on profile icon (updates live in demo mode).
+ * + Clickable RFQs: View listing button opens product card (closes dashboard; works in seed/demo).
  */
 (function (global) {
   'use strict';
@@ -63,9 +64,28 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;');
+      .replace(/"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
+  function openListingFromRfq(listingId) {
+    if (!listingId) {
+      if (global.FD_TOAST) global.FD_TOAST.show('No listing associated with this request', 'error');
+      return;
+    }
+    const listings = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) {
+      if (global.FD_TOAST) global.FD_TOAST.show('Listing no longer available in current data', 'error');
+      return;
+    }
+    closeDashboard();
+    if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
+      global.FD_LIST.select(listingId);
+    } else if (global.FD_CARDS && typeof global.FD_CARDS.showProduct === 'function') {
+      global.FD_CARDS.showProduct(listing);
+    }
+  }
 
   function renderDashboard() {
     const content = document.getElementById('dashboard-content');
@@ -186,6 +206,9 @@
         const listing = mine.find(l => l.id === r.listingId);
         const title = listing ? listing.headerdescription : (r.listingId || 'Unknown');
         const when = r.created ? new Date(r.created).toLocaleString() : '';
+        const viewBtn = r.listingId
+          ? '<button type="button" class="icon-btn" style="width:auto;padding:0 0.75rem;margin-top:0.4rem" data-listing="' + escapeAttr(r.listingId) + '">View listing</button>'
+          : '';
         return `
           <div class="listing-card">
             <div class="listing-info" style="padding:0.5rem">
@@ -193,11 +216,17 @@
               <div class="meta">From ${escapeHtml(r.name)} &lt;${escapeHtml(r.email)}&gt; · Qty: ${escapeHtml(r.quantity)}</div>
               ${r.message ? `<p style="margin:0.3rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
               <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
+              ${viewBtn}
             </div>
           </div>
         `;
       }).join('') +
       `<p style="margin-top:0.5rem"><button type="button" id="clear-rfqs-btn" class="small-btn">Clear my RFQs</button></p>`;
+
+      // Wire view buttons
+      rfqEl.querySelectorAll('button[data-listing]').forEach(btn => {
+        btn.addEventListener('click', () => openListingFromRfq(btn.dataset.listing));
+      });
 
       document.getElementById('clear-rfqs-btn')?.addEventListener('click', () => {
         if (!confirm('Clear all quote requests for your listings?')) return;
