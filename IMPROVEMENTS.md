@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Complete filter card UI + options menu exports
+
+**What:** Expanded the filter card in `index.html` to fully match the capabilities already implemented in `js/list.js`: fixed price input IDs (`filter-minprice` / `filter-maxprice`), added units select, seller as populated select, sort select, radius input, favorites checkbox, and in-view checkbox. Added the missing `export-csv-btn` and `export-geojson-btn` to the options menu so the existing `js/csv.js` and `js/geojson.js` modules bind and work. All pure client-side; works in seed/demo mode.
+
+**Why:** Highest remaining pure-code polish while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Previous wiring left the filter card incomplete (price filters broken by ID mismatch) and export buttons absent, so the designed list/filter/export experience was only partially usable in the undeployed demo.
+
+**How:** One commit. Updated `index.html` (filter card + options buttons). Updated `GOAL.md` (last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Complete frontend module wiring & options UI
 
 **What:** Updated `index.html` to load every existing `js/` module in dependency order (config, toast, api, map, layers, list, cards, form, dashboard, rfq, recent, shortcuts, stats, sellers, csv, search, fullscreen, geojson, compare, main) and expanded the options menu, filter card, toast container, deploy modal skeleton, and supporting structure. All prior polish features (stats, sellers, CSV/GeoJSON export, search typeahead, fullscreen, layers, favorites, RFQ, recent, theme, etc.) are now loadable and interactive in pure seed/demo mode.

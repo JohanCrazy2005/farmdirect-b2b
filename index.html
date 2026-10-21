@@ -42,12 +42,17 @@
     </aside>
   </div>
 
-  <!-- Filter card -->
+  <!-- Filter card (matches js/list.js capabilities) -->
   <div id="filter-card" class="filter-card">
     <div class="filter-group"><label for="filter-category">Category</label><select id="filter-category"><option value="">All</option></select></div>
     <div class="filter-group"><label for="filter-visibility">Visibility</label><select id="filter-visibility"><option value="">All</option><option value="worldwide">Worldwide</option><option value="country">Country</option><option value="province">Province</option></select></div>
-    <div class="filter-group"><label for="filter-seller">Seller</label><input id="filter-seller" type="text" placeholder="Seller ID"></div>
-    <div class="filter-group"><label>Price</label><div class="form-row"><input id="filter-price-min" type="number" placeholder="Min"><input id="filter-price-max" type="number" placeholder="Max"></div></div>
+    <div class="filter-group"><label for="filter-units">Units</label><select id="filter-units"><option value="">Any</option><option value="kg">kg</option><option value="lb">lb</option><option value="ton">ton</option><option value="crate">crate</option><option value="box">box</option><option value="bunch">bunch</option></select></div>
+    <div class="filter-group"><label for="filter-seller">Seller</label><select id="filter-seller"><option value="">Any</option></select></div>
+    <div class="filter-group"><label>Price</label><div class="form-row"><input id="filter-minprice" type="number" placeholder="Min" min="0" step="0.01"><input id="filter-maxprice" type="number" placeholder="Max" min="0" step="0.01"></div></div>
+    <div class="filter-group"><label for="filter-sort">Sort</label><select id="filter-sort"><option value="">Default</option><option value="price-asc">Price (low–high)</option><option value="price-desc">Price (high–low)</option><option value="name">Name</option><option value="distance">Distance (after Locate me)</option></select></div>
+    <div class="filter-group"><label for="filter-radius">Max distance (km)</label><input id="filter-radius" type="number" placeholder="e.g. 50" min="0" step="1"></div>
+    <div class="filter-group"><label><input id="filter-favorites" type="checkbox"> Favorites only</label></div>
+    <div class="filter-group"><label><input id="filter-inview" type="checkbox"> In current map view</label></div>
     <button id="clear-filters" class="clear-filters">Clear filters</button>
   </div>
 
@@ -60,6 +65,8 @@
     <button id="compare-btn">Compare listings</button>
     <button id="my-rfqs-btn">My quote requests</button>
     <button id="export-filtered-btn">Export filtered (JSON)</button>
+    <button id="export-csv-btn">Export filtered (CSV)</button>
+    <button id="export-geojson-btn">Export filtered (GeoJSON)</button>
     <button id="copy-view-link-btn">Copy view link</button>
     <button id="copy-map-link-btn">Copy map view link</button>
     <button id="clear-favorites-btn">Clear favorites</button>
