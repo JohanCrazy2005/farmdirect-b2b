@@ -12,6 +12,7 @@
    + search suggestions dropdown
    + fullscreen map mode (CSS fallback)
    + data-source badge for seed/demo/live mode
+   + status badges for draft/published/archived in dashboard
 */
 
 :root {
@@ -398,6 +399,25 @@ body.map-fullscreen .sidebar {
 body.map-fullscreen #map {
   height: calc(100vh - var(--topbar-h));
 }
+
+/* Status badges (dashboard drafts / published / archived) */
+.status-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.badge-draft { background: #fef3c7; color: #92400e; }
+.badge-published { background: #d1fae5; color: #065f46; }
+.badge-archived { background: #e2e8f0; color: #475569; }
+html.dark .badge-draft { background: #422006; color: #fde68a; }
+html.dark .badge-published { background: #064e3b; color: #a7f3d0; }
+html.dark .badge-archived { background: #334155; color: #cbd5e1; }
 
 @media (max-width: 720px) {
   .sidebar { position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); border-radius: 1rem 1rem 0 0; z-index: 800; }
