@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Default to pure seed/demo fallback (no failed API request)
+
+**What:** Cleared the hardcoded `API_BASE` in `js/config.js` (was pointing at a presumed workers.dev URL). On load the app now skips the network attempt entirely and uses seed or local demo data immediately. The seed banner appears by default until the user sets an API base via the options menu after deploying the Worker.
+
+**Why:** Highest remaining pure-code item while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The previous default URL caused a failed fetch on every page load for undeployed demos, delaying the seed fallback and hiding the banner. This makes the seed/demo experience instant and transparent.
+
+**How:** One commit. Updated `js/config.js`. Updated `GOAL.md` (last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Improve seed/demo fallback UX
 
 **What:** Added a data-source badge in the sidebar header that shows Seed / Local demo / Live / Empty based on the actual load source. Updated the seed banner text to clarify that demo data is editable and persisted locally. Expanded the units filter select to include `liter` and `dozen` so all seed listings can be filtered correctly. Added a one-time toast on load for seed/demo modes.

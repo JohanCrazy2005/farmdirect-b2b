@@ -1,7 +1,7 @@
 // FarmDirect B2B – configuration
 window.FD_CONFIG = window.FD_CONFIG || {
-  // Live Cloudflare Worker + D1
-  API_BASE: 'https://farmdirect-b2b.fehrjohan65.workers.dev',
+  // Live Cloudflare Worker + D1 (set after deploy; empty uses seed/demo fallback)
+  API_BASE: '',
   SEED_URL: 'data/seed-listings.json',
   MAP_CENTER: [39.7392, -104.9903], // Denver
   MAP_ZOOM: 10,
