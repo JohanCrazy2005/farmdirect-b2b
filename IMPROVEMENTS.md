@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Auth column-error button opens deploy modal
+
+**What:** Updated `js/auth.js` so a detected D1 column-missing error renders a "Show migration command" button that closes the auth modal and opens the deploy modal (with the exact `npx wrangler d1 execute` command). Updated Done table and last-updated note in `GOAL.md`.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. Previous text-only error was helpful; a one-click path to the command reduces friction without new features or a second Worker.
+
+**How:** Frontend-only change in the existing auth module + docs. Deploy modal already contains the full command block.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Clarify seed banner and dashboard auth notes
 
 **What:** Updated seed-banner default text in `index.html` and dynamic logic in `js/main.js` so it accurately describes demo mode when no API base is set. Updated the temporary-seller note in `js/dashboard.js` to point to the exact migration command and Options menu. Refreshed last-updated note in `GOAL.md`.
