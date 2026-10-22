@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – Exact migration + redeploy commands documented in README and the in-app deploy modal. User still needs to run `schema/auth-migration.sql` and `npx wrangler deploy` for live sessions.*
+*Last updated: 2026-10-22 – auth-migration.sql now has active ALTER TABLE statements for sellers (email / password_hash / password_salt). User still needs to run the SQL on D1 `b2bistening` (ignore duplicate-column errors). Worker auth routes are already live.*
 
 ---
 
@@ -26,19 +26,19 @@
 
 ## Current priority: P3 – Authentication & listing publications
 
-### P3.1 – Seller authentication (in progress – deploy migration + new Worker)
+### P3.1 – Seller authentication (in progress – run migration on D1)
 
 **Goal:** Real seller accounts so create/edit/delete/publish are tied to a logged-in identity, not a free-form `X-Seller-Id` header.
 
 | Step | Owner | Notes |
 |------|--------|--------|
-| D1 migration: `sellers` password fields + `sessions` table | You (SQL in dashboard) | `schema/auth-migration.sql` |
-| Worker: register / login / logout / me | You (redeploy Worker) | Same Worker `farmdirect-b2b` – **no new Worker required** |
+| D1 migration: `sellers` password fields + `sessions` table | You (SQL in dashboard) | `schema/auth-migration.sql` (ALTERs now active) |
+| Worker: register / login / logout / me | Done (already redeployed) | Same Worker `farmdirect-b2b` – **no new Worker required** |
 | Session token in `Authorization: Bearer …` | Code | Opaque token; hash stored in D1 |
 | Frontend login/register UI + store token | Done (modal + token storage) | Bearer preferred; interim ID still available |
 | Optional later: Cloudflare Access / OAuth | Optional | Can replace password auth later |
 
-**Auth endpoints (after redeploy):**
+**Auth endpoints (live):**
 
 - `POST /api/v1/auth/register` – `{ sellerid, password, name?, email?, contact? }`
 - `POST /api/v1/auth/login` – `{ sellerid, password }` → `{ token, seller, expiresAt }`
@@ -94,8 +94,8 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
 
 ### Manual install checklist (phone/dashboard OK)
 
-1. **Run migration** on D1 `b2bistening` → paste `schema/auth-migration.sql` in D1 Console **or** `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql`.
-2. **Replace Worker script** with the new `workers/api.js` from this repo (or `npx wrangler deploy`).
+1. **Run migration** on D1 `b2bistening` → paste `schema/auth-migration.sql` in D1 Console **or** `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql`. Ignore "duplicate column name" errors.
+2. Worker is already redeployed with auth + publication routes.
 3. **Confirm bindings:** D1 binding name still `DB` → database `b2bistening`.
 4. **Smoke test:**
    - `GET …/api/v1/health`
