@@ -78,7 +78,7 @@
           ? 'Already have an account? <button type="button" class="link-btn" id="switch-to-login">Sign in</button>'
           : 'Need an account? <button type="button" class="link-btn" id="switch-to-register">Register</button>'}
       </p>
-      <p class="muted small">Requires the Worker with auth endpoints to be redeployed. Demo mode still uses the temporary seller ID in the dashboard.</p>
+      <p class="muted small">If you see a column error, run the auth migration on D1 (see README). Demo mode still uses the temporary seller ID in the dashboard.</p>
     `;
 
     document.getElementById('switch-to-login')?.addEventListener('click', () => {
@@ -122,7 +122,14 @@
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          if (status) status.textContent = data.error || `HTTP ${res.status}`;
+          const msg = data.message || data.error || '';
+          if (status) {
+            if (/column named|no column|email|password_hash|password_salt/i.test(msg)) {
+              status.textContent = 'Auth columns missing on D1. Run: npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql (ignore duplicate column errors). See README.';
+            } else {
+              status.textContent = data.error || data.message || `HTTP ${res.status}`;
+            }
+          }
           return;
         }
         setSession(data.token, data.seller);

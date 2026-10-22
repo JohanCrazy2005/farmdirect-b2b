@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Clearer auth error when D1 migration not applied
+
+**What:** Updated `js/auth.js` so the login/register modal detects D1 "no column named …" (email / password_hash / password_salt) errors returned as Internal error and shows the exact `npx wrangler d1 execute` command. Help text in the modal now points to the migration.
+
+**Why:** Highest unfinished item is still the user-owned D1 migration. Live register fails with a column error; surfacing the precise fix in the UI unblocks the user without new features or a second Worker.
+
+**How:** Frontend-only change in the existing auth module. Worker already returns the D1 message on 500.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Make auth-migration.sql immediately executable
 
 **What:** Updated `schema/auth-migration.sql` so the three `ALTER TABLE sellers ADD COLUMN` statements (email, password_hash, password_salt) are active instead of commented. Cleaned comments to say "ignore duplicate column name errors". Minor refresh of the P3 section in `README.md` and the last-updated note in `GOAL.md`.
