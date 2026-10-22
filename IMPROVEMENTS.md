@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: Removable styled filter chips
+
+**What:** Updated `js/list.js` `updateChips` so active filters render as proper `.filter-chip` elements (matching existing CSS) with a × button. Clicking the button clears only that filter (category, visibility, units, seller, price range, favorites, in-view, radius, or search) and re-applies. No new features; reuses the filter state already present.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. Filter chips existed but used an unstyled `.chip` class, so they were invisible or hard to dismiss. This is a pure code-only polish that completes the filter UX promised in the fresh-start design, works in both demo and live modes, and requires no second Worker or schema change.
+
+**How:** Frontend-only change in the listings module. Chip removal calls the same DOM clear + `applyFilters` path used by the Clear filters button.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: Product card distance + sidebar listing item styles
 
 **What:** Updated `js/cards.js` `showProduct` to compute and display distance (m or km) from the user's Locate me position (via `FD_MAP.getUserLatLng`) when available. Aligned `css/main.css` with the classes actually used by `js/list.js` (`.listing-item`, `.list-thumb`, `.listing-item-title`, etc.) so the sidebar renders with proper layout, thumbs, hover, favorites, and distance text. Added supporting product-card styles for the distance line and meta badges.

@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 14:05 MDT – Product cards now show distance after Locate me; sidebar listing items have proper styles matching the JS. Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
+*Last updated: 2026-10-22 15:05 MDT – Active filter chips are now properly styled (`.filter-chip`) and individually removable. Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
 
 ---
 
@@ -34,6 +34,7 @@
 | Richer seller cards listing real products | Done |
 | Product card shows distance after Locate me | Done |
 | Sidebar listing item styles aligned | Done |
+| Removable styled filter chips | Done |
 
 ---
 

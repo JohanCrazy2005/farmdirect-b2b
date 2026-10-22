@@ -2,6 +2,7 @@
  * FarmDirect B2B – listings list, filters, favorites, sidebar rendering
  * Substantial module. Works with seed/demo or API data.
  * Exposes: setListings, bindUI, getFiltered, getListings, exportFiltered, clearFavorites, select
+ * Filter chips are now styled (.filter-chip) and individually removable.
  */
 (function (global) {
   'use strict';
@@ -176,17 +177,27 @@
     const chips = document.getElementById('filter-chips');
     if (!chips) return;
     const f = getFilterState();
-    const parts = [];
-    if (f.category) parts.push(`Category: ${f.category}`);
-    if (f.visibility) parts.push(`Visibility: ${f.visibility}`);
-    if (f.units) parts.push(`Units: ${f.units}`);
-    if (f.seller) parts.push(`Seller: ${f.seller}`);
-    if (f.minPrice != null || f.maxPrice != null) parts.push(`Price: ${f.minPrice||0}–${f.maxPrice||'∞'}`);
-    if (f.favoritesOnly) parts.push('Favorites');
-    if (f.inView) parts.push('In view');
-    if (f.radius) parts.push(`≤${f.radius} km`);
-    if (f.search) parts.push(`Search: ${f.search}`);
-    chips.innerHTML = parts.map(p => `<span class="chip">${escapeHtml(p)}</span>`).join('');
+    const items = [];
+    if (f.category) items.push({ label: `Category: ${f.category}`, clear: () => { const el = document.getElementById('filter-category'); if (el) el.value = ''; } });
+    if (f.visibility) items.push({ label: `Visibility: ${f.visibility}`, clear: () => { const el = document.getElementById('filter-visibility'); if (el) el.value = ''; } });
+    if (f.units) items.push({ label: `Units: ${f.units}`, clear: () => { const el = document.getElementById('filter-units'); if (el) el.value = ''; } });
+    if (f.seller) items.push({ label: `Seller: ${f.seller}`, clear: () => { const el = document.getElementById('filter-seller'); if (el) el.value = ''; } });
+    if (f.minPrice != null || f.maxPrice != null) items.push({ label: `Price: ${f.minPrice||0}–${f.maxPrice||'∞'}`, clear: () => { const min = document.getElementById('filter-minprice'); const max = document.getElementById('filter-maxprice'); if (min) min.value = ''; if (max) max.value = ''; } });
+    if (f.favoritesOnly) items.push({ label: 'Favorites', clear: () => { const el = document.getElementById('filter-favorites'); if (el) el.checked = false; } });
+    if (f.inView) items.push({ label: 'In view', clear: () => { const el = document.getElementById('filter-inview'); if (el) el.checked = false; } });
+    if (f.radius) items.push({ label: `≤${f.radius} km`, clear: () => { const el = document.getElementById('filter-radius'); if (el) el.value = ''; } });
+    if (f.search) items.push({ label: `Search: ${f.search}`, clear: () => { const el = document.getElementById('search-input'); if (el) el.value = ''; } });
+    chips.innerHTML = items.map((item, i) => `<span class="filter-chip">${escapeHtml(item.label)} <button type="button" data-chip="${i}" aria-label="Remove filter">×</button></span>`).join('');
+    chips.querySelectorAll('button[data-chip]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.chip, 10);
+        if (items[idx]) {
+          items[idx].clear();
+          applyFilters();
+        }
+      });
+    });
   }
 
   function select(id) {
