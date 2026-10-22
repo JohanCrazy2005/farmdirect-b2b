@@ -1,7 +1,7 @@
 -- FarmDirect B2B – P3 auth + publication migration
 -- Database: b2bistening
 -- Run once in D1 Console (or wrangler d1 execute --remote --file=...)
--- Safe to re-run: uses IF NOT EXISTS / ignore duplicate column errors if already applied
+-- Safe to re-run: CREATE IF NOT EXISTS is fine; ignore "duplicate column name" errors on ALTER.
 
 -- ---- Sellers: ensure table + auth columns ----
 CREATE TABLE IF NOT EXISTS sellers (
@@ -15,16 +15,11 @@ CREATE TABLE IF NOT EXISTS sellers (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- If sellers already existed without password columns, add them.
--- D1/SQLite: ALTER ADD COLUMN fails if column exists – run each once; ignore "duplicate column" errors.
--- ALTER TABLE sellers ADD COLUMN email TEXT;
--- ALTER TABLE sellers ADD COLUMN password_hash TEXT;
--- ALTER TABLE sellers ADD COLUMN password_salt TEXT;
-
--- Prefer explicit adds (uncomment if your sellers table is the old 5-column version):
--- ALTER TABLE sellers ADD COLUMN email TEXT;
--- ALTER TABLE sellers ADD COLUMN password_hash TEXT;
--- ALTER TABLE sellers ADD COLUMN password_salt TEXT;
+-- If the sellers table already existed (original 5-column schema), add the auth columns.
+-- D1/SQLite: each ALTER fails with "duplicate column name" if the column is already present – that is OK, continue.
+ALTER TABLE sellers ADD COLUMN email TEXT;
+ALTER TABLE sellers ADD COLUMN password_hash TEXT;
+ALTER TABLE sellers ADD COLUMN password_salt TEXT;
 
 -- ---- Sessions ----
 CREATE TABLE IF NOT EXISTS sessions (
@@ -38,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_sessions_seller ON sessions(sellerid);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 
 -- ---- Listings publication fields ----
--- Run these; if column already exists, skip that line.
+-- Ignore "duplicate column name" if already applied.
 ALTER TABLE listings ADD COLUMN status TEXT NOT NULL DEFAULT 'published';
 ALTER TABLE listings ADD COLUMN published_at TEXT;
 
