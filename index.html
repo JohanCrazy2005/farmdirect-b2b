@@ -94,10 +94,11 @@
   <div id="deploy-modal" class="form-modal">
     <div class="form-modal-content">
       <button id="close-deploy-btn" class="close-btn" aria-label="Close">×</button>
-      <h3>Deploy the Worker</h3>
+      <h3>Auth migration + redeploy</h3>
       <pre id="deploy-commands">npx wrangler login
-npx wrangler d1 execute b2bistening --remote --file=./schema/d1-schema.sql
+npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
 npx wrangler deploy</pre>
+      <p class="muted small">Applies sellers/sessions + listing status columns, then redeploys the same Worker. Frontend already supports Bearer tokens.</p>
       <button id="copy-deploy-btn" class="primary-btn">Copy commands</button>
     </div>
   </div>

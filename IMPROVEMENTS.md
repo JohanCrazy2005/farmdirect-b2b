@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Document exact auth-migration + Worker redeploy commands
+
+**What:** Updated `README.md` with live URLs and a clear P3 section containing the exact `npx wrangler` commands to apply `schema/auth-migration.sql` and redeploy. Refreshed the in-app deploy modal in `index.html` to show the same auth-migration commands. Minor refresh of the last-updated note in `GOAL.md`.
+
+**Why:** Highest unfinished item is the user-owned migration + redeploy step. Frontend and Worker code are already ready; documenting the precise commands unblocks live sessions without inventing new features.
+
+**How:** Docs-only + modal text update. Commands match the existing `schema/auth-migration.sql` and single-Worker architecture.
+
+**Next:** User runs the migration on D1 `b2bistening` and `npx wrangler deploy`. Then real register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3.3: Dashboard drafts / published / archived + Publish controls
 
 **What:** Updated `js/api.js` with `fetchMyListings`, `publishListing`, `unpublishListing`, `archiveListing`. Demo mode now tracks `status` (seed defaults to published; new creates default to draft) and public list filters to published only. `js/dashboard.js` loads owner listings, groups them into Drafts / Published / Archived, and adds Publish / Unpublish / Archive / Republish buttons. Status badges added in `css/main.css`.

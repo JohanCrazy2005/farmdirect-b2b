@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – Dashboard now groups listings by status with Publish / Unpublish / Archive controls (P3.3). User still needs to run migration + redeploy Worker for live sessions.*
+*Last updated: 2026-10-22 – Exact migration + redeploy commands documented in README and the in-app deploy modal. User still needs to run `schema/auth-migration.sql` and `npx wrangler deploy` for live sessions.*
 
 ---
 
@@ -94,7 +94,7 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
 
 ### Manual install checklist (phone/dashboard OK)
 
-1. **Run migration** on D1 `b2bistening` → paste `schema/auth-migration.sql` in D1 Console.
+1. **Run migration** on D1 `b2bistening` → paste `schema/auth-migration.sql` in D1 Console **or** `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql`.
 2. **Replace Worker script** with the new `workers/api.js` from this repo (or `npx wrangler deploy`).
 3. **Confirm bindings:** D1 binding name still `DB` → database `b2bistening`.
 4. **Smoke test:**
@@ -103,7 +103,7 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
    - `POST …/api/v1/auth/login`
    - `GET …/api/v1/listings` (published only)
    - `GET …/api/v1/listings/mine` (Bearer token)
-5. Set frontend API base to `https://farmdirect-b2b.fehrjohan65.workers.dev` if not already.
+5. Frontend API base is already set to `https://farmdirect-b2b.fehrjohan65.workers.dev`.
 
 ---
 
