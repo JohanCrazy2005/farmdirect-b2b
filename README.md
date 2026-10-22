@@ -21,7 +21,7 @@ Seed fallback: `data/seed-listings.json` when API is offline.
 
 Frontend auth modal + dashboard publish controls are ready. The Worker script in this repo already includes register/login/session + draft/published/archived workflow.
 
-You must apply the migration and redeploy the same Worker so live sessions work.
+You must apply the migration so live sessions work (Worker is already redeployed with auth routes).
 
 ### Exact commands
 
@@ -30,17 +30,18 @@ You must apply the migration and redeploy the same Worker so live sessions work.
 npx wrangler login
 
 # 2. Apply auth + publication migration to live D1
+#    (Ignore "duplicate column name" errors if columns already exist – that is expected on re-run.)
 npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
 
-# 3. Redeploy the Worker (same name farmdirect-b2b; no new Worker needed)
-npx wrangler deploy
+# 3. Redeploy the Worker only if you have local changes (same name farmdirect-b2b; no new Worker needed)
+# npx wrangler deploy
 
 # 4. Smoke test
 curl https://farmdirect-b2b.fehrjohan65.workers.dev/api/v1/health
 # Then register / login from the frontend Profile menu
 ```
 
-Alternatively, paste `schema/auth-migration.sql` into the Cloudflare D1 Console for `b2bistening`, then redeploy.
+Alternatively, paste `schema/auth-migration.sql` into the Cloudflare D1 Console for `b2bistening`.
 
 After this:
 
