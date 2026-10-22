@@ -1,8 +1,10 @@
 /**
  * FarmDirect B2B – listings list, filters, favorites, sidebar rendering
  * Substantial module. Works with seed/demo or API data.
- * Exposes: setListings, bindUI, getFiltered, getListings, exportFiltered, clearFavorites, select
+ * Exposes: setListings, bindUI, getFiltered, getListings, exportFiltered, clearFavorites, select,
+ *          highlight, sortByDistance, clearDistance, setUserLocation
  * Filter chips are now styled (.filter-chip) and individually removable.
+ * List-map sync: hover highlight + Locate me distance sort now fully wired.
  */
 (function (global) {
   'use strict';
@@ -11,6 +13,7 @@
   let allListings = [];
   let filtered = [];
   let userLocation = null; // {lat, lng} from map.locateMe
+  let highlightedId = null;
 
   function getFavorites() {
     try { return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); }
@@ -122,8 +125,8 @@
     }
 
     renderList();
-    if (global.FD_MAP && typeof global.FD_MAP.updateMarkers === 'function') {
-      global.FD_MAP.updateMarkers(filtered);
+    if (global.FD_MAP && typeof global.FD_MAP.renderMarkers === 'function') {
+      global.FD_MAP.renderMarkers(filtered);
     }
     updateChips();
   }
@@ -147,7 +150,8 @@
         const d = distanceKm(userLocation.lat, userLocation.lng, l.location.lat, l.location.long);
         distHtml = `<div class="listing-item-dist">${d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km'} away</div>`;
       }
-      return `<div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
+      const active = highlightedId === l.id ? ' active' : '';
+      return `<div class="listing-item${active}" data-id="${escapeHtml(l.id)}" role="listitem">
         ${img}
         <div class="listing-item-body">
           <div class="listing-item-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
@@ -164,6 +168,17 @@
         if (e.target.closest('.fav-btn')) return;
         select(el.dataset.id);
       });
+      el.addEventListener('mouseenter', () => {
+        const id = el.dataset.id;
+        if (global.FD_MAP && typeof global.FD_MAP.highlightMarker === 'function') {
+          global.FD_MAP.highlightMarker(id);
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (global.FD_MAP && typeof global.FD_MAP.clearMarkerHighlight === 'function') {
+          global.FD_MAP.clearMarkerHighlight();
+        }
+      });
     });
     container.querySelectorAll('.fav-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -171,6 +186,39 @@
         toggleFavorite(btn.dataset.fav);
       });
     });
+  }
+
+  function highlight(id) {
+    highlightedId = id || null;
+    const container = document.getElementById('listing-list');
+    if (!container) return;
+    container.querySelectorAll('.listing-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.id === id);
+    });
+    // Scroll into view if present
+    if (id) {
+      const el = container.querySelector(`.listing-item[data-id="${CSS.escape(id)}"]`);
+      if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  function sortByDistance(lat, lng) {
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      setUserLocation({ lat, lng });
+      // Optionally auto-select distance sort so the list reorders
+      const sortSel = document.getElementById('filter-sort');
+      if (sortSel && !sortSel.value) {
+        sortSel.value = 'distance';
+      }
+      applyFilters();
+    }
+  }
+
+  function clearDistance() {
+    setUserLocation(null);
+    const sortSel = document.getElementById('filter-sort');
+    if (sortSel && sortSel.value === 'distance') sortSel.value = '';
+    applyFilters();
   }
 
   function updateChips() {
@@ -203,11 +251,12 @@
   function select(id) {
     const listing = allListings.find(l => l.id === id);
     if (!listing) return;
+    highlight(id);
     if (global.FD_CARDS && typeof global.FD_CARDS.showProduct === 'function') {
       global.FD_CARDS.showProduct(listing);
     }
     if (global.FD_MAP && typeof global.FD_MAP.flyTo === 'function' && listing.location) {
-      global.FD_MAP.flyTo(listing.location.lat, listing.location.long);
+      global.FD_MAP.flyTo(listing);
     }
     if (global.FD_RECENT && typeof global.FD_RECENT.add === 'function') {
       global.FD_RECENT.add(id);
@@ -271,10 +320,10 @@
 
   function escapeHtml(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
   global.FD_LIST = {
@@ -287,6 +336,9 @@
     select,
     setUserLocation,
     toggleFavorite,
-    isFavorite
+    isFavorite,
+    highlight,
+    sortByDistance,
+    clearDistance
   };
 })(window);
