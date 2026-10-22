@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 15:05 MDT – Active filter chips are now properly styled (`.filter-chip`) and individually removable. Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
+*Last updated: 2026-10-22 16:05 MDT – List-map sync complete: hover highlight, Locate me distance labels/sort, and marker-list linking now work end-to-end. Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
 
 ---
 
@@ -35,6 +35,7 @@
 | Product card shows distance after Locate me | Done |
 | Sidebar listing item styles aligned | Done |
 | Removable styled filter chips | Done |
+| List-map hover highlight + Locate me distance sync | Done |
 
 ---
 
