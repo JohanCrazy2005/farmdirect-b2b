@@ -11,6 +11,7 @@
  * + Persist map view (center + zoom) in localStorage so reloads resume the last explored area (fully client-side for seed/demo)
  * + Shareable map view via URL hash (#map=lat,lng,zoom) – copy button + restore on load (overrides localStorage; fully client-side for seed/demo)
  * + Persist Locate me location in localStorage (marker + accuracy + distance sort restored on reload; fully client-side for seed/demo)
+ * + Location callbacks now also drive FD_LIST.setUserLocation for consistent distance display/filter
  */
 (function (global) {
   'use strict';
@@ -132,9 +133,11 @@
     const clearBtn = document.getElementById('clear-location-btn');
     if (clearBtn) clearBtn.removeAttribute('hidden');
 
-    // Restore distance sort if list is ready
+    // Drive list distance display + optional sort
+    if (global.FD_LIST && typeof global.FD_LIST.setUserLocation === 'function') {
+      global.FD_LIST.setUserLocation({ lat, lng });
+    }
     if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
-      // Delay slightly so list has data
       setTimeout(() => global.FD_LIST.sortByDistance(lat, lng), 300);
     }
   }
@@ -288,6 +291,9 @@
       });
       marker.on('mouseout', () => {
         clearMarkerHighlight();
+        if (global.FD_LIST && typeof global.FD_LIST.highlight === 'function') {
+          global.FD_LIST.highlight(null);
+        }
       });
 
       const price = Number(listing.price);
@@ -408,7 +414,10 @@
         // Persist for reload continuity
         saveLocation(lat, lng, accuracy);
 
-        // Trigger distance sort in list panel
+        // Drive list distance display + sort
+        if (global.FD_LIST && typeof global.FD_LIST.setUserLocation === 'function') {
+          global.FD_LIST.setUserLocation({ lat, lng });
+        }
         if (global.FD_LIST && typeof global.FD_LIST.sortByDistance === 'function') {
           global.FD_LIST.sortByDistance(lat, lng);
         }
@@ -445,6 +454,9 @@
     if (global.FD_LIST && typeof global.FD_LIST.clearDistance === 'function') {
       global.FD_LIST.clearDistance();
     }
+    if (global.FD_LIST && typeof global.FD_LIST.setUserLocation === 'function') {
+      global.FD_LIST.setUserLocation(null);
+    }
     showToast('Location cleared', 'info');
   }
 
@@ -478,10 +490,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/\"/g, '"');
   }
 
   global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink };
