@@ -1,1 +1,261 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmDirect B2B – Map-first Marketplace</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <header class="top-bar">
+    <a href="/" class="logo">FarmDirect</a>
+    <div class="search-box">
+      <input id="search-input" type="search" placeholder="Search products, sellers, locations…" aria-label="Search listings" autocomplete="off">
+      <button id="clear-search" class="clear-search" hidden aria-label="Clear search">×</button>
+      <div id="search-suggestions" class="search-suggestions" hidden role="listbox"></div>
+    </div>
+    <div class="header-actions">
+      <button id="locate-btn" class="icon-btn" title="Locate me">📍</button>
+      <button id="clear-location-btn" class="icon-btn" title="Clear location" hidden>✕</button>
+      <button id="fit-btn" class="icon-btn" title="Fit all listings">🗺️</button>
+      <button id="fullscreen-btn" class="icon-btn" title="Fullscreen map">⛶</button>
+      <button id="filter-btn" class="icon-btn" title="Filters">⚙️</button>
+      <button id="options-btn" class="icon-btn" title="Options" aria-haspopup="true" aria-expanded="false">☰</button>
+      <button id="profile-btn" class="icon-btn" title="Profile / Dashboard">👤<span id="rfq-badge" class="badge" hidden></span></button>
+    </div>
+  </header>
+  <div id="seed-banner" class="seed-banner hidden">
+    <span>Demo mode – using local seed data (editable & persisted locally). Deploy the Worker to go live.</span>
+    <button id="deploy-guide-btn" class="link-btn">Show deploy steps</button>
+    <button id="close-banner" class="close-banner" aria-label="Dismiss">×</button>
+  </div>
+  <div class="main">
+    <div id="map"></div>
+    <div id="map-overlay" class="map-overlay"><div class="overlay-content"><div class="spinner"></div>Loading listings…</div></div>
+    <aside class="sidebar">
+      <div class="sidebar-header"><h2>Listings</h2><span id="data-source" class="data-source">Seed</span><span id="list-count" class="count">0</span></div>
+      <div id="filter-chips" class="filter-chips"></div>
+      <div id="listing-list" class="listing-list" role="list"></div>
+    </aside>
+    <div id="product-card" class="detail-card"></div>
+    <div id="seller-card" class="seller-card-overlay"></div>
+  </div>
+
+  <!-- Filter card (matches js/list.js capabilities) -->
+  <div id="filter-card" class="filter-card">
+    <div class="filter-group"><label for="filter-category">Category</label><select id="filter-category"><option value="">All</option></select></div>
+    <div class="filter-group"><label for="filter-visibility">Visibility</label><select id="filter-visibility"><option value="">All</option><option value="worldwide">Worldwide</option><option value="country">Country</option><option value="province">Province</option></select></div>
+    <div class="filter-group"><label for="filter-units">Units</label><select id="filter-units"><option value="">Any</option><option value="kg">kg</option><option value="lb">lb</option><option value="ton">ton</option><option value="liter">liter</option><option value="dozen">dozen</option><option value="crate">crate</option><option value="box">box</option><option value="bunch">bunch</option></select></div>
+    <div class="filter-group"><label for="filter-seller">Seller</label><select id="filter-seller"><option value="">Any</option></select></div>
+    <div class="filter-group"><label>Price</label><div class="form-row"><input id="filter-minprice" type="number" placeholder="Min" min="0" step="0.01"><input id="filter-maxprice" type="number" placeholder="Max" min="0" step="0.01"></div></div>
+    <div class="filter-group"><label for="filter-sort">Sort</label><select id="filter-sort"><option value="">Default</option><option value="price-asc">Price (low–high)</option><option value="price-desc">Price (high–low)</option><option value="name">Name</option><option value="distance">Distance (after Locate me)</option></select></div>
+    <div class="filter-group"><label for="filter-radius">Max distance (km)</label><input id="filter-radius" type="number" placeholder="e.g. 50" min="0" step="1"></div>
+    <div class="filter-group"><label><input id="filter-favorites" type="checkbox"> Favorites only</label></div>
+    <div class="filter-group"><label><input id="filter-inview" type="checkbox"> In current map view</label></div>
+    <button id="clear-filters" class="clear-filters">Clear filters</button>
+  </div>
+
+  <!-- Options menu -->
+  <div id="options-menu" class="options-menu">
+    <button id="theme-btn">Toggle theme</button>
+    <button id="shortcuts-btn">Keyboard shortcuts</button>
+    <button id="stats-btn">Listing statistics</button>
+    <button id="sellers-btn">Seller directory</button>
+    <button id="recent-btn">Recently viewed</button>
+    <button id="compare-btn">Compare listings</button>
+    <button id="my-rfqs-btn">My quote requests</button>
+    <button id="export-filtered-btn">Export filtered (JSON)</button>
+    <button id="export-csv-btn">Export filtered (CSV)</button>
+    <button id="export-geojson-btn">Export filtered (GeoJSON)</button>
+    <button id="copy-view-link-btn">Copy view link</button>
+    <button id="copy-map-link-btn">Copy map view link</button>
+    <button id="clear-favorites-btn">Clear favorites</button>
+    <button id="export-demo-btn">Export demo data</button>
+    <button id="import-demo-btn">Import demo data</button>
+    <button id="reset-demo-btn">Reset demo data</button>
+    <button id="set-api-btn">Set API base</button>
+    <button id="clear-api-btn">Clear API base</button>
+    <button id="deploy-modal-btn">Show deploy commands</button>
+  </div>
+
+  <!-- Compare modal -->
+  <div id="compare-modal" class="form-modal">
+    <div class="form-modal-content" style="width:min(900px,96vw)">
+      <button id="close-compare-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Compare listings</h3>
+      <div id="compare-content"></div>
+    </div>
+  </div>
+
+  <!-- Deploy guide modal -->
+  <div id="deploy-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-deploy-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Deploy the Worker</h3>
+      <pre id="deploy-commands">npx wrangler login
+npx wrangler d1 execute b2bistening --remote --file=./schema/d1-schema.sql
+npx wrangler deploy</pre>
+      <button id="copy-deploy-btn" class="primary-btn">Copy commands</button>
+    </div>
+  </div>
+
+  <!-- Listing form modal (create / edit) -->
+  <div id="listing-form-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-form-btn" class="close-btn" aria-label="Close">×</button>
+      <h3 id="form-title">Add listing</h3>
+      <form id="listing-form">
+        <div class="form-row">
+          <label>Latitude <input id="form-lat" name="lat" type="number" step="any" required></label>
+          <label>Longitude <input id="form-long" name="long" type="number" step="any" required></label>
+        </div>
+        <button type="button" id="use-location-btn" class="small-btn">Use my location</button>
+        <label>Visibility
+          <select name="visibility" required>
+            <option value="province">Province</option>
+            <option value="country">Country</option>
+            <option value="worldwide">Worldwide</option>
+          </select>
+        </label>
+        <label>Address <input name="address" type="text" required></label>
+        <label>Seller ID <input id="form-sellerid" name="sellerid" type="text" required></label>
+        <label>Category <input name="category" type="text" required></label>
+        <label>Header description <input name="headerdescription" type="text" maxlength="120" required></label>
+        <div class="form-row">
+          <label>Price <input name="price" type="number" min="0" step="0.01" required></label>
+          <label>Units <input name="units" type="text" required></label>
+        </div>
+        <label>Description <textarea name="description" rows="3"></textarea></label>
+        <label>Image URL or upload
+          <input name="image" type="text" placeholder="https://… or leave blank and upload">
+          <input id="image-file" type="file" accept="image/*">
+        </label>
+        <img id="image-preview" class="image-preview" alt="Preview">
+        <div id="form-status" class="form-status"></div>
+        <button type="submit" class="primary-btn">Create listing</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Seller dashboard modal -->
+  <div id="dashboard-modal" class="form-modal">
+    <div class="form-modal-content" style="width:min(640px,96vw)">
+      <button id="close-dashboard-btn" class="close-btn" aria-label="Close">×</button>
+      <div id="dashboard-content"></div>
+    </div>
+  </div>
+
+  <!-- RFQ modal -->
+  <div id="rfq-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-rfq-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Request a quote</h3>
+      <form id="rfq-form">
+        <input type="hidden" id="rfq-listing-id">
+        <label>Your name <input id="rfq-name" type="text" required></label>
+        <label>Email <input id="rfq-email" type="email" required></label>
+        <label>Quantity <input id="rfq-quantity" type="text" required></label>
+        <label>Message <textarea id="rfq-message" rows="3"></textarea></label>
+        <div id="rfq-status" class="form-status"></div>
+        <button type="submit" class="primary-btn">Send request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- My quote requests modal -->
+  <div id="my-rfqs-modal" class="form-modal">
+    <div class="form-modal-content" style="width:min(560px,96vw)">
+      <button id="close-my-rfqs-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>My quote requests</h3>
+      <div id="my-rfqs-list"></div>
+      <button id="clear-my-rfqs-btn" class="small-btn" style="margin-top:0.75rem">Clear all</button>
+    </div>
+  </div>
+
+  <!-- Recently viewed modal -->
+  <div id="recent-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-recent-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Recently viewed</h3>
+      <div id="recent-list"></div>
+      <button id="clear-recent-btn" class="small-btn" style="margin-top:0.75rem">Clear history</button>
+    </div>
+  </div>
+
+  <!-- Listing statistics modal -->
+  <div id="stats-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-stats-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Listing statistics</h3>
+      <div id="stats-content"></div>
+    </div>
+  </div>
+
+  <!-- Seller directory modal -->
+  <div id="sellers-modal" class="form-modal">
+    <div class="form-modal-content" style="width:min(520px,96vw)">
+      <button id="close-sellers-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Seller directory</h3>
+      <div id="sellers-content"></div>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts modal (expected by js/shortcuts.js) -->
+  <div id="shortcuts-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-shortcuts-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Keyboard shortcuts</h3>
+      <div class="shortcuts-list">
+        <p><kbd>/</kbd> or <kbd>s</kbd> — Focus search</p>
+        <p><kbd>l</kbd> — Locate me</p>
+        <p><kbd>f</kbd> — Fit all listings</p>
+        <p><kbd>x</kbd> — Clear location</p>
+        <p><kbd>?</kbd> or <kbd>h</kbd> — Show this help</p>
+        <p><kbd>Esc</kbd> — Close open cards, menus, and modals</p>
+      </div>
+      <p class="hint">Shortcuts are ignored while typing in form fields.</p>
+    </div>
+  </div>
+
+  <!-- Auth modal (login / register) -->
+  <div id="auth-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-auth-btn" class="close-btn" aria-label="Close">×</button>
+      <div id="auth-content"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <div id="image-lightbox" class="image-lightbox"><img id="lightbox-img" alt=""></div>
+
+  <!-- Leaflet + cluster -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- App modules (order matters) -->
+  <script src="js/config.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/list.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/form.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/rfq.js"></script>
+  <script src="js/recent.js"></script>
+  <script src="js/shortcuts.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/sellers.js"></script>
+  <script src="js/csv.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/fullscreen.js"></script>
+  <script src="js/geojson.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
