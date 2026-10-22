@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Explicit published status in seed data for consistent demo fallback
+
+**What:** Added `"status": "published"` to every listing in `data/seed-listings.json`. Updated Done table and last-updated note in `GOAL.md`.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. Explicit status makes the seed/demo fallback match the publication workflow (public views filter to published) out of the box, without relying solely on the ensureStatus helper. Supports P3.3 demo mode while waiting on the user step.
+
+**How:** Data + docs only. No new features or second Worker.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Auth column-error button opens deploy modal
 
 **What:** Updated `js/auth.js` so a detected D1 column-missing error renders a "Show migration command" button that closes the auth modal and opens the deploy modal (with the exact `npx wrangler d1 execute` command). Updated Done table and last-updated note in `GOAL.md`.

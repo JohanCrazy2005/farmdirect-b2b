@@ -10,7 +10,8 @@
     "price": 1.35,
     "units": "kg",
     "description": "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available in bulk for restaurants and retailers.",
-    "image": "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-2",
@@ -23,7 +24,8 @@
     "price": 0.68,
     "units": "liter",
     "description": "Pasture-based dairy producing fresh milk and cream. Daily delivery available within metro Denver.",
-    "image": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-3",
@@ -36,7 +38,8 @@
     "price": 2.10,
     "units": "dozen",
     "description": "Free-range poultry farm with daily egg collection. Certified organic.",
-    "image": "https://images.unsplash.com/photo-1582722872448-3b6d1b0c4f1a?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1582722872448-3b6d1b0c4f1a?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-4",
@@ -49,7 +52,8 @@
     "price": 235.00,
     "units": "ton",
     "description": "Large-scale grain grower offering bulk wheat. Pickup preferred.",
-    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-5",
@@ -62,7 +66,8 @@
     "price": 8.50,
     "units": "kg",
     "description": "Specialty herb grower with greenhouse and field production. Same-day harvest possible.",
-    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-6",
@@ -75,7 +80,8 @@
     "price": 12.00,
     "units": "kg",
     "description": "Raw honey from local apiaries. Small-batch, unfiltered.",
-    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-7",
@@ -88,7 +94,8 @@
     "price": 1.80,
     "units": "kg",
     "description": "Family orchard with late-season Fuji apples. Bulk crates available for grocers.",
-    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-8",
@@ -101,7 +108,8 @@
     "price": 14.50,
     "units": "kg",
     "description": "Small-batch goat cheese from grass-fed herd. Multiple varieties.",
-    "image": "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-9",
@@ -114,7 +122,8 @@
     "price": 4.20,
     "units": "kg",
     "description": "U-pick or bulk organic strawberries. Peak season June-July.",
-    "image": "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=300&fit=crop",
+    "status": "published"
   },
   {
     "id": "seed-10",
@@ -127,6 +136,7 @@
     "price": 180.00,
     "units": "ton",
     "description": "Certified organic oats in bulk. Available for food processors.",
-    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop"
+    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]
