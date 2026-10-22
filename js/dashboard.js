@@ -1,12 +1,7 @@
 /**
- * FarmDirect B2B – seller dashboard (P4 starter)
- * Temporary client-side "session" via localStorage sellerid.
- * Full Cloudflare Access / JWT / RLS pending Worker deploy + user setup.
- * + RFQ inbox: shows incoming quote requests for the seller's listings (localStorage demo).
- * + correct HTML escaping for listings and RFQ content (seed/demo safety).
- * + RFQ count badge on profile icon (updates live in demo mode).
- * + Clickable RFQs: View listing button opens product card (closes dashboard; works in seed/demo).
- * + Prefers real auth session (Bearer token) when available.
+ * FarmDirect B2B – seller dashboard
+ * Prefers real auth session (Bearer token). Shows drafts / published / archived
+ * with Publish / Unpublish / Archive actions (live API or demo localStorage).
  */
 (function (global) {
   'use strict';
@@ -92,17 +87,18 @@
     }
   }
 
-  function renderDashboard() {
+  function statusBadge(status) {
+    const s = status || 'published';
+    const label = s.charAt(0).toUpperCase() + s.slice(1);
+    const cls = s === 'published' ? 'badge-published' : s === 'draft' ? 'badge-draft' : 'badge-archived';
+    return `<span class="status-badge ${cls}">${escapeHtml(label)}</span>`;
+  }
+
+  async function renderDashboard() {
     const content = document.getElementById('dashboard-content');
     if (!content) return;
 
     const seller = getCurrentSeller();
-    const all = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
-    const mine = seller ? all.filter(l => l.sellerid === seller) : [];
-    const myIds = new Set(mine.map(l => l.id));
-
-    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
-    const myRfqs = allRfqs.filter(r => myIds.has(r.listingId));
 
     if (!seller) {
       content.innerHTML = `
@@ -146,17 +142,35 @@
       return;
     }
 
+    content.innerHTML = '<p class="muted">Loading your listings…</p>';
+
+    let mine = [];
+    if (global.FD_API && typeof global.FD_API.fetchMyListings === 'function') {
+      try {
+        const result = await global.FD_API.fetchMyListings();
+        mine = result.listings || [];
+      } catch (_) {
+        mine = [];
+      }
+    }
+
+    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
+    const myIds = new Set(mine.map(l => l.id));
+    const myRfqs = allRfqs.filter(r => myIds.has(r.listingId));
+
+    const drafts = mine.filter(l => (l.status || 'published') === 'draft');
+    const published = mine.filter(l => (l.status || 'published') === 'published');
+    const archived = mine.filter(l => (l.status || 'published') === 'archived');
+
     content.innerHTML = `
       <h3>Dashboard · ${escapeHtml(seller)}</h3>
-      <p class="muted">${mine.length} listing${mine.length === 1 ? '' : 's'} · ${myRfqs.length} quote request${myRfqs.length === 1 ? '' : 's'} · <button type="button" id="logout-btn" class="link-btn">Sign out</button></p>
-      <h4 style="margin:1rem 0 0.4rem">My listings</h4>
+      <p class="muted">${mine.length} listing${mine.length === 1 ? '' : 's'} · ${drafts.length} draft${drafts.length === 1 ? '' : 's'} · ${published.length} published · ${archived.length} archived · ${myRfqs.length} quote request${myRfqs.length === 1 ? '' : 's'} · <button type="button" id="logout-btn" class="link-btn">Sign out</button></p>
       <div id="my-listings" class="dashboard-list"></div>
       <h4 style="margin:1.2rem 0 0.4rem">Incoming quote requests</h4>
       <div id="my-rfqs" class="dashboard-list"></div>
-      <p class="muted small">Real authentication (Cloudflare Access + JWT) and row-level security will be added after the Worker is deployed. This is a client-side preview that works with seed data and localStorage RFQs.</p>
+      <p class="muted small">Publish controls work against the live Worker (after auth migration) or in local demo mode.</p>
     `;
 
-    // Listings
     const listEl = document.getElementById('my-listings');
     if (!mine.length) {
       listEl.innerHTML = `
@@ -173,45 +187,89 @@
         }
       });
     } else {
-      listEl.innerHTML = mine.map(l => `
-        <div class="listing-card" data-id="${escapeAttr(l.id)}">
-          <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
-          <div class="listing-info">
-            <h3>${escapeHtml(l.headerdescription)}</h3>
-            <div class="meta">${escapeHtml(l.category)} · $${Number(l.price).toFixed(2)}/${escapeHtml(l.units)}</div>
-            <div class="actions">
-              <button type="button" class="small-btn edit-btn" data-id="${escapeAttr(l.id)}">Edit</button>
-              <button type="button" class="small-btn del-btn" data-id="${escapeAttr(l.id)}">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
+      function renderGroup(title, items) {
+        if (!items.length) return '';
+        return `<h4 style="margin:1rem 0 0.4rem">${title} (${items.length})</h4>` + items.map(l => {
+          const st = l.status || 'published';
+          let actions = `
+            <button type="button" class="small-btn edit-btn" data-id="${escapeAttr(l.id)}">Edit</button>
+            <button type="button" class="small-btn del-btn" data-id="${escapeAttr(l.id)}">Delete</button>`;
+          if (st === 'draft') {
+            actions = `<button type="button" class="small-btn primary-btn publish-btn" data-id="${escapeAttr(l.id)}">Publish</button>` + actions;
+          } else if (st === 'published') {
+            actions = `<button type="button" class="small-btn unpublish-btn" data-id="${escapeAttr(l.id)}">Unpublish</button>` +
+                      `<button type="button" class="small-btn archive-btn" data-id="${escapeAttr(l.id)}">Archive</button>` + actions;
+          } else if (st === 'archived') {
+            actions = `<button type="button" class="small-btn publish-btn" data-id="${escapeAttr(l.id)}">Republish</button>` + actions;
+          }
+          return `
+            <div class="listing-card" data-id="${escapeAttr(l.id)}">
+              <img src="${escapeAttr(l.image)}" alt="" onerror="this.style.background='var(--hover-bg)'">
+              <div class="listing-info">
+                <h3>${escapeHtml(l.headerdescription)} ${statusBadge(st)}</h3>
+                <div class="meta">${escapeHtml(l.category)} · $${Number(l.price).toFixed(2)}/${escapeHtml(l.units)}</div>
+                <div class="actions">${actions}</div>
+              </div>
+            </div>`;
+        }).join('');
+      }
 
-      listEl.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.id;
-          const listing = mine.find(x => x.id === id);
-          closeDashboard();
-          if (global.FD_FORM && listing) global.FD_FORM.openForm(listing);
+      listEl.innerHTML = renderGroup('Drafts', drafts) + renderGroup('Published', published) + renderGroup('Archived', archived);
+
+      function wireAction(selector, fn) {
+        listEl.querySelectorAll(selector).forEach(btn => {
+          btn.addEventListener('click', () => fn(btn.dataset.id));
         });
+      }
+
+      wireAction('.edit-btn', (id) => {
+        const listing = mine.find(x => x.id === id);
+        closeDashboard();
+        if (global.FD_FORM && listing) global.FD_FORM.openForm(listing);
       });
 
-      listEl.querySelectorAll('.del-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (!confirm('Delete this listing?')) return;
-          const id = btn.dataset.id;
-          if (global.FD_API && global.FD_API.deleteListing) {
-            const res = await global.FD_API.deleteListing(id);
-            if (res.ok) {
-              const result = await global.FD_API.fetchListings();
-              if (global.FD_LIST) global.FD_LIST.setListings(result.listings);
-              renderDashboard();
-              updateRfqBadge();
-            } else {
-              alert(res.error || 'Delete failed (seed mode is read-only)');
-            }
+      wireAction('.del-btn', async (id) => {
+        if (!confirm('Delete this listing?')) return;
+        if (global.FD_API && global.FD_API.deleteListing) {
+          const res = await global.FD_API.deleteListing(id);
+          if (res.ok) {
+            if (global.FD_TOAST) global.FD_TOAST.show('Listing deleted', 'info');
+            await refreshAfterChange();
+          } else {
+            alert(res.error || 'Delete failed');
           }
-        });
+        }
+      });
+
+      wireAction('.publish-btn', async (id) => {
+        const res = await global.FD_API.publishListing(id);
+        if (res.ok) {
+          if (global.FD_TOAST) global.FD_TOAST.show('Listing published', 'success');
+          await refreshAfterChange();
+        } else {
+          alert(res.error || 'Publish failed');
+        }
+      });
+
+      wireAction('.unpublish-btn', async (id) => {
+        const res = await global.FD_API.unpublishListing(id);
+        if (res.ok) {
+          if (global.FD_TOAST) global.FD_TOAST.show('Listing unpublished (draft)', 'info');
+          await refreshAfterChange();
+        } else {
+          alert(res.error || 'Unpublish failed');
+        }
+      });
+
+      wireAction('.archive-btn', async (id) => {
+        if (!confirm('Archive this listing? It will no longer appear publicly.')) return;
+        const res = await global.FD_API.archiveListing(id);
+        if (res.ok) {
+          if (global.FD_TOAST) global.FD_TOAST.show('Listing archived', 'info');
+          await refreshAfterChange();
+        } else {
+          alert(res.error || 'Archive failed');
+        }
       });
     }
 
@@ -241,14 +299,12 @@
       }).join('') +
       `<p style="margin-top:0.5rem"><button type="button" id="clear-rfqs-btn" class="small-btn">Clear my RFQs</button></p>`;
 
-      // Wire view buttons
       rfqEl.querySelectorAll('button[data-listing]').forEach(btn => {
         btn.addEventListener('click', () => openListingFromRfq(btn.dataset.listing));
       });
 
       document.getElementById('clear-rfqs-btn')?.addEventListener('click', () => {
         if (!confirm('Clear all quote requests for your listings?')) return;
-        // Remove only this seller's RFQs
         const remaining = allRfqs.filter(r => !myIds.has(r.listingId));
         try {
           localStorage.setItem('fd-rfqs', JSON.stringify(remaining));
@@ -268,6 +324,16 @@
       updateRfqBadge();
     });
 
+    updateRfqBadge();
+  }
+
+  async function refreshAfterChange() {
+    // Refresh public map/list so published status is reflected
+    if (global.FD_API && global.FD_API.fetchListings && global.FD_LIST) {
+      const result = await global.FD_API.fetchListings();
+      global.FD_LIST.setListings(result.listings);
+    }
+    renderDashboard();
     updateRfqBadge();
   }
 
