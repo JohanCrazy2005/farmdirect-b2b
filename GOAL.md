@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. UI texts and banner updated for clarity. Run the SQL (ignore duplicate-column errors).*
+*Last updated: 2026-10-22 06:02 MDT – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). Auth error now includes a button that opens the deploy modal with the exact command. All code is ready. Run the SQL (ignore duplicate-column errors).*
 
 ---
 
@@ -23,6 +23,7 @@
 | Dashboard drafts / published / archived + publish controls | Done (demo + live-ready) |
 | Auth migration SQL executable + documented commands | Done |
 | In-app deploy modal with exact wrangler commands | Done |
+| Auth column-error UX opens deploy modal | Done |
 
 ---
 
