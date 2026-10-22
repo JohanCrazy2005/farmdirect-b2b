@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – Frontend auth login/register modal added (P3.3). User still needs to run migration + redeploy Worker.*
+*Last updated: 2026-10-22 – Dashboard now groups listings by status with Publish / Unpublish / Archive controls (P3.3). User still needs to run migration + redeploy Worker for live sessions.*
 
 ---
 
@@ -19,6 +19,8 @@
 | Frontend map / list / filters / RFQ (demo-capable) | Done |
 | Live Worker + D1 binding | Done |
 | Sample data (incl. Cuauhtémoc, Chihuahua) | Available via seed SQL |
+| Frontend login/register modal + Bearer token | Done |
+| Dashboard drafts / published / archived + publish controls | Done (demo + live-ready) |
 
 ---
 
@@ -64,8 +66,8 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
 
 1. Login / register modal; persist token in `localStorage` – **Done**
 2. Attach `Authorization: Bearer <token>` on mutations – **Done**
-3. Dashboard: drafts vs published vs archived; Publish / Unpublish buttons – next
-4. Map/list show only published from API – already on Worker
+3. Dashboard: drafts vs published vs archived; Publish / Unpublish buttons – **Done**
+4. Map/list show only published from API – already on Worker (and in demo fallback)
 5. Remove reliance on interim `X-Seller-Id` once sessions work
 
 ---
@@ -100,6 +102,7 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
    - `POST …/api/v1/auth/register`
    - `POST …/api/v1/auth/login`
    - `GET …/api/v1/listings` (published only)
+   - `GET …/api/v1/listings/mine` (Bearer token)
 5. Set frontend API base to `https://farmdirect-b2b.fehrjohan65.workers.dev` if not already.
 
 ---
