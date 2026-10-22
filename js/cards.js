@@ -2,11 +2,31 @@
  * FarmDirect B2B – product detail card + seller card + image lightbox
  * Substantial module. Pure client-side.
  * Seller card now lists actual products for the seller via FD_LIST.getListings().
+ * Product card shows distance when user has used Locate me.
  */
 (function (global) {
   'use strict';
 
   let currentListing = null;
+
+  function distanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function getDistanceHtml(listing) {
+    let userLoc = null;
+    if (global.FD_MAP && typeof global.FD_MAP.getUserLatLng === 'function') {
+      userLoc = global.FD_MAP.getUserLatLng();
+    }
+    if (!userLoc || !listing.location || listing.location.lat == null || listing.location.long == null) return '';
+    const d = distanceKm(userLoc.lat, userLoc.lng, listing.location.lat, listing.location.long);
+    const label = d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km';
+    return `<p class="product-dist">📍 ${label} away</p>`;
+  }
 
   function showProduct(listing) {
     currentListing = listing;
@@ -16,6 +36,7 @@
     const img = listing.image
       ? `<img class="product-img" src="${escapeHtml(listing.image)}" alt="" data-lightbox="1">`
       : '<div class="product-img placeholder"></div>';
+    const distHtml = getDistanceHtml(listing);
     el.innerHTML = `
       <button class="close-card" aria-label="Close">×</button>
       ${img}
@@ -27,6 +48,7 @@
           <span class="badge">${escapeHtml(listing.visibility || '')}</span>
           <span class="badge">${escapeHtml(listing.sellerid || '')}</span>
         </div>
+        ${distHtml}
         <p class="product-desc">${escapeHtml(listing.description || '')}</p>
         <p class="product-addr">📍 ${escapeHtml(listing.address || '')}</p>
         <div class="product-actions">

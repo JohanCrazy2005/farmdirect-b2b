@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: Product card distance + sidebar listing item styles
+
+**What:** Updated `js/cards.js` `showProduct` to compute and display distance (m or km) from the user's Locate me position (via `FD_MAP.getUserLatLng`) when available. Aligned `css/main.css` with the classes actually used by `js/list.js` (`.listing-item`, `.list-thumb`, `.listing-item-title`, etc.) so the sidebar renders with proper layout, thumbs, hover, favorites, and distance text. Added supporting product-card styles for the distance line and meta badges.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. This is a pure code-only polish that completes the map/list/product card experience promised in the fresh-start design, works in both demo and live modes, and reuses existing location state without new features or a second Worker.
+
+**How:** Frontend-only changes in the cards module + CSS. Demo fallback and live data both benefit. Distance appears only after Locate me (same as list items).
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: Richer seller cards with real product list
 
 **What:** Updated `js/cards.js` `showSeller` to pull the full listing set via the existing `FD_LIST.getListings()` export, filter to the seller, and render a clickable list of their products (header, category, price/units). Clicking a product selects it (opens product card + flies map). Filter-by-seller button remains. Added supporting CSS for the listing items inside the seller card.
