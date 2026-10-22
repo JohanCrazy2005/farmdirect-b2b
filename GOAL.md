@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 08:05 MDT – Seed/demo fallback banner now appears even when an API base is configured but live data is unavailable (migration pending or Worker offline). Sole remaining blocker for live sessions remains the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column errors).*
+*Last updated: 2026-10-22 09:15 MDT – Documented exact GitHub Actions secrets needed for optional CI auto-deploy of the Worker (P5). Sole remaining blocker for live sessions remains the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column errors).*
 
 ---
 
@@ -26,6 +26,7 @@
 | Auth column-error UX opens deploy modal | Done |
 | Seed listings explicitly status: published | Done |
 | Dynamic seed banner on API fallback | Done |
+| CI deploy workflow + secrets instructions | Documented |
 
 ---
 
@@ -84,7 +85,7 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
 | P4 | Cloudflare Access or stronger identity (optional upgrade) |
 | P5 | R2 for durable images |
 | P5 | Custom domain for API |
-| P5 | CI deploy secrets on GitHub Actions |
+| P5 | CI deploy secrets on GitHub Actions | Documented (add `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`) |
 | P6 | RFQ persistence in D1 (today RFQ is mostly client-side) |
 
 ---

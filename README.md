@@ -69,6 +69,17 @@ npx wrangler dev
 # Frontend can point API_BASE at http://localhost:8787
 ```
 
+## Optional: GitHub Actions auto-deploy (P5)
+
+The repo includes `.github/workflows/deploy.yml` which deploys the Worker on push to `main` (or manual dispatch) using the Cloudflare Wrangler action.
+
+To enable it, add these repository secrets (Settings → Secrets and variables → Actions):
+
+- `CLOUDFLARE_API_TOKEN` – Cloudflare API token with Workers edit / deploy permissions
+- `CLOUDFLARE_ACCOUNT_ID` – your Cloudflare account ID
+
+No other changes required. The workflow uses the existing `wrangler.toml` (D1 binding already set).
+
 ## Project layout
 
 ```
