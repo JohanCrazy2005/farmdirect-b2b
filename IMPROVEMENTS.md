@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Make auth-migration.sql immediately executable
+
+**What:** Updated `schema/auth-migration.sql` so the three `ALTER TABLE sellers ADD COLUMN` statements (email, password_hash, password_salt) are active instead of commented. Cleaned comments to say "ignore duplicate column name errors". Minor refresh of the P3 section in `README.md` and the last-updated note in `GOAL.md`.
+
+**Why:** Highest unfinished item remains the user-owned D1 migration. Live register currently fails with `table sellers has no column named email` because the original sellers table lacks the auth columns. Making the ALTERs executable unblocks the user without inventing new features. Worker auth routes are already deployed.
+
+**How:** Schema + docs only. Same single-Worker architecture.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (or pastes the file in the D1 Console). Ignore duplicate-column errors. Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Document exact auth-migration + Worker redeploy commands
 
 **What:** Updated `README.md` with live URLs and a clear P3 section containing the exact `npx wrangler` commands to apply `schema/auth-migration.sql` and redeploy. Refreshed the in-app deploy modal in `index.html` to show the same auth-migration commands. Minor refresh of the last-updated note in `GOAL.md`.
