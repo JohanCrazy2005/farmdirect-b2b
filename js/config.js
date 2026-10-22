@@ -1,13 +1,13 @@
 // FarmDirect B2B – configuration
 window.FD_CONFIG = window.FD_CONFIG || {
-  // Live Cloudflare Worker + D1 (set after deploy; empty uses seed/demo fallback)
-  API_BASE: '',
+  // Live Cloudflare Worker + D1
+  API_BASE: 'https://farmdirect-b2b.fehrjohan65.workers.dev',
   SEED_URL: 'data/seed-listings.json',
-  MAP_CENTER: [39.7392, -104.9903], // Denver
-  MAP_ZOOM: 10,
+  MAP_CENTER: [28.4089, -106.8667], // Cuauhtémoc, Chihuahua (override via options if needed)
+  MAP_ZOOM: 12,
 };
 
-// Runtime override from localStorage (set via options menu) for testing after deploy
+// Runtime override from localStorage (set via options menu)
 try {
   const stored = localStorage.getItem('fd-api-base');
   if (stored && typeof stored === 'string') {
