@@ -9,6 +9,6 @@
 
 ---
 
-*Last updated: 2026-10-21 – P2+: Added missing modal shells (listing form, dashboard, RFQ, recent, stats, sellers) to index.html so existing JS modules function fully in seed/demo mode. P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Improved seed/demo fallback UX (data-source badge in sidebar, clearer banner noting editable local persistence, units filter expanded to match seed). P1 deploy still requires user (`npx wrangler login` + README commands).*
 
-(Full priority queue retained; new item added to P2 as completed.)
+(Full priority queue retained; P1 blocked on user action, continuing pure-code P2 polish for better undeployed demo.)

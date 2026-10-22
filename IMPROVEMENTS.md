@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Improve seed/demo fallback UX
+
+**What:** Added a data-source badge in the sidebar header that shows Seed / Local demo / Live / Empty based on the actual load source. Updated the seed banner text to clarify that demo data is editable and persisted locally. Expanded the units filter select to include `liter` and `dozen` so all seed listings can be filtered correctly. Added a one-time toast on load for seed/demo modes.
+
+**Why:** Highest remaining pure-code item while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). Makes the undeployed demo/seed fallback more transparent and usable so buyers and sellers immediately understand the data origin and can fully exercise filters against the provided seed.
+
+**How:** One commit. Updated `index.html` (banner + badge + units options), `js/main.js` (badge update + toast), `css/main.css` (badge styles). Updated `GOAL.md` (last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Complete missing modal shells in index.html
 
 **What:** Added the HTML modal structures expected by the existing substantial JS modules so they can open and function in pure seed/demo mode: listing form (`listing-form-modal` + fields), seller dashboard (`dashboard-modal`), RFQ request (`rfq-modal`), buyer My quote requests (`my-rfqs-modal`), recently viewed (`recent-modal`), listing statistics (`stats-modal`), and seller directory (`sellers-modal`). All reuse the existing `.form-modal` styles. No new features; just the missing UI shells that the already-shipped modules (`js/form.js`, `js/dashboard.js`, `js/rfq.js`, `js/recent.js`, `js/stats.js`, `js/sellers.js`) require.

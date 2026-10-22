@@ -28,7 +28,7 @@
     </div>
   </header>
   <div id="seed-banner" class="seed-banner hidden">
-    <span>Demo mode – using local seed data. Deploy the Worker to go live.</span>
+    <span>Demo mode – using local seed data (editable & persisted locally). Deploy the Worker to go live.</span>
     <button id="deploy-guide-btn" class="link-btn">Show deploy steps</button>
     <button id="close-banner" class="close-banner" aria-label="Dismiss">×</button>
   </div>
@@ -36,7 +36,7 @@
     <div id="map"></div>
     <div id="map-overlay" class="map-overlay"><div class="overlay-content"><div class="spinner"></div>Loading listings…</div></div>
     <aside class="sidebar">
-      <div class="sidebar-header"><h2>Listings</h2><span id="list-count" class="count">0</span></div>
+      <div class="sidebar-header"><h2>Listings</h2><span id="data-source" class="data-source">Seed</span><span id="list-count" class="count">0</span></div>
       <div id="filter-chips" class="filter-chips"></div>
       <div id="listing-list" class="listing-list" role="list"></div>
     </aside>
@@ -48,7 +48,7 @@
   <div id="filter-card" class="filter-card">
     <div class="filter-group"><label for="filter-category">Category</label><select id="filter-category"><option value="">All</option></select></div>
     <div class="filter-group"><label for="filter-visibility">Visibility</label><select id="filter-visibility"><option value="">All</option><option value="worldwide">Worldwide</option><option value="country">Country</option><option value="province">Province</option></select></div>
-    <div class="filter-group"><label for="filter-units">Units</label><select id="filter-units"><option value="">Any</option><option value="kg">kg</option><option value="lb">lb</option><option value="ton">ton</option><option value="crate">crate</option><option value="box">box</option><option value="bunch">bunch</option></select></div>
+    <div class="filter-group"><label for="filter-units">Units</label><select id="filter-units"><option value="">Any</option><option value="kg">kg</option><option value="lb">lb</option><option value="ton">ton</option><option value="liter">liter</option><option value="dozen">dozen</option><option value="crate">crate</option><option value="box">box</option><option value="bunch">bunch</option></select></div>
     <div class="filter-group"><label for="filter-seller">Seller</label><select id="filter-seller"><option value="">Any</option></select></div>
     <div class="filter-group"><label>Price</label><div class="form-row"><input id="filter-minprice" type="number" placeholder="Min" min="0" step="0.01"><input id="filter-maxprice" type="number" placeholder="Max" min="0" step="0.01"></div></div>
     <div class="filter-group"><label for="filter-sort">Sort</label><select id="filter-sort"><option value="">Default</option><option value="price-asc">Price (low–high)</option><option value="price-desc">Price (high–low)</option><option value="name">Name</option><option value="distance">Distance (after Locate me)</option></select></div>

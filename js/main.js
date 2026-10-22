@@ -15,6 +15,7 @@
  * + wires fullscreen map toggle.
  * + wires GeoJSON export of filtered listings.
  * + wires compare listings modal.
+ * + updates data-source badge for seed/demo/live transparency.
  */
 (function (global) {
   'use strict';
@@ -225,12 +226,25 @@
     });
   }
 
+  function updateDataSourceBadge(source) {
+    const el = document.getElementById('data-source');
+    if (!el) return;
+    const labels = { api: 'Live', demo: 'Local demo', seed: 'Seed', none: 'Empty' };
+    el.textContent = labels[source] || source || 'Seed';
+    el.classList.toggle('live', source === 'api');
+    el.classList.remove('hidden');
+  }
+
   async function loadData() {
     const overlay = document.getElementById('map-overlay');
     try {
       const result = await (global.FD_API && global.FD_API.fetchListings ? global.FD_API.fetchListings() : Promise.resolve({ listings: [] }));
       if (global.FD_LIST && global.FD_LIST.setListings) {
         global.FD_LIST.setListings(result.listings || []);
+      }
+      updateDataSourceBadge(result.source);
+      if (result.source === 'demo' || result.source === 'seed') {
+        showToast(`Loaded ${result.count || 0} listings from ${result.source === 'demo' ? 'local demo data' : 'seed'}`, 'info');
       }
       // Deep link
       const hash = location.hash;
@@ -243,6 +257,7 @@
       }
     } catch (err) {
       showToast('Failed to load listings: ' + err.message, 'error');
+      updateDataSourceBadge('none');
     } finally {
       if (overlay) overlay.classList.add('hidden');
     }
