@@ -9,6 +9,6 @@
 
 ---
 
-*Last updated: 2026-10-21 – P2+: Complete filter card UI + options menu (CSV/GeoJSON). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Implemented substantial list.js + cards.js (filters, sidebar, product/seller cards). P1 deploy still requires user (`npx wrangler login` + README commands).*
 
 (Full priority queue retained; new item added to P2 as completed.)
