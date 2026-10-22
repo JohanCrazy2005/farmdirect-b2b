@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – listings list, filters, favorites, sidebar rendering
  * Substantial module. Works with seed/demo or API data.
- * Exposes: setListings, bindUI, getFiltered, exportFiltered, clearFavorites, select
+ * Exposes: setListings, bindUI, getFiltered, getListings, exportFiltered, clearFavorites, select
  */
 (function (global) {
   'use strict';
@@ -35,6 +35,10 @@
     allListings = Array.isArray(listings) ? listings.slice() : [];
     populateFilterSelects();
     applyFilters();
+  }
+
+  function getListings() {
+    return allListings.slice();
   }
 
   function populateFilterSelects() {
@@ -137,12 +141,18 @@
     container.innerHTML = filtered.map(l => {
       const fav = isFavorite(l.id);
       const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">` : '<div class="list-thumb placeholder"></div>';
+      let distHtml = '';
+      if (userLocation && l.location && l.location.lat != null && l.location.long != null) {
+        const d = distanceKm(userLocation.lat, userLocation.lng, l.location.lat, l.location.long);
+        distHtml = `<div class="listing-item-dist">${d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km'} away</div>`;
+      }
       return `<div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
         ${img}
         <div class="listing-item-body">
           <div class="listing-item-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
           <div class="listing-item-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')} · $${Number(l.price||0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
           <div class="listing-item-addr">${escapeHtml(l.address || '')}</div>
+          ${distHtml}
         </div>
         <button class="fav-btn" data-fav="${escapeHtml(l.id)}" title="Favorite" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
       </div>`;
@@ -260,6 +270,7 @@
     setListings,
     bindUI,
     getFiltered,
+    getListings,
     exportFiltered,
     clearFavorites,
     select,

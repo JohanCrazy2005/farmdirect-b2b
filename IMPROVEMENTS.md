@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: Distance in list items + getListings export
+
+**What:** Updated `js/list.js` to show distance (m or km) under each listing in the sidebar when the user has used Locate me. Added `getListings()` and exported it so the existing search typeahead (`js/search.js`) can read the current set of listings.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. This is a pure code-only polish on the core map/list experience that works in both demo and live modes, and fixes the missing export the typeahead already expected.
+
+**How:** Frontend-only change in the listings module + docs. No new features, no second Worker, no schema change.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P5: Document GitHub Actions CI secrets for optional Worker auto-deploy
 
 **What:** Added an "Optional: GitHub Actions auto-deploy (P5)" section to `README.md` explaining the existing `.github/workflows/deploy.yml` and the two repository secrets required (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`). Updated `GOAL.md` Done table, last-updated note, and the P5 CI line in later priorities.

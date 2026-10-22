@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 09:15 MDT – Documented exact GitHub Actions secrets needed for optional CI auto-deploy of the Worker (P5). Sole remaining blocker for live sessions remains the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column errors).*
+*Last updated: 2026-10-22 10:05 MDT – Added distance display in the listings sidebar (after Locate me) and exported getListings so search typeahead works. Sole remaining blocker for live sessions remains the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column errors).*
 
 ---
 
@@ -27,6 +27,8 @@
 | Seed listings explicitly status: published | Done |
 | Dynamic seed banner on API fallback | Done |
 | CI deploy workflow + secrets instructions | Documented |
+| Distance shown in list items after Locate me | Done |
+| getListings exported for search typeahead | Done |
 
 ---
 
