@@ -1,3 +1,15 @@
+## 2026-10-22 – P3.3: Dashboard drafts / published / archived + Publish controls
+
+**What:** Updated `js/api.js` with `fetchMyListings`, `publishListing`, `unpublishListing`, `archiveListing`. Demo mode now tracks `status` (seed defaults to published; new creates default to draft) and public list filters to published only. `js/dashboard.js` loads owner listings, groups them into Drafts / Published / Archived, and adds Publish / Unpublish / Archive / Republish buttons. Status badges added in `css/main.css`.
+
+**Why:** Highest unfinished code-only item in GOAL.md P3.3. Frontend is now ready for the publication workflow whether the Worker is redeployed or the user stays in local demo mode.
+
+**How:** API layer prefers live `/listings/mine` + action endpoints when `API_BASE` is set and auth headers are present; falls back to localStorage status mutations otherwise. Dashboard refreshes the public map/list after a status change.
+
+**Next:** User runs `schema/auth-migration.sql` on D1 `b2bistening` and redeploys `workers/api.js`. Then real sessions + publish workflow work end-to-end.
+
+---
+
 ## 2026-10-22 – P3.3: Frontend auth login/register modal + Bearer token
 
 **What:** Added `js/auth.js` with login/register modal. Token stored in localStorage. `js/api.js` prefers `Authorization: Bearer` on mutations. Dashboard shows Sign in / Register buttons when no session (falls back to temporary seller ID for demo).
