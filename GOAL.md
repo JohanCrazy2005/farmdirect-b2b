@@ -9,6 +9,6 @@
 
 ---
 
-*Last updated: 2026-10-21 – P2+: Default to pure seed/demo fallback (cleared hardcoded API_BASE so no failed network request on load; banner shows by default until user sets API base after deploy). P1 deploy still requires user (`npx wrangler login` + README commands).*
+*Last updated: 2026-10-21 – P2+: Added missing keyboard shortcuts modal shell so existing js/shortcuts.js works in seed/demo (button in options menu + modal with kbd list). P1 deploy still requires user (`npx wrangler login` + README commands).*
 
 (Full priority queue retained; P1 blocked on user action, continuing pure-code P2 polish for better undeployed demo.)

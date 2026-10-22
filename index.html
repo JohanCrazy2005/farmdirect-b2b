@@ -61,6 +61,7 @@
   <!-- Options menu -->
   <div id="options-menu" class="options-menu">
     <button id="theme-btn">Toggle theme</button>
+    <button id="shortcuts-btn">Keyboard shortcuts</button>
     <button id="stats-btn">Listing statistics</button>
     <button id="sellers-btn">Seller directory</button>
     <button id="recent-btn">Recently viewed</button>
@@ -199,6 +200,23 @@ npx wrangler deploy</pre>
       <button id="close-sellers-btn" class="close-btn" aria-label="Close">×</button>
       <h3>Seller directory</h3>
       <div id="sellers-content"></div>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts modal (expected by js/shortcuts.js) -->
+  <div id="shortcuts-modal" class="form-modal">
+    <div class="form-modal-content">
+      <button id="close-shortcuts-btn" class="close-btn" aria-label="Close">×</button>
+      <h3>Keyboard shortcuts</h3>
+      <div class="shortcuts-list">
+        <p><kbd>/</kbd> or <kbd>s</kbd> — Focus search</p>
+        <p><kbd>l</kbd> — Locate me</p>
+        <p><kbd>f</kbd> — Fit all listings</p>
+        <p><kbd>x</kbd> — Clear location</p>
+        <p><kbd>?</kbd> or <kbd>h</kbd> — Show this help</p>
+        <p><kbd>Esc</kbd> — Close open cards, menus, and modals</p>
+      </div>
+      <p class="hint">Shortcuts are ignored while typing in form fields.</p>
     </div>
   </div>
 

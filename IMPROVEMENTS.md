@@ -1,3 +1,15 @@
+## 2026-10-21 – P2+: Add missing keyboard shortcuts modal shell
+
+**What:** Added the HTML modal (`shortcuts-modal`) and options-menu button (`shortcuts-btn`) that `js/shortcuts.js` already expected. The modal lists the implemented shortcuts (`/`, `s`, `l`, `f`, `x`, `?`, `h`, `Esc`) using existing `.form-modal` styles. No new behavior; just the missing UI shell so the module functions in pure seed/demo mode.
+
+**Why:** Highest remaining pure-code item while P1 remains blocked on user (`npx wrangler login` + documented deploy commands in README). The shortcuts module was shipped and bound, but the corresponding DOM elements were absent from `index.html`, so users could not discover or open the help modal in the undeployed demo.
+
+**How:** One commit. Updated `index.html` (button + modal). Updated `GOAL.md` (last-updated) and `IMPROVEMENTS.md`.
+
+Next: user-run P1 deploy so the live Worker can replace the seed/demo fallback.
+
+---
+
 ## 2026-10-21 – P2+: Default to pure seed/demo fallback (no failed API request)
 
 **What:** Cleared the hardcoded `API_BASE` in `js/config.js` (was pointing at a presumed workers.dev URL). On load the app now skips the network attempt entirely and uses seed or local demo data immediately. The seed banner appears by default until the user sets an API base via the options menu after deploying the Worker.
