@@ -5,6 +5,7 @@
  * until the Worker is deployed and API_BASE is set.
  * Mutations attach Authorization: Bearer token when logged in (preferred), else interim X-Seller-Id.
  * + demo data export/import (download/upload JSON of localStorage listings; seed/demo friendly)
+ * + publication workflow: status (draft|published|archived), fetchMyListings, publish/unpublish/archive
  */
 (function (global) {
   'use strict';
@@ -52,17 +53,24 @@
     return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
   }
 
+  function ensureStatus(listing) {
+    if (!listing.status || !['draft', 'published', 'archived'].includes(listing.status)) {
+      listing.status = 'published';
+    }
+    return listing;
+  }
+
   async function fetchSeedListings() {
     const res = await fetch(cfg.SEED_URL || 'data/seed-listings.json');
     if (!res.ok) throw new Error('Seed fetch failed');
     const listings = await res.json();
-    return Array.isArray(listings) ? listings : [];
+    return Array.isArray(listings) ? listings.map(ensureStatus) : [];
   }
 
   async function getDemoOrSeedListings() {
     const demo = loadDemoListings();
     if (demo) {
-      return { listings: demo, source: 'demo' };
+      return { listings: demo.map(ensureStatus), source: 'demo' };
     }
     const seed = await fetchSeedListings();
     return { listings: seed, source: 'seed' };
@@ -85,18 +93,44 @@
         console.warn('API unavailable, falling back to seed/demo:', err.message);
       }
     }
-    // Demo / seed fallback
+    // Demo / seed fallback – public view shows only published
     try {
       const { listings, source } = await getDemoOrSeedListings();
+      const published = listings.filter(l => (l.status || 'published') === 'published');
       return {
-        listings,
+        listings: published,
         source,
-        count: listings.length,
+        count: published.length,
       };
     } catch (err) {
       console.error('Seed/demo fallback failed:', err);
       return { listings: [], source: 'none', count: 0, error: err.message };
     }
+  }
+
+  async function fetchMyListings() {
+    const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
+    if (apiBase) {
+      try {
+        const res = await fetch(`${apiBase}/api/v1/listings/mine`, {
+          headers: getAuthHeaders(),
+          cache: 'no-store',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return { listings: data.listings || [], source: 'api' };
+        }
+      } catch (err) {
+        console.warn('My listings API unavailable, using demo:', err.message);
+      }
+    }
+    // Demo fallback: all statuses for current seller
+    const seller = (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.getCurrentSeller === 'function')
+      ? global.FD_DASHBOARD.getCurrentSeller()
+      : '';
+    const { listings } = await getDemoOrSeedListings();
+    const mine = seller ? listings.filter(l => l.sellerid === seller) : [];
+    return { listings: mine, source: 'demo' };
   }
 
   async function fetchListing(id) {
@@ -107,7 +141,7 @@
         if (res.ok) return { listing: await res.json(), source: 'api' };
       } catch (_) {}
     }
-    const { listings } = await fetchListings();
+    const { listings } = await getDemoOrSeedListings();
     const listing = listings.find(l => l.id === id);
     return listing ? { listing, source: 'demo' } : { listing: null, source: 'none' };
   }
@@ -115,18 +149,19 @@
   async function createListing(listing) {
     const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
     if (!apiBase) {
-      // Interactive demo mode
+      // Interactive demo mode – default draft so publish is explicit
       const { listings } = await getDemoOrSeedListings();
-      const newListing = {
+      const newListing = ensureStatus({
         ...listing,
         id: listing.id || generateId(),
-      };
+        status: listing.status || 'draft',
+      });
       const updated = [...listings, newListing];
       saveDemoListings(updated);
       return {
         ok: true,
         listing: newListing,
-        message: 'Listing created (demo mode – saved locally)',
+        message: 'Listing created as draft (demo mode – saved locally)',
       };
     }
     try {
@@ -153,7 +188,7 @@
       if (idx === -1) {
         return { ok: false, error: 'Listing not found in demo data' };
       }
-      const updatedListing = { ...listings[idx], ...listing, id };
+      const updatedListing = ensureStatus({ ...listings[idx], ...listing, id });
       const updated = listings.slice();
       updated[idx] = updatedListing;
       saveDemoListings(updated);
@@ -205,6 +240,40 @@
     }
   }
 
+  async function setListingStatus(id, action) {
+    const apiBase = (cfg.API_BASE || '').replace(/\/$/, '');
+    const statusMap = { publish: 'published', unpublish: 'draft', archive: 'archived' };
+    const newStatus = statusMap[action];
+    if (!newStatus) return { ok: false, error: 'Invalid action' };
+
+    if (!apiBase) {
+      const { listings } = await getDemoOrSeedListings();
+      const idx = listings.findIndex(l => l.id === id);
+      if (idx === -1) return { ok: false, error: 'Listing not found in demo data' };
+      const updated = listings.slice();
+      updated[idx] = { ...updated[idx], status: newStatus, published_at: newStatus === 'published' ? (updated[idx].published_at || new Date().toISOString()) : updated[idx].published_at };
+      saveDemoListings(updated);
+      return { ok: true, listing: updated[idx], message: `${action} (demo mode)` };
+    }
+    try {
+      const res = await fetch(`${apiBase}/api/v1/listings/${encodeURIComponent(id)}/${action}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return { ok: true, listing: data.listing || data, message: data.message || action };
+      }
+      return { ok: false, error: data.error || `HTTP ${res.status}` };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Network error' };
+    }
+  }
+
+  async function publishListing(id) { return setListingStatus(id, 'publish'); }
+  async function unpublishListing(id) { return setListingStatus(id, 'unpublish'); }
+  async function archiveListing(id) { return setListingStatus(id, 'archive'); }
+
   function resetDemoListings() {
     try {
       localStorage.removeItem(DEMO_KEY);
@@ -245,17 +314,21 @@
       }
       if (l.location.lat == null || l.location.long == null) return { ok: false, error: 'Invalid location (lat/long required)' };
     }
-    const withIds = listings.map(l => ({ ...l, id: l.id || generateId() }));
+    const withIds = listings.map(l => ensureStatus({ ...l, id: l.id || generateId() }));
     saveDemoListings(withIds);
     return { ok: true, count: withIds.length };
   }
 
   global.FD_API = {
     fetchListings,
+    fetchMyListings,
     fetchListing,
     createListing,
     updateListing,
     deleteListing,
+    publishListing,
+    unpublishListing,
+    archiveListing,
     resetDemoListings,
     exportDemoData,
     importDemoData,
