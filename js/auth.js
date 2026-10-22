@@ -125,7 +125,12 @@
           const msg = data.message || data.error || '';
           if (status) {
             if (/column named|no column|email|password_hash|password_salt/i.test(msg)) {
-              status.textContent = 'Auth columns missing on D1. Run: npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql (ignore duplicate column errors). See README.';
+              status.innerHTML = 'Auth columns missing on D1. <button type="button" class="link-btn" id="open-deploy-from-auth">Show migration command</button> (ignore duplicate column errors).';
+              document.getElementById('open-deploy-from-auth')?.addEventListener('click', () => {
+                closeAuthModal();
+                // Open deploy modal (wired in main.js)
+                document.getElementById('deploy-modal')?.classList.add('open');
+              });
             } else {
               status.textContent = data.error || data.message || `HTTP ${res.status}`;
             }
