@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). Worker auth + publication routes and frontend modal/dashboard are ready. Run the SQL (ignore duplicate-column errors).*
+*Last updated: 2026-10-22 – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. UI texts and banner updated for clarity. Run the SQL (ignore duplicate-column errors).*
 
 ---
 

@@ -186,9 +186,14 @@
   function bindSeedBanner() {
     const banner = document.getElementById('seed-banner');
     if (!banner) return;
-    // Show if no API base
+    const span = banner.querySelector('span');
     const apiBase = (global.FD_CONFIG && global.FD_CONFIG.API_BASE) || localStorage.getItem('fd-api-base');
-    if (!apiBase) banner.classList.remove('hidden');
+    if (!apiBase) {
+      if (span) span.textContent = 'Demo mode – using local seed data (editable & persisted locally). Set an API base or deploy the Worker to go live.';
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
     document.getElementById('close-banner')?.addEventListener('click', () => banner.classList.add('hidden'));
     document.getElementById('deploy-guide-btn')?.addEventListener('click', openDeployModal);
   }

@@ -113,7 +113,7 @@
           <input id="seller-id-input" type="text" placeholder="e.g. seller-greenfield" autocomplete="username" />
         </label>
         <button type="button" id="login-btn" class="small-btn">Continue with ID</button>
-        <p class="muted small">Real auth requires the Worker redeploy with schema/auth-migration.sql applied.</p>
+        <p class="muted small">Real auth requires applying schema/auth-migration.sql on D1 b2bistening (ignore duplicate-column errors). See Options → Show deploy commands.</p>
       `;
       document.getElementById('auth-login-btn')?.addEventListener('click', () => {
         closeDashboard();

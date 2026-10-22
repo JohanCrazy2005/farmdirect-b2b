@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Clarify seed banner and dashboard auth notes
+
+**What:** Updated seed-banner default text in `index.html` and dynamic logic in `js/main.js` so it accurately describes demo mode when no API base is set. Updated the temporary-seller note in `js/dashboard.js` to point to the exact migration command and Options menu. Refreshed last-updated note in `GOAL.md`.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. Clearer UI copy reduces confusion about demo vs live and where to find the one remaining command, without adding features.
+
+**How:** Frontend text + banner logic + docs only. Same single-Worker architecture.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Clarify sole remaining user step is D1 auth migration
 
 **What:** Updated `GOAL.md` last-updated note and Done table to explicitly state that the sole remaining blocker for live sessions is the user-owned D1 migration. Enhanced the in-app deploy modal in `index.html` with clearer title, full command block including the ignore-duplicate note, and confirmation that Worker is already deployed.
