@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: List-map sync (highlight + Locate me distance)
+
+**What:** Added `highlight`, `sortByDistance`, and `clearDistance` to `js/list.js` (exported on `FD_LIST`). Hovering a list item or marker now highlights the counterpart; selecting a listing marks it active and scrolls it into view. Locate me / restore location now drive `setUserLocation` so distance labels, radius filter, and optional distance sort stay consistent. Fixed `applyFilters` to call `renderMarkers` (not the missing `updateMarkers`) and `select` to pass the full listing to `flyTo`.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. `js/map.js` already called the missing list helpers, so hover sync and Locate me distance sorting were incomplete. This pure code-only polish completes the map-first exploration promised in the fresh-start design, works in both demo and live modes, and requires no second Worker or schema change.
+
+**How:** Frontend-only changes in the list and map modules. Demo fallback and live data both benefit.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: Removable styled filter chips
 
 **What:** Updated `js/list.js` `updateChips` so active filters render as proper `.filter-chip` elements (matching existing CSS) with a × button. Clicking the button clears only that filter (category, visibility, units, seller, price range, favorites, in-view, radius, or search) and re-applies. No new features; reuses the filter state already present.
