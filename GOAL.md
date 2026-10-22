@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 – auth-migration.sql now has active ALTER TABLE statements for sellers (email / password_hash / password_salt). User still needs to run the SQL on D1 `b2bistening` (ignore duplicate-column errors). Worker auth routes are already live.*
+*Last updated: 2026-10-22 – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). Worker auth + publication routes and frontend modal/dashboard are ready. Run the SQL (ignore duplicate-column errors).*
 
 ---
 
@@ -21,6 +21,8 @@
 | Sample data (incl. Cuauhtémoc, Chihuahua) | Available via seed SQL |
 | Frontend login/register modal + Bearer token | Done |
 | Dashboard drafts / published / archived + publish controls | Done (demo + live-ready) |
+| Auth migration SQL executable + documented commands | Done |
+| In-app deploy modal with exact wrangler commands | Done |
 
 ---
 
@@ -32,7 +34,7 @@
 
 | Step | Owner | Notes |
 |------|--------|--------|
-| D1 migration: `sellers` password fields + `sessions` table | You (SQL in dashboard) | `schema/auth-migration.sql` (ALTERs now active) |
+| D1 migration: `sellers` password fields + `sessions` table | You (SQL in dashboard) | `schema/auth-migration.sql` (ALTERs now active). **This is the sole remaining blocker.** |
 | Worker: register / login / logout / me | Done (already redeployed) | Same Worker `farmdirect-b2b` – **no new Worker required** |
 | Session token in `Authorization: Bearer …` | Code | Opaque token; hash stored in D1 |
 | Frontend login/register UI + store token | Done (modal + token storage) | Bearer preferred; interim ID still available |
@@ -68,7 +70,7 @@ Passwords: PBKDF2-SHA-256 (Web Crypto). Sessions expire in 30 days.
 2. Attach `Authorization: Bearer <token>` on mutations – **Done**
 3. Dashboard: drafts vs published vs archived; Publish / Unpublish buttons – **Done**
 4. Map/list show only published from API – already on Worker (and in demo fallback)
-5. Remove reliance on interim `X-Seller-Id` once sessions work
+5. Remove reliance on interim `X-Seller-Id` once sessions work – after migration
 
 ---
 

@@ -1,3 +1,15 @@
+## 2026-10-22 – P3: Clarify sole remaining user step is D1 auth migration
+
+**What:** Updated `GOAL.md` last-updated note and Done table to explicitly state that the sole remaining blocker for live sessions is the user-owned D1 migration. Enhanced the in-app deploy modal in `index.html` with clearer title, full command block including the ignore-duplicate note, and confirmation that Worker is already deployed.
+
+**Why:** Highest unfinished item remains the user action on D1 `b2bistening`. All code (Worker auth routes, frontend modal, dashboard publish controls, error UX) is ready. Clearer status and modal unblocks the user without new features.
+
+**How:** Docs + HTML modal text only. Same single-Worker architecture.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – P3: Clearer auth error when D1 migration not applied
 
 **What:** Updated `js/auth.js` so the login/register modal detects D1 "no column named …" (email / password_hash / password_salt) errors returned as Internal error and shows the exact `npx wrangler d1 execute` command. Help text in the modal now points to the migration.
@@ -6,7 +18,7 @@
 
 **How:** Frontend-only change in the existing auth module. Worker already returns the D1 message on 500.
 
-**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate column errors). Then register/login + publish workflow works end-to-end.
 
 ---
 

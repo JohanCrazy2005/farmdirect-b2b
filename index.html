@@ -94,11 +94,15 @@
   <div id="deploy-modal" class="form-modal">
     <div class="form-modal-content">
       <button id="close-deploy-btn" class="close-btn" aria-label="Close">×</button>
-      <h3>Auth migration + redeploy</h3>
+      <h3>Auth migration (sole remaining step)</h3>
       <pre id="deploy-commands">npx wrangler login
+
+# Apply auth + publication columns (ignore "duplicate column name" errors)
 npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
-npx wrangler deploy</pre>
-      <p class="muted small">Applies sellers/sessions + listing status columns, then redeploys the same Worker. Frontend already supports Bearer tokens.</p>
+
+# Worker is already deployed with auth routes – redeploy only if you changed workers/api.js
+# npx wrangler deploy</pre>
+      <p class="muted small">This is the only step needed for live register/login + publish workflow. Frontend and Worker are ready. See README for full details.</p>
       <button id="copy-deploy-btn" class="primary-btn">Copy commands</button>
     </div>
   </div>
