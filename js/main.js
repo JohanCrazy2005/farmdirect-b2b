@@ -17,6 +17,7 @@
  * + wires compare listings modal.
  * + updates data-source badge for seed/demo/live transparency.
  * + wires seller auth login/register modal (Bearer token).
+ * + dynamic seed banner that appears on API fallback even when API_BASE is set.
  */
 (function (global) {
   'use strict';
@@ -183,17 +184,32 @@
     });
   }
 
-  function bindSeedBanner() {
+  function updateSeedBanner(source) {
     const banner = document.getElementById('seed-banner');
     if (!banner) return;
     const span = banner.querySelector('span');
     const apiBase = (global.FD_CONFIG && global.FD_CONFIG.API_BASE) || localStorage.getItem('fd-api-base');
+
+    if (source === 'api') {
+      banner.classList.add('hidden');
+      return;
+    }
+
     if (!apiBase) {
       if (span) span.textContent = 'Demo mode – using local seed data (editable & persisted locally). Set an API base or deploy the Worker to go live.';
-      banner.classList.remove('hidden');
+    } else if (source === 'demo' || source === 'seed' || source === 'none') {
+      if (span) span.textContent = 'API base is set but live data is unavailable (migration pending or Worker offline) – using local seed/demo. See deploy commands to enable live sessions.';
     } else {
-      banner.classList.add('hidden');
+      if (span) span.textContent = 'Using local data. See Options → Show deploy commands for the remaining D1 migration step.';
     }
+    banner.classList.remove('hidden');
+  }
+
+  function bindSeedBanner() {
+    const banner = document.getElementById('seed-banner');
+    if (!banner) return;
+    // Initial state before data load
+    updateSeedBanner('seed');
     document.getElementById('close-banner')?.addEventListener('click', () => banner.classList.add('hidden'));
     document.getElementById('deploy-guide-btn')?.addEventListener('click', openDeployModal);
   }
@@ -249,6 +265,7 @@
         global.FD_LIST.setListings(result.listings || []);
       }
       updateDataSourceBadge(result.source);
+      updateSeedBanner(result.source);
       if (result.source === 'demo' || result.source === 'seed') {
         showToast(`Loaded ${result.count || 0} listings from ${result.source === 'demo' ? 'local demo data' : 'seed'}`, 'info');
       }
@@ -264,6 +281,7 @@
     } catch (err) {
       showToast('Failed to load listings: ' + err.message, 'error');
       updateDataSourceBadge('none');
+      updateSeedBanner('none');
     } finally {
       if (overlay) overlay.classList.add('hidden');
     }

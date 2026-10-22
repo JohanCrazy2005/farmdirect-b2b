@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 07:05 MDT – Sole remaining blocker for live sessions is the user-owned D1 migration (`schema/auth-migration.sql`). Seed data now explicitly marks listings published for consistent demo fallback. All code is ready. Run the SQL (ignore duplicate-column errors).*
+*Last updated: 2026-10-22 08:05 MDT – Seed/demo fallback banner now appears even when an API base is configured but live data is unavailable (migration pending or Worker offline). Sole remaining blocker for live sessions remains the user-owned D1 migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column errors).*
 
 ---
 
@@ -25,6 +25,7 @@
 | In-app deploy modal with exact wrangler commands | Done |
 | Auth column-error UX opens deploy modal | Done |
 | Seed listings explicitly status: published | Done |
+| Dynamic seed banner on API fallback | Done |
 
 ---
 
