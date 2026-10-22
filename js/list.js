@@ -5,6 +5,7 @@
  *          highlight, sortByDistance, clearDistance, setUserLocation
  * Filter chips are now styled (.filter-chip) and individually removable.
  * List-map sync: hover highlight + Locate me distance sort now fully wired.
+ * Filter card now closes on × button or outside click.
  */
 (function (global) {
   'use strict';
@@ -306,9 +307,19 @@
       if (s) s.value = '';
       applyFilters();
     });
-    // filter card toggle
-    document.getElementById('filter-btn')?.addEventListener('click', () => {
-      document.getElementById('filter-card')?.classList.toggle('open');
+    // filter card toggle + close on × or outside click
+    const filterCard = document.getElementById('filter-card');
+    document.getElementById('filter-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filterCard?.classList.toggle('open');
+    });
+    document.getElementById('close-filter-btn')?.addEventListener('click', () => {
+      filterCard?.classList.remove('open');
+    });
+    document.addEventListener('click', (e) => {
+      if (filterCard && filterCard.classList.contains('open') && !filterCard.contains(e.target) && e.target.id !== 'filter-btn') {
+        filterCard.classList.remove('open');
+      }
     });
   }
 
