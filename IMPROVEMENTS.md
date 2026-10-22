@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: Richer seller cards with real product list
+
+**What:** Updated `js/cards.js` `showSeller` to pull the full listing set via the existing `FD_LIST.getListings()` export, filter to the seller, and render a clickable list of their products (header, category, price/units). Clicking a product selects it (opens product card + flies map). Filter-by-seller button remains. Added supporting CSS for the listing items inside the seller card.
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. This is a pure code-only polish that completes the product + seller cards experience promised in the fresh-start design, works in both demo and live modes, and reuses the already-exported getter without new features or a second Worker.
+
+**How:** Frontend-only change in the cards module + CSS. Demo fallback and live data both benefit.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Dashboard RFQ inbox + badge prefer live API
 
 **What:** Updated `js/dashboard.js` so the seller dashboard RFQ section and header badge call `FD_API.fetchMyRfqs()` (preferring live `GET /api/v1/rfqs/mine`) and fall back to localStorage filtering. Added `normalizeRfq` so both API shape (`listing_id`, `buyer_name`, `buyer_email`, `created_at`) and local shape (`listingId`, `name`, `email`, `created`) display consistently. Labels the section “(live)” or “(demo)”. Clear button only appears for local/demo source. Fixed broken HTML escaping in the same module.

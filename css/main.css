@@ -13,6 +13,7 @@
    + fullscreen map mode (CSS fallback)
    + data-source badge for seed/demo/live mode
    + status badges for draft/published/archived in dashboard
+   + richer seller card with listing items
 */
 
 :root {
@@ -217,6 +218,20 @@ html.dark .map-overlay { background: rgba(15,23,42,0.85); }
   box-shadow: var(--shadow); z-index: 1100; display: none; max-height: calc(100vh - var(--topbar-h) - 2rem); overflow-y: auto;
 }
 .detail-card.open, .seller-card-overlay.open { display: block; }
+
+/* Richer seller card listings */
+.seller-listings { margin: 0.75rem 0; max-height: 280px; overflow-y: auto; }
+.seller-listing-item {
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: 0.3rem;
+}
+.seller-listing-item:hover { background: var(--hover-bg); }
+.seller-listing-item:last-child { border-bottom: none; }
+.seller-listing-title { font-weight: 600; font-size: 0.85rem; }
+.seller-listing-meta { font-size: 0.75rem; color: #64748b; margin-top: 0.1rem; }
+.seller-count { font-size: 0.8rem; color: #64748b; margin: 0.25rem 0 0.5rem; }
 
 .form-modal {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center;

@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – product detail card + seller card + image lightbox
  * Substantial module. Pure client-side.
+ * Seller card now lists actual products for the seller via FD_LIST.getListings().
  */
 (function (global) {
   'use strict';
@@ -60,38 +61,29 @@
 
   function showSeller(sellerid) {
     if (!sellerid) return;
-    const listings = (global.FD_LIST && global.FD_LIST.getFiltered ? global.FD_LIST.getFiltered() : [])
-      .concat( /* all if needed */ )
-      .filter(l => l.sellerid === sellerid);
-    // Prefer all listings for seller overview
-    const all = global.FD_LIST && global.FD_LIST.getFiltered ? null : null; // fallback: use whatever is loaded
-    // Simple aggregation from current known listings via a helper if available; otherwise use filtered
-    const source = (typeof global.FD_LIST?.getAll === 'function') ? global.FD_LIST.getAll() : (global.FD_LIST ? [] : []);
-    // For simplicity, re-query from last set by exposing a getter if needed. Use filtered + current.
-    const sellerListings = [];
-    // We'll collect by asking list if possible; for now aggregate from known
-    document.querySelectorAll('.listing-item').forEach(() => {});
-    // Better: store reference. For this implementation, use a direct approach via global if we add getAll.
-    // Temporary: show based on current filtered that match, or all if we patch.
     const el = document.getElementById('seller-card');
     if (!el) return;
-    // Aggregate from allListings if we can access; for now build from DOM or assume list exposes.
-    // To keep self-contained, call a safe path:
-    const allKnown = (global.FD_LIST && typeof global.FD_LIST.getFiltered === 'function')
-      ? [] // will enhance list later if needed
+
+    const all = (global.FD_LIST && typeof global.FD_LIST.getListings === 'function')
+      ? global.FD_LIST.getListings()
       : [];
-    // Practical: collect unique by scanning. Since setListings is internal, add getAll in list later.
-    // For shippable: show seller summary using available filtered that match + a note.
-    const matched = [];
-    if (global.FD_LIST && global.FD_LIST.getFiltered) {
-      // We'll enhance list.js to expose getAll in a follow-up if required; for now use a simple display.
-    }
+    const sellerListings = all.filter(l => l.sellerid === sellerid);
+
+    const itemsHtml = sellerListings.length
+      ? sellerListings.map(l => `
+          <div class="seller-listing-item" data-id="${escapeHtml(l.id)}">
+            <div class="seller-listing-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
+            <div class="seller-listing-meta">${escapeHtml(l.category || '')} · $${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
+          </div>`).join('')
+      : '<p class="muted">No listings found for this seller in the current data set.</p>';
+
     el.innerHTML = `
       <button class="close-card" aria-label="Close">×</button>
       <div class="seller-body">
         <h3>Seller: ${escapeHtml(sellerid)}</h3>
-        <p>Listings by this seller appear in the map and list. Use the seller filter to see all.</p>
-        <button class="primary-btn filter-seller-btn" data-seller="${escapeHtml(sellerid)}">Filter by this seller</button>
+        <p class="seller-count">${sellerListings.length} listing${sellerListings.length === 1 ? '' : 's'}</p>
+        <div class="seller-listings">${itemsHtml}</div>
+        <button class="primary-btn filter-seller-btn" data-seller="${escapeHtml(sellerid)}">Filter map & list by this seller</button>
       </div>
     `;
     el.classList.add('open');
@@ -101,6 +93,15 @@
       if (sel) { sel.value = sellerid; sel.dispatchEvent(new Event('change')); }
       el.classList.remove('open');
       if (global.FD_TOAST) global.FD_TOAST.show('Filtered by seller', 'info');
+    });
+    el.querySelectorAll('.seller-listing-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.dataset.id;
+        if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
+          global.FD_LIST.select(id);
+        }
+        el.classList.remove('open');
+      });
     });
   }
 
