@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: Filter card close button + outside click
+
+**What:** Added a × close button to the filter card in `index.html`. Updated `js/list.js` `bindUI` so the card closes on the button, on outside click (excluding the filter icon), and remains compatible with the existing Escape handler. Added `.close-card` styles in `css/main.css` (also used by product and seller cards).
+
+**Why:** Highest unfinished item remains the user-owned D1 auth migration. This pure code-only polish completes the filter icon → filter card interaction promised in the fresh-start design. Works in both demo and live modes; no new features or second Worker.
+
+**How:** Frontend-only changes in HTML, list module, and CSS. Demo fallback and live data both benefit.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: List-map sync (highlight + Locate me distance)
 
 **What:** Added `highlight`, `sortByDistance`, and `clearDistance` to `js/list.js` (exported on `FD_LIST`). Hovering a list item or marker now highlights the counterpart; selecting a listing marks it active and scrolls it into view. Locate me / restore location now drive `setUserLocation` so distance labels, radius filter, and optional distance sort stay consistent. Fixed `applyFilters` to call `renderMarkers` (not the missing `updateMarkers`) and `select` to pass the full listing to `flyTo`.
