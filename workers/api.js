@@ -1,27 +1,36 @@
 /**
- * FarmDirect B2B Worker API
+ * FarmDirect B2B Worker API (P3 – auth + publication)
  * Binding: env.DB (D1)
- * Endpoints:
- *   GET /api/v1/health
- *   GET /api/v1/listings
- *   GET /api/v1/listings/:id
- *   POST /api/v1/listings   (create – requires X-Seller-Id matching body.sellerid)
- *   PUT /api/v1/listings/:id (update – requires ownership)
- *   DELETE /api/v1/listings/:id (requires ownership)
  *
- * Interim auth: X-Seller-Id header (from client dashboard session).
- * Full Cloudflare Access / JWT verification will replace this after deploy + Access setup.
+ * Public:
+ *   GET  /api/v1/health
+ *   GET  /api/v1/listings              (published only)
+ *   GET  /api/v1/listings/:id          (published, or owner with token)
  *
- * Rate limiting: simple per-IP in-memory window (60 requests / 60s). Per-isolate only;
- * for production-scale use Durable Objects or KV. Returns 429 with Retry-After when exceeded.
+ * Auth:
+ *   POST /api/v1/auth/register
+ *   POST /api/v1/auth/login
+ *   POST /api/v1/auth/logout
+ *   GET  /api/v1/auth/me
  *
- * Observability: structured JSON logs to console for every request (method, path, status,
- * duration, ip, seller when present). Visible in Cloudflare Workers logs / wrangler tail.
+ * Seller (Bearer token required):
+ *   GET  /api/v1/listings/mine
+ *   POST /api/v1/listings              (default status: draft)
+ *   PUT  /api/v1/listings/:id
+ *   DELETE /api/v1/listings/:id
+ *   POST /api/v1/listings/:id/publish
+ *   POST /api/v1/listings/:id/unpublish
+ *   POST /api/v1/listings/:id/archive
+ *
+ * Interim: X-Seller-Id still accepted for mutations if no Bearer token
+ * (legacy); prefer Authorization: Bearer <token> from login.
  */
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 60;
-const rateStore = new Map(); // ip -> { count, resetAt }
+const SESSION_DAYS = 30;
+const PBKDF2_ITERATIONS = 100_000;
+const rateStore = new Map();
 
 function getClientIp(request) {
   return request.headers.get('CF-Connecting-IP')
@@ -39,357 +48,542 @@ function checkRateLimit(ip) {
   }
   entry.count += 1;
   if (entry.count > RATE_LIMIT_MAX) {
-    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
-    return { allowed: false, retryAfter };
+    return { allowed: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
   }
   return { allowed: true, remaining: RATE_LIMIT_MAX - entry.count };
 }
 
-function getSellerId(request) {
-  return (request.headers.get('X-Seller-Id') || '').trim();
+function logRequest(entry) {
+  console.log(JSON.stringify({ ts: new Date().toISOString(), service: 'farmdirect-b2b', ...entry }));
 }
 
-function logRequest(entry) {
-  console.log(JSON.stringify({
-    ts: new Date().toISOString(),
-    service: 'farmdirect-b2b',
-    ...entry,
-  }));
+function corsHeaders(extra = {}) {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Seller-Id',
+    'Content-Type': 'application/json',
+    ...extra,
+  };
+}
+
+function json(data, status = 200, extraHeaders = {}) {
+  return Response.json(data, { status, headers: corsHeaders(extraHeaders) });
+}
+
+function rowToListing(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    location: { lat: row.lat, long: row.long },
+    visibility: row.visibility,
+    address: row.address,
+    sellerid: row.sellerid,
+    category: row.category,
+    headerdescription: row.headerdescription,
+    price: row.price,
+    units: row.units,
+    description: row.description,
+    image: row.image,
+    status: row.status || 'published',
+    published_at: row.published_at || null,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+const LISTING_SELECT =
+  'SELECT id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image, status, published_at, created_at, updated_at FROM listings';
+
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function randomBytesB64(n = 32) {
+  const buf = new Uint8Array(n);
+  crypto.getRandomValues(buf);
+  return btoa(String.fromCharCode(...buf));
+}
+
+async function hashPassword(password, saltB64) {
+  const enc = new TextEncoder();
+  const salt = Uint8Array.from(atob(saltB64), (c) => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    key,
+    256
+  );
+  return btoa(String.fromCharCode(...new Uint8Array(bits)));
+}
+
+async function verifyPassword(password, saltB64, hashB64) {
+  const computed = await hashPassword(password, saltB64);
+  return computed === hashB64;
+}
+
+function getBearerToken(request) {
+  const h = request.headers.get('Authorization') || '';
+  const m = h.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1].trim() : '';
+}
+
+async function resolveSession(env, request) {
+  const token = getBearerToken(request);
+  if (!token) return null;
+  const tokenHash = await sha256Hex(token);
+  const row = await env.DB.prepare(
+    `SELECT s.sellerid, s.expires_at, sel.name, sel.email, sel.contact, sel.bio
+     FROM sessions s
+     LEFT JOIN sellers sel ON sel.sellerid = s.sellerid
+     WHERE s.token_hash = ?`
+  ).bind(tokenHash).first();
+  if (!row) return null;
+  if (new Date(row.expires_at).getTime() < Date.now()) {
+    await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(tokenHash).run();
+    return null;
+  }
+  return {
+    sellerid: row.sellerid,
+    name: row.name,
+    email: row.email,
+    contact: row.contact,
+    bio: row.bio,
+    tokenHash,
+  };
+}
+
+/** Session seller, or legacy X-Seller-Id header */
+async function resolveActor(env, request) {
+  const session = await resolveSession(env, request);
+  if (session) return { sellerid: session.sellerid, via: 'session', session };
+  const legacy = (request.headers.get('X-Seller-Id') || '').trim();
+  if (legacy) return { sellerid: legacy, via: 'legacy', session: null };
+  return null;
+}
+
+async function createSession(env, sellerid) {
+  const token = randomBytesB64(32);
+  const tokenHash = await sha256Hex(token);
+  const expires = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  await env.DB.prepare(
+    'INSERT INTO sessions (token_hash, sellerid, expires_at) VALUES (?, ?, ?)'
+  ).bind(tokenHash, sellerid, expires).run();
+  return { token, expiresAt: expires };
+}
+
+function validateListingBody(body, { requireImage = true } = {}) {
+  const required = ['location', 'visibility', 'address', 'sellerid', 'category', 'headerdescription', 'price', 'units'];
+  if (requireImage) required.push('image');
+  for (const k of required) {
+    if (body[k] == null || (typeof body[k] === 'string' && !String(body[k]).trim())) {
+      return `Missing required field: ${k}`;
+    }
+  }
+  if (body.location?.lat == null || body.location?.long == null) {
+    return 'location.lat and location.long required';
+  }
+  if (!['worldwide', 'country', 'province'].includes(body.visibility)) {
+    return 'Invalid visibility';
+  }
+  if (body.status && !['draft', 'published', 'archived'].includes(body.status)) {
+    return 'Invalid status (draft|published|archived)';
+  }
+  return null;
 }
 
 export default {
   async fetch(request, env, ctx) {
     const start = Date.now();
     const url = new URL(request.url);
-    const path = url.pathname;
+    const path = url.pathname.replace(/\/$/, '') || '/';
     const method = request.method;
     const ip = getClientIp(request);
-    const sellerId = getSellerId(request);
 
-    // CORS for frontend
-    if (request.method === 'OPTIONS') {
-      const res = new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-Seller-Id',
-        },
-      });
+    if (method === 'OPTIONS') {
+      const res = new Response(null, { status: 204, headers: corsHeaders() });
       logRequest({ method, path, status: 204, durationMs: Date.now() - start, ip, type: 'cors' });
       return res;
     }
 
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-    };
-
-    // Basic rate limit (skip OPTIONS)
     const rl = checkRateLimit(ip);
     if (!rl.allowed) {
-      const res = Response.json(
+      const res = json(
         { error: 'Rate limit exceeded', retryAfter: rl.retryAfter },
-        {
-          status: 429,
-          headers: {
-            ...corsHeaders,
-            'Retry-After': String(rl.retryAfter),
-            'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
-            'X-RateLimit-Remaining': '0',
-          },
-        }
+        429,
+        { 'Retry-After': String(rl.retryAfter) }
       );
-      logRequest({ method, path, status: 429, durationMs: Date.now() - start, ip, sellerId: sellerId || null, rateLimited: true });
+      logRequest({ method, path, status: 429, durationMs: Date.now() - start, ip, rateLimited: true });
       return res;
     }
-    // Attach remaining for successful responses (optional observability)
-    corsHeaders['X-RateLimit-Limit'] = String(RATE_LIMIT_MAX);
-    corsHeaders['X-RateLimit-Remaining'] = String(rl.remaining);
 
     try {
-      if (path === '/api/v1/health' && request.method === 'GET') {
-        const res = Response.json({
+      // ---- Health ----
+      if (path === '/api/v1/health' && method === 'GET') {
+        const res = json({
           status: 'ok',
           service: 'farmdirect-b2b',
           database: 'b2bistening',
           binding: 'DB',
+          features: ['auth', 'publication'],
           rateLimit: { windowSec: 60, max: RATE_LIMIT_MAX, remaining: rl.remaining },
           timestamp: new Date().toISOString(),
-        }, { headers: corsHeaders });
-        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null });
+        });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip });
         return res;
       }
 
-      if (path === '/api/v1/listings' && request.method === 'GET') {
-        const { results } = await env.DB.prepare(
-          'SELECT id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image FROM listings ORDER BY created_at DESC'
-        ).all();
-
-        const listings = (results || []).map(row => ({
-          id: row.id,
-          location: { lat: row.lat, long: row.long },
-          visibility: row.visibility,
-          address: row.address,
-          sellerid: row.sellerid,
-          category: row.category,
-          headerdescription: row.headerdescription,
-          price: row.price,
-          units: row.units,
-          description: row.description,
-          image: row.image,
-        }));
-
-        const res = Response.json({ listings, count: listings.length, source: 'd1' }, { headers: corsHeaders });
-        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null, count: listings.length });
-        return res;
-      }
-
-      if (path === '/api/v1/listings' && request.method === 'POST') {
-        const sellerIdHdr = getSellerId(request);
-        if (!sellerIdHdr) {
-          const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
-          logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, error: 'missing_seller' });
-          return res;
-        }
-
+      // ---- Auth: register ----
+      if (path === '/api/v1/auth/register' && method === 'POST') {
         let body;
         try {
           body = await request.json();
         } catch {
-          const res = Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
-          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'invalid_json' });
-          return res;
+          return json({ error: 'Invalid JSON' }, 400);
         }
+        const sellerid = (body.sellerid || '').trim();
+        const password = body.password || '';
+        if (!sellerid || sellerid.length < 2) {
+          return json({ error: 'sellerid required (min 2 chars)' }, 400);
+        }
+        if (!password || password.length < 6) {
+          return json({ error: 'password required (min 6 chars)' }, 400);
+        }
+        const existing = await env.DB.prepare('SELECT sellerid FROM sellers WHERE sellerid = ?').bind(sellerid).first();
+        if (existing) {
+          return json({ error: 'sellerid already registered' }, 409);
+        }
+        const salt = randomBytesB64(16);
+        const password_hash = await hashPassword(password, salt);
+        await env.DB.prepare(
+          `INSERT INTO sellers (sellerid, name, email, contact, bio, password_hash, password_salt)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          sellerid,
+          body.name || sellerid,
+          body.email || null,
+          body.contact || null,
+          body.bio || null,
+          password_hash,
+          salt
+        ).run();
+        const { token, expiresAt } = await createSession(env, sellerid);
+        const res = json({
+          message: 'registered',
+          token,
+          expiresAt,
+          seller: { sellerid, name: body.name || sellerid, email: body.email || null },
+        }, 201);
+        logRequest({ method, path, status: 201, durationMs: Date.now() - start, ip, sellerid });
+        return res;
+      }
 
-        if (body.sellerid !== sellerIdHdr) {
-          const res = Response.json({ error: 'sellerid must match X-Seller-Id' }, { status: 403, headers: corsHeaders });
-          logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'seller_mismatch' });
-          return res;
+      // ---- Auth: login ----
+      if (path === '/api/v1/auth/login' && method === 'POST') {
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: 'Invalid JSON' }, 400);
         }
+        const sellerid = (body.sellerid || '').trim();
+        const password = body.password || '';
+        const row = await env.DB.prepare(
+          'SELECT sellerid, name, email, contact, bio, password_hash, password_salt FROM sellers WHERE sellerid = ?'
+        ).bind(sellerid).first();
+        if (!row || !row.password_hash || !row.password_salt) {
+          return json({ error: 'Invalid sellerid or password' }, 401);
+        }
+        const ok = await verifyPassword(password, row.password_salt, row.password_hash);
+        if (!ok) {
+          return json({ error: 'Invalid sellerid or password' }, 401);
+        }
+        const { token, expiresAt } = await createSession(env, sellerid);
+        const res = json({
+          message: 'ok',
+          token,
+          expiresAt,
+          seller: {
+            sellerid: row.sellerid,
+            name: row.name,
+            email: row.email,
+            contact: row.contact,
+            bio: row.bio,
+          },
+        });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid });
+        return res;
+      }
 
-        const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
-        for (const k of required) {
-          if (body[k] == null || (typeof body[k] === 'string' && !body[k].trim())) {
-            const res = Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
-            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: `missing_${k}` });
-            return res;
-          }
+      // ---- Auth: logout ----
+      if (path === '/api/v1/auth/logout' && method === 'POST') {
+        const session = await resolveSession(env, request);
+        if (session) {
+          await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(session.tokenHash).run();
         }
-        if (!body.location?.lat || !body.location?.long) {
-          const res = Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
-          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'missing_location' });
-          return res;
-        }
-        if (!['worldwide','country','province'].includes(body.visibility)) {
-          const res = Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
-          logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, error: 'invalid_visibility' });
-          return res;
-        }
+        const res = json({ message: 'logged out' });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip });
+        return res;
+      }
 
+      // ---- Auth: me ----
+      if (path === '/api/v1/auth/me' && method === 'GET') {
+        const session = await resolveSession(env, request);
+        if (!session) {
+          return json({ error: 'Not authenticated' }, 401);
+        }
+        const res = json({
+          seller: {
+            sellerid: session.sellerid,
+            name: session.name,
+            email: session.email,
+            contact: session.contact,
+            bio: session.bio,
+          },
+        });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid: session.sellerid });
+        return res;
+      }
+
+      // ---- Listings: mine (owner, all statuses) ----
+      if (path === '/api/v1/listings/mine' && method === 'GET') {
+        const actor = await resolveActor(env, request);
+        if (!actor) {
+          return json({ error: 'Authentication required (Bearer token or X-Seller-Id)' }, 401);
+        }
+        const { results } = await env.DB.prepare(
+          `${LISTING_SELECT} WHERE sellerid = ? ORDER BY updated_at DESC`
+        ).bind(actor.sellerid).all();
+        const listings = (results || []).map(rowToListing);
+        const res = json({ listings, count: listings.length, source: 'd1', scope: 'mine' });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid: actor.sellerid, count: listings.length });
+        return res;
+      }
+
+      // ---- Listings: public list (published only) ----
+      if (path === '/api/v1/listings' && method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `${LISTING_SELECT} WHERE COALESCE(status, 'published') = 'published' ORDER BY COALESCE(published_at, created_at) DESC`
+        ).all();
+        const listings = (results || []).map(rowToListing);
+        const res = json({ listings, count: listings.length, source: 'd1' });
+        logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, count: listings.length });
+        return res;
+      }
+
+      // ---- Listings: create ----
+      if (path === '/api/v1/listings' && method === 'POST') {
+        const actor = await resolveActor(env, request);
+        if (!actor) {
+          return json({ error: 'Authentication required' }, 401);
+        }
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: 'Invalid JSON' }, 400);
+        }
+        body.sellerid = actor.sellerid;
+        const verr = validateListingBody(body);
+        if (verr) return json({ error: verr }, 400);
+
+        const status = body.status && ['draft', 'published', 'archived'].includes(body.status)
+          ? body.status
+          : 'draft';
         const id = crypto.randomUUID();
-        const stmt = env.DB.prepare(
-          `INSERT INTO listings (id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        const publishedAt = status === 'published' ? new Date().toISOString() : null;
+
+        await env.DB.prepare(
+          `INSERT INTO listings (id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image, status, published_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(
           id,
           Number(body.location.lat),
           Number(body.location.long),
           body.visibility,
           body.address,
-          body.sellerid,
+          actor.sellerid,
           body.category,
           body.headerdescription,
           Number(body.price),
           body.units,
           body.description || '',
-          body.image
-        );
+          body.image,
+          status,
+          publishedAt
+        ).run();
 
-        await stmt.run();
-
-        const listing = {
+        const listing = rowToListing({
           id,
-          location: { lat: Number(body.location.lat), long: Number(body.location.long) },
+          lat: Number(body.location.lat),
+          long: Number(body.location.long),
           visibility: body.visibility,
           address: body.address,
-          sellerid: body.sellerid,
+          sellerid: actor.sellerid,
           category: body.category,
           headerdescription: body.headerdescription,
           price: Number(body.price),
           units: body.units,
           description: body.description || '',
           image: body.image,
-        };
+          status,
+          published_at: publishedAt,
+        });
 
-        const res = Response.json({ listing, message: 'created' }, { status: 201, headers: corsHeaders });
-        logRequest({ method, path, status: 201, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+        const res = json({ listing, message: 'created' }, 201);
+        logRequest({ method, path, status: 201, durationMs: Date.now() - start, ip, sellerid: actor.sellerid, listingId: id, listingStatus: status });
         return res;
       }
 
-      const listingMatch = path.match(/^\/api\/v1\/listings\/([^/]+)$/);
+      // ---- Listings: by id + publish actions ----
+      const listingMatch = path.match(/^\/api\/v1\/listings\/([^/]+)(?:\/(publish|unpublish|archive))?$/);
       if (listingMatch) {
-        const id = listingMatch[1];
+        const id = decodeURIComponent(listingMatch[1]);
+        const action = listingMatch[2] || null;
 
-        if (request.method === 'GET') {
-          const row = await env.DB.prepare(
-            'SELECT id, lat, long, visibility, address, sellerid, category, headerdescription, price, units, description, image FROM listings WHERE id = ?'
+        // Publish / unpublish / archive
+        if (action && method === 'POST') {
+          const actor = await resolveActor(env, request);
+          if (!actor) return json({ error: 'Authentication required' }, 401);
+
+          const existing = await env.DB.prepare(
+            `${LISTING_SELECT} WHERE id = ?`
           ).bind(id).first();
-
-          if (!row) {
-            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
-            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerId || null, listingId: id });
-            return res;
+          if (!existing) return json({ error: 'Listing not found' }, 404);
+          if (existing.sellerid !== actor.sellerid) {
+            return json({ error: 'Not authorized' }, 403);
           }
 
-          const listing = {
-            id: row.id,
-            location: { lat: row.lat, long: row.long },
-            visibility: row.visibility,
-            address: row.address,
-            sellerid: row.sellerid,
-            category: row.category,
-            headerdescription: row.headerdescription,
-            price: row.price,
-            units: row.units,
-            description: row.description,
-            image: row.image,
-          };
+          let newStatus;
+          let publishedAt = existing.published_at;
+          if (action === 'publish') {
+            newStatus = 'published';
+            publishedAt = existing.published_at || new Date().toISOString();
+          } else if (action === 'unpublish') {
+            newStatus = 'draft';
+          } else if (action === 'archive') {
+            newStatus = 'archived';
+          }
 
-          const res = Response.json(listing, { headers: corsHeaders });
-          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerId || null, listingId: id });
+          await env.DB.prepare(
+            `UPDATE listings SET status = ?, published_at = ?, updated_at = datetime('now') WHERE id = ?`
+          ).bind(newStatus, publishedAt, id).run();
+
+          const updated = { ...existing, status: newStatus, published_at: publishedAt };
+          const res = json({ listing: rowToListing(updated), message: action });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid: actor.sellerid, listingId: id, action });
           return res;
         }
 
-        if (request.method === 'PUT') {
-          const sellerIdHdr = getSellerId(request);
-          if (!sellerIdHdr) {
-            const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
-            logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, listingId: id, error: 'missing_seller' });
-            return res;
+        if (method === 'GET') {
+          const row = await env.DB.prepare(`${LISTING_SELECT} WHERE id = ?`).bind(id).first();
+          if (!row) return json({ error: 'Listing not found' }, 404);
+          const status = row.status || 'published';
+          if (status !== 'published') {
+            const actor = await resolveActor(env, request);
+            if (!actor || actor.sellerid !== row.sellerid) {
+              return json({ error: 'Listing not found' }, 404);
+            }
           }
+          const res = json(rowToListing(row));
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, listingId: id });
+          return res;
+        }
 
+        if (method === 'PUT') {
+          const actor = await resolveActor(env, request);
+          if (!actor) return json({ error: 'Authentication required' }, 401);
           let body;
           try {
             body = await request.json();
           } catch {
-            const res = Response.json({ error: 'Invalid JSON' }, { status: 400, headers: corsHeaders });
-            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'invalid_json' });
-            return res;
+            return json({ error: 'Invalid JSON' }, 400);
+          }
+          body.sellerid = actor.sellerid;
+          const verr = validateListingBody(body);
+          if (verr) return json({ error: verr }, 400);
+
+          const existing = await env.DB.prepare('SELECT id, sellerid, status, published_at FROM listings WHERE id = ?').bind(id).first();
+          if (!existing) return json({ error: 'Listing not found' }, 404);
+          if (existing.sellerid !== actor.sellerid) {
+            return json({ error: 'Not authorized to update this listing' }, 403);
           }
 
-          const required = ['location','visibility','address','sellerid','category','headerdescription','price','units','image'];
-          for (const k of required) {
-            if (body[k] == null || (typeof body[k] === 'string' && !body[k].trim())) {
-              const res = Response.json({ error: `Missing required field: ${k}` }, { status: 400, headers: corsHeaders });
-              logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: `missing_${k}` });
-              return res;
-            }
-          }
-          if (!body.location?.lat || !body.location?.long) {
-            const res = Response.json({ error: 'location.lat and location.long required' }, { status: 400, headers: corsHeaders });
-            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'missing_location' });
-            return res;
-          }
-          if (!['worldwide','country','province'].includes(body.visibility)) {
-            const res = Response.json({ error: 'Invalid visibility' }, { status: 400, headers: corsHeaders });
-            logRequest({ method, path, status: 400, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'invalid_visibility' });
-            return res;
+          let status = existing.status || 'published';
+          let publishedAt = existing.published_at;
+          if (body.status && ['draft', 'published', 'archived'].includes(body.status)) {
+            status = body.status;
+            if (status === 'published' && !publishedAt) publishedAt = new Date().toISOString();
           }
 
-          const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
-          if (!existing) {
-            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
-            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
-            return res;
-          }
-          if (existing.sellerid !== sellerIdHdr) {
-            const res = Response.json({ error: 'Not authorized to update this listing' }, { status: 403, headers: corsHeaders });
-            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'not_owner' });
-            return res;
-          }
-          if (body.sellerid !== sellerIdHdr) {
-            const res = Response.json({ error: 'Cannot change sellerid' }, { status: 403, headers: corsHeaders });
-            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'seller_change' });
-            return res;
-          }
-
-          const stmt = env.DB.prepare(
+          await env.DB.prepare(
             `UPDATE listings SET
               lat = ?, long = ?, visibility = ?, address = ?, sellerid = ?, category = ?,
               headerdescription = ?, price = ?, units = ?, description = ?, image = ?,
-              updated_at = datetime('now')
+              status = ?, published_at = ?, updated_at = datetime('now')
              WHERE id = ?`
           ).bind(
             Number(body.location.lat),
             Number(body.location.long),
             body.visibility,
             body.address,
-            body.sellerid,
+            actor.sellerid,
             body.category,
             body.headerdescription,
             Number(body.price),
             body.units,
             body.description || '',
             body.image,
+            status,
+            publishedAt,
             id
-          );
+          ).run();
 
-          await stmt.run();
-
-          const listing = {
+          const listing = rowToListing({
             id,
-            location: { lat: Number(body.location.lat), long: Number(body.location.long) },
+            lat: Number(body.location.lat),
+            long: Number(body.location.long),
             visibility: body.visibility,
             address: body.address,
-            sellerid: body.sellerid,
+            sellerid: actor.sellerid,
             category: body.category,
             headerdescription: body.headerdescription,
             price: Number(body.price),
             units: body.units,
             description: body.description || '',
             image: body.image,
-          };
-
-          const res = Response.json({ listing, message: 'updated' }, { headers: corsHeaders });
-          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+            status,
+            published_at: publishedAt,
+          });
+          const res = json({ listing, message: 'updated' });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid: actor.sellerid, listingId: id });
           return res;
         }
 
-        if (request.method === 'DELETE') {
-          const sellerIdHdr = getSellerId(request);
-          if (!sellerIdHdr) {
-            const res = Response.json({ error: 'X-Seller-Id header required' }, { status: 401, headers: corsHeaders });
-            logRequest({ method, path, status: 401, durationMs: Date.now() - start, ip, listingId: id, error: 'missing_seller' });
-            return res;
-          }
-
+        if (method === 'DELETE') {
+          const actor = await resolveActor(env, request);
+          if (!actor) return json({ error: 'Authentication required' }, 401);
           const existing = await env.DB.prepare('SELECT id, sellerid FROM listings WHERE id = ?').bind(id).first();
-          if (!existing) {
-            const res = Response.json({ error: 'Listing not found' }, { status: 404, headers: corsHeaders });
-            logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
-            return res;
+          if (!existing) return json({ error: 'Listing not found' }, 404);
+          if (existing.sellerid !== actor.sellerid) {
+            return json({ error: 'Not authorized to delete this listing' }, 403);
           }
-          if (existing.sellerid !== sellerIdHdr) {
-            const res = Response.json({ error: 'Not authorized to delete this listing' }, { status: 403, headers: corsHeaders });
-            logRequest({ method, path, status: 403, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id, error: 'not_owner' });
-            return res;
-          }
-
           await env.DB.prepare('DELETE FROM listings WHERE id = ?').bind(id).run();
-
-          const res = Response.json({ message: 'deleted', id }, { headers: corsHeaders });
-          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerId: sellerIdHdr, listingId: id });
+          const res = json({ message: 'deleted', id });
+          logRequest({ method, path, status: 200, durationMs: Date.now() - start, ip, sellerid: actor.sellerid, listingId: id });
           return res;
         }
       }
 
-      const res = Response.json({ error: 'Not found', path }, { status: 404, headers: corsHeaders });
-      logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip, sellerId: sellerId || null });
+      const res = json({ error: 'Not found', path }, 404);
+      logRequest({ method, path, status: 404, durationMs: Date.now() - start, ip });
       return res;
     } catch (err) {
       console.error(err);
-      const res = Response.json({ error: 'Internal error', message: err.message }, { status: 500, headers: corsHeaders });
-      logRequest({ method, path, status: 500, durationMs: Date.now() - start, ip, sellerId: sellerId || null, error: err.message });
+      const res = json({ error: 'Internal error', message: err.message }, 500);
+      logRequest({ method, path, status: 500, durationMs: Date.now() - start, ip, error: err.message });
       return res;
     }
   },
