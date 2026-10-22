@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 11:15 MDT – Added P6 RFQ persistence foundation (schema/rfq-migration.sql + Worker POST/GET routes + frontend createRfq prefers API). Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). RFQ migration is optional next. All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
+*Last updated: 2026-10-22 12:15 MDT – Dashboard RFQ inbox + badge now prefer live GET /api/v1/rfqs/mine (with local fallback and field normalization). Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). RFQ migration is optional next. All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
 
 ---
 
@@ -30,6 +30,7 @@
 | Distance shown in list items after Locate me | Done |
 | getListings exported for search typeahead | Done |
 | RFQ schema + Worker create/mine routes + frontend API prefer | Done (user runs migration when ready) |
+| Dashboard RFQ inbox + badge prefer live API | Done (normalizes API/local shapes) |
 
 ---
 

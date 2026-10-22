@@ -2,6 +2,7 @@
  * FarmDirect B2B – seller dashboard
  * Prefers real auth session (Bearer token). Shows drafts / published / archived
  * with Publish / Unpublish / Archive actions (live API or demo localStorage).
+ * RFQ inbox and badge prefer live GET /api/v1/rfqs/mine when available.
  */
 (function (global) {
   'use strict';
@@ -24,7 +25,44 @@
     }
   }
 
-  function updateRfqBadge() {
+  /** Normalize local or API RFQ shape for display */
+  function normalizeRfq(r) {
+    if (!r) return null;
+    return {
+      id: r.id,
+      listingId: r.listingId || r.listing_id || '',
+      name: r.name || r.buyer_name || '',
+      email: r.email || r.buyer_email || '',
+      quantity: r.quantity || '',
+      message: r.message || '',
+      created: r.created || r.created_at || '',
+      status: r.status || 'open',
+    };
+  }
+
+  async function loadMyRfqs(seller, mineListings) {
+    if (global.FD_API && typeof global.FD_API.fetchMyRfqs === 'function') {
+      try {
+        const result = await global.FD_API.fetchMyRfqs();
+        if (result && Array.isArray(result.rfqs)) {
+          return {
+            rfqs: result.rfqs.map(normalizeRfq).filter(Boolean),
+            source: result.source || 'api',
+          };
+        }
+      } catch (_) {}
+    }
+    // Local fallback: filter by current seller's listing ids
+    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
+    const myIds = new Set((mineListings || []).map(l => l.id));
+    const filtered = allRfqs
+      .filter(r => myIds.has(r.listingId || r.listing_id))
+      .map(normalizeRfq)
+      .filter(Boolean);
+    return { rfqs: filtered, source: 'local' };
+  }
+
+  async function updateRfqBadge() {
     const badge = document.getElementById('rfq-badge');
     if (!badge) return;
     const seller = getCurrentSeller();
@@ -33,17 +71,18 @@
       badge.textContent = '';
       return;
     }
-    const all = (global.FD_LIST && global.FD_LIST.getListings) ? global.FD_LIST.getListings() : [];
-    const mine = all.filter(l => l.sellerid === seller);
-    const myIds = new Set(mine.map(l => l.id));
-    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
-    const count = allRfqs.filter(r => myIds.has(r.listingId)).length;
-    if (count > 0) {
-      badge.textContent = count > 99 ? '99+' : String(count);
-      badge.hidden = false;
-    } else {
+    try {
+      const { rfqs } = await loadMyRfqs(seller, []);
+      const count = rfqs.length;
+      if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+        badge.textContent = '';
+      }
+    } catch (_) {
       badge.hidden = true;
-      badge.textContent = '';
     }
   }
 
@@ -154,9 +193,7 @@
       }
     }
 
-    const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
-    const myIds = new Set(mine.map(l => l.id));
-    const myRfqs = allRfqs.filter(r => myIds.has(r.listingId));
+    const { rfqs: myRfqs, source: rfqSource } = await loadMyRfqs(seller, mine);
 
     const drafts = mine.filter(l => (l.status || 'published') === 'draft');
     const published = mine.filter(l => (l.status || 'published') === 'published');
@@ -166,9 +203,9 @@
       <h3>Dashboard · ${escapeHtml(seller)}</h3>
       <p class="muted">${mine.length} listing${mine.length === 1 ? '' : 's'} · ${drafts.length} draft${drafts.length === 1 ? '' : 's'} · ${published.length} published · ${archived.length} archived · ${myRfqs.length} quote request${myRfqs.length === 1 ? '' : 's'} · <button type="button" id="logout-btn" class="link-btn">Sign out</button></p>
       <div id="my-listings" class="dashboard-list"></div>
-      <h4 style="margin:1.2rem 0 0.4rem">Incoming quote requests</h4>
+      <h4 style="margin:1.2rem 0 0.4rem">Incoming quote requests${rfqSource === 'api' ? ' <span class="muted small">(live)</span>' : ' <span class="muted small">(demo)</span>'}</h4>
       <div id="my-rfqs" class="dashboard-list"></div>
-      <p class="muted small">Publish controls work against the live Worker (after auth migration) or in local demo mode.</p>
+      <p class="muted small">Publish controls work against the live Worker (after auth migration) or in local demo mode. Quote requests prefer the live API when the RFQ migration has been applied.</p>
     `;
 
     const listEl = document.getElementById('my-listings');
@@ -289,7 +326,7 @@
           <div class="listing-card">
             <div class="listing-info" style="padding:0.5rem">
               <h3 style="font-size:0.95rem">${escapeHtml(title)}</h3>
-              <div class="meta">From ${escapeHtml(r.name)} <${escapeHtml(r.email)}> · Qty: ${escapeHtml(r.quantity)}</div>
+              <div class="meta">From ${escapeHtml(r.name)} (${escapeHtml(r.email)}) · Qty: ${escapeHtml(r.quantity)}</div>
               ${r.message ? `<p style="margin:0.3rem 0;font-size:0.85rem">${escapeHtml(r.message)}</p>` : ''}
               <div class="meta" style="font-size:0.75rem">${escapeHtml(when)}</div>
               ${viewBtn}
@@ -297,15 +334,19 @@
           </div>
         `;
       }).join('') +
-      `<p style="margin-top:0.5rem"><button type="button" id="clear-rfqs-btn" class="small-btn">Clear my RFQs</button></p>`;
+      (rfqSource === 'local'
+        ? `<p style="margin-top:0.5rem"><button type="button" id="clear-rfqs-btn" class="small-btn">Clear my RFQs (demo)</button></p>`
+        : '');
 
       rfqEl.querySelectorAll('button[data-listing]').forEach(btn => {
         btn.addEventListener('click', () => openListingFromRfq(btn.dataset.listing));
       });
 
       document.getElementById('clear-rfqs-btn')?.addEventListener('click', () => {
-        if (!confirm('Clear all quote requests for your listings?')) return;
-        const remaining = allRfqs.filter(r => !myIds.has(r.listingId));
+        if (!confirm('Clear all local quote requests for your listings?')) return;
+        const allRfqs = (global.FD_RFQ && global.FD_RFQ.getAll) ? global.FD_RFQ.getAll() : [];
+        const myIds = new Set(mine.map(l => l.id));
+        const remaining = allRfqs.filter(r => !myIds.has(r.listingId || r.listing_id));
         try {
           localStorage.setItem('fd-rfqs', JSON.stringify(remaining));
         } catch (_) {}
@@ -328,7 +369,6 @@
   }
 
   async function refreshAfterChange() {
-    // Refresh public map/list so published status is reflected
     if (global.FD_API && global.FD_API.fetchListings && global.FD_LIST) {
       const result = await global.FD_API.fetchListings();
       global.FD_LIST.setListings(result.listings);

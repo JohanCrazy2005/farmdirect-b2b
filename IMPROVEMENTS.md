@@ -1,3 +1,15 @@
+## 2026-10-22 – Dashboard RFQ inbox + badge prefer live API
+
+**What:** Updated `js/dashboard.js` so the seller dashboard RFQ section and header badge call `FD_API.fetchMyRfqs()` (preferring live `GET /api/v1/rfqs/mine`) and fall back to localStorage filtering. Added `normalizeRfq` so both API shape (`listing_id`, `buyer_name`, `buyer_email`, `created_at`) and local shape (`listingId`, `name`, `email`, `created`) display consistently. Labels the section “(live)” or “(demo)”. Clear button only appears for local/demo source. Fixed broken HTML escaping in the same module.
+
+**Why:** Highest unfinished code-only item after the user-owned D1 auth migration. Completes the P6 frontend preference for the seller inbox without inventing features or requiring a second Worker. Demo fallback remains intact.
+
+**How:** Frontend-only change in the dashboard module + docs. User must still run `auth-migration.sql` first (sole blocker for sessions), then optionally `rfq-migration.sql` for durable RFQs.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login works. Optionally run the RFQ migration for live quote storage.
+
+---
+
 ## 2026-10-22 – P6: RFQ persistence foundation (schema + Worker routes + frontend API prefer)
 
 **What:** Added `schema/rfq-migration.sql` (rfqs table with listing_id, sellerid, buyer fields, status). Extended `workers/api.js` with public `POST /api/v1/rfqs` (resolves sellerid from listing) and seller `GET /api/v1/rfqs/mine`. Updated `js/api.js` with `createRfq` / `fetchMyRfqs` that prefer the live API when `API_BASE` is set and fall back to localStorage. `js/rfq.js` submit now calls `FD_API.createRfq`. Health endpoint advertises `rfq` feature. GOAL.md and README notes refreshed.
