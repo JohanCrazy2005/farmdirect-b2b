@@ -65,8 +65,8 @@
       showProduct(listing); // refresh
     });
     el.querySelector('.rfq-btn')?.addEventListener('click', () => {
-      if (global.FD_RFQ && typeof global.FD_RFQ.openForm === 'function') {
-        global.FD_RFQ.openForm(listing);
+      if (global.FD_RFQ && typeof global.FD_RFQ.open === 'function') {
+        global.FD_RFQ.open(listing.id);
       } else if (global.FD_TOAST) {
         global.FD_TOAST.show('RFQ module not available', 'info');
       }

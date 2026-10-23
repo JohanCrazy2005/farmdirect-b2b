@@ -95,6 +95,7 @@
       <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
       <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
       <button id="sellers-btn" type="button" class="small-btn">Seller directory</button>
+      <button id="my-rfqs-btn" type="button" class="small-btn">My quote requests</button>
       <button id="shortcuts-btn" type="button" class="small-btn">Keyboard shortcuts</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
@@ -218,6 +219,34 @@ npx wrangler deploy</pre>
           <li><kbd>Esc</kbd> Close open cards / menus / modals</li>
         </ul>
         <p class="muted small">Fully client-side. Ignored while typing in inputs. Works in seed/demo and live modes.</p>
+      </div>
+    </div>
+
+    <!-- RFQ modal -->
+    <div id="rfq-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-rfq-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Request a quote</h3>
+        <form id="rfq-form">
+          <input type="hidden" id="rfq-listing-id">
+          <label>Your name <input id="rfq-name" type="text" required></label>
+          <label>Email <input id="rfq-email" type="email" required></label>
+          <label>Quantity <input id="rfq-quantity" type="text" required placeholder="e.g. 100 kg"></label>
+          <label>Message <textarea id="rfq-message" rows="3"></textarea></label>
+          <div id="rfq-status" class="form-status"></div>
+          <button type="submit" class="primary-btn">Send request</button>
+        </form>
+        <p class="muted small">Saved locally in demo/seed mode. Sent to the Worker when live and RFQ migration applied.</p>
+      </div>
+    </div>
+
+    <!-- My quote requests modal -->
+    <div id="my-rfqs-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-my-rfqs-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>My quote requests</h3>
+        <div id="my-rfqs-list"></div>
+        <button id="clear-my-rfqs-btn" type="button" class="small-btn" style="margin-top:0.75rem">Clear all</button>
       </div>
     </div>
 

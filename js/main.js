@@ -22,6 +22,7 @@
     if (window.FD_COMPARE) window.FD_COMPARE.bind();
     if (window.FD_SHORTCUTS) window.FD_SHORTCUTS.bind();
     if (window.FD_SELLERS) window.FD_SELLERS.bind();
+    if (window.FD_RFQ) window.FD_RFQ.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -88,6 +89,12 @@
     // Seller directory
     document.getElementById('sellers-btn')?.addEventListener('click', () => {
       if (window.FD_SELLERS) window.FD_SELLERS.open();
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // My quote requests
+    document.getElementById('my-rfqs-btn')?.addEventListener('click', () => {
+      if (window.FD_RFQ) window.FD_RFQ.openMyRfqs();
       optionsMenu?.setAttribute('hidden', '');
     });
 
