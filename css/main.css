@@ -103,6 +103,31 @@ body {
   padding: 0 4px;
 }
 
+/* Offline / seed banner */
+.offline-banner {
+  position: fixed;
+  top: var(--top-h);
+  left: 0; right: 0;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.45rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  z-index: 999;
+  border-bottom: 1px solid #fcd34d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.offline-banner[hidden] { display: none !important; }
+.offline-banner .small-btn {
+  background: #92400e;
+  color: white;
+  flex-shrink: 0;
+}
+.offline-banner .small-btn:hover { background: #78350f; }
+
 /* Map */
 #map {
   position: absolute;
@@ -355,6 +380,7 @@ body {
   .sidebar { width: calc(100% - 24px); max-height: 40vh; bottom: 12px; top: auto; }
   .product-card, .seller-card, .filter-card, .options-menu { width: calc(100% - 24px); right: 12px; }
   .top-bar { padding: 0 0.4rem; }
+  .offline-banner { flex-direction: column; align-items: stretch; text-align: center; gap: 0.4rem; }
 }
 
 #toast-container {

@@ -1,3 +1,15 @@
+## 2026-10-22 – Clearer offline/seed banner (P4 seed fallback UX)
+
+**What:** Added a dismissible fixed banner (`#offline-banner`) that appears below the top bar when listings load from seed or demo fallback. Text distinguishes seed (read-only until Worker live) vs demo (local changes persist). Dismiss is remembered for the session via sessionStorage. Styles in `css/main.css` (amber warning, responsive). Wired in `js/main.js` after `fetchListings`.
+
+**Why:** Highest unfinished code-only item after user-owned P1 auth migration. The toast was easy to miss; a persistent but dismissible banner improves seed-fallback UX as noted in GOAL.md without inventing features or requiring a second Worker. Works in both demo and live modes.
+
+**How:** Frontend-only changes to index.html, css/main.css, and js/main.js. Updated GOAL.md to mark the optional banner complete. Single commit via push_files.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Complete frontend shell (index.html + css/main.css + js/main.js)
 
 **What:** Replaced the three PLACEHOLDER files with a full map-first UI shell. `index.html` provides the transparent top search bar, profile icon, options menu, filter button → filter card, sidebar listing list, product + seller cards, lightbox, dashboard/form/auth/deploy modals. `css/main.css` supplies layout, cards, clusters, legend, responsive behavior. `js/main.js` bootstraps Leaflet via FD_MAP, binds FD_LIST / search / dashboard / form / auth, loads listings (live API or seed/demo fallback), and wires options (API base override, deploy commands, demo export/reset).

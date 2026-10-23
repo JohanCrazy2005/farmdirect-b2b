@@ -103,8 +103,32 @@
       if (e.target.id === 'image-lightbox' && window.FD_CARDS) window.FD_CARDS.closeLightbox();
     });
 
+    // Offline banner dismiss
+    document.getElementById('dismiss-offline-banner')?.addEventListener('click', () => {
+      const banner = document.getElementById('offline-banner');
+      if (banner) banner.setAttribute('hidden', '');
+      try { sessionStorage.setItem('fd-offline-banner-dismissed', '1'); } catch (_) {}
+    });
+
     // Load data
     loadListings();
+  }
+
+  function showOfflineBanner(source) {
+    const banner = document.getElementById('offline-banner');
+    const text = document.getElementById('offline-banner-text');
+    if (!banner || !text) return;
+    try {
+      if (sessionStorage.getItem('fd-offline-banner-dismissed') === '1') return;
+    } catch (_) {}
+    if (source === 'seed') {
+      text.textContent = 'Using seed listings (Worker offline or undeployed). Changes are not saved until the Worker is live.';
+    } else if (source === 'demo') {
+      text.textContent = 'Demo mode – local changes persist. Connect the live Worker via Options for real data.';
+    } else {
+      return;
+    }
+    banner.removeAttribute('hidden');
   }
 
   async function loadListings() {
@@ -120,6 +144,7 @@
                     'No listings loaded';
         window.FD_TOAST.show(msg, src === 'api' ? 'success' : 'info');
       }
+      showOfflineBanner(src);
       // Deep link support
       const hash = location.hash || '';
       const m = hash.match(/#listing=([^&]+)/);
