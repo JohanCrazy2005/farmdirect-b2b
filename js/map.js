@@ -12,6 +12,7 @@
  * + Shareable map view via URL hash (#map=lat,lng,zoom) – copy button + restore on load (overrides localStorage; fully client-side for seed/demo)
  * + Persist Locate me location in localStorage (marker + accuracy + distance sort restored on reload; fully client-side for seed/demo)
  * + Location callbacks now also drive FD_LIST.setUserLocation for consistent distance display/filter
+ * + getBounds exposed so “Only in view” filter works (client-side, seed/demo friendly)
  */
 (function (global) {
   'use strict';
@@ -487,14 +488,25 @@
     return base + '#map=' + c.lat.toFixed(6) + ',' + c.lng.toFixed(6) + ',' + z;
   }
 
+  function getBounds() {
+    if (!map) return null;
+    const b = map.getBounds();
+    return {
+      north: b.getNorth(),
+      south: b.getSouth(),
+      east: b.getEast(),
+      west: b.getWest()
+    };
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/\"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink, getBounds };
 })(window);

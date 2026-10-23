@@ -88,6 +88,20 @@
       if (window.FD_TOAST) window.FD_TOAST.show('Reloading listings…', 'info');
     });
 
+    // Copy map view link
+    document.getElementById('copy-map-link-btn')?.addEventListener('click', async () => {
+      if (window.FD_MAP && typeof window.FD_MAP.getMapViewLink === 'function') {
+        const link = window.FD_MAP.getMapViewLink();
+        try {
+          await navigator.clipboard.writeText(link);
+          if (window.FD_TOAST) window.FD_TOAST.show('Map view link copied', 'success');
+        } catch (_) {
+          if (window.FD_TOAST) window.FD_TOAST.show('Could not copy – link: ' + link, 'info');
+        }
+      }
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
     // Recently viewed
     document.getElementById('show-recent-btn')?.addEventListener('click', () => {
       if (window.FD_RECENT) window.FD_RECENT.open();
