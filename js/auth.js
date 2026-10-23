@@ -3,6 +3,7 @@
  * Login / register modal. Stores opaque Bearer token in localStorage.
  * Works against live Worker once migration + redeploy are done.
  * Falls back gracefully when API is unavailable (demo mode).
+ * Updates profile icon after session changes.
  */
 (function (global) {
   'use strict';
@@ -28,6 +29,9 @@
       if (seller) localStorage.setItem(SELLER_KEY, JSON.stringify(seller));
       else localStorage.removeItem(SELLER_KEY);
     } catch (_) {}
+    if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.updateProfileIndicator === 'function') {
+      global.FD_DASHBOARD.updateProfileIndicator();
+    }
   }
 
   function clearSession() {
@@ -128,7 +132,6 @@
               status.innerHTML = 'Auth columns missing on D1. <button type="button" class="link-btn" id="open-deploy-from-auth">Show migration command</button> (ignore duplicate column errors).';
               document.getElementById('open-deploy-from-auth')?.addEventListener('click', () => {
                 closeAuthModal();
-                // Open deploy modal (wired in main.js)
                 document.getElementById('deploy-modal')?.classList.add('open');
               });
             } else {
@@ -143,7 +146,6 @@
         if (global.FD_DASHBOARD && global.FD_DASHBOARD.openDashboard) {
           global.FD_DASHBOARD.openDashboard();
         }
-        // Refresh data so mine endpoint can be used later
         if (global.FD_API && global.FD_API.fetchListings) {
           const result = await global.FD_API.fetchListings();
           if (global.FD_LIST && global.FD_LIST.setListings) global.FD_LIST.setListings(result.listings || []);

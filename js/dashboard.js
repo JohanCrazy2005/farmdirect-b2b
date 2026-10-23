@@ -3,6 +3,7 @@
  * Prefers real auth session (Bearer token). Shows drafts / published / archived
  * with Publish / Unpublish / Archive actions (live API or demo localStorage).
  * RFQ inbox and badge prefer live GET /api/v1/rfqs/mine when available.
+ * Profile icon reflects logged-in state (demo or live).
  */
 (function (global) {
   'use strict';
@@ -22,6 +23,23 @@
       localStorage.setItem(STORAGE_KEY, id.trim());
     } else {
       localStorage.removeItem(STORAGE_KEY);
+    }
+    updateProfileIndicator();
+  }
+
+  /** Reflect logged-in seller on the top-bar profile icon */
+  function updateProfileIndicator() {
+    const btn = document.getElementById('profile-btn');
+    if (!btn) return;
+    const seller = getCurrentSeller();
+    if (seller) {
+      btn.classList.add('logged-in');
+      btn.title = `Signed in as ${seller} – open dashboard`;
+      btn.setAttribute('aria-label', `Profile: ${seller}`);
+    } else {
+      btn.classList.remove('logged-in');
+      btn.title = 'Profile / Dashboard';
+      btn.setAttribute('aria-label', 'Profile / Dashboard');
     }
   }
 
@@ -69,6 +87,7 @@
     if (!seller) {
       badge.hidden = true;
       badge.textContent = '';
+      updateProfileIndicator();
       return;
     }
     try {
@@ -84,6 +103,7 @@
     } catch (_) {
       badge.hidden = true;
     }
+    updateProfileIndicator();
   }
 
   function openDashboard() {
@@ -100,10 +120,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 
@@ -178,6 +198,7 @@
         });
       }
       updateRfqBadge();
+      updateProfileIndicator();
       return;
     }
 
@@ -366,6 +387,7 @@
     });
 
     updateRfqBadge();
+    updateProfileIndicator();
   }
 
   async function refreshAfterChange() {
@@ -383,7 +405,8 @@
       if (e.target.id === 'dashboard-modal') closeDashboard();
     });
     updateRfqBadge();
+    updateProfileIndicator();
   }
 
-  global.FD_DASHBOARD = { openDashboard, closeDashboard, bindDashboard, getCurrentSeller, updateRfqBadge };
+  global.FD_DASHBOARD = { openDashboard, closeDashboard, bindDashboard, getCurrentSeller, updateRfqBadge, updateProfileIndicator };
 })(window);

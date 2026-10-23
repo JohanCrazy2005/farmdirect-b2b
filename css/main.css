@@ -16,6 +16,7 @@
    + richer seller card with listing items
    + listing item styles aligned with js/list.js (sidebar cards)
    + product card distance
+   + profile icon logged-in state
 */
 
 :root {
@@ -99,6 +100,13 @@ html.dark .top-bar { background: rgba(15,23,42,0.85); }
 .icon-btn { position: relative; background: none; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); }
 .icon-btn:hover { background: var(--hover-bg); }
 .icon-btn:focus-visible { outline: 2px solid var(--accent); }
+.icon-btn.logged-in {
+  background: rgba(45, 106, 79, 0.12);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+html.dark .icon-btn.logged-in {
+  background: rgba(45, 106, 79, 0.28);
+}
 
 .badge {
   position: absolute;
@@ -484,23 +492,6 @@ html.dark .badge-archived { background: #334155; color: #cbd5e1; }
   .sidebar { position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); border-radius: 1rem 1rem 0 0; z-index: 800; }
   .main { flex-direction: column; }
   #map { height: 60vh; }
-  .filter-card, .detail-card, .seller-card-overlay { left: 0.5rem; right: 0.5rem; width: auto; }
-  .search-suggestions { max-height: 240px; }
-  body.map-fullscreen .sidebar { display: none; }
+  .filter-card, .detail-card, .seller-card-overlay { width: calc(100% - 2rem); left: 1rem; right: 1rem; }
+  .options-menu { right: 0.5rem; }
 }
-
-/* Close button for filter / product / seller cards */
-.close-card {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  color: var(--text);
-  line-height: 1;
-  z-index: 1;
-  padding: 0.2rem;
-}
-.close-card:hover { opacity: 0.7; }

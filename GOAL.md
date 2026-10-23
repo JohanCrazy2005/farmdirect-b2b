@@ -6,7 +6,7 @@
 **Frontend:** https://farmdirect-b2b-yjzt.vercel.app  
 **Database:** Cloudflare D1 `b2bistening` (id `ad22b284-cafd-4f74-a8bc-6205056d38f8`, binding `DB`)
 
-*Last updated: 2026-10-22 17:05 MDT – Filter card close button + outside-click dismissal complete. Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
+*Last updated: 2026-10-22 18:05 MDT – Profile icon now reflects logged-in seller state (demo or live). Sole remaining blocker for live sessions remains the user-owned D1 auth migration (`schema/auth-migration.sql`). All code is ready. Run the SQL (ignore duplicate-column / table-exists errors).*
 
 ---
 
@@ -37,6 +37,7 @@
 | Removable styled filter chips | Done |
 | List-map hover highlight + Locate me distance sync | Done |
 | Filter card close button + outside click | Done |
+| Profile icon reflects logged-in seller | Done |
 
 ---
 
