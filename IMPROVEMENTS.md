@@ -1,3 +1,15 @@
+## 2026-10-22 – Polish: dynamically populate units filter select
+
+**What:** Extended `populateFilterSelects` in `js/list.js` so the Units `<select id="filter-units">` is filled with unique, sorted values from the current listings (same pattern as Category and Seller). Also corrected the broken `escapeHtml` helper (was emitting literal `&` instead of `&amp;` etc.).
+
+**Why:** Highest unfinished code-only item after user-owned P1 auth migration. The filter card already had a Units control and the filter logic already respected it, but the dropdown stayed empty (only "Any"). Completing the dynamic population makes the filter fully usable in both seed/demo and live modes without new features or schema changes.
+
+**How:** Frontend-only change to `js/list.js`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Publish workflow UI feedback (P3)
 
 **What:** Added a visible draft-guidance note (`#form-draft-note`) in the listing form that appears only in create mode. On successful create/update the form status now includes next-step text and a success toast is shown via FD_TOAST. Close delay slightly increased so the message is readable. Edit mode hides the note.

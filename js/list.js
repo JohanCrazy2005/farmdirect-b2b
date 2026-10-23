@@ -6,6 +6,7 @@
  * Filter chips are now styled (.filter-chip) and individually removable.
  * List-map sync: hover highlight + Locate me distance sort now fully wired.
  * Filter card now closes on × button or outside click.
+ * Units filter select is populated dynamically from unique listing units.
  */
 (function (global) {
   'use strict';
@@ -49,6 +50,7 @@
   function populateFilterSelects() {
     const catSel = document.getElementById('filter-category');
     const sellerSel = document.getElementById('filter-seller');
+    const unitsSel = document.getElementById('filter-units');
     if (catSel) {
       const cats = [...new Set(allListings.map(l => l.category).filter(Boolean))].sort();
       catSel.innerHTML = '<option value="">All</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
@@ -56,6 +58,10 @@
     if (sellerSel) {
       const sellers = [...new Set(allListings.map(l => l.sellerid).filter(Boolean))].sort();
       sellerSel.innerHTML = '<option value="">Any</option>' + sellers.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+    }
+    if (unitsSel) {
+      const units = [...new Set(allListings.map(l => l.units).filter(Boolean))].sort();
+      unitsSel.innerHTML = '<option value="">Any</option>' + units.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
     }
   }
 
@@ -331,10 +337,10 @@
 
   function escapeHtml(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   global.FD_LIST = {
