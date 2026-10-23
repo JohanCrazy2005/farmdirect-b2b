@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire map base-layer switcher module
+
+**What:** Completed the existing `js/layers.js` module by loading the script in `index.html` and calling `FD_LAYERS.bind()` from `js/main.js` after map initialization. The Leaflet layers control now appears on the map (top-right), letting users switch between OpenStreetMap, Carto Light, Carto Dark, and Esri Satellite tiles. Choice persists in localStorage.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already implemented but not wired into the shell. Works fully in seed/demo mode and improves map-first exploration UX without new features or schema changes.
+
+**How:** Frontend changes to index.html and js/main.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Wire listings statistics module
 
 **What:** Completed the existing `js/stats.js` module by adding the `#stats-modal` UI, a “Listings statistics” button in the options menu, script load + bind in `main.js`, and styles for the summary and lists. Users can now open a modal showing total listings, unique sellers, price range/average, and breakdowns by category, visibility, and units.

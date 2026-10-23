@@ -24,6 +24,7 @@
     if (window.FD_SELLERS) window.FD_SELLERS.bind();
     if (window.FD_RFQ) window.FD_RFQ.bind();
     if (window.FD_STATS) window.FD_STATS.bind();
+    if (window.FD_LAYERS) window.FD_LAYERS.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
