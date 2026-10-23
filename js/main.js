@@ -21,6 +21,7 @@
     if (window.FD_RECENT) window.FD_RECENT.bind();
     if (window.FD_COMPARE) window.FD_COMPARE.bind();
     if (window.FD_SHORTCUTS) window.FD_SHORTCUTS.bind();
+    if (window.FD_SELLERS) window.FD_SELLERS.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -81,6 +82,12 @@
     // Compare listings
     document.getElementById('compare-btn')?.addEventListener('click', () => {
       if (window.FD_COMPARE) window.FD_COMPARE.open();
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // Seller directory
+    document.getElementById('sellers-btn')?.addEventListener('click', () => {
+      if (window.FD_SELLERS) window.FD_SELLERS.open();
       optionsMenu?.setAttribute('hidden', '');
     });
 

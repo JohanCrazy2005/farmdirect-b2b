@@ -366,6 +366,29 @@ body {
   margin-right: 0.25rem;
 }
 
+/* Seller directory */
+.seller-dir-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.seller-dir-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.seller-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.seller-meta, .seller-address {
+  font-size: 0.85rem;
+  margin: 0.2rem 0;
+}
+.view-seller-btn {
+  margin-top: 0.4rem;
+}
+
 /* Map legend & clusters */
 .map-legend {
   background: rgba(255,255,255,0.92);

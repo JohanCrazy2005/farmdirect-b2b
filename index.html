@@ -94,6 +94,7 @@
       <hr>
       <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
       <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
+      <button id="sellers-btn" type="button" class="small-btn">Seller directory</button>
       <button id="shortcuts-btn" type="button" class="small-btn">Keyboard shortcuts</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
@@ -194,6 +195,15 @@ npx wrangler deploy</pre>
       </div>
     </div>
 
+    <!-- Seller directory modal -->
+    <div id="sellers-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-sellers-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Seller directory</h3>
+        <div id="sellers-content"></div>
+      </div>
+    </div>
+
     <!-- Keyboard shortcuts modal -->
     <div id="shortcuts-modal" class="modal">
       <div class="modal-content card">
@@ -230,6 +240,7 @@ npx wrangler deploy</pre>
   <script src="js/recent.js"></script>
   <script src="js/compare.js"></script>
   <script src="js/shortcuts.js"></script>
+  <script src="js/sellers.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
