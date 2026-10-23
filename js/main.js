@@ -127,6 +127,14 @@
       optionsMenu?.setAttribute('hidden', '');
     });
 
+    // Clear favorites
+    document.getElementById('clear-favorites-btn')?.addEventListener('click', () => {
+      if (window.FD_LIST && typeof window.FD_LIST.clearFavorites === 'function') {
+        window.FD_LIST.clearFavorites();
+      }
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
     // Demo helpers
     document.getElementById('export-demo-btn')?.addEventListener('click', async () => {
       if (window.FD_API && window.FD_API.exportDemoData) {
