@@ -19,6 +19,7 @@
     if (window.FD_FORM) window.FD_FORM.bindForm();
     if (window.FD_AUTH) window.FD_AUTH.bindAuth();
     if (window.FD_RECENT) window.FD_RECENT.bind();
+    if (window.FD_COMPARE) window.FD_COMPARE.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -73,6 +74,12 @@
     // Recently viewed
     document.getElementById('show-recent-btn')?.addEventListener('click', () => {
       if (window.FD_RECENT) window.FD_RECENT.open();
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // Compare listings
+    document.getElementById('compare-btn')?.addEventListener('click', () => {
+      if (window.FD_COMPARE) window.FD_COMPARE.open();
       optionsMenu?.setAttribute('hidden', '');
     });
 

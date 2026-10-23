@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire compare listings module
+
+**What:** Completed the existing `js/compare.js` module by adding the `#compare-modal` UI, a “Compare listings” button in the options menu, script load + bind in `main.js`. Users can now open the side-by-side comparison (2–4 listings) from Options. Selection persists in localStorage.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already implemented but not wired into the shell. Works fully in seed/demo mode and improves UX for comparing products without new features or schema changes.
+
+**How:** Frontend changes to index.html and js/main.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Wire recently-viewed module
 
 **What:** Completed the existing `js/recent.js` module by adding the `#recent-modal` UI, a “Recently viewed” button in the options menu, script load + bind in `main.js`, and an `add` alias for `track` so `FD_LIST.select` correctly records views. Image rendering is now null-safe.

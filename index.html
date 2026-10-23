@@ -93,6 +93,7 @@
       <button id="save-api-base" type="button" class="small-btn">Save API base</button>
       <hr>
       <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
+      <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
       <button id="reset-demo-btn" type="button" class="small-btn">Reset demo listings</button>
@@ -183,6 +184,15 @@ npx wrangler deploy</pre>
       </div>
     </div>
 
+    <!-- Compare listings modal -->
+    <div id="compare-modal" class="modal">
+      <div class="modal-content card" style="width:min(720px,96vw)">
+        <button id="close-compare-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Compare listings</h3>
+        <div id="compare-content"></div>
+      </div>
+    </div>
+
     <div id="toast-container"></div>
   </div>
 
@@ -200,6 +210,7 @@ npx wrangler deploy</pre>
   <script src="js/form.js"></script>
   <script src="js/rfq.js"></script>
   <script src="js/recent.js"></script>
+  <script src="js/compare.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
