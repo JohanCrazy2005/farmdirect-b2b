@@ -18,6 +18,7 @@
     if (window.FD_DASHBOARD) window.FD_DASHBOARD.bindDashboard();
     if (window.FD_FORM) window.FD_FORM.bindForm();
     if (window.FD_AUTH) window.FD_AUTH.bindAuth();
+    if (window.FD_RECENT) window.FD_RECENT.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -67,6 +68,12 @@
     });
     document.getElementById('deploy-modal')?.addEventListener('click', (e) => {
       if (e.target.id === 'deploy-modal') e.target.classList.remove('open');
+    });
+
+    // Recently viewed
+    document.getElementById('show-recent-btn')?.addEventListener('click', () => {
+      if (window.FD_RECENT) window.FD_RECENT.open();
+      optionsMenu?.setAttribute('hidden', '');
     });
 
     // Demo helpers

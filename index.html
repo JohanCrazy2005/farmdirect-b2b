@@ -92,6 +92,7 @@
       </label>
       <button id="save-api-base" type="button" class="small-btn">Save API base</button>
       <hr>
+      <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
       <button id="reset-demo-btn" type="button" class="small-btn">Reset demo listings</button>
@@ -172,6 +173,16 @@ npx wrangler deploy</pre>
       </div>
     </div>
 
+    <!-- Recent listings modal -->
+    <div id="recent-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-recent-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Recently viewed</h3>
+        <div id="recent-list"></div>
+        <button id="clear-recent-btn" type="button" class="small-btn" style="margin-top:0.75rem">Clear</button>
+      </div>
+    </div>
+
     <div id="toast-container"></div>
   </div>
 
@@ -188,6 +199,7 @@ npx wrangler deploy</pre>
   <script src="js/dashboard.js"></script>
   <script src="js/form.js"></script>
   <script src="js/rfq.js"></script>
+  <script src="js/recent.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

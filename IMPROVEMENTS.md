@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire recently-viewed module
+
+**What:** Completed the existing `js/recent.js` module by adding the `#recent-modal` UI, a “Recently viewed” button in the options menu, script load + bind in `main.js`, and an `add` alias for `track` so `FD_LIST.select` correctly records views. Image rendering is now null-safe.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already referenced from the list but not wired into the shell. Works fully in seed/demo mode and improves UX for exploring listings without new features or schema changes.
+
+**How:** Frontend changes to index.html, js/main.js, and js/recent.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: dynamically populate units filter select
 
 **What:** Extended `populateFilterSelects` in `js/list.js` so the Units `<select id="filter-units">` is filled with unique, sorted values from the current listings (same pattern as Category and Seller). Also corrected the broken `escapeHtml` helper (was emitting literal `&` instead of `&amp;` etc.).

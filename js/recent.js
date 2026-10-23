@@ -54,15 +54,19 @@
       container.innerHTML = '<p class="muted">No recently viewed listings yet. Open a product card to start tracking.</p>';
       return;
     }
-    container.innerHTML = items.map(l => `
+    container.innerHTML = items.map(l => {
+      const img = l.image
+        ? `<img src="${escapeHtml(l.image)}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:0.3rem;background:var(--hover-bg)" onerror="this.style.display='none'">`
+        : '<div style="width:48px;height:48px;border-radius:0.3rem;background:var(--hover-bg)"></div>';
+      return `
       <div class="recent-item" data-id="${escapeHtml(l.id)}" style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border);cursor:pointer;align-items:center">
-        <img src="${escapeHtml(l.image)}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:0.3rem;background:var(--hover-bg)" onerror="this.style.display='none'">
+        ${img}
         <div>
-          <strong style="font-size:0.9rem">${escapeHtml(l.headerdescription)}</strong>
-          <div style="font-size:0.75rem;color:var(--muted,#64748b)">$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units)} · ${escapeHtml(l.category)}</div>
+          <strong style="font-size:0.9rem">${escapeHtml(l.headerdescription || 'Untitled')}</strong>
+          <div style="font-size:0.75rem;color:var(--muted,#64748b)">$${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || 'unit')} · ${escapeHtml(l.category || '')}</div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     container.querySelectorAll('.recent-item').forEach(el => {
       el.addEventListener('click', () => {
@@ -109,5 +113,6 @@
     });
   }
 
-  global.FD_RECENT = { track, open, close, bind };
+  // Alias so list.js select() can call FD_RECENT.add(id)
+  global.FD_RECENT = { track, add: track, open, close, bind };
 })(window);
