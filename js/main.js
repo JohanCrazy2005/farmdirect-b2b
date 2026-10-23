@@ -119,6 +119,14 @@
       optionsMenu?.setAttribute('hidden', '');
     });
 
+    // JSON export (uses existing FD_LIST.exportFiltered)
+    document.getElementById('export-json-btn')?.addEventListener('click', () => {
+      if (window.FD_LIST && typeof window.FD_LIST.exportFiltered === 'function') {
+        window.FD_LIST.exportFiltered();
+      }
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
     // Demo helpers
     document.getElementById('export-demo-btn')?.addEventListener('click', async () => {
       if (window.FD_API && window.FD_API.exportDemoData) {
