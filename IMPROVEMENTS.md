@@ -1,3 +1,15 @@
+## 2026-10-22 – Complete frontend shell (index.html + css/main.css + js/main.js)
+
+**What:** Replaced the three PLACEHOLDER files with a full map-first UI shell. `index.html` provides the transparent top search bar, profile icon, options menu, filter button → filter card, sidebar listing list, product + seller cards, lightbox, dashboard/form/auth/deploy modals. `css/main.css` supplies layout, cards, clusters, legend, responsive behavior. `js/main.js` bootstraps Leaflet via FD_MAP, binds FD_LIST / search / dashboard / form / auth, loads listings (live API or seed/demo fallback), and wires options (API base override, deploy commands, demo export/reset).
+
+**Why:** Highest unfinished item after the user-owned D1 auth migration. The modules (map.js, list.js, cards.js, api.js, …) were already substantial but the shell that wires them was missing, so the app could not run. Pure code-only change; no second Worker; works in both demo and live modes.
+
+**How:** Single commit via push_files. Updated GOAL.md priority queue to mark P2 complete and keep P1 as the user action.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-22 – Polish: Options menu close button
 
 **What:** Added a × close button (`#close-options-btn.close-card`) to the options menu in `index.html`. Bound it in `js/main.js` so the menu closes and aria-expanded updates. Added shared `.close-card` styles in `css/main.css` (positioned absolute, hover, focus) that also cover the existing filter-card close button for visual consistency.

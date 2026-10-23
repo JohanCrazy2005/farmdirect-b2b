@@ -1,1 +1,186 @@
-PLACEHOLDER - full content from /tmp/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FarmDirect B2B – Map-first Marketplace</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Transparent top search bar -->
+    <header class="top-bar">
+      <div class="search-box">
+        <input id="search-input" type="search" placeholder="Search listings, categories, sellers…" autocomplete="off" aria-label="Search listings">
+        <button id="clear-search" type="button" class="icon-btn" title="Clear search" aria-label="Clear search">×</button>
+        <div id="search-suggestions" class="search-suggestions" hidden></div>
+      </div>
+      <div class="top-actions">
+        <button id="filter-btn" type="button" class="icon-btn" title="Filters" aria-label="Open filters" aria-expanded="false">🔍</button>
+        <button id="profile-btn" type="button" class="icon-btn" title="Profile / Dashboard" aria-label="Profile / Dashboard">👤</button>
+        <span id="rfq-badge" class="badge-count" hidden></span>
+        <button id="options-btn" type="button" class="icon-btn" title="Options" aria-label="Options menu" aria-expanded="false">⚙</button>
+      </div>
+    </header>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Sidebar listing list -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h2>Listings <span id="list-count" class="muted">0</span></h2>
+        <div class="sidebar-tools">
+          <button id="locate-btn" type="button" class="small-btn" title="Locate me">📍 Locate</button>
+          <button id="clear-location-btn" type="button" class="small-btn" hidden>Clear</button>
+          <button id="fit-all-btn" type="button" class="small-btn" title="Fit all">Fit</button>
+        </div>
+      </div>
+      <div id="filter-chips" class="filter-chips"></div>
+      <div id="listing-list" class="listing-list" role="list"></div>
+    </aside>
+
+    <!-- Filter card -->
+    <div id="filter-card" class="card filter-card" hidden>
+      <button id="close-filter-btn" type="button" class="close-card" aria-label="Close filters">×</button>
+      <h3>Filters</h3>
+      <label>Category <select id="filter-category"><option value="">All</option></select></label>
+      <label>Visibility
+        <select id="filter-visibility">
+          <option value="">Any</option>
+          <option value="worldwide">Worldwide</option>
+          <option value="country">Country</option>
+          <option value="province">Province</option>
+        </select>
+      </label>
+      <label>Units <select id="filter-units"><option value="">Any</option></select></label>
+      <label>Seller <select id="filter-seller"><option value="">Any</option></select></label>
+      <label>Min price <input id="filter-minprice" type="number" min="0" step="0.01"></label>
+      <label>Max price <input id="filter-maxprice" type="number" min="0" step="0.01"></label>
+      <label>Radius (km) <input id="filter-radius" type="number" min="0" step="1" placeholder="after Locate"></label>
+      <label>Sort
+        <select id="filter-sort">
+          <option value="">Default</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="name">Name</option>
+          <option value="distance">Distance</option>
+        </select>
+      </label>
+      <label class="checkbox"><input id="filter-favorites" type="checkbox"> Favorites only</label>
+      <label class="checkbox"><input id="filter-inview" type="checkbox"> Only in view</label>
+      <div class="card-actions">
+        <button id="clear-filters" type="button" class="small-btn">Clear filters</button>
+      </div>
+    </div>
+
+    <!-- Options menu -->
+    <div id="options-menu" class="card options-menu" hidden>
+      <button id="close-options-btn" type="button" class="close-card" aria-label="Close options">×</button>
+      <h3>Options</h3>
+      <label>API base (leave blank for seed)
+        <input id="api-base-input" type="url" placeholder="https://farmdirect-b2b.fehrjohan65.workers.dev">
+      </label>
+      <button id="save-api-base" type="button" class="small-btn">Save API base</button>
+      <hr>
+      <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
+      <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
+      <button id="reset-demo-btn" type="button" class="small-btn">Reset demo listings</button>
+      <p class="muted small">Seed fallback is automatic when the Worker is unreachable. See README for D1 migration.</p>
+    </div>
+
+    <!-- Product card -->
+    <div id="product-card" class="card product-card"></div>
+
+    <!-- Seller card -->
+    <div id="seller-card" class="card seller-card"></div>
+
+    <!-- Image lightbox -->
+    <div id="image-lightbox" class="lightbox">
+      <button type="button" class="close-card" aria-label="Close">×</button>
+      <img id="lightbox-img" alt="Listing image">
+    </div>
+
+    <!-- Dashboard modal -->
+    <div id="dashboard-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-dashboard-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <div id="dashboard-content"></div>
+      </div>
+    </div>
+
+    <!-- Listing form modal -->
+    <div id="listing-form-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-form-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3 id="form-title">Add listing</h3>
+        <form id="listing-form">
+          <label>Latitude <input name="lat" id="form-lat" type="number" step="any" required></label>
+          <label>Longitude <input name="long" id="form-long" type="number" step="any" required></label>
+          <button id="use-location-btn" type="button" class="small-btn">Use current location</button>
+          <label>Visibility
+            <select name="visibility" required>
+              <option value="province">Province</option>
+              <option value="country">Country</option>
+              <option value="worldwide">Worldwide</option>
+            </select>
+          </label>
+          <label>Address <input name="address" required></label>
+          <label>Seller ID <input name="sellerid" id="form-sellerid" required></label>
+          <label>Category <input name="category" required></label>
+          <label>Header description <input name="headerdescription" maxlength="120" required></label>
+          <label>Price <input name="price" type="number" min="0" step="0.01" required></label>
+          <label>Units <input name="units" required></label>
+          <label>Description <textarea name="description" rows="3"></textarea></label>
+          <label>Image URL <input name="image" type="url" placeholder="https://… or data URL"></label>
+          <label>Or upload image <input id="image-file" type="file" accept="image/*"></label>
+          <img id="image-preview" alt="" style="display:none;max-width:100%;border-radius:8px">
+          <div id="form-status" class="form-status"></div>
+          <button type="submit" class="primary-btn">Create listing</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Auth modal -->
+    <div id="auth-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-auth-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <div id="auth-content"></div>
+      </div>
+    </div>
+
+    <!-- Deploy commands modal -->
+    <div id="deploy-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-deploy-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Deploy & auth migration</h3>
+        <pre class="deploy-pre">npx wrangler login
+npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
+# ignore duplicate-column errors
+npx wrangler deploy</pre>
+        <p class="muted small">See README.md for full details. Database: b2bistening (ad22b284-cafd-4f74-a8bc-6205056d38f8).</p>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/list.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/form.js"></script>
+  <script src="js/rfq.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
