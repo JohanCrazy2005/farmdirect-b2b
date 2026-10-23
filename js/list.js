@@ -8,6 +8,7 @@
  * Filter card now closes on × button or outside click.
  * Units filter select is populated dynamically from unique listing units.
  * applyFilters is exposed so the map can re-apply the “Only in view” filter on pan/zoom.
+ * Empty state includes Clear filters when active; filter icon shows active count badge.
  */
 (function (global) {
   'use strict';
@@ -82,6 +83,26 @@
     };
   }
 
+  function hasActiveFilters(f) {
+    return !!(f.category || f.visibility || f.units || f.seller ||
+              f.minPrice != null || f.maxPrice != null ||
+              f.favoritesOnly || f.inView || f.radius || f.search);
+  }
+
+  function countActiveFilters(f) {
+    let n = 0;
+    if (f.category) n++;
+    if (f.visibility) n++;
+    if (f.units) n++;
+    if (f.seller) n++;
+    if (f.minPrice != null || f.maxPrice != null) n++;
+    if (f.favoritesOnly) n++;
+    if (f.inView) n++;
+    if (f.radius) n++;
+    if (f.search) n++;
+    return n;
+  }
+
   function distanceKm(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -137,6 +158,30 @@
       global.FD_MAP.renderMarkers(filtered);
     }
     updateChips();
+    updateFilterBadge(f);
+  }
+
+  function updateFilterBadge(f) {
+    const badge = document.getElementById('filter-badge');
+    if (!badge) return;
+    const n = countActiveFilters(f);
+    if (n > 0) {
+      badge.textContent = String(n);
+      badge.removeAttribute('hidden');
+    } else {
+      badge.setAttribute('hidden', '');
+    }
+  }
+
+  function clearAllFilters() {
+    const ids = ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-sort','filter-radius','filter-favorites','filter-inview','search-input'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+    });
+    applyFilters();
   }
 
   function renderList() {
@@ -146,7 +191,12 @@
     if (countEl) countEl.textContent = String(filtered.length);
 
     if (!filtered.length) {
-      container.innerHTML = '<div class="empty-list">No listings match the current filters.</div>';
+      const f = getFilterState();
+      const showClear = hasActiveFilters(f);
+      container.innerHTML = `<div class="empty-list">No listings match the current filters.${showClear ? '<br><button type="button" id="empty-clear-filters" class="small-btn" style="margin-top:0.75rem">Clear filters</button>' : ''}</div>`;
+      if (showClear) {
+        document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
+      }
       return;
     }
 
@@ -300,15 +350,7 @@
       if (el) el.addEventListener('input', applyFilters);
       if (el && el.tagName === 'SELECT') el.addEventListener('change', applyFilters);
     });
-    document.getElementById('clear-filters')?.addEventListener('click', () => {
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (el.type === 'checkbox') el.checked = false;
-        else el.value = '';
-      });
-      applyFilters();
-    });
+    document.getElementById('clear-filters')?.addEventListener('click', clearAllFilters);
     document.getElementById('clear-search')?.addEventListener('click', () => {
       const s = document.getElementById('search-input');
       if (s) s.value = '';
