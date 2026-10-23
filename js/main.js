@@ -26,6 +26,7 @@
     if (window.FD_STATS) window.FD_STATS.bind();
     if (window.FD_LAYERS) window.FD_LAYERS.bind();
     if (window.FD_CSV) window.FD_CSV.bind();
+    if (window.FD_GEOJSON) window.FD_GEOJSON.bind();
     if (window.FD_FULLSCREEN) window.FD_FULLSCREEN.bind();
 
     // Profile → dashboard
@@ -110,6 +111,11 @@
 
     // CSV export
     document.getElementById('export-csv-btn')?.addEventListener('click', () => {
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // GeoJSON export
+    document.getElementById('export-geojson-btn')?.addEventListener('click', () => {
       optionsMenu?.setAttribute('hidden', '');
     });
 

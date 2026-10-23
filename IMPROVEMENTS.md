@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire GeoJSON export module for filtered listings
+
+**What:** Completed the existing `js/geojson.js` module by adding an “Export filtered GeoJSON” button in the options menu, loading the script in `index.html`, and calling `FD_GEOJSON.bind()` from `js/main.js`. Users can now download the currently filtered listings (as shown in the sidebar) as a GeoJSON FeatureCollection of Point features with schema properties. Complements the existing CSV/JSON exports. Fully client-side.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already implemented but not wired into the shell. Works fully in seed/demo mode and improves geospatial data portability without new features or schema changes.
+
+**How:** Frontend changes to index.html and js/main.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Wire fullscreen map toggle module
 
 **What:** Completed the existing `js/fullscreen.js` module by adding a ⛶ button in the top actions bar, loading the script in `index.html`, calling `FD_FULLSCREEN.bind()` from `js/main.js`, and adding CSS for the Fullscreen API fallback (`.map-fullscreen`). Also calls `map.invalidateSize()` after toggle so Leaflet redraws correctly. Users can expand the map to the full browser window for better exploration.
