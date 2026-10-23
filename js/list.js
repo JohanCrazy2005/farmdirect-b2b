@@ -2,11 +2,12 @@
  * FarmDirect B2B – listings list, filters, favorites, sidebar rendering
  * Substantial module. Works with seed/demo or API data.
  * Exposes: setListings, bindUI, getFiltered, getListings, exportFiltered, clearFavorites, select,
- *          highlight, sortByDistance, clearDistance, setUserLocation
+ *          highlight, sortByDistance, clearDistance, setUserLocation, applyFilters
  * Filter chips are now styled (.filter-chip) and individually removable.
  * List-map sync: hover highlight + Locate me distance sort now fully wired.
  * Filter card now closes on × button or outside click.
  * Units filter select is populated dynamically from unique listing units.
+ * applyFilters is exposed so the map can re-apply the “Only in view” filter on pan/zoom.
  */
 (function (global) {
   'use strict';
@@ -356,6 +357,7 @@
     isFavorite,
     highlight,
     sortByDistance,
-    clearDistance
+    clearDistance,
+    applyFilters
   };
 })(window);

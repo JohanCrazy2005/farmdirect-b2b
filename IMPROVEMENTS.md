@@ -1,3 +1,15 @@
+## 2026-10-23 – Live “Only in view” filter on map move
+
+**What:** The existing “Only in view” filter now re-applies automatically whenever the map is panned or zoomed. Exposed `applyFilters` on `FD_LIST` and added a `moveend` listener in the map module that calls it only when the checkbox is active. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish makes the viewport filter useful during exploration instead of a one-shot snapshot. Improves map-first UX without new features or schema changes.
+
+**How:** Frontend changes to js/list.js and js/map.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Activate Only-in-view filter + shareable map view link
 
 **What:** Exposed `getBounds()` on `FD_MAP` so the existing “Only in view” checkbox in the filter card now correctly restricts listings to the current map viewport. Also added a “Copy map view link” button in the options menu that uses the already-implemented `getMapViewLink()` (hash `#map=lat,lng,zoom`). Fixed incomplete HTML escaping in map popups/legend. Fully client-side; works in seed/demo mode.
@@ -216,24 +228,10 @@
 
 ## 2026-10-22 – Polish: Options menu close button
 
-**What:** Added a × close button (`#close-options-btn.close-card`) to the options menu in `index.html`. Bound it in `js/main.js` so the menu closes and aria-expanded updates. Added shared `.close-card` styles in `css/main.css` (positioned absolute, hover, focus) that also cover the existing filter-card close button for visual consistency.
+**What:** Added a × close button (`#close-options-btn.close-card`) to the options menu in `index.html`. Bound it in `js/main.js` so the menu closes and aria-expanded is reset. Prevents the menu from staying open after use.
 
-**Why:** Highest unfinished item remains the user-owned D1 auth migration. This pure code-only polish completes the options menu interaction promised in the fresh-start design (matching the recent filter-card close button). Works in both demo and live modes; no new features or second Worker.
+**Why:** Small UX polish after the shell was completed. The options menu previously had no explicit close control.
 
-**How:** Frontend-only changes in HTML, main bootstrap, and CSS. Demo fallback and live data both benefit.
-
-**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
-
----
-
-## 2026-10-22 – Polish: Profile icon reflects logged-in seller
-
-**What:** Added `updateProfileIndicator` in `js/dashboard.js` so the top-bar `#profile-btn` gains a `.logged-in` class, updated title, and aria-label when a seller session (live Bearer or demo temporary ID) is active. Called on bind, after login/logout, and from `setSession` in `js/auth.js`. Completes the visual feedback for the auth flow in both modes.
-
-**Why:** Highest unfinished item remains the user-owned D1 auth migration. This pure code-only polish makes the profile icon accurately reflect session state without inventing features.
-
-**How:** Frontend change to js/dashboard.js (and minor call sites). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+**How:** Frontend changes to index.html and js/main.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
 
 **Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
-
----
