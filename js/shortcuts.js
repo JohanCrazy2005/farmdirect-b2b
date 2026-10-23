@@ -86,17 +86,27 @@
     if (e.key === 'Escape') {
       // Close common overlays if open
       close();
-      document.getElementById('filter-card')?.classList.remove('open');
-      document.getElementById('options-menu')?.classList.remove('open');
+      // Options and filter use hidden attribute
+      document.getElementById('options-menu')?.setAttribute('hidden', '');
+      document.getElementById('options-btn')?.setAttribute('aria-expanded', 'false');
+      document.getElementById('filter-card')?.setAttribute('hidden', '');
+      document.getElementById('filter-btn')?.setAttribute('aria-expanded', 'false');
+      // Cards and modals use .open class
       document.getElementById('product-card')?.classList.remove('open');
       document.getElementById('seller-card')?.classList.remove('open');
       document.getElementById('listing-form-modal')?.classList.remove('open');
       document.getElementById('dashboard-modal')?.classList.remove('open');
-      document.getElementById('rfq-modal')?.classList.remove('open');
+      document.getElementById('auth-modal')?.classList.remove('open');
       document.getElementById('deploy-modal')?.classList.remove('open');
-      document.getElementById('my-rfqs-modal')?.classList.remove('open');
       document.getElementById('recent-modal')?.classList.remove('open');
+      document.getElementById('compare-modal')?.classList.remove('open');
       document.getElementById('image-lightbox')?.classList.remove('open');
+      if (global.FD_CARDS && typeof global.FD_CARDS.closeLightbox === 'function') {
+        global.FD_CARDS.closeLightbox();
+      }
+      if (global.FD_CARDS && typeof global.FD_CARDS.closeProduct === 'function') {
+        global.FD_CARDS.closeProduct();
+      }
       // Clear hash if a listing was open
       if (location.hash.startsWith('#listing=')) {
         history.replaceState(null, '', location.pathname + location.search);

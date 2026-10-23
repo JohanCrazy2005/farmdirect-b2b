@@ -94,6 +94,7 @@
       <hr>
       <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
       <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
+      <button id="shortcuts-btn" type="button" class="small-btn">Keyboard shortcuts</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
       <button id="reset-demo-btn" type="button" class="small-btn">Reset demo listings</button>
@@ -193,6 +194,23 @@ npx wrangler deploy</pre>
       </div>
     </div>
 
+    <!-- Keyboard shortcuts modal -->
+    <div id="shortcuts-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-shortcuts-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Keyboard shortcuts</h3>
+        <ul class="shortcuts-list">
+          <li><kbd>/</kbd> or <kbd>s</kbd> Focus search box</li>
+          <li><kbd>l</kbd> Locate me</li>
+          <li><kbd>f</kbd> Fit all listings</li>
+          <li><kbd>x</kbd> Clear location (if active)</li>
+          <li><kbd>?</kbd> or <kbd>h</kbd> Open this help</li>
+          <li><kbd>Esc</kbd> Close open cards / menus / modals</li>
+        </ul>
+        <p class="muted small">Fully client-side. Ignored while typing in inputs. Works in seed/demo and live modes.</p>
+      </div>
+    </div>
+
     <div id="toast-container"></div>
   </div>
 
@@ -211,6 +229,7 @@ npx wrangler deploy</pre>
   <script src="js/rfq.js"></script>
   <script src="js/recent.js"></script>
   <script src="js/compare.js"></script>
+  <script src="js/shortcuts.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

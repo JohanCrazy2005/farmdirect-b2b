@@ -20,6 +20,7 @@
     if (window.FD_AUTH) window.FD_AUTH.bindAuth();
     if (window.FD_RECENT) window.FD_RECENT.bind();
     if (window.FD_COMPARE) window.FD_COMPARE.bind();
+    if (window.FD_SHORTCUTS) window.FD_SHORTCUTS.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
