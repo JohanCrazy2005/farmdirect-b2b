@@ -96,6 +96,7 @@
       <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
       <button id="sellers-btn" type="button" class="small-btn">Seller directory</button>
       <button id="my-rfqs-btn" type="button" class="small-btn">My quote requests</button>
+      <button id="stats-btn" type="button" class="small-btn">Listings statistics</button>
       <button id="shortcuts-btn" type="button" class="small-btn">Keyboard shortcuts</button>
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
@@ -250,6 +251,15 @@ npx wrangler deploy</pre>
       </div>
     </div>
 
+    <!-- Listings statistics modal -->
+    <div id="stats-modal" class="modal">
+      <div class="modal-content card">
+        <button id="close-stats-btn" type="button" class="close-card" aria-label="Close">×</button>
+        <h3>Listings statistics</h3>
+        <div id="stats-content"></div>
+      </div>
+    </div>
+
     <div id="toast-container"></div>
   </div>
 
@@ -270,6 +280,7 @@ npx wrangler deploy</pre>
   <script src="js/compare.js"></script>
   <script src="js/shortcuts.js"></script>
   <script src="js/sellers.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire listings statistics module
+
+**What:** Completed the existing `js/stats.js` module by adding the `#stats-modal` UI, a “Listings statistics” button in the options menu, script load + bind in `main.js`, and styles for the summary and lists. Users can now open a modal showing total listings, unique sellers, price range/average, and breakdowns by category, visibility, and units.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already implemented but not wired into the shell. Works fully in seed/demo mode and improves UX for understanding the current dataset without new features or schema changes.
+
+**How:** Frontend changes to index.html, js/main.js, and css/main.css. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Wire RFQ buyer modals and options entry
 
 **What:** Completed the existing `js/rfq.js` module by adding the `#rfq-modal` request form and `#my-rfqs-modal` buyer view to `index.html`, fixing the product-card “Request quote” button to call `FD_RFQ.open(listing.id)`, binding the module in `main.js`, and adding a “My quote requests” button in the options menu. Buyers can now request quotes from product cards and review their requests; sellers continue to see incoming RFQs in the dashboard. Fully works in seed/demo mode (localStorage) and prefers the live Worker when available.

@@ -389,6 +389,28 @@ body {
   margin-top: 0.4rem;
 }
 
+/* Listings statistics */
+.stats-summary {
+  margin: 0.5rem 0 1rem;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.stats-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 1rem;
+}
+.stats-list li {
+  padding: 0.25rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
 /* Map legend & clusters */
 .map-legend {
   background: rgba(255,255,255,0.92);

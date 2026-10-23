@@ -23,6 +23,7 @@
     if (window.FD_SHORTCUTS) window.FD_SHORTCUTS.bind();
     if (window.FD_SELLERS) window.FD_SELLERS.bind();
     if (window.FD_RFQ) window.FD_RFQ.bind();
+    if (window.FD_STATS) window.FD_STATS.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -95,6 +96,12 @@
     // My quote requests
     document.getElementById('my-rfqs-btn')?.addEventListener('click', () => {
       if (window.FD_RFQ) window.FD_RFQ.openMyRfqs();
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // Listings statistics
+    document.getElementById('stats-btn')?.addEventListener('click', () => {
+      if (window.FD_STATS) window.FD_STATS.open();
       optionsMenu?.setAttribute('hidden', '');
     });
 
