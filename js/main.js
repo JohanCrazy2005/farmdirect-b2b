@@ -68,15 +68,24 @@
     });
 
     // Deploy modal
-    document.getElementById('show-deploy-btn')?.addEventListener('click', () => {
+    function openDeployModal() {
       document.getElementById('deploy-modal')?.classList.add('open');
       optionsMenu?.setAttribute('hidden', '');
-    });
+    }
+    document.getElementById('show-deploy-btn')?.addEventListener('click', openDeployModal);
+    document.getElementById('banner-deploy-btn')?.addEventListener('click', openDeployModal);
     document.getElementById('close-deploy-btn')?.addEventListener('click', () => {
       document.getElementById('deploy-modal')?.classList.remove('open');
     });
     document.getElementById('deploy-modal')?.addEventListener('click', (e) => {
       if (e.target.id === 'deploy-modal') e.target.classList.remove('open');
+    });
+
+    // Reload listings
+    document.getElementById('reload-listings-btn')?.addEventListener('click', () => {
+      loadListings();
+      optionsMenu?.setAttribute('hidden', '');
+      if (window.FD_TOAST) window.FD_TOAST.show('Reloading listings…', 'info');
     });
 
     // Recently viewed

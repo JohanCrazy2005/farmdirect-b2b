@@ -30,7 +30,10 @@
     <!-- Offline / seed banner -->
     <div id="offline-banner" class="offline-banner" hidden>
       <span id="offline-banner-text">Using seed listings (Worker offline or undeployed). Demo changes persist locally.</span>
-      <button type="button" id="dismiss-offline-banner" class="small-btn">Dismiss</button>
+      <div style="display:flex;gap:0.4rem;flex-shrink:0">
+        <button type="button" id="banner-deploy-btn" class="small-btn">Deploy steps</button>
+        <button type="button" id="dismiss-offline-banner" class="small-btn">Dismiss</button>
+      </div>
     </div>
 
     <!-- Map -->
@@ -93,6 +96,7 @@
       </label>
       <button id="save-api-base" type="button" class="small-btn">Save API base</button>
       <hr>
+      <button id="reload-listings-btn" type="button" class="small-btn">Reload listings</button>
       <button id="show-recent-btn" type="button" class="small-btn">Recently viewed</button>
       <button id="compare-btn" type="button" class="small-btn">Compare listings</button>
       <button id="sellers-btn" type="button" class="small-btn">Seller directory</button>
