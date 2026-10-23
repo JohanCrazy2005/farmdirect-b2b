@@ -13,7 +13,7 @@
 
   function toggleFullscreen() {
     const mapEl = document.getElementById('map');
-    const container = document.querySelector('.main') || document.body;
+    const container = document.getElementById('app') || document.body;
     if (!mapEl) return;
 
     if (isFullscreen()) {
@@ -57,6 +57,14 @@
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     btn.title = active ? 'Exit fullscreen' : 'Fullscreen map';
     btn.setAttribute('aria-label', active ? 'Exit fullscreen' : 'Fullscreen map');
+
+    // Let Leaflet redraw after size change
+    setTimeout(() => {
+      if (global.FD_MAP && typeof global.FD_MAP.getMap === 'function') {
+        const m = global.FD_MAP.getMap();
+        if (m && typeof m.invalidateSize === 'function') m.invalidateSize();
+      }
+    }, 150);
   }
 
   function showToast(msg, type) {

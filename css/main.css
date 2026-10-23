@@ -442,6 +442,35 @@ body {
 .cluster-medium { width: 42px; height: 42px; font-size: 0.9rem; }
 .cluster-large { width: 48px; height: 48px; font-size: 1rem; }
 
+/* Fullscreen map (CSS fallback when Fullscreen API unavailable) */
+body.map-fullscreen #map {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2000 !important;
+  height: 100% !important;
+}
+body.map-fullscreen .top-bar,
+body.map-fullscreen .sidebar,
+body.map-fullscreen .offline-banner,
+body.map-fullscreen .product-card,
+body.map-fullscreen .seller-card,
+body.map-fullscreen .filter-card,
+body.map-fullscreen .options-menu,
+body.map-fullscreen .modal {
+  display: none !important;
+}
+body.map-fullscreen #fullscreen-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2001;
+  background: rgba(255,255,255,0.92);
+  box-shadow: var(--shadow);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar { width: calc(100% - 24px); max-height: 40vh; bottom: 12px; top: auto; }

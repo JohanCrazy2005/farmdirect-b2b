@@ -26,6 +26,7 @@
     if (window.FD_STATS) window.FD_STATS.bind();
     if (window.FD_LAYERS) window.FD_LAYERS.bind();
     if (window.FD_CSV) window.FD_CSV.bind();
+    if (window.FD_FULLSCREEN) window.FD_FULLSCREEN.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
