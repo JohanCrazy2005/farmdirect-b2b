@@ -25,6 +25,7 @@
     if (window.FD_RFQ) window.FD_RFQ.bind();
     if (window.FD_STATS) window.FD_STATS.bind();
     if (window.FD_LAYERS) window.FD_LAYERS.bind();
+    if (window.FD_CSV) window.FD_CSV.bind();
 
     // Profile → dashboard
     document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -103,6 +104,11 @@
     // Listings statistics
     document.getElementById('stats-btn')?.addEventListener('click', () => {
       if (window.FD_STATS) window.FD_STATS.open();
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
+    // CSV export
+    document.getElementById('export-csv-btn')?.addEventListener('click', () => {
       optionsMenu?.setAttribute('hidden', '');
     });
 

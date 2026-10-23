@@ -1,3 +1,15 @@
+## 2026-10-23 – Wire CSV export module for filtered listings
+
+**What:** Completed the existing `js/csv.js` module by adding an “Export filtered CSV” button in the options menu, loading the script in `index.html`, and calling `FD_CSV.bind()` from `js/main.js`. Users can now download the currently filtered listings (as shown in the sidebar) as a properly escaped CSV file. Complements the existing JSON export. Fully client-side.
+
+**Why:** Highest unfinished items are user-owned (P1 auth migration). This code-only polish activates a substantial client-side module that was already implemented but not wired into the shell. Works fully in seed/demo mode and improves data portability without new features or schema changes.
+
+**How:** Frontend changes to index.html and js/main.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Wire map base-layer switcher module
 
 **What:** Completed the existing `js/layers.js` module by loading the script in `index.html` and calling `FD_LAYERS.bind()` from `js/main.js` after map initialization. The Leaflet layers control now appears on the map (top-right), letting users switch between OpenStreetMap, Carto Light, Carto Dark, and Esri Satellite tiles. Choice persists in localStorage.
