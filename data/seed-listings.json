@@ -166,5 +166,61 @@
     "description": "Sun-dried lavender buds. Culinary and sachet grade.",
     "image": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-13",
+    "location": { "lat": 39.7450, "long": -104.9800 },
+    "visibility": "province",
+    "address": "101 Root Cellar Rd, Denver, CO 80203",
+    "sellerid": "seller-root",
+    "category": "produce",
+    "headerdescription": "Organic carrots – bulk",
+    "price": 0.85,
+    "units": "kg",
+    "description": "Storage carrots, cleaned and bagged. Ideal for processors and retailers.",
+    "image": "https://images.unsplash.com/photo-1445282768818-728615cc910a?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-14",
+    "location": { "lat": 39.6700, "long": -104.8600 },
+    "visibility": "country",
+    "address": "202 Maple Grove, Littleton, CO 80120",
+    "sellerid": "seller-maple",
+    "category": "honey",
+    "headerdescription": "Clover honey – raw",
+    "price": 11.50,
+    "units": "kg",
+    "description": "Single-source clover honey. Unfiltered and unheated.",
+    "image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-15",
+    "location": { "lat": 39.8300, "long": -105.0800 },
+    "visibility": "worldwide",
+    "address": "303 Poultry Lane, Broomfield, CO 80020",
+    "sellerid": "seller-poultry",
+    "category": "eggs",
+    "headerdescription": "Pasture-raised eggs",
+    "price": 2.40,
+    "units": "dozen",
+    "description": "Pasture-raised hens. Available in bulk cases for foodservice.",
+    "image": "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-16",
+    "location": { "lat": 39.5800, "long": -104.8500 },
+    "visibility": "province",
+    "address": "404 Dairy Ridge, Parker, CO 80138",
+    "sellerid": "seller-dairy2",
+    "category": "dairy",
+    "headerdescription": "Whole milk – glass bottles",
+    "price": 0.72,
+    "units": "liter",
+    "description": "Non-homogenized whole milk. Returnable glass bottles available.",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]

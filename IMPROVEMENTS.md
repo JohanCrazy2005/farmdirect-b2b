@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Expand seed listings for richer demo fallback UX
+- P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (carrots, clover honey, pasture eggs, whole milk).
+- Increases map density and filter/demo variety in the Denver metro cluster when the Worker is offline or undeployed.
+- Fully client-side; no runtime or API changes. Improves first-load seed experience.
+
 ## 2026-10-24 – Clarify P1 user deploy steps + richer deploy modal
 - P1 docs polish: Enhanced the deploy modal in `index.html` with the full exact sequence from README (login, auth-migration, optional RFQ, redeploy, smoke test).
 - Added a clear note in `GOAL.md` that remaining P1/P5 items require user action (wrangler login / secrets) and that seed/demo fallback is ready.
