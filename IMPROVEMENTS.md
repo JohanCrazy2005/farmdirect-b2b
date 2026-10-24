@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Expand seed listings with seafood, bakery and more produce
+- P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (rainbow trout, artisan sourdough, shiitake mushrooms, mixed salad greens).
+- Introduces new categories (seafood, bakery) and additional produce variety to increase filter options and map density in the Denver metro cluster when the Worker is offline or undeployed.
+- Fully client-side; no runtime or API changes. Improves first-load seed experience and category coverage.
+
 ## 2026-10-24 – Expand seed listings with new categories for richer demo fallback
 - P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (grass-fed beef, cut sunflowers, English walnuts, maple syrup).
 - Introduces new categories (meat, flowers, nuts) to increase filter variety and map density in the Denver metro cluster when the Worker is offline or undeployed.
