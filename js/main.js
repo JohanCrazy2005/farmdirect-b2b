@@ -203,6 +203,25 @@
     loadListings();
   }
 
+  function updateDataSourceBadge(source) {
+    const badge = document.getElementById('data-source-badge');
+    if (!badge) return;
+    if (source === 'seed') {
+      badge.textContent = 'SEED';
+      badge.title = 'Using seed listings (Worker offline or undeployed)';
+      badge.className = 'data-source-badge source-seed';
+      badge.hidden = false;
+    } else if (source === 'demo') {
+      badge.textContent = 'DEMO';
+      badge.title = 'Demo mode – local changes persist until Worker is live';
+      badge.className = 'data-source-badge source-demo';
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+      badge.textContent = '';
+    }
+  }
+
   function showOfflineBanner(source) {
     const banner = document.getElementById('offline-banner');
     const text = document.getElementById('offline-banner-text');
@@ -226,6 +245,7 @@
       const result = await window.FD_API.fetchListings();
       window.FD_LIST.setListings(result.listings || []);
       const src = result.source || 'unknown';
+      updateDataSourceBadge(src);
       if (window.FD_TOAST) {
         const msg = src === 'api' ? `Loaded ${result.count || result.listings.length} live listings` :
                     src === 'demo' ? 'Demo mode (local changes persist)' :

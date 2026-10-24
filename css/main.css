@@ -122,6 +122,28 @@ body {
 }
 .filter-badge[hidden] { display: none !important; }
 
+/* Data source badge (seed/demo) */
+.data-source-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  user-select: none;
+}
+.data-source-badge.source-seed {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+.data-source-badge.source-demo {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+.data-source-badge[hidden] { display: none !important; }
+
 /* Offline / seed banner */
 .offline-banner {
   position: fixed;
@@ -498,6 +520,7 @@ body.map-fullscreen #fullscreen-btn {
   .product-card, .seller-card, .filter-card, .options-menu { width: calc(100% - 24px); right: 12px; }
   .top-bar { padding: 0 0.4rem; }
   .offline-banner { flex-direction: column; align-items: stretch; text-align: center; gap: 0.4rem; }
+  .data-source-badge { font-size: 0.6rem; padding: 0.1rem 0.35rem; }
 }
 
 #toast-container {

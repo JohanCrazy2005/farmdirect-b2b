@@ -21,6 +21,7 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 ### P4 – Seed fallback UX
 - [x] Automatic seed/demo fallback already in `js/api.js`
 - [x] Clearer offline banner (dismissible, shows for seed/demo)
+- [x] Persistent data-source badge in top bar (SEED/DEMO)
 
 ### P5 – Optional GitHub Actions
 - [x] `.github/workflows/deploy.yml` present
