@@ -222,5 +222,61 @@
     "description": "Non-homogenized whole milk. Returnable glass bottles available.",
     "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-17",
+    "location": { "lat": 39.6500, "long": -104.9100 },
+    "visibility": "country",
+    "address": "555 Ranch Road, Castle Rock, CO 80109",
+    "sellerid": "seller-ranch",
+    "category": "meat",
+    "headerdescription": "Grass-fed beef – ground",
+    "price": 8.90,
+    "units": "kg",
+    "description": "Pasture-raised grass-fed beef. Vacuum-sealed for wholesale or retail.",
+    "image": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-18",
+    "location": { "lat": 39.7700, "long": -104.9700 },
+    "visibility": "province",
+    "address": "666 Sunflower Field, Commerce City, CO 80022",
+    "sellerid": "seller-sunflower",
+    "category": "flowers",
+    "headerdescription": "Cut sunflowers – bulk",
+    "price": 1.20,
+    "units": "stem",
+    "description": "Fresh cut sunflowers. Available by the dozen or case for florists and markets.",
+    "image": "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-19",
+    "location": { "lat": 39.6200, "long": -105.0500 },
+    "visibility": "worldwide",
+    "address": "777 Walnut Grove, Morrison, CO 80465",
+    "sellerid": "seller-walnut",
+    "category": "nuts",
+    "headerdescription": "English walnuts – in-shell",
+    "price": 6.50,
+    "units": "kg",
+    "description": "Orchard-grown English walnuts. Bulk sacks for bakers and retailers.",
+    "image": "https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-20",
+    "location": { "lat": 39.7100, "long": -104.8900 },
+    "visibility": "country",
+    "address": "888 Sugar Maple Farm, Aurora, CO 80011",
+    "sellerid": "seller-syrup",
+    "category": "honey",
+    "headerdescription": "Colorado maple syrup",
+    "price": 18.00,
+    "units": "liter",
+    "description": "Small-batch pure maple syrup. Available in bulk jugs for foodservice.",
+    "image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]

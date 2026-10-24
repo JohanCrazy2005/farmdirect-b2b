@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Expand seed listings with new categories for richer demo fallback
+- P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (grass-fed beef, cut sunflowers, English walnuts, maple syrup).
+- Introduces new categories (meat, flowers, nuts) to increase filter variety and map density in the Denver metro cluster when the Worker is offline or undeployed.
+- Fully client-side; no runtime or API changes. Improves first-load seed experience and category legend coverage.
+
 ## 2026-10-24 – Expand seed listings for richer demo fallback UX
 - P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (carrots, clover honey, pasture eggs, whole milk).
 - Increases map density and filter/demo variety in the Denver metro cluster when the Worker is offline or undeployed.
