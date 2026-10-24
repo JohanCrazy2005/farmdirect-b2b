@@ -278,5 +278,61 @@
     "description": "Small-batch pure maple syrup. Available in bulk jugs for foodservice.",
     "image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-21",
+    "location": { "lat": 39.7350, "long": -105.0300 },
+    "visibility": "province",
+    "address": "111 Trout Stream Rd, Golden, CO 80403",
+    "sellerid": "seller-trout",
+    "category": "seafood",
+    "headerdescription": "Fresh rainbow trout – whole",
+    "price": 9.75,
+    "units": "kg",
+    "description": "Farm-raised rainbow trout. Cleaned and iced for wholesale to restaurants.",
+    "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-22",
+    "location": { "lat": 39.6850, "long": -104.9650 },
+    "visibility": "country",
+    "address": "222 Sourdough Bakery, Littleton, CO 80122",
+    "sellerid": "seller-bakery",
+    "category": "bakery",
+    "headerdescription": "Artisan sourdough loaves",
+    "price": 6.00,
+    "units": "loaf",
+    "description": "Naturally leavened sourdough. Wholesale cases for cafes and markets.",
+    "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-23",
+    "location": { "lat": 39.8000, "long": -105.1200 },
+    "visibility": "worldwide",
+    "address": "333 Mushroom Forest, Boulder, CO 80304",
+    "sellerid": "seller-mushroom",
+    "category": "produce",
+    "headerdescription": "Shiitake mushrooms – bulk",
+    "price": 12.00,
+    "units": "kg",
+    "description": "Indoor-grown shiitake. Fresh harvests available year-round for chefs.",
+    "image": "https://images.unsplash.com/photo-1504545102780-26774c1bb073?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-24",
+    "location": { "lat": 39.6600, "long": -104.9400 },
+    "visibility": "province",
+    "address": "444 Greens Farm, Englewood, CO 80110",
+    "sellerid": "seller-greens",
+    "category": "produce",
+    "headerdescription": "Mixed salad greens – bulk",
+    "price": 3.20,
+    "units": "kg",
+    "description": "Hydroponic mixed greens. Daily harvest for restaurants and grocers.",
+    "image": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]
