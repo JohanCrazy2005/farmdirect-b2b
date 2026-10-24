@@ -11,6 +11,7 @@
  * Empty state includes Clear filters when active; filter icon shows active count badge.
  * Filter state (search, category, prices, sort, radius, favorites, in-view, etc.) is persisted
  * in localStorage and restored on load so demo exploration survives reloads.
+ * Filter card visibility now correctly toggles the hidden attribute (consistent with options menu).
  */
 (function (global) {
   'use strict';
@@ -409,18 +410,24 @@
       if (s) s.value = '';
       applyFilters();
     });
-    // filter card toggle + close on × or outside click
+    // filter card toggle + close on × or outside click (uses hidden attribute, consistent with options menu)
     const filterCard = document.getElementById('filter-card');
-    document.getElementById('filter-btn')?.addEventListener('click', (e) => {
+    const filterBtn = document.getElementById('filter-btn');
+    filterBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
-      filterCard?.classList.toggle('open');
+      if (!filterCard) return;
+      const willShow = filterCard.hasAttribute('hidden');
+      filterCard.toggleAttribute('hidden', !willShow);
+      filterBtn.setAttribute('aria-expanded', String(willShow));
     });
     document.getElementById('close-filter-btn')?.addEventListener('click', () => {
-      filterCard?.classList.remove('open');
+      filterCard?.setAttribute('hidden', '');
+      filterBtn?.setAttribute('aria-expanded', 'false');
     });
     document.addEventListener('click', (e) => {
-      if (filterCard && filterCard.classList.contains('open') && !filterCard.contains(e.target) && e.target.id !== 'filter-btn') {
-        filterCard.classList.remove('open');
+      if (filterCard && !filterCard.hasAttribute('hidden') && !filterCard.contains(e.target) && e.target.id !== 'filter-btn') {
+        filterCard.setAttribute('hidden', '');
+        filterBtn?.setAttribute('aria-expanded', 'false');
       }
     });
   }

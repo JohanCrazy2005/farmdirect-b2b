@@ -1,3 +1,15 @@
+## 2026-10-23 – Fix filter card open/close (hidden attribute)
+
+**What:** The filter card (opened by the top-bar filter icon) was non-functional. JS toggled a CSS class `open` while the element carried the HTML `hidden` attribute and no CSS rule showed `.filter-card.open`. It now correctly toggles the `hidden` attribute (and updates `aria-expanded`), matching the options menu. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish restores the core filter icon → filter card interaction that is part of the specified map-first UI. Improves reliability of filtering during seed/demo exploration without new features or schema changes.
+
+**How:** Frontend change to `js/list.js` (bindUI only). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Persist filter state across reloads
 
 **What:** Filter selections (category, visibility, units, seller, min/max price, sort, radius, favorites-only, only-in-view, and search query) are now saved to `localStorage` on every change and restored automatically when listings load. Fully client-side; works in seed/demo mode.
