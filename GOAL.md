@@ -9,6 +9,8 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 - [ ] User runs: `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors)
 - [ ] Optional: RFQ migration + GitHub Actions secrets for auto-deploy
 
+**Note:** Docs and deploy modal are complete. These remaining items require user action (wrangler login / Cloudflare secrets). Seed/demo fallback is fully functional in the meantime.
+
 ### P2 – Frontend shell (DONE)
 - [x] Complete `index.html` (transparent top bar, map, sidebar list, filter card, options menu, product/seller cards, modals)
 - [x] Complete `css/main.css` (layout, cards, clusters, responsive)

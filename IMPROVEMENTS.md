@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Clarify P1 user deploy steps + richer deploy modal
+- P1 docs polish: Enhanced the deploy modal in `index.html` with the full exact sequence from README (login, auth-migration, optional RFQ, redeploy, smoke test).
+- Added a clear note in `GOAL.md` that remaining P1/P5 items require user action (wrangler login / secrets) and that seed/demo fallback is ready.
+- Improves discoverability of deploy guidance from the SEED/DEMO badge and offline banner without changing runtime behavior.
+
 ## 2026-10-24 – Seed data expansion + map center alignment (seed UX)
 - P4 / seed-demo polish: Expanded `data/seed-listings.json` with two additional listings (potatoes, dried lavender) for a richer fallback demo.
 - Aligned default `MAP_CENTER` / zoom in `js/config.js` to the Denver metro seed cluster so the first map view is relevant when no saved view or URL hash exists.

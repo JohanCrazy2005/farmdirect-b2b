@@ -181,11 +181,22 @@
       <div class="modal-content card">
         <button id="close-deploy-btn" type="button" class="close-card" aria-label="Close">×</button>
         <h3>Deploy & auth migration</h3>
-        <pre class="deploy-pre">npx wrangler login
+        <pre class="deploy-pre"># 1. Login (once)
+npx wrangler login
+
+# 2. Apply auth + publication migration to live D1
+#    (Ignore "duplicate column name" errors if columns already exist)
 npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
-# ignore duplicate-column errors
-npx wrangler deploy</pre>
-        <p class="muted small">See README.md for full details. Database: b2bistening (ad22b284-cafd-4f74-a8bc-6205056d38f8).</p>
+
+# 3. (Optional) RFQ migration
+# npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql
+
+# 4. Redeploy only if you changed workers/api.js
+# npx wrangler deploy
+
+# 5. Smoke test
+curl https://farmdirect-b2b.fehrjohan65.workers.dev/api/v1/health</pre>
+        <p class="muted small">See README.md for full details and GitHub Actions secrets. Database: b2bistening (ad22b284-cafd-4f74-a8bc-6205056d38f8). After migration, register/login from the Profile menu.</p>
       </div>
     </div>
 
