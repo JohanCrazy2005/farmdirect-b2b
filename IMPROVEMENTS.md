@@ -1,5 +1,14 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Complete restoration of js/list.js (full module with thumbnails + chips)
+- P4 / seed-demo polish: Replaced the persistent truncated stub in `js/list.js` with a complete substantial module.
+  - Correct HTML escaping, filter persistence (localStorage), favorites, distance calculation/sort, only-in-view (via FD_MAP.getBounds), keyboard navigation helpers, empty-state with Clear filters, copy listing links.
+  - Real listing thumbnails (image or placeholder) using existing `.list-thumb` CSS.
+  - Removable filter chips for all active filters (search, category, visibility, units, seller, price range, radius, favorites, only-in-view, sort).
+  - Filter count badge, populate dynamic options, hover highlight sync with map.
+  - Fully client-side; works in seed/demo mode and with live Worker.
+  - Restores the core map-first sidebar list that repeated overwrites had left broken.
+
 ## 2026-10-24 – Restore complete sidebar list.js (thumbnails + chips)
 - P4 / seed-demo polish: Replaced the truncated stub in `js/list.js` (which broke the sidebar) with a full substantial module.
   - Correct HTML escaping, filter persistence, favorites, distance, only-in-view, keyboard nav, empty-state clear, copy links.
