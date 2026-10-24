@@ -5,6 +5,7 @@
  *
  * Shortcuts:
  *   / or s   Focus search box
+ *   i        Toggle filter card
  *   l        Locate me
  *   f        Fit all listings
  *   x        Clear location (if active)
@@ -36,6 +37,20 @@
     return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || ae.isContentEditable;
   }
 
+  function toggleFilters() {
+    const filterCard = document.getElementById('filter-card');
+    const filterBtn = document.getElementById('filter-btn');
+    if (!filterCard || !filterBtn) return;
+    const willShow = filterCard.hasAttribute('hidden');
+    filterCard.toggleAttribute('hidden', !willShow);
+    filterBtn.setAttribute('aria-expanded', String(willShow));
+    if (willShow) {
+      // Focus first control for accessibility
+      const first = filterCard.querySelector('select, input');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
+  }
+
   function handleKey(e) {
     // Ignore when typing in fields, or with modifiers that look like browser shortcuts
     if (isTyping() || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -49,6 +64,12 @@
         input.focus();
         input.select();
       }
+      return;
+    }
+
+    if (key === 'i') {
+      e.preventDefault();
+      toggleFilters();
       return;
     }
 

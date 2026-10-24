@@ -1,3 +1,15 @@
+## 2026-10-23 – Keyboard shortcut to toggle filter card
+
+**What:** Pressing `i` (when not typing in a field) now toggles the filter card open/closed, matching the existing filter-icon button behavior (including aria-expanded and focusing the first control when opening). The shortcuts help modal lists it. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish speeds up map-first filtering during seed/demo exploration without new features or schema changes.
+
+**How:** Updated `js/shortcuts.js` (new toggle helper + key handler) and `index.html` (shortcuts list). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Fix filter card open/close (hidden attribute)
 
 **What:** The filter card (opened by the top-bar filter icon) was non-functional. JS toggled a CSS class `open` while the element carried the HTML `hidden` attribute and no CSS rule showed `.filter-card.open`. It now correctly toggles the `hidden` attribute (and updates `aria-expanded`), matching the options menu. Fully client-side; works in seed/demo mode.
