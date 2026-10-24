@@ -9,15 +9,19 @@
  * Units filter select is populated dynamically from unique listing units.
  * applyFilters is exposed so the map can re-apply the “Only in view” filter on pan/zoom.
  * Empty state includes Clear filters when active; filter icon shows active count badge.
+ * Filter state (search, category, prices, sort, radius, favorites, in-view, etc.) is persisted
+ * in localStorage and restored on load so demo exploration survives reloads.
  */
 (function (global) {
   'use strict';
 
   const FAVORITES_KEY = 'fd-favorites';
+  const FILTER_STATE_KEY = 'fd-filter-state';
   let allListings = [];
   let filtered = [];
   let userLocation = null; // {lat, lng} from map.locateMe
   let highlightedId = null;
+  let filtersRestored = false;
 
   function getFavorites() {
     try { return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); }
@@ -39,9 +43,57 @@
     if (global.FD_CARDS && global.FD_CARDS.refresh) global.FD_CARDS.refresh();
   }
 
+  function saveFilterState() {
+    try {
+      const f = getFilterState();
+      localStorage.setItem(FILTER_STATE_KEY, JSON.stringify({
+        category: f.category,
+        visibility: f.visibility,
+        units: f.units,
+        seller: f.seller,
+        minPrice: f.minPrice,
+        maxPrice: f.maxPrice,
+        sort: f.sort,
+        radius: f.radius,
+        favoritesOnly: f.favoritesOnly,
+        inView: f.inView,
+        search: f.search
+      }));
+    } catch (_) {}
+  }
+
+  function restoreFilterState() {
+    try {
+      const raw = localStorage.getItem(FILTER_STATE_KEY);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || val == null || val === '') return;
+        if (el.type === 'checkbox') el.checked = !!val;
+        else el.value = String(val);
+      };
+      setVal('filter-category', s.category);
+      setVal('filter-visibility', s.visibility);
+      setVal('filter-units', s.units);
+      setVal('filter-seller', s.seller);
+      if (s.minPrice != null) setVal('filter-minprice', s.minPrice);
+      if (s.maxPrice != null) setVal('filter-maxprice', s.maxPrice);
+      setVal('filter-sort', s.sort);
+      if (s.radius != null) setVal('filter-radius', s.radius);
+      setVal('filter-favorites', s.favoritesOnly);
+      setVal('filter-inview', s.inView);
+      setVal('search-input', s.search);
+    } catch (_) {}
+  }
+
   function setListings(listings) {
     allListings = Array.isArray(listings) ? listings.slice() : [];
     populateFilterSelects();
+    if (!filtersRestored) {
+      restoreFilterState();
+      filtersRestored = true;
+    }
     applyFilters();
   }
 
@@ -159,6 +211,7 @@
     }
     updateChips();
     updateFilterBadge(f);
+    saveFilterState();
   }
 
   function updateFilterBadge(f) {
@@ -193,7 +246,7 @@
     if (!filtered.length) {
       const f = getFilterState();
       const showClear = hasActiveFilters(f);
-      container.innerHTML = `<div class="empty-list">No listings match the current filters.${showClear ? '<br><button type="button" id="empty-clear-filters" class="small-btn" style="margin-top:0.75rem">Clear filters</button>' : ''}</div>`;
+      container.innerHTML = `<div class=\"empty-list\">No listings match the current filters.${showClear ? '<br><button type=\"button\" id=\"empty-clear-filters\" class=\"small-btn\" style=\"margin-top:0.75rem\">Clear filters</button>' : ''}</div>`;
       if (showClear) {
         document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
       }
@@ -202,22 +255,22 @@
 
     container.innerHTML = filtered.map(l => {
       const fav = isFavorite(l.id);
-      const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">` : '<div class="list-thumb placeholder"></div>';
+      const img = l.image ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" loading=\"lazy\">` : '<div class=\"list-thumb placeholder\"></div>';
       let distHtml = '';
       if (userLocation && l.location && l.location.lat != null && l.location.long != null) {
         const d = distanceKm(userLocation.lat, userLocation.lng, l.location.lat, l.location.long);
-        distHtml = `<div class="listing-item-dist">${d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km'} away</div>`;
+        distHtml = `<div class=\"listing-item-dist\">${d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km'} away</div>`;
       }
       const active = highlightedId === l.id ? ' active' : '';
-      return `<div class="listing-item${active}" data-id="${escapeHtml(l.id)}" role="listitem">
+      return `<div class=\"listing-item${active}\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\">
         ${img}
-        <div class="listing-item-body">
-          <div class="listing-item-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
-          <div class="listing-item-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')} · $${Number(l.price||0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
-          <div class="listing-item-addr">${escapeHtml(l.address || '')}</div>
+        <div class=\"listing-item-body\">
+          <div class=\"listing-item-title\">${escapeHtml(l.headerdescription || 'Untitled')}</div>
+          <div class=\"listing-item-meta\">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')} · $${Number(l.price||0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
+          <div class=\"listing-item-addr\">${escapeHtml(l.address || '')}</div>
           ${distHtml}
         </div>
-        <button class="fav-btn" data-fav="${escapeHtml(l.id)}" title="Favorite" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
+        <button class=\"fav-btn\" data-fav=\"${escapeHtml(l.id)}\" title=\"Favorite\" aria-pressed=\"${fav}\">${fav ? '★' : '☆'}</button>
       </div>`;
     }).join('');
 
@@ -255,7 +308,7 @@
     });
     // Scroll into view if present
     if (id) {
-      const el = container.querySelector(`.listing-item[data-id="${CSS.escape(id)}"]`);
+      const el = container.querySelector(`.listing-item[data-id=\"${CSS.escape(id)}\"]`);
       if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }
@@ -293,7 +346,7 @@
     if (f.inView) items.push({ label: 'In view', clear: () => { const el = document.getElementById('filter-inview'); if (el) el.checked = false; } });
     if (f.radius) items.push({ label: `≤${f.radius} km`, clear: () => { const el = document.getElementById('filter-radius'); if (el) el.value = ''; } });
     if (f.search) items.push({ label: `Search: ${f.search}`, clear: () => { const el = document.getElementById('search-input'); if (el) el.value = ''; } });
-    chips.innerHTML = items.map((item, i) => `<span class="filter-chip">${escapeHtml(item.label)} <button type="button" data-chip="${i}" aria-label="Remove filter">×</button></span>`).join('');
+    chips.innerHTML = items.map((item, i) => `<span class=\"filter-chip\">${escapeHtml(item.label)} <button type=\"button\" data-chip=\"${i}\" aria-label=\"Remove filter\">×</button></span>`).join('');
     chips.querySelectorAll('button[data-chip]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -383,7 +436,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   global.FD_LIST = {

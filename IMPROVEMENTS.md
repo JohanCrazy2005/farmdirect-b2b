@@ -1,3 +1,15 @@
+## 2026-10-23 – Persist filter state across reloads
+
+**What:** Filter selections (category, visibility, units, seller, min/max price, sort, radius, favorites-only, only-in-view, and search query) are now saved to `localStorage` on every change and restored automatically when listings load. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish makes the filter card and search sticky across page reloads, which is common while exploring the undeployed demo. Improves map-first filtering UX without new features or schema changes.
+
+**How:** Added save/restore helpers in `js/list.js`; restore runs once after filter selects are populated; save runs at the end of `applyFilters`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Restore truncated index.html + filter badge polish
 
 **What:** Restored the full `index.html` (which had been overwritten with a truncated stub) including all modals, scripts, and UI shells. Added the `#filter-badge` span to the filter icon and corresponding `.filter-badge` CSS (absolute positioned count badge). Restored full IMPROVEMENTS.md history. Fully client-side; works in seed/demo mode.
