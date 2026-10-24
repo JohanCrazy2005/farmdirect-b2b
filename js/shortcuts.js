@@ -6,6 +6,7 @@
  * Shortcuts:
  *   / or s   Focus search box
  *   i        Toggle filter card
+ *   o        Toggle options menu
  *   l        Locate me
  *   f        Fit all listings
  *   x        Clear location (if active)
@@ -51,6 +52,19 @@
     }
   }
 
+  function toggleOptions() {
+    const optionsMenu = document.getElementById('options-menu');
+    const optionsBtn = document.getElementById('options-btn');
+    if (!optionsMenu || !optionsBtn) return;
+    const willShow = optionsMenu.hasAttribute('hidden');
+    optionsMenu.toggleAttribute('hidden', !willShow);
+    optionsBtn.setAttribute('aria-expanded', String(willShow));
+    if (willShow) {
+      const first = optionsMenu.querySelector('input, button, select');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
+  }
+
   function handleKey(e) {
     // Ignore when typing in fields, or with modifiers that look like browser shortcuts
     if (isTyping() || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -70,6 +84,12 @@
     if (key === 'i') {
       e.preventDefault();
       toggleFilters();
+      return;
+    }
+
+    if (key === 'o') {
+      e.preventDefault();
+      toggleOptions();
       return;
     }
 

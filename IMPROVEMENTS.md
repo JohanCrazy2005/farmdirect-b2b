@@ -1,3 +1,15 @@
+## 2026-10-24 – Keyboard shortcut to toggle options menu
+
+**What:** Pressing `o` (when not typing in a field) now toggles the options menu open/closed, matching the existing ⚙ button behavior (including aria-expanded and focusing the first control when opening). The shortcuts help modal lists it. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish speeds up access to the options menu (API base, exports, deploy commands, etc.) during map-first seed/demo exploration without new features or schema changes.
+
+**How:** Updated `js/shortcuts.js` (new toggle helper + key handler) and `index.html` (shortcuts list). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Copy listing link from sidebar list items
 
 **What:** Each listing row in the sidebar now includes a 🔗 “Copy link” button next to the favorite star. Clicking it copies a shareable `#listing=id` URL (same as the product-card button). Clicking the button does not open the product card. Fully client-side; works in seed/demo mode.
