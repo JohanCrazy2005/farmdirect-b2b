@@ -1,3 +1,15 @@
+## 2026-10-23 – Copy listing deep-link from product card
+
+**What:** Product cards now include a “Copy link” button that copies a shareable `#listing=id` URL. Opening the link selects the listing, opens the product card, and flies the map to the marker (existing deep-link support in main.js). Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish makes individual listings easily shareable during map-first exploration, complementing the existing map-view share link, without new features or schema changes.
+
+**How:** Frontend change to js/cards.js (copy helper + button in product-actions). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Keyboard shortcut to toggle filter card
 
 **What:** Pressing `i` (when not typing in a field) now toggles the filter card open/closed, matching the existing filter-icon button behavior (including aria-expanded and focusing the first control when opening). The shortcuts help modal lists it. Fully client-side; works in seed/demo mode.

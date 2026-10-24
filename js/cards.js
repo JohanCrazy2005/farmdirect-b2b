@@ -3,6 +3,7 @@
  * Substantial module. Pure client-side.
  * Seller card now lists actual products for the seller via FD_LIST.getListings().
  * Product card shows distance when user has used Locate me.
+ * Product card includes Copy listing link for shareable #listing= deep links.
  */
 (function (global) {
   'use strict';
@@ -25,7 +26,22 @@
     if (!userLoc || !listing.location || listing.location.lat == null || listing.location.long == null) return '';
     const d = distanceKm(userLoc.lat, userLoc.lng, listing.location.lat, listing.location.long);
     const label = d < 1 ? (d * 1000).toFixed(0) + ' m' : d.toFixed(1) + ' km';
-    return `<p class="product-dist">📍 ${label} away</p>`;
+    return `<p class=\"product-dist\">📍 ${label} away</p>`;
+  }
+
+  function getListingLink(id) {
+    const base = location.origin + location.pathname + location.search;
+    return base + '#listing=' + encodeURIComponent(id);
+  }
+
+  async function copyListingLink(id) {
+    const link = getListingLink(id);
+    try {
+      await navigator.clipboard.writeText(link);
+      if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+    } catch (_) {
+      if (global.FD_TOAST) global.FD_TOAST.show('Could not copy – link: ' + link, 'info');
+    }
   }
 
   function showProduct(listing) {
@@ -34,27 +50,28 @@
     if (!el || !listing) return;
     const fav = global.FD_LIST && global.FD_LIST.isFavorite ? global.FD_LIST.isFavorite(listing.id) : false;
     const img = listing.image
-      ? `<img class="product-img" src="${escapeHtml(listing.image)}" alt="" data-lightbox="1">`
-      : '<div class="product-img placeholder"></div>';
+      ? `<img class=\"product-img\" src=\"${escapeHtml(listing.image)}\" alt=\"\" data-lightbox=\"1\">`
+      : '<div class=\"product-img placeholder\"></div>';
     const distHtml = getDistanceHtml(listing);
     el.innerHTML = `
-      <button class="close-card" aria-label="Close">×</button>
+      <button class=\"close-card\" aria-label=\"Close\">×</button>
       ${img}
-      <div class="product-body">
+      <div class=\"product-body\">
         <h3>${escapeHtml(listing.headerdescription || 'Untitled')}</h3>
-        <div class="product-price">$${Number(listing.price || 0).toFixed(2)} <span class="units">/ ${escapeHtml(listing.units || 'unit')}</span></div>
-        <div class="product-meta">
-          <span class="badge">${escapeHtml(listing.category || '')}</span>
-          <span class="badge">${escapeHtml(listing.visibility || '')}</span>
-          <span class="badge">${escapeHtml(listing.sellerid || '')}</span>
+        <div class=\"product-price\">$${Number(listing.price || 0).toFixed(2)} <span class=\"units\">/ ${escapeHtml(listing.units || 'unit')}</span></div>
+        <div class=\"product-meta\">
+          <span class=\"badge\">${escapeHtml(listing.category || '')}</span>
+          <span class=\"badge\">${escapeHtml(listing.visibility || '')}</span>
+          <span class=\"badge\">${escapeHtml(listing.sellerid || '')}</span>
         </div>
         ${distHtml}
-        <p class="product-desc">${escapeHtml(listing.description || '')}</p>
-        <p class="product-addr">📍 ${escapeHtml(listing.address || '')}</p>
-        <div class="product-actions">
-          <button class="fav-btn-large" data-id="${escapeHtml(listing.id)}">${fav ? '★ Favorited' : '☆ Favorite'}</button>
-          <button class="primary-btn rfq-btn" data-id="${escapeHtml(listing.id)}">Request quote</button>
-          <button class="link-btn seller-btn" data-seller="${escapeHtml(listing.sellerid || '')}">View seller</button>
+        <p class=\"product-desc\">${escapeHtml(listing.description || '')}</p>
+        <p class=\"product-addr\">📍 ${escapeHtml(listing.address || '')}</p>
+        <div class=\"product-actions\">
+          <button class=\"fav-btn-large\" data-id=\"${escapeHtml(listing.id)}\">${fav ? '★ Favorited' : '☆ Favorite'}</button>
+          <button class=\"primary-btn rfq-btn\" data-id=\"${escapeHtml(listing.id)}\">Request quote</button>
+          <button class=\"link-btn seller-btn\" data-seller=\"${escapeHtml(listing.sellerid || '')}\">View seller</button>
+          <button class=\"link-btn copy-link-btn\" data-id=\"${escapeHtml(listing.id)}\">Copy link</button>
         </div>
       </div>
     `;
@@ -72,6 +89,7 @@
       }
     });
     el.querySelector('.seller-btn')?.addEventListener('click', () => showSeller(listing.sellerid));
+    el.querySelector('.copy-link-btn')?.addEventListener('click', () => copyListingLink(listing.id));
     el.querySelector('[data-lightbox]')?.addEventListener('click', () => openLightbox(listing.image));
   }
 
@@ -93,19 +111,19 @@
 
     const itemsHtml = sellerListings.length
       ? sellerListings.map(l => `
-          <div class="seller-listing-item" data-id="${escapeHtml(l.id)}">
-            <div class="seller-listing-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
-            <div class="seller-listing-meta">${escapeHtml(l.category || '')} · $${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
+          <div class=\"seller-listing-item\" data-id=\"${escapeHtml(l.id)}\">
+            <div class=\"seller-listing-title\">${escapeHtml(l.headerdescription || 'Untitled')}</div>
+            <div class=\"seller-listing-meta\">${escapeHtml(l.category || '')} · $${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || 'unit')}</div>
           </div>`).join('')
-      : '<p class="muted">No listings found for this seller in the current data set.</p>';
+      : '<p class=\"muted\">No listings found for this seller in the current data set.</p>';
 
     el.innerHTML = `
-      <button class="close-card" aria-label="Close">×</button>
-      <div class="seller-body">
+      <button class=\"close-card\" aria-label=\"Close\">×</button>
+      <div class=\"seller-body\">
         <h3>Seller: ${escapeHtml(sellerid)}</h3>
-        <p class="seller-count">${sellerListings.length} listing${sellerListings.length === 1 ? '' : 's'}</p>
-        <div class="seller-listings">${itemsHtml}</div>
-        <button class="primary-btn filter-seller-btn" data-seller="${escapeHtml(sellerid)}">Filter map & list by this seller</button>
+        <p class=\"seller-count\">${sellerListings.length} listing${sellerListings.length === 1 ? '' : 's'}</p>
+        <div class=\"seller-listings\">${itemsHtml}</div>
+        <button class=\"primary-btn filter-seller-btn\" data-seller=\"${escapeHtml(sellerid)}\">Filter map & list by this seller</button>
       </div>
     `;
     el.classList.add('open');
@@ -147,7 +165,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   global.FD_CARDS = {
