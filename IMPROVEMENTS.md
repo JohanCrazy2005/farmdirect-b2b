@@ -1,3 +1,15 @@
+## 2026-10-24 – Restore full js/list.js module
+
+**What:** Rebuilt the truncated `js/list.js` (previously reduced to a broken escapeHtml stub) into a complete sidebar + filter module. Restores list rendering, live filtering (category, visibility, units, seller, price, radius, favorites, only-in-view), filter persistence, filter-count badge, empty-state clear button, copy-link buttons, keyboard navigation (arrows + Enter/Space), favorites, distance sort/display, map marker sync, and JSON export. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The list module had been accidentally emptied, breaking the core map-first sidebar and all filter/list interactions. This code-only restoration returns the specified UI to a working state without new features or schema changes.
+
+**How:** Replaced `js/list.js` with a substantial module exposing the full `FD_LIST` API expected by main.js, map.js, cards.js, and shortcuts.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-24 – Fix HTML escaping in sidebar list rendering
 
 **What:** Corrected the broken `escapeHtml` helper in `js/list.js` (replacements were no-ops). Listing titles, categories, sellers, addresses, prices, and filter option values are now properly escaped before insertion into the DOM. Fully client-side; works in seed/demo mode.
