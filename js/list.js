@@ -1,7 +1,8 @@
 /**
  * FarmDirect B2B – sidebar list + filter module
  * Renders filtered listings, handles search/filters/favorites/distance/only-in-view,
- * keyboard navigation, persistence, empty-state, filter badge, copy links.
+ * keyboard navigation, persistence, empty-state, filter badge, copy links,
+ * removable filter chips.
  * Fully client-side; works in seed/demo and live modes.
  */
 (function (global) {
@@ -147,6 +148,69 @@
     fill('filter-seller', sellers);
   }
 
+  function clearOneFilter(key) {
+    if (key === 'q') {
+      const el = document.getElementById('search-input');
+      if (el) el.value = '';
+    } else if (key === 'favorites') {
+      const el = document.getElementById('filter-favorites');
+      if (el) el.checked = false;
+    } else if (key === 'inview') {
+      const el = document.getElementById('filter-inview');
+      if (el) el.checked = false;
+    } else {
+      const el = document.getElementById('filter-' + key);
+      if (el) el.value = '';
+    }
+    applyFilters();
+  }
+
+  function renderFilterChips() {
+    const container = document.getElementById('filter-chips');
+    if (!container) return;
+    const chips = [];
+    const q = getSearchQuery();
+    if (q) chips.push({ key: 'q', label: `Search: “${q}”` });
+    const cat = document.getElementById('filter-category')?.value;
+    if (cat) chips.push({ key: 'category', label: `Category: ${cat}` });
+    const vis = document.getElementById('filter-visibility')?.value;
+    if (vis) chips.push({ key: 'visibility', label: `Visibility: ${vis}` });
+    const units = document.getElementById('filter-units')?.value;
+    if (units) chips.push({ key: 'units', label: `Units: ${units}` });
+    const seller = document.getElementById('filter-seller')?.value;
+    if (seller) chips.push({ key: 'seller', label: `Seller: ${seller}` });
+    const minP = document.getElementById('filter-minprice')?.value;
+    if (minP) chips.push({ key: 'minprice', label: `Min ≥ $${minP}` });
+    const maxP = document.getElementById('filter-maxprice')?.value;
+    if (maxP) chips.push({ key: 'maxprice', label: `Max ≤ $${maxP}` });
+    const radius = document.getElementById('filter-radius')?.value;
+    if (radius) chips.push({ key: 'radius', label: `Radius ≤ ${radius} km` });
+    const sort = document.getElementById('filter-sort')?.value;
+    if (sort) {
+      const labels = { 'price-asc': 'Price ↑', 'price-desc': 'Price ↓', 'name': 'Name', 'distance': 'Distance' };
+      chips.push({ key: 'sort', label: `Sort: ${labels[sort] || sort}` });
+    }
+    if (document.getElementById('filter-favorites')?.checked) chips.push({ key: 'favorites', label: 'Favorites only' });
+    if (document.getElementById('filter-inview')?.checked) chips.push({ key: 'inview', label: 'Only in view' });
+
+    if (!chips.length) {
+      container.innerHTML = '';
+      return;
+    }
+    container.innerHTML = chips.map(c => `
+      <span class="filter-chip">
+        ${escapeHtml(c.label)}
+        <button type="button" class="chip-clear" data-key="${escapeHtml(c.key)}" title="Remove filter" aria-label="Remove ${escapeHtml(c.label)}">×</button>
+      </span>
+    `).join('');
+    container.querySelectorAll('.chip-clear').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearOneFilter(btn.dataset.key);
+      });
+    });
+  }
+
   function applyFilters() {
     const q = getSearchQuery();
     const cat = document.getElementById('filter-category')?.value || '';
@@ -201,6 +265,7 @@
     }
 
     renderList();
+    renderFilterChips();
     updateFilterBadge();
     saveFilters();
 

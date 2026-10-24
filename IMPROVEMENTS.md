@@ -1,3 +1,15 @@
+## 2026-10-24 – Removable filter chips in sidebar
+
+**What:** Active filters (search, category, visibility, units, seller, min/max price, radius, sort, favorites-only, only-in-view) now appear as dismissible chips under the sidebar header. Clicking a chip’s × clears only that filter and re-applies. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The `#filter-chips` container and `.filter-chip` styles already existed in the map-first shell but were unused. This code-only polish makes applied constraints visible and individually clearable during exploration without new features or schema changes.
+
+**How:** Added `renderFilterChips` + `clearOneFilter` to `js/list.js` (called from `applyFilters`). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-24 – Restore full js/list.js module
 
 **What:** Rebuilt the truncated `js/list.js` (previously reduced to a broken escapeHtml stub) into a complete sidebar + filter module. Restores list rendering, live filtering (category, visibility, units, seller, price, radius, favorites, only-in-view), filter persistence, filter-count badge, empty-state clear button, copy-link buttons, keyboard navigation (arrows + Enter/Space), favorites, distance sort/display, map marker sync, and JSON export. Fully client-side; works in seed/demo mode.
