@@ -1,3 +1,15 @@
+## 2026-10-23 – Copy listing link from sidebar list items
+
+**What:** Each listing row in the sidebar now includes a 🔗 “Copy link” button next to the favorite star. Clicking it copies a shareable `#listing=id` URL (same as the product-card button). Clicking the button does not open the product card. Fully client-side; works in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish makes individual listings easier to share directly from the map-first list view without opening the product card, improving exploration UX in the undeployed demo.
+
+**How:** Frontend changes to `js/list.js` (copy helper + button in list items + click handling) and `css/main.css` (button style). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-23 – Copy listing deep-link from product card
 
 **What:** Product cards now include a “Copy link” button that copies a shareable `#listing=id` URL. Opening the link selects the listing, opens the product card, and flies the map to the marker (existing deep-link support in main.js). Fully client-side; works in seed/demo mode.

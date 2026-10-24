@@ -12,6 +12,7 @@
  * Filter state (search, category, prices, sort, radius, favorites, in-view, etc.) is persisted
  * in localStorage and restored on load so demo exploration survives reloads.
  * Filter card visibility now correctly toggles the hidden attribute (consistent with options menu).
+ * List items include a Copy link button for quick #listing= deep-link sharing (seed/demo friendly).
  */
 (function (global) {
   'use strict';
@@ -42,6 +43,21 @@
     setFavorites(favs);
     renderList();
     if (global.FD_CARDS && global.FD_CARDS.refresh) global.FD_CARDS.refresh();
+  }
+
+  function getListingLink(id) {
+    const base = location.origin + location.pathname + location.search;
+    return base + '#listing=' + encodeURIComponent(id);
+  }
+
+  async function copyListingLink(id) {
+    const link = getListingLink(id);
+    try {
+      await navigator.clipboard.writeText(link);
+      if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+    } catch (_) {
+      if (global.FD_TOAST) global.FD_TOAST.show('Could not copy – link: ' + link, 'info');
+    }
   }
 
   function saveFilterState() {
@@ -271,13 +287,14 @@
           <div class=\"listing-item-addr\">${escapeHtml(l.address || '')}</div>
           ${distHtml}
         </div>
+        <button class=\"copy-list-btn\" data-copy=\"${escapeHtml(l.id)}\" title=\"Copy listing link\" aria-label=\"Copy link\">🔗</button>
         <button class=\"fav-btn\" data-fav=\"${escapeHtml(l.id)}\" title=\"Favorite\" aria-pressed=\"${fav}\">${fav ? '★' : '☆'}</button>
       </div>`;
     }).join('');
 
     container.querySelectorAll('.listing-item').forEach(el => {
       el.addEventListener('click', (e) => {
-        if (e.target.closest('.fav-btn')) return;
+        if (e.target.closest('.fav-btn') || e.target.closest('.copy-list-btn')) return;
         select(el.dataset.id);
       });
       el.addEventListener('mouseenter', () => {
@@ -296,6 +313,12 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(btn.dataset.fav);
+      });
+    });
+    container.querySelectorAll('.copy-list-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyListingLink(btn.dataset.copy);
       });
     });
   }
