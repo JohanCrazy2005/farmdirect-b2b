@@ -81,6 +81,12 @@
       if (e.target.id === 'deploy-modal') e.target.classList.remove('open');
     });
 
+    // Data-source badge click → deploy modal (seed/demo UX)
+    document.getElementById('data-source-badge')?.addEventListener('click', () => {
+      openDeployModal();
+      if (window.FD_TOAST) window.FD_TOAST.show('Deploy steps for live data', 'info');
+    });
+
     // Reload listings
     document.getElementById('reload-listings-btn')?.addEventListener('click', () => {
       loadListings();
@@ -208,12 +214,12 @@
     if (!badge) return;
     if (source === 'seed') {
       badge.textContent = 'SEED';
-      badge.title = 'Using seed listings (Worker offline or undeployed)';
+      badge.title = 'Using seed listings (Worker offline or undeployed) – click for deploy steps';
       badge.className = 'data-source-badge source-seed';
       badge.hidden = false;
     } else if (source === 'demo') {
       badge.textContent = 'DEMO';
-      badge.title = 'Demo mode – local changes persist until Worker is live';
+      badge.title = 'Demo mode – local changes persist until Worker is live – click for deploy steps';
       badge.className = 'data-source-badge source-demo';
       badge.hidden = false;
     } else {
