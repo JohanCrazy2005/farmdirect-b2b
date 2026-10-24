@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Seed data expansion + map center alignment (seed UX)
+- P4 / seed-demo polish: Expanded `data/seed-listings.json` with two additional listings (potatoes, dried lavender) for a richer fallback demo.
+- Aligned default `MAP_CENTER` / zoom in `js/config.js` to the Denver metro seed cluster so the first map view is relevant when no saved view or URL hash exists.
+- Fully client-side; improves seed fallback experience when the Worker is unreachable. Live API path unchanged.
+
 ## 2026-10-24 – Complete restoration of js/list.js (full module with thumbnails + chips)
 - P4 / seed-demo polish: Replaced the persistent truncated stub in `js/list.js` with a complete substantial module.
   - Correct HTML escaping, filter persistence (localStorage), favorites, distance calculation/sort, only-in-view (via FD_MAP.getBounds), keyboard navigation helpers, empty-state with Clear filters, copy listing links.

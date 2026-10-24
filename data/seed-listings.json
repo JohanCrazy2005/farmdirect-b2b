@@ -138,5 +138,33 @@
     "description": "Certified organic oats in bulk. Available for food processors.",
     "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-11",
+    "location": { "lat": 39.7900, "long": -105.0500 },
+    "visibility": "province",
+    "address": "777 Potato Ridge, Arvada, CO 80004",
+    "sellerid": "seller-ridge",
+    "category": "produce",
+    "headerdescription": "Russet potatoes – bulk",
+    "price": 0.45,
+    "units": "kg",
+    "description": "Storage crop russets. Cleaned and graded for retail or processing.",
+    "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-12",
+    "location": { "lat": 39.6100, "long": -104.9900 },
+    "visibility": "country",
+    "address": "888 Lavender Lane, Highlands Ranch, CO 80126",
+    "sellerid": "seller-lavender",
+    "category": "herbs",
+    "headerdescription": "Dried culinary lavender",
+    "price": 22.00,
+    "units": "kg",
+    "description": "Sun-dried lavender buds. Culinary and sachet grade.",
+    "image": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]
