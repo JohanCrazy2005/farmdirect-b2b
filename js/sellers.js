@@ -1,11 +1,34 @@
 /**
  * FarmDirect B2B – seller directory module
  * Options-menu modal listing unique sellers from current data with counts,
- * categories, and average price. Clicking a seller applies the seller filter
- * and closes the modal. Fully client-side; works in pure seed/demo mode.
+ * categories, and average price. Prefers display names from data/seed-sellers.json
+ * when available. Clicking a seller applies the seller filter and closes the modal.
+ * Fully client-side; works in pure seed/demo mode.
  */
 (function (global) {
   'use strict';
+
+  let sellersMeta = null; // cache of seed-sellers.json map
+
+  async function loadSellersMeta() {
+    if (sellersMeta) return sellersMeta;
+    const cfg = global.FD_CONFIG || {};
+    try {
+      const res = await fetch(cfg.SEED_SELLERS_URL || 'data/seed-sellers.json');
+      if (res.ok) {
+        const arr = await res.json();
+        sellersMeta = {};
+        if (Array.isArray(arr)) {
+          arr.forEach(s => {
+            if (s && s.sellerid) sellersMeta[s.sellerid] = s;
+          });
+        }
+      }
+    } catch (_) {
+      sellersMeta = {};
+    }
+    return sellersMeta || {};
+  }
 
   function escapeHtml(s) {
     if (s == null) return '';
@@ -59,7 +82,7 @@
     if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${sellerid}`, 'info');
   }
 
-  function render(sellers) {
+  async function render(sellers) {
     const el = document.getElementById('sellers-content');
     if (!el) return;
 
@@ -68,14 +91,20 @@
       return;
     }
 
+    const meta = await loadSellersMeta();
     const fmt = (n) => n == null ? '–' : '$' + Number(n).toFixed(2);
 
-    el.innerHTML = sellers.map(s => `
+    el.innerHTML = sellers.map(s => {
+      const info = meta[s.sellerid] || {};
+      const display = info.name || s.sellerid;
+      const bio = info.bio || '';
+      return `
       <div class="seller-dir-item">
         <div class="seller-dir-header">
-          <strong>${escapeHtml(s.sellerid)}</strong>
+          <strong>${escapeHtml(display)}</strong>
           <span class="seller-count">${s.count} listing${s.count === 1 ? '' : 's'}</span>
         </div>
+        ${bio ? `<div class="seller-bio small muted">${escapeHtml(bio)}</div>` : ''}
         <div class="seller-meta">
           Categories: ${escapeHtml(s.categories.join(', ') || '–')}
           ${s.avgPrice != null ? ` · Avg ${fmt(s.avgPrice)}` : ''}
@@ -83,21 +112,22 @@
         ${s.sampleAddress ? `<div class="seller-address muted small">${escapeHtml(s.sampleAddress)}</div>` : ''}
         <button type="button" class="small-btn view-seller-btn" data-seller="${escapeHtml(s.sellerid)}">View listings</button>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     el.querySelectorAll('.view-seller-btn').forEach(btn => {
       btn.addEventListener('click', () => applySellerFilter(btn.dataset.seller));
     });
   }
 
-  function open() {
+  async function open() {
     const modal = document.getElementById('sellers-modal');
     if (!modal) return;
     const listings = (global.FD_LIST && typeof global.FD_LIST.getListings === 'function')
       ? global.FD_LIST.getListings()
       : [];
     const sellers = computeSellers(listings);
-    render(sellers);
+    await render(sellers);
     modal.classList.add('open');
   }
 

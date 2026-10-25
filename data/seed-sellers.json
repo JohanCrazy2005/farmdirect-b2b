@@ -1,0 +1,52 @@
+[
+  {
+    "sellerid": "seller-greenfield",
+    "name": "Greenfield Organics",
+    "bio": "Family-run greenhouse in Denver specializing in vine-ripened tomatoes and seasonal produce for restaurants and retailers."
+  },
+  {
+    "sellerid": "seller-highland",
+    "name": "Highland Farms",
+    "bio": "Highland-area growers of sweet organic carrots and root vegetables in rich Colorado soil."
+  },
+  {
+    "sellerid": "seller-sunrise",
+    "name": "Sunrise Coop",
+    "bio": "Cooperative in Aurora raising pasture free-range hens for deep-orange-yolk eggs."
+  },
+  {
+    "sellerid": "seller-plains",
+    "name": "Plains Grain Co.",
+    "bio": "High-protein hard red winter wheat grown on the plains near Golden for milling and baking."
+  },
+  {
+    "sellerid": "seller-orchard",
+    "name": "Orchard Lane",
+    "bio": "Seasonal Colorado apple orchard offering Honeycrisp, Gala, and cider varieties."
+  },
+  {
+    "sellerid": "seller-creamery",
+    "name": "Brighton Creamery",
+    "bio": "Small-batch artisan cheddar aged 12 months, available in wheels or food-service cuts."
+  },
+  {
+    "sellerid": "seller-valley",
+    "name": "Valley Spud",
+    "bio": "Buttery Yukon Gold potatoes, washed and graded for bulk or retail sacks."
+  },
+  {
+    "sellerid": "seller-herb",
+    "name": "Herb Garden",
+    "bio": "Hydroponic culinary herb mixes (basil, parsley, cilantro, thyme) grown weekly."
+  },
+  {
+    "sellerid": "seller-berry",
+    "name": "Mountain Berry",
+    "bio": "Tree-ripened Colorado peaches from the foothills, ideal for fresh market or preserves."
+  },
+  {
+    "sellerid": "seller-grain",
+    "name": "Grain Elevator",
+    "bio": "Certified organic oats, rolled or whole, for processors and bakeries."
+  }
+]
