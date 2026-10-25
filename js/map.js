@@ -1,1 +1,1 @@
-PLACEHOLDER_WILL_REPLACE
+$(cat /tmp/map.js)
