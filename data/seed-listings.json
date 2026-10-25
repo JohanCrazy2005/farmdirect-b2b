@@ -334,5 +334,61 @@
     "description": "Hydroponic mixed greens. Daily harvest for restaurants and grocers.",
     "image": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-25",
+    "location": { "lat": 39.7250, "long": -104.9700 },
+    "visibility": "country",
+    "address": "555 Kale Patch, Denver, CO 80206",
+    "sellerid": "seller-kale",
+    "category": "produce",
+    "headerdescription": "Organic curly kale – bulk",
+    "price": 2.80,
+    "units": "kg",
+    "description": "Field-grown organic kale. Harvested daily for restaurants and juice bars.",
+    "image": "https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-26",
+    "location": { "lat": 39.6900, "long": -104.9800 },
+    "visibility": "province",
+    "address": "666 Yogurt Barn, Englewood, CO 80112",
+    "sellerid": "seller-yogurt",
+    "category": "dairy",
+    "headerdescription": "Plain goat milk yogurt",
+    "price": 4.50,
+    "units": "kg",
+    "description": "Cultured goat milk yogurt. Available in bulk tubs for foodservice.",
+    "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-27",
+    "location": { "lat": 39.7800, "long": -105.0400 },
+    "visibility": "worldwide",
+    "address": "777 Duck Pond Farm, Westminster, CO 80030",
+    "sellerid": "seller-duck",
+    "category": "eggs",
+    "headerdescription": "Pasture-raised duck eggs",
+    "price": 3.20,
+    "units": "dozen",
+    "description": "Rich duck eggs from free-range flock. Popular with bakers and chefs.",
+    "image": "https://images.unsplash.com/photo-1569288052389-dac9b01c9c05?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-28",
+    "location": { "lat": 39.6000, "long": -104.8700 },
+    "visibility": "country",
+    "address": "888 Barley Fields, Castle Rock, CO 80108",
+    "sellerid": "seller-barley",
+    "category": "grains",
+    "headerdescription": "Malting barley – bulk",
+    "price": 210.00,
+    "units": "ton",
+    "description": "Two-row malting barley. Available for breweries and maltsters.",
+    "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]

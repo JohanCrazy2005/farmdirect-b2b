@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Further densify Denver metro seed listings
+- P4 / seed-demo polish: Added four more listings to `data/seed-listings.json` (organic kale, goat yogurt, duck eggs, malting barley).
+- Increases map marker density and variety within existing categories when the Worker is offline or undeployed.
+- Fully client-side; no API or schema changes. Improves first-load seed experience and filter exploration.
+
 ## 2026-10-24 – Expand category colors for new seed listings
 - P4 / seed-demo polish: Updated CATEGORY_COLORS in `js/map.js` to include meat (#dc2626), flowers (#ec4899), nuts (#78350f), seafood (#0ea5e9), and bakery (#f97316).
 - Legend and markers now distinguish the expanded seed categories (previously falling back to default green). Improves map scannability and filter-to-map correlation when using the Denver metro seed fallback.
