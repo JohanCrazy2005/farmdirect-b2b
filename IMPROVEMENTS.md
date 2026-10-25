@@ -1,3 +1,15 @@
+## 2026-10-25 – Add diverse category seed listings for richer map demo
+
+**What:** Expanded `data/seed-listings.json` from 10 to 16 listings and matching `data/seed-sellers.json` with six new sellers. Added honey, meat, flowers, nuts, seafood, and bakery categories, all clustered in the Denver metro area with unique Unsplash images. Legend colors, filters, clusters, and cards now show a fuller range of product types in pure seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The existing seed was produce-heavy; the category legend and filters looked sparse. This code-only densification improves map-first exploration without schema or backend changes.
+
+**How:** Updated `data/seed-listings.json` and `data/seed-sellers.json`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Fix map-list integration (distance, highlight, focus) for seed/demo
 
 **What:** Aligned `js/list.js` with `js/map.js` so Locate me, distance display/sort, marker↔list hover highlight, and list-item→map flyTo all work in pure seed/demo mode. Added the missing `setUserLocation`, `sortByDistance`, `clearDistance`, and `highlight` methods; switched internal calls to the actual map APIs (`getUserLatLng`, `renderMarkers`, `flyTo`).
@@ -45,5 +57,3 @@
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
 
 ---
-
-PLACEHOLDER_IMP

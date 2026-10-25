@@ -48,5 +48,35 @@
     "sellerid": "seller-grain",
     "name": "Grain Elevator",
     "bio": "Certified organic oats, rolled or whole, for processors and bakeries."
+  },
+  {
+    "sellerid": "seller-honey",
+    "name": "Denver Apiary",
+    "bio": "Raw Colorado wildflower honey from urban and foothill hives, available in bulk."
+  },
+  {
+    "sellerid": "seller-beef",
+    "name": "Pasture Beef Co.",
+    "bio": "Grass-fed, grass-finished beef from local Colorado pastures for restaurants and retailers."
+  },
+  {
+    "sellerid": "seller-bloom",
+    "name": "Bloom Street Flowers",
+    "bio": "Field-grown seasonal flowers and mixed bouquets for florists and events."
+  },
+  {
+    "sellerid": "seller-nuts",
+    "name": "Nut Grove",
+    "bio": "Locally grown in-shell walnuts available in bulk sacks or retail packs."
+  },
+  {
+    "sellerid": "seller-trout",
+    "name": "Trout Creek Farm",
+    "bio": "Farm-raised rainbow trout, whole or filleted, with weekly harvest for restaurants."
+  },
+  {
+    "sellerid": "seller-bakery",
+    "name": "Bakery Row",
+    "bio": "Naturally leavened artisan sourdough baked daily for wholesale cafes and grocers."
   }
 ]
