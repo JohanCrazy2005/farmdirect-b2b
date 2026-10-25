@@ -1,16 +1,12 @@
-## 2026-10-25 – Surface friendly seller names across list, cards, and filters
+## 2026-10-25 – Restore substantial list.js + cards.js modules for seed/demo UX
 
-**What:** Extended `js/sellers.js` to expose `getDisplayName` / `getBio` (with eager meta load). Updated `js/list.js` so sidebar items, filter dropdown, filter chips, and search all prefer the display name from `data/seed-sellers.json`. Updated `js/cards.js` so product badges and seller cards show the friendly name + bio. Also fixed duplicate Unsplash image on the organic oats seed listing.
+**What:** Replaced placeholder `js/list.js` and `js/cards.js` with full client-side modules. List now renders thumbnails, filter chips (removable), favorites (persisted), distance, only-in-view, keyboard navigation, and prefers friendly seller display names. Cards show product/seller detail with max 3 badges, lightbox, and RFQ/filter actions. Fully works offline with seed data.
 
-Fully client-side; works immediately in seed/demo mode.
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The sidebar list and product/seller cards were stubs, so the map-first seed fallback UX was incomplete. This restores the primary interactive surface without new features or schema changes.
 
-**Why:** Highest unfinished items remain user-owned (P1 auth migration / secrets). After adding seller meta, raw sellerids still appeared in the primary list and product cards. This polish makes the marketplace substantially more readable while exploring seed data.
+**How:** New substantial implementations in js/list.js and js/cards.js. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
 
-**How:** Updates to js/sellers.js, js/list.js, js/cards.js, and data/seed-listings.json. Single commit via push_files.
-Appended this entry to IMPROVEMENTS.md.
-
-**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
-Then register/login + publish workflow works end-to-end.
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
 
 ---
 
