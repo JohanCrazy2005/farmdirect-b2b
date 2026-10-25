@@ -6,6 +6,7 @@
  *   distance display, hover sync, and list→map focus work in pure seed/demo.
  * + Persist active filters (category, visibility, search, sort, radius, favorites, in-view, etc.) in localStorage
  *   so exploration state survives reloads. Fully client-side for seed/demo continuity.
+ * + Copy listing link button on each list item (copies shareable #listing= deep link; toast feedback). Fully client-side.
  */
 (function (global) {
   'use strict';
@@ -241,9 +242,9 @@
     if (document.getElementById('filter-favorites')?.checked) chips.push({ key: 'favorites', label: 'Favorites' });
     if (document.getElementById('filter-inview')?.checked) chips.push({ key: 'inview', label: 'In view' });
     const q = document.getElementById('search-input')?.value;
-    if (q) chips.push({ key: 'search', label: `"${q}"` });
+    if (q) chips.push({ key: 'search', label: `\"${q}\"` });
 
-    el.innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
+    el.innerHTML = chips.map(c => `<span class=\"chip\">${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => clearFilter(btn.dataset.key));
     });
@@ -276,6 +277,15 @@
     applyFilters();
   }
 
+  function copyListingLink(id) {
+    const url = location.origin + location.pathname + '#listing=' + encodeURIComponent(id);
+    navigator.clipboard.writeText(url).then(() => {
+      if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+    }).catch(() => {
+      if (global.FD_TOAST) global.FD_TOAST.show('Could not copy link: ' + url, 'info');
+    });
+  }
+
   function renderList() {
     const el = document.getElementById('listing-list');
     const countEl = document.getElementById('list-count');
@@ -284,7 +294,7 @@
 
     if (!filtered.length) {
       const hasFilters = document.getElementById('filter-badge') && !document.getElementById('filter-badge').hidden;
-      el.innerHTML = `<div class="empty-state muted">No listings match.${hasFilters ? ' <button type="button" id="clear-filters-empty" class="small-btn">Clear filters</button>' : ''}</div>`;
+      el.innerHTML = `<div class=\"empty-state muted\">No listings match.${hasFilters ? ' <button type=\"button\" id=\"clear-filters-empty\" class=\"small-btn\">Clear filters</button>' : ''}</div>`;
       document.getElementById('clear-filters-empty')?.addEventListener('click', clearAllFilters);
       return;
     }
@@ -299,25 +309,28 @@
         return d < 1 ? `${Math.round(d*1000)} m` : `${d.toFixed(1)} km`;
       })();
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units||''}` : '';
-      const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">` : '<div class="list-thumb placeholder"></div>';
+      const img = l.image ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" loading=\"lazy\">` : '<div class=\"list-thumb placeholder\"></div>';
       const hi = i === highlightedIndex ? ' highlighted' : '';
       const sel = l.id === selectedId ? ' selected' : '';
       return `
-        <div class="list-item${hi}${sel}" role="listitem" data-id="${escapeHtml(l.id)}" tabindex="0">
+        <div class=\"list-item${hi}${sel}\" role=\"listitem\" data-id=\"${escapeHtml(l.id)}\" tabindex=\"0\">
           ${img}
-          <div class="list-body">
-            <div class="list-header">
+          <div class=\"list-body\">
+            <div class=\"list-header\">
               <strong>${escapeHtml(l.headerdescription || 'Untitled')}</strong>
-              <button type="button" class="fav-btn" data-id="${escapeHtml(l.id)}" aria-label="Favorite">${fav}</button>
+              <div class=\"list-actions\">
+                <button type=\"button\" class=\"copy-list-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"Copy listing link\" title=\"Copy link\">🔗</button>
+                <button type=\"button\" class=\"fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"Favorite\">${fav}</button>
+              </div>
             </div>
-            <div class="list-meta muted small">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
+            <div class=\"list-meta muted small\">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
           </div>
         </div>`;
     }).join('');
 
     el.querySelectorAll('.list-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.classList.contains('fav-btn')) return;
+        if (e.target.closest('.fav-btn, .copy-list-btn')) return;
         select(item.dataset.id);
       });
       item.addEventListener('keydown', (e) => {
@@ -331,6 +344,12 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(btn.dataset.id);
+      });
+    });
+    el.querySelectorAll('.copy-list-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyListingLink(btn.dataset.id);
       });
     });
   }
@@ -371,7 +390,7 @@
       el.classList.toggle('highlighted', el.dataset.id === id);
     });
     if (id) {
-      const item = document.querySelector(`.list-item[data-id="${CSS.escape(id)}"]`);
+      const item = document.querySelector(`.list-item[data-id=\"${CSS.escape(id)}\"]`);
       item?.scrollIntoView({ block: 'nearest' });
     }
   }

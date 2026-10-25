@@ -1,3 +1,15 @@
+## 2026-10-25 – Copy listing link button on list items (shareable deep links)
+
+**What:** Each sidebar list item now has a copy-link button (🔗) next to the favorite star. Clicking it copies a shareable URL with `#listing=<id>` to the clipboard and shows a toast. Opening that link selects the listing, flies the map, and opens the product card (already supported). Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The CSS already styled `.copy-list-btn` and deep-link selection existed, but there was no UI to share a specific seed listing. This small polish makes the densified Denver demo easier to share and revisit without schema or backend changes.
+
+**How:** Updated `js/list.js` (renderList button + click handler + `copyListingLink` helper using `navigator.clipboard`). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Persist filters across reloads (seed/demo continuity)
 
 **What:** Active filters (category, visibility, units, seller, price range, radius, sort, favorites-only, only-in-view, and search query) are now saved to localStorage and restored on page load. Clearing filters also clears the persisted state. Works fully client-side in seed/demo mode.
