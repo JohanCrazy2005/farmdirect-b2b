@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Further densify Denver metro seed listings (peaches, cream, lamb, basil)
+- P4 / seed-demo polish: Added four more listings to `data/seed-listings.json` (Colorado peaches, heavy cream, pasture-raised lamb, fresh sweet basil).
+- Increases map marker density and category variety (produce, dairy, meat, herbs) within the Denver metro cluster when the Worker is offline or undeployed.
+- Fully client-side; no API or schema changes. Improves first-load seed experience, filter exploration, and map scannability.
+
 ## 2026-10-24 – Further densify Denver metro seed listings
 - P4 / seed-demo polish: Added four more listings to `data/seed-listings.json` (organic kale, goat yogurt, duck eggs, malting barley).
 - Increases map marker density and variety within existing categories when the Worker is offline or undeployed.

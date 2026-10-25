@@ -390,5 +390,61 @@
     "description": "Two-row malting barley. Available for breweries and maltsters.",
     "image": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
     "status": "published"
+  },
+  {
+    "id": "seed-29",
+    "location": { "lat": 39.7550, "long": -105.0000 },
+    "visibility": "province",
+    "address": "999 Peach Orchard, Golden, CO 80401",
+    "sellerid": "seller-peach",
+    "category": "produce",
+    "headerdescription": "Ripe Colorado peaches – bulk",
+    "price": 2.95,
+    "units": "kg",
+    "description": "Tree-ripened freestone peaches. Ideal for restaurants, canning, or markets.",
+    "image": "https://images.unsplash.com/photo-1629828874514-c1e5103f2150?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-30",
+    "location": { "lat": 39.6400, "long": -104.9200 },
+    "visibility": "country",
+    "address": "111 Creamery Lane, Castle Rock, CO 80104",
+    "sellerid": "seller-cream",
+    "category": "dairy",
+    "headerdescription": "Heavy cream – bulk",
+    "price": 3.80,
+    "units": "liter",
+    "description": "Fresh heavy cream from grass-fed cows. Available in bulk for bakeries and foodservice.",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-31",
+    "location": { "lat": 39.7000, "long": -105.0100 },
+    "visibility": "worldwide",
+    "address": "222 Lamb Pasture, Morrison, CO 80465",
+    "sellerid": "seller-lamb",
+    "category": "meat",
+    "headerdescription": "Pasture-raised lamb – leg",
+    "price": 14.50,
+    "units": "kg",
+    "description": "Grass-fed lamb from local ranch. Vacuum-sealed cuts for wholesale.",
+    "image": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-32",
+    "location": { "lat": 39.7800, "long": -104.9900 },
+    "visibility": "province",
+    "address": "333 Herb Garden, Denver, CO 80211",
+    "sellerid": "seller-basil",
+    "category": "herbs",
+    "headerdescription": "Fresh sweet basil – bulk",
+    "price": 9.00,
+    "units": "kg",
+    "description": "Greenhouse-grown sweet basil. Same-day harvest for chefs and restaurants.",
+    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=300&fit=crop",
+    "status": "published"
   }
 ]
