@@ -1,5 +1,10 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-24 – Expand category colors for new seed listings
+- P4 / seed-demo polish: Updated CATEGORY_COLORS in `js/map.js` to include meat (#dc2626), flowers (#ec4899), nuts (#78350f), seafood (#0ea5e9), and bakery (#f97316).
+- Legend and markers now distinguish the expanded seed categories (previously falling back to default green). Improves map scannability and filter-to-map correlation when using the Denver metro seed fallback.
+- Fully client-side; no API or schema changes. Live Worker path unchanged.
+
 ## 2026-10-24 – Expand seed listings with seafood, bakery and more produce
 - P4 / seed-demo polish: Added four more diverse listings to `data/seed-listings.json` (rainbow trout, artisan sourdough, shiitake mushrooms, mixed salad greens).
 - Introduces new categories (seafood, bakery) and additional produce variety to increase filter options and map density in the Denver metro cluster when the Worker is offline or undeployed.

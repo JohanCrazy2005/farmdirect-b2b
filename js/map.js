@@ -14,6 +14,7 @@
  * + Location callbacks now also drive FD_LIST.setUserLocation for consistent distance display/filter
  * + getBounds exposed so “Only in view” filter works (client-side, seed/demo friendly)
  * + “Only in view” now re-applies live on map pan/zoom (via moveend → FD_LIST.applyFilters)
+ * + Expanded category colors for seed listings (meat, flowers, nuts, seafood, bakery) so new demo markers are distinguishable in the legend
  */
 (function (global) {
   'use strict';
@@ -38,6 +39,11 @@
     grains: '#92400e',
     herbs: '#059669',
     honey: '#f59e0b',
+    meat: '#dc2626',
+    flowers: '#ec4899',
+    nuts: '#78350f',
+    seafood: '#0ea5e9',
+    bakery: '#f97316',
     default: '#40916c'
   };
 
@@ -173,7 +179,7 @@
           if (count >= 10) size = 'large';
           else if (count >= 5) size = 'medium';
           return L.divIcon({
-            html: `<div class="cluster-icon cluster-${size}"><span>${count}</span></div>`,
+            html: `<div class=\"cluster-icon cluster-${size}\"><span>${count}</span></div>`,
             className: 'marker-cluster-custom',
             iconSize: L.point(40, 40),
             iconAnchor: L.point(20, 20)
@@ -226,7 +232,7 @@
       const div = L.DomUtil.create('div', 'map-legend');
       const items = Object.entries(CATEGORY_COLORS)
         .filter(([k]) => k !== 'default')
-        .map(([cat, color]) => `<div class="legend-item"><span class="legend-swatch" style="background:${color}"></span>${escapeHtml(cat)}</div>`)
+        .map(([cat, color]) => `<div class=\"legend-item\"><span class=\"legend-swatch\" style=\"background:${color}\"></span>${escapeHtml(cat)}</div>`)
         .join('');
       div.innerHTML = `<strong>Categories</strong>${items}`;
       return div;
@@ -242,7 +248,7 @@
     const color = CATEGORY_COLORS[category] || CATEGORY_COLORS.default;
     return L.divIcon({
       className: 'category-marker',
-      html: `<div style="background:${color}"></div>`,
+      html: `<div style=\"background:${color}\"></div>`,
       iconSize: [18, 18],
       iconAnchor: [9, 9]
     });
@@ -308,19 +314,19 @@
 
       const price = Number(listing.price);
       const priceStr = isNaN(price) ? '' : `$${price.toFixed(2)} / ${escapeHtml(listing.units || '')}`;
-      const addr = listing.address ? `<div class="popup-meta">${escapeHtml(listing.address)}</div>` : '';
-      const vis = listing.visibility ? `<div class="popup-meta">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
-      const seller = listing.sellerid ? `<div class="popup-meta">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
+      const addr = listing.address ? `<div class=\"popup-meta\">${escapeHtml(listing.address)}</div>` : '';
+      const vis = listing.visibility ? `<div class=\"popup-meta\">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
+      const seller = listing.sellerid ? `<div class=\"popup-meta\">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
 
       marker.bindPopup(`
-        <div class="map-popup">
+        <div class=\"map-popup\">
           <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong>
-          <div class="popup-price">${priceStr}</div>
-          <div class="popup-meta">${escapeHtml(listing.category || '')}</div>
+          <div class=\"popup-price\">${priceStr}</div>
+          <div class=\"popup-meta\">${escapeHtml(listing.category || '')}</div>
           ${seller}
           ${addr}
           ${vis}
-          <div class="popup-hint">Click marker or list item for full details</div>
+          <div class=\"popup-hint\">Click marker or list item for full details</div>
         </div>
       `);
 
@@ -514,7 +520,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink, getBounds };
