@@ -3,6 +3,8 @@
  * Shows matching listings under the top-bar search as you type.
  * Debounced, keyboard-navigable (arrows/Enter/Esc), click to open product + fly to marker.
  * Fully client-side; works in pure seed/demo mode. Complements existing filters/search.
+ * + Prefers friendly seller display names (from seed meta) in matches and results.
+ * + Category color swatches for visual consistency with the map legend.
  */
 (function (global) {
   'use strict';
@@ -11,6 +13,21 @@
   let activeIndex = -1;
   let currentMatches = [];
 
+  const CATEGORY_COLORS = {
+    produce: '#2d6a4f',
+    dairy: '#1d4ed8',
+    eggs: '#d97706',
+    grains: '#92400e',
+    herbs: '#059669',
+    honey: '#f59e0b',
+    meat: '#dc2626',
+    flowers: '#ec4899',
+    nuts: '#78350f',
+    seafood: '#0ea5e9',
+    bakery: '#f97316',
+    default: '#40916c'
+  };
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -18,6 +35,10 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function getDisplayName(sellerid) {
+    return (global.FD_SELLERS && global.FD_SELLERS.getDisplayName) ? global.FD_SELLERS.getDisplayName(sellerid) : (sellerid || '');
   }
 
   function getListings() {
@@ -34,6 +55,7 @@
       listing.headerdescription,
       listing.description,
       listing.category,
+      getDisplayName(listing.sellerid),
       listing.sellerid,
       listing.address,
       listing.units
@@ -56,10 +78,13 @@
     box.innerHTML = currentMatches.map((l, i) => {
       const price = Number(l.price);
       const priceStr = isNaN(price) ? '' : ` · $${price.toFixed(2)}/${escapeHtml(l.units || '')}`;
+      const seller = escapeHtml(getDisplayName(l.sellerid));
+      const color = CATEGORY_COLORS[l.category] || CATEGORY_COLORS.default;
+      const swatch = `<span class="suggestion-swatch" style="background:${color}" aria-hidden="true"></span>`;
       return `
         <div class="suggestion-item" data-index="${i}" data-id="${escapeHtml(l.id)}" role="option" tabindex="-1">
-          <div class="suggestion-title">${escapeHtml(l.headerdescription || 'Listing')}</div>
-          <div class="suggestion-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')}${priceStr}</div>
+          <div class="suggestion-title">${swatch}${escapeHtml(l.headerdescription || 'Listing')}</div>
+          <div class="suggestion-meta">${escapeHtml(l.category || '')} · ${seller}${priceStr}</div>
         </div>`;
     }).join('');
 

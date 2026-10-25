@@ -1,3 +1,15 @@
+## 2026-10-25 – Friendly seller names + category swatches in search suggestions
+
+**What:** Top-bar search typeahead now shows friendly seller display names (from seed-sellers.json meta) instead of raw sellerids, matches on those names, and prefixes each suggestion with a category color swatch matching the map legend. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). Search suggestions were the last surface still using raw sellerids after the map popup, list, and seller directory polish. Color swatches make category discovery consistent across map, legend, and search without schema or backend changes.
+
+**How:** Updated `js/search.js` (getDisplayName in matches + render, category color map + swatch) and `css/main.css` (`.suggestion-swatch` + flex title). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Copy listing link button on list items (shareable deep links)
 
 **What:** Each sidebar list item now has a copy-link button (🔗) next to the favorite star. Clicking it copies a shareable URL with `#listing=<id>` to the clipboard and shows a toast. Opening that link selects the listing, flies the map, and opens the product card (already supported). Fully client-side; works in pure seed/demo mode.

@@ -79,7 +79,19 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .suggestion-item:hover, .suggestion-item.active { background: var(--hover-bg); }
-.suggestion-title { font-weight: 600; }
+.suggestion-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.suggestion-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+}
 .suggestion-meta { font-size: 0.8rem; color: var(--muted); }
 
 .top-actions { display: flex; align-items: center; gap: 0.25rem; position: relative; }
