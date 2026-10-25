@@ -1,3 +1,16 @@
-{
-  "note": "full content too large for this simulation, but in practice it would be the 22k JSON"
-}
+[
+  {
+    "id": "seed-1",
+    "location": { "lat": 39.7392, "long": -104.9903 },
+    "visibility": "country",
+    "address": "123 Green Valley Rd, Denver, CO 80202",
+    "sellerid": "seller-greenfield",
+    "category": "produce",
+    "headerdescription": "Organic vine-ripened tomatoes",
+    "price": 1.35,
+    "units": "kg",
+    "description": "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available in bulk for restaurants and retailers.",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop",
+    "status": "published"
+  }
+]
