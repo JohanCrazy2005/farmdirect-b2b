@@ -1,3 +1,15 @@
+## 2026-10-25 – Fix map-list integration (distance, highlight, focus) for seed/demo
+
+**What:** Aligned `js/list.js` with `js/map.js` so Locate me, distance display/sort, marker↔list hover highlight, and list-item→map flyTo all work in pure seed/demo mode. Added the missing `setUserLocation`, `sortByDistance`, `clearDistance`, and `highlight` methods; switched internal calls to the actual map APIs (`getUserLatLng`, `renderMarkers`, `flyTo`).
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). After restoring the substantial list module, the map and list were calling non-existent methods on each other, so distance, hover sync, and focus were dead. This code-only fix restores the core map-first interaction without new features or schema changes.
+
+**How:** Updated `js/list.js` only. Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Friendly seller names in map popups + fix seller directory escaping + unique oats image
 
 **What:** Map marker popups now show friendly seller display names (from seed-sellers.json meta) instead of raw sellerids. Fixed broken HTML escaping in js/sellers.js (was not producing entities). Uniquified the organic oats seed image so it no longer duplicates the wheat photo. Fully client-side; works in seed/demo mode.

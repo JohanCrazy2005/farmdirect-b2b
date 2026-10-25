@@ -2,6 +2,8 @@
  * FarmDirect B2B – sidebar list + filter module
  * Substantial implementation: thumbnails, chips, favorites, distance, only-in-view, keyboard, seller display names.
  * Fully client-side; works in seed/demo mode.
+ * + Integrated with map: setUserLocation / sortByDistance / clearDistance / highlight so Locate me,
+ *   distance display, hover sync, and list→map focus work in pure seed/demo.
  */
 (function (global) {
   'use strict';
@@ -12,6 +14,7 @@
   let favorites = new Set();
   let selectedId = null;
   let highlightedIndex = -1;
+  let userLocation = null; // {lat, lng}
 
   function loadFavorites() {
     try {
@@ -30,7 +33,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function getDisplayName(sellerid) {
@@ -46,7 +49,34 @@
   }
 
   function getUserLoc() {
-    return global.FD_MAP && global.FD_MAP.getUserLocation ? global.FD_MAP.getUserLocation() : null;
+    if (userLocation) return userLocation;
+    if (global.FD_MAP && typeof global.FD_MAP.getUserLatLng === 'function') {
+      return global.FD_MAP.getUserLatLng();
+    }
+    return null;
+  }
+
+  function setUserLocation(loc) {
+    userLocation = (loc && typeof loc.lat === 'number' && typeof (loc.lng || loc.long) === 'number')
+      ? { lat: loc.lat, lng: loc.lng || loc.long }
+      : null;
+    applyFilters();
+  }
+
+  function clearDistance() {
+    userLocation = null;
+    applyFilters();
+  }
+
+  function sortByDistance(lat, lng) {
+    userLocation = { lat, lng };
+    const sortSel = document.getElementById('filter-sort');
+    if (sortSel) {
+      sortSel.value = 'distance';
+      sortSel.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+      applyFilters();
+    }
   }
 
   function getMapBounds() {
@@ -81,15 +111,15 @@
     if (radius > 0) {
       const ul = getUserLoc();
       if (!ul || !l.location) return false;
-      const d = haversine(ul.lat, ul.lng || ul.long, l.location.lat, l.location.long);
+      const d = haversine(ul.lat, ul.lng, l.location.lat, l.location.long);
       if (d > radius) return false;
     }
 
     if (inView) {
       const b = getMapBounds();
       if (!b || !l.location) return false;
-      if (l.location.lat < b.getSouth() || l.location.lat > b.getNorth() ||
-          l.location.long < b.getWest() || l.location.long > b.getEast()) return false;
+      if (l.location.lat < b.south || l.location.lat > b.north ||
+          l.location.long < b.west || l.location.long > b.east) return false;
     }
 
     return true;
@@ -103,8 +133,8 @@
       if (sort === 'price-desc') return (Number(b.price)||0) - (Number(a.price)||0);
       if (sort === 'name') return (a.headerdescription||'').localeCompare(b.headerdescription||'');
       if (sort === 'distance' && ul && a.location && b.location) {
-        const da = haversine(ul.lat, ul.lng||ul.long, a.location.lat, a.location.long);
-        const db = haversine(ul.lat, ul.lng||ul.long, b.location.lat, b.location.long);
+        const da = haversine(ul.lat, ul.lng, a.location.lat, a.location.long);
+        const db = haversine(ul.lat, ul.lng, b.location.lat, b.location.long);
         return da - db;
       }
       return 0;
@@ -123,17 +153,17 @@
     const sellSel = document.getElementById('filter-seller');
     if (catSel) {
       const cur = catSel.value;
-      catSel.innerHTML = '<option value="">All</option>' + [...cats].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      catSel.innerHTML = '<option value=\"\">All</option>' + [...cats].sort().map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
       catSel.value = cur;
     }
     if (unitSel) {
       const cur = unitSel.value;
-      unitSel.innerHTML = '<option value="">Any</option>' + [...units].sort().map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+      unitSel.innerHTML = '<option value=\"\">Any</option>' + [...units].sort().map(u => `<option value=\"${escapeHtml(u)}\">${escapeHtml(u)}</option>`).join('');
       unitSel.value = cur;
     }
     if (sellSel) {
       const cur = sellSel.value;
-      sellSel.innerHTML = '<option value="">Any</option>' + [...sellers].sort().map(s => `<option value="${escapeHtml(s)}">${escapeHtml(getDisplayName(s))}</option>`).join('');
+      sellSel.innerHTML = '<option value=\"\">Any</option>' + [...sellers].sort().map(s => `<option value=\"${escapeHtml(s)}\">${escapeHtml(getDisplayName(s))}</option>`).join('');
       sellSel.value = cur;
     }
   }
@@ -159,9 +189,9 @@
     if (document.getElementById('filter-favorites')?.checked) chips.push({ key: 'favorites', label: 'Favorites' });
     if (document.getElementById('filter-inview')?.checked) chips.push({ key: 'inview', label: 'In view' });
     const q = document.getElementById('search-input')?.value;
-    if (q) chips.push({ key: 'search', label: `"${q}"` });
+    if (q) chips.push({ key: 'search', label: `\"${q}\"` });
 
-    el.innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
+    el.innerHTML = chips.map(c => `<span class=\"chip\">${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => clearFilter(btn.dataset.key));
     });
@@ -202,7 +232,7 @@
 
     if (!filtered.length) {
       const hasFilters = document.getElementById('filter-badge') && !document.getElementById('filter-badge').hidden;
-      el.innerHTML = `<div class="empty-state muted">No listings match.${hasFilters ? ' <button type="button" id="clear-filters-empty" class="small-btn">Clear filters</button>' : ''}</div>`;
+      el.innerHTML = `<div class=\"empty-state muted\">No listings match.${hasFilters ? ' <button type=\"button\" id=\"clear-filters-empty\" class=\"small-btn\">Clear filters</button>' : ''}</div>`;
       document.getElementById('clear-filters-empty')?.addEventListener('click', clearAllFilters);
       return;
     }
@@ -213,22 +243,22 @@
       const dist = (() => {
         const ul = getUserLoc();
         if (!ul || !l.location) return '';
-        const d = haversine(ul.lat, ul.lng || ul.long, l.location.lat, l.location.long);
+        const d = haversine(ul.lat, ul.lng, l.location.lat, l.location.long);
         return d < 1 ? `${Math.round(d*1000)} m` : `${d.toFixed(1)} km`;
       })();
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units||''}` : '';
-      const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">` : '<div class="list-thumb placeholder"></div>';
+      const img = l.image ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" loading=\"lazy\">` : '<div class=\"list-thumb placeholder\"></div>';
       const hi = i === highlightedIndex ? ' highlighted' : '';
       const sel = l.id === selectedId ? ' selected' : '';
       return `
-        <div class="list-item${hi}${sel}" role="listitem" data-id="${escapeHtml(l.id)}" tabindex="0">
+        <div class=\"list-item${hi}${sel}\" role=\"listitem\" data-id=\"${escapeHtml(l.id)}\" tabindex=\"0\">
           ${img}
-          <div class="list-body">
-            <div class="list-header">
+          <div class=\"list-body\">
+            <div class=\"list-header\">
               <strong>${escapeHtml(l.headerdescription || 'Untitled')}</strong>
-              <button type="button" class="fav-btn" data-id="${escapeHtml(l.id)}" aria-label="Favorite">${fav}</button>
+              <button type=\"button\" class=\"fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"Favorite\">${fav}</button>
             </div>
-            <div class="list-meta muted small">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
+            <div class=\"list-meta muted small\">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
           </div>
         </div>`;
     }).join('');
@@ -257,7 +287,9 @@
     filtered = sortListings(allListings.filter(matchesFilters));
     renderChips();
     renderList();
-    if (global.FD_MAP && global.FD_MAP.setListings) global.FD_MAP.setListings(filtered);
+    if (global.FD_MAP && typeof global.FD_MAP.renderMarkers === 'function') {
+      global.FD_MAP.renderMarkers(filtered, { fit: false });
+    }
     highlightedIndex = -1;
   }
 
@@ -272,10 +304,23 @@
     selectedId = id;
     const l = allListings.find(x => x.id === id);
     if (l && global.FD_CARDS) global.FD_CARDS.showProduct(l);
-    if (l && global.FD_MAP && global.FD_MAP.focusListing) global.FD_MAP.focusListing(l);
+    if (l && global.FD_MAP && typeof global.FD_MAP.flyTo === 'function') {
+      global.FD_MAP.flyTo(l);
+    }
     if (global.FD_RECENT) global.FD_RECENT.add(id);
     renderList();
     history.replaceState(null, '', `#listing=${encodeURIComponent(id)}`);
+  }
+
+  function highlight(id) {
+    // Visual highlight of the matching list item (called from map hover)
+    document.querySelectorAll('.list-item').forEach(el => {
+      el.classList.toggle('highlighted', el.dataset.id === id);
+    });
+    if (id) {
+      const item = document.querySelector(`.list-item[data-id=\"${CSS.escape(id)}\"]`);
+      item?.scrollIntoView({ block: 'nearest' });
+    }
   }
 
   function toggleFavorite(id) {
@@ -364,6 +409,10 @@
     select,
     clearFavorites,
     exportFiltered,
-    toggleFavorite
+    toggleFavorite,
+    setUserLocation,
+    sortByDistance,
+    clearDistance,
+    highlight
   };
 })(window);
