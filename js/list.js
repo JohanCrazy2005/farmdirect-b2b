@@ -1,1 +1,1 @@
-$(cat /tmp/list_update.js)
+$(cat /tmp/list.js)
