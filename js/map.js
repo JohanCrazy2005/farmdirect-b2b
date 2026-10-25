@@ -16,6 +16,7 @@
  * + “Only in view” now re-applies live on map pan/zoom (via moveend → FD_LIST.applyFilters)
  * + Expanded category colors for seed listings (meat, flowers, nuts, seafood, bakery) so new demo markers are distinguishable in the legend
  * + Popups now prefer friendly seller display names from seed meta (seed/demo UX)
+ * + Interactive category legend: click a swatch to filter list + markers to that category (toggle to clear). Fully client-side for seed/demo.
  */
 (function (global) {
   'use strict';
@@ -29,6 +30,7 @@
   let userLatLng = null;
   let radiusCircle = null;
   let skipInitialFit = false;
+  let legendControl = null;
 
   const MAP_VIEW_KEY = 'fd-map-view';
   const USER_LOC_KEY = 'fd-user-location';
@@ -230,19 +232,65 @@
     return map;
   }
 
+  function syncLegendActive() {
+    const catSel = document.getElementById('filter-category');
+    const active = catSel ? catSel.value : '';
+    document.querySelectorAll('.legend-item[data-cat]').forEach(el => {
+      el.classList.toggle('active', el.dataset.cat === active);
+    });
+  }
+
+  function setCategoryFilter(cat) {
+    const catSel = document.getElementById('filter-category');
+    if (!catSel) return;
+    const next = (catSel.value === cat) ? '' : cat; // toggle
+    catSel.value = next;
+    catSel.dispatchEvent(new Event('change', { bubbles: true }));
+    if (global.FD_LIST && typeof global.FD_LIST.applyFilters === 'function') {
+      global.FD_LIST.applyFilters();
+    }
+    syncLegendActive();
+    if (global.FD_TOAST) {
+      global.FD_TOAST.show(next ? `Filtered to ${next}` : 'Category filter cleared', 'info');
+    }
+  }
+
   function addLegend() {
     if (!map) return;
+    if (legendControl) map.removeControl(legendControl);
     const legend = L.control({ position: 'bottomleft' });
     legend.onAdd = function () {
       const div = L.DomUtil.create('div', 'map-legend');
       const items = Object.entries(CATEGORY_COLORS)
         .filter(([k]) => k !== 'default')
-        .map(([cat, color]) => `<div class=\"legend-item\"><span class=\"legend-swatch\" style=\"background:${color}\"></span>${escapeHtml(cat)}</div>`)
+        .map(([cat, color]) => `
+          <div class=\"legend-item\" data-cat=\"${escapeHtml(cat)}\" title=\"Filter to ${escapeHtml(cat)}\" role=\"button\" tabindex=\"0\">
+            <span class=\"legend-swatch\" style=\"background:${color}\"></span>${escapeHtml(cat)}
+          </div>`)
         .join('');
-      div.innerHTML = `<strong>Categories</strong>${items}`;
+      div.innerHTML = `<strong>Categories</strong>${items}<div class=\"legend-hint muted small\">Click to filter</div>`;
+
+      div.querySelectorAll('.legend-item[data-cat]').forEach(item => {
+        const handler = (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setCategoryFilter(item.dataset.cat);
+        };
+        item.addEventListener('click', handler);
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') handler(e);
+        });
+      });
+
+      // Keep legend highlight in sync if filter changes from elsewhere
+      const catSel = document.getElementById('filter-category');
+      if (catSel) catSel.addEventListener('change', syncLegendActive);
+      setTimeout(syncLegendActive, 50);
+
       return div;
     };
     legend.addTo(map);
+    legendControl = legend;
   }
 
   function clearMarkers() {
@@ -348,6 +396,7 @@
       } catch (_) {}
     }
     skipInitialFit = true;
+    syncLegendActive();
   }
 
   function selectListing(id) {
@@ -529,5 +578,5 @@
       .replace(/\"/g, '&quot;');
   }
 
-  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink, getBounds };
+  global.FD_MAP = { initMap, renderMarkers, selectListing, flyTo, locateMe, clearLocation, fitAll, setRadiusCircle, getMap: () => map, getUserLatLng: () => userLatLng, highlightMarker, clearMarkerHighlight, getMapViewLink, getBounds, syncLegendActive };
 })(window);

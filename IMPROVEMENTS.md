@@ -1,3 +1,15 @@
+## 2026-10-25 – Interactive category legend (click to filter)
+
+**What:** Category legend on the map is now interactive. Clicking a colored swatch filters the sidebar list and markers to that category (click again to clear). Active category is highlighted. Keyboard accessible. Fully client-side; works in pure seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). The static legend explained colors but did not drive exploration. Making it a filter control improves map-first discovery of the densified seed categories without schema or backend changes.
+
+**How:** Updated `js/map.js` (click handlers, toggle, sync with `#filter-category`) and `css/main.css` (pointer, hover, active styles, hint). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Add diverse category seed listings for richer map demo
 
 **What:** Expanded `data/seed-listings.json` from 10 to 16 listings and matching `data/seed-sellers.json` with six new sellers. Added honey, meat, flowers, nuts, seafood, and bakery categories, all clustered in the Denver metro area with unique Unsplash images. Legend colors, filters, clusters, and cards now show a fuller range of product types in pure seed/demo mode.
