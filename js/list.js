@@ -4,11 +4,14 @@
  * Fully client-side; works in seed/demo mode.
  * + Integrated with map: setUserLocation / sortByDistance / clearDistance / highlight so Locate me,
  *   distance display, hover sync, and list→map focus work in pure seed/demo.
+ * + Persist active filters (category, visibility, search, sort, radius, favorites, in-view, etc.) in localStorage
+ *   so exploration state survives reloads. Fully client-side for seed/demo continuity.
  */
 (function (global) {
   'use strict';
 
   const FAVORITES_KEY = 'fd-favorites';
+  const FILTERS_KEY = 'fd-filters';
   let allListings = [];
   let filtered = [];
   let favorites = new Set();
@@ -27,13 +30,62 @@
     try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites])); } catch (_) {}
   }
 
+  function loadFilters() {
+    try {
+      const raw = localStorage.getItem(FILTERS_KEY);
+      if (!raw) return;
+      const f = JSON.parse(raw);
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || val == null) return;
+        if (el.type === 'checkbox') el.checked = !!val;
+        else el.value = String(val);
+      };
+      setVal('filter-category', f.category);
+      setVal('filter-visibility', f.visibility);
+      setVal('filter-units', f.units);
+      setVal('filter-seller', f.seller);
+      setVal('filter-minprice', f.minprice);
+      setVal('filter-maxprice', f.maxprice);
+      setVal('filter-radius', f.radius);
+      setVal('filter-sort', f.sort);
+      setVal('filter-favorites', f.favorites);
+      setVal('filter-inview', f.inview);
+      setVal('search-input', f.search);
+    } catch (_) {}
+  }
+
+  function saveFilters() {
+    try {
+      const getVal = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return '';
+        return el.type === 'checkbox' ? el.checked : el.value;
+      };
+      const f = {
+        category: getVal('filter-category'),
+        visibility: getVal('filter-visibility'),
+        units: getVal('filter-units'),
+        seller: getVal('filter-seller'),
+        minprice: getVal('filter-minprice'),
+        maxprice: getVal('filter-maxprice'),
+        radius: getVal('filter-radius'),
+        sort: getVal('filter-sort'),
+        favorites: getVal('filter-favorites'),
+        inview: getVal('filter-inview'),
+        search: getVal('search-input')
+      };
+      localStorage.setItem(FILTERS_KEY, JSON.stringify(f));
+    } catch (_) {}
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;');
+      .replace(/"/g, '&quot;');
   }
 
   function getDisplayName(sellerid) {
@@ -153,17 +205,17 @@
     const sellSel = document.getElementById('filter-seller');
     if (catSel) {
       const cur = catSel.value;
-      catSel.innerHTML = '<option value=\"\">All</option>' + [...cats].sort().map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
+      catSel.innerHTML = '<option value="">All</option>' + [...cats].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
       catSel.value = cur;
     }
     if (unitSel) {
       const cur = unitSel.value;
-      unitSel.innerHTML = '<option value=\"\">Any</option>' + [...units].sort().map(u => `<option value=\"${escapeHtml(u)}\">${escapeHtml(u)}</option>`).join('');
+      unitSel.innerHTML = '<option value="">Any</option>' + [...units].sort().map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
       unitSel.value = cur;
     }
     if (sellSel) {
       const cur = sellSel.value;
-      sellSel.innerHTML = '<option value=\"\">Any</option>' + [...sellers].sort().map(s => `<option value=\"${escapeHtml(s)}\">${escapeHtml(getDisplayName(s))}</option>`).join('');
+      sellSel.innerHTML = '<option value="">Any</option>' + [...sellers].sort().map(s => `<option value="${escapeHtml(s)}">${escapeHtml(getDisplayName(s))}</option>`).join('');
       sellSel.value = cur;
     }
   }
@@ -189,9 +241,9 @@
     if (document.getElementById('filter-favorites')?.checked) chips.push({ key: 'favorites', label: 'Favorites' });
     if (document.getElementById('filter-inview')?.checked) chips.push({ key: 'inview', label: 'In view' });
     const q = document.getElementById('search-input')?.value;
-    if (q) chips.push({ key: 'search', label: `\"${q}\"` });
+    if (q) chips.push({ key: 'search', label: `"${q}"` });
 
-    el.innerHTML = chips.map(c => `<span class=\"chip\">${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`).join('');
+    el.innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => clearFilter(btn.dataset.key));
     });
@@ -232,7 +284,7 @@
 
     if (!filtered.length) {
       const hasFilters = document.getElementById('filter-badge') && !document.getElementById('filter-badge').hidden;
-      el.innerHTML = `<div class=\"empty-state muted\">No listings match.${hasFilters ? ' <button type=\"button\" id=\"clear-filters-empty\" class=\"small-btn\">Clear filters</button>' : ''}</div>`;
+      el.innerHTML = `<div class="empty-state muted">No listings match.${hasFilters ? ' <button type="button" id="clear-filters-empty" class="small-btn">Clear filters</button>' : ''}</div>`;
       document.getElementById('clear-filters-empty')?.addEventListener('click', clearAllFilters);
       return;
     }
@@ -247,18 +299,18 @@
         return d < 1 ? `${Math.round(d*1000)} m` : `${d.toFixed(1)} km`;
       })();
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units||''}` : '';
-      const img = l.image ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" loading=\"lazy\">` : '<div class=\"list-thumb placeholder\"></div>';
+      const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">` : '<div class="list-thumb placeholder"></div>';
       const hi = i === highlightedIndex ? ' highlighted' : '';
       const sel = l.id === selectedId ? ' selected' : '';
       return `
-        <div class=\"list-item${hi}${sel}\" role=\"listitem\" data-id=\"${escapeHtml(l.id)}\" tabindex=\"0\">
+        <div class="list-item${hi}${sel}" role="listitem" data-id="${escapeHtml(l.id)}" tabindex="0">
           ${img}
-          <div class=\"list-body\">
-            <div class=\"list-header\">
+          <div class="list-body">
+            <div class="list-header">
               <strong>${escapeHtml(l.headerdescription || 'Untitled')}</strong>
-              <button type=\"button\" class=\"fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"Favorite\">${fav}</button>
+              <button type="button" class="fav-btn" data-id="${escapeHtml(l.id)}" aria-label="Favorite">${fav}</button>
             </div>
-            <div class=\"list-meta muted small\">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
+            <div class="list-meta muted small">${escapeHtml(name)} · ${escapeHtml(l.category||'')} ${price ? '· ' + price : ''} ${dist ? '· ' + dist : ''}</div>
           </div>
         </div>`;
     }).join('');
@@ -291,6 +343,7 @@
       global.FD_MAP.renderMarkers(filtered, { fit: false });
     }
     highlightedIndex = -1;
+    saveFilters();
   }
 
   function setListings(list) {
@@ -318,7 +371,7 @@
       el.classList.toggle('highlighted', el.dataset.id === id);
     });
     if (id) {
-      const item = document.querySelector(`.list-item[data-id=\"${CSS.escape(id)}\"]`);
+      const item = document.querySelector(`.list-item[data-id="${CSS.escape(id)}"]`);
       item?.scrollIntoView({ block: 'nearest' });
     }
   }
@@ -349,6 +402,9 @@
     });
     const search = document.getElementById('search-input');
     if (search) search.value = '';
+    // Also clear sort to default
+    const sortSel = document.getElementById('filter-sort');
+    if (sortSel) sortSel.value = '';
     applyFilters();
   }
 
@@ -367,6 +423,9 @@
     document.getElementById('close-filter-btn')?.addEventListener('click', () => {
       document.getElementById('filter-card').hidden = true;
     });
+
+    // Restore persisted filters before listings load so populateFilterOptions preserves them
+    loadFilters();
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {

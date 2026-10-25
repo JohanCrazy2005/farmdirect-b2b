@@ -1,3 +1,15 @@
+## 2026-10-25 – Persist filters across reloads (seed/demo continuity)
+
+**What:** Active filters (category, visibility, units, seller, price range, radius, sort, favorites-only, only-in-view, and search query) are now saved to localStorage and restored on page load. Clearing filters also clears the persisted state. Works fully client-side in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). Map view and user location already persisted; filters did not, so users lost their exploration context on every reload. This continuity polish improves the map-first seed/demo experience without schema or backend changes.
+
+**How:** Updated `js/list.js` with `loadFilters` / `saveFilters` (called from `bindUI` and `applyFilters`). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end.
+
+---
+
 ## 2026-10-25 – Interactive category legend (click to filter)
 
 **What:** Category legend on the map is now interactive. Clicking a colored swatch filters the sidebar list and markers to that category (click again to clear). Active category is highlighted. Keyboard accessible. Fully client-side; works in pure seed/demo mode.
