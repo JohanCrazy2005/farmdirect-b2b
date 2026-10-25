@@ -1,0 +1,30 @@
+[
+  {
+    "id": "seed-1",
+    "location": { "lat": 39.7392, "long": -104.9903 },
+    "visibility": "country",
+    "address": "123 Green Valley Rd, Denver, CO 80202",
+    "sellerid": "seller-greenfield",
+    "category": "produce",
+    "headerdescription": "Organic vine-ripened tomatoes",
+    "price": 1.35,
+    "units": "kg",
+    "description": "Family-run greenhouse operation specializing in vine-ripened tomatoes. Available in bulk for restaurants and retailers.",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop",
+    "status": "published"
+  },
+  {
+    "id": "seed-2",
+    "location": { "lat": 39.7555, "long": -105.0078 },
+    "visibility": "province",
+    "address": "456 Highland Farms, Denver, CO 80211",
+    "sellerid": "seller-highland",
+    "category": "produce",
+    "headerdescription": "Fresh organic carrots",
+    "price": 0.85,
+    "units": "kg",
+    "description": "Sweet, crunchy carrots grown in rich Colorado soil. Ideal for juicing, cooking, or retail packs.",
+    "image": "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop",
+    "status": "published"
+  }
+]
