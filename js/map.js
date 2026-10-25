@@ -6,7 +6,7 @@
  * + category legend control (explains colored markers; demo-friendly)
  * + optional fitBounds skip so “only in view” filter does not loop
  * + list-map hover highlight sync (hovering marker highlights list card and vice versa; improves map-first exploration in seed/demo)
- * + correct HTML escaping in popups and legend + richer popup content (price, seller, address, visibility)
+ * + correct HTML escaping in popups and legend + richer popup content (price, seller display name, address, visibility)
  * + Locate me polish: toasts instead of alerts, accuracy circle, clear-location control (seed/demo)
  * + Persist map view (center + zoom) in localStorage so reloads resume the last explored area (fully client-side for seed/demo)
  * + Shareable map view via URL hash (#map=lat,lng,zoom) – copy button + restore on load (overrides localStorage; fully client-side for seed/demo)
@@ -15,6 +15,7 @@
  * + getBounds exposed so “Only in view” filter works (client-side, seed/demo friendly)
  * + “Only in view” now re-applies live on map pan/zoom (via moveend → FD_LIST.applyFilters)
  * + Expanded category colors for seed listings (meat, flowers, nuts, seafood, bakery) so new demo markers are distinguishable in the legend
+ * + Popups now prefer friendly seller display names from seed meta (seed/demo UX)
  */
 (function (global) {
   'use strict';
@@ -46,6 +47,10 @@
     bakery: '#f97316',
     default: '#40916c'
   };
+
+  function getDisplayName(sellerid) {
+    return (global.FD_SELLERS && global.FD_SELLERS.getDisplayName) ? global.FD_SELLERS.getDisplayName(sellerid) : (sellerid || '');
+  }
 
   function loadSavedView() {
     try {
@@ -316,7 +321,8 @@
       const priceStr = isNaN(price) ? '' : `$${price.toFixed(2)} / ${escapeHtml(listing.units || '')}`;
       const addr = listing.address ? `<div class=\"popup-meta\">${escapeHtml(listing.address)}</div>` : '';
       const vis = listing.visibility ? `<div class=\"popup-meta\">Visibility: ${escapeHtml(listing.visibility)}</div>` : '';
-      const seller = listing.sellerid ? `<div class=\"popup-meta\">Seller: ${escapeHtml(listing.sellerid)}</div>` : '';
+      const sellerName = getDisplayName(listing.sellerid);
+      const seller = sellerName ? `<div class=\"popup-meta\">Seller: ${escapeHtml(sellerName)}</div>` : '';
 
       marker.bindPopup(`
         <div class=\"map-popup\">

@@ -4,7 +4,7 @@
  * categories, and average price. Prefers display names from data/seed-sellers.json
  * when available. Clicking a seller applies the seller filter and closes the modal.
  * Fully client-side; works in pure seed/demo mode.
- * Now exposes getDisplayName for use in list/cards.
+ * Now exposes getDisplayName for use in list/cards/map.
  */
 (function (global) {
   'use strict';
@@ -46,10 +46,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function computeSellers(listings) {
