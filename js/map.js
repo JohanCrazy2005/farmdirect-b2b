@@ -1,6 +1,6 @@
 /**
  * FarmDirect B2B – Leaflet map module
- * Initializes map, marker clusters, category colors, location, fit, view links.
+ * Initializes map, marker clusters, category colors, location, fit, view links, and category legend.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -29,6 +29,21 @@
 
   function getCategoryColor(cat) {
     return CATEGORY_COLORS[cat] || CATEGORY_COLORS.default;
+  }
+
+  function addCategoryLegend() {
+    if (!map) return;
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'category-legend card');
+      const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== 'default');
+      div.innerHTML = '<h4>Categories</h4>' + entries.map(([cat, color]) =>
+        `<div class="legend-item"><span class="legend-swatch" style="background:${color}"></span> ${cat}</div>`
+      ).join('');
+      L.DomEvent.disableClickPropagation(div);
+      return div;
+    };
+    legend.addTo(map);
   }
 
   function initMap() {
@@ -63,6 +78,8 @@
         global.FD_LIST.onMapMove();
       }
     });
+
+    addCategoryLegend();
   }
 
   function getMap() {

@@ -1,3 +1,15 @@
+## 2026-10-25 – Add category color legend to map (seed/demo polish)
+
+**What:** Added a Leaflet control legend (bottom-right) that lists every category with its matching color swatch. Colors are identical to map markers, sidebar list items, and filter chips via the shared CATEGORY_COLORS map.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish improves visual consistency and scanability so users can instantly understand marker colors without opening filters or the list.
+
+**How:** Extended `js/map.js` with `addCategoryLegend()` called from `initMap`; added `.category-legend` / `.legend-item` / `.legend-swatch` styles to `css/main.css`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Implement real map.js + list.js + main.css (seed/demo functional)
 
 **What:** Replaced the literal placeholder contents of `js/map.js`, `js/list.js`, and `css/main.css` (which still contained `$(cat /tmp/...)` strings) with full working modules. Map initializes Leaflet + marker clusters with category-colored dots, supports locate/fit/view links, and exposes `getCategoryColor`. List handles filters, chips with swatches, favorites, distance, only-in-view, search sync, and map marker updates. CSS provides the transparent top bar, sidebar, cards, markers, responsive layout, and visual consistency.

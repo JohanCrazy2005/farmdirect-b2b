@@ -1,6 +1,6 @@
 /* FarmDirect B2B – main stylesheet
    Transparent top bar, full map, sidebar list, filter/product/seller cards, responsive.
-   Supports seed/demo mode with category swatches and clusters. */
+   Supports seed/demo mode with category swatches, clusters, and map legend. */
 
 :root {
   --top-bar-h: 56px;
@@ -90,6 +90,39 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
 .listing-marker.highlight .marker-dot { transform: scale(1.35); box-shadow: 0 0 0 4px rgba(255,255,255,.6); }
+
+/* Category legend (Leaflet control) */
+.category-legend {
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(6px);
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 600;
+}
+.category-legend h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.15rem 0;
+  text-transform: capitalize;
+}
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
 
 /* Sidebar */
 .sidebar {
@@ -199,4 +232,5 @@ kbd { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; paddin
   .product-card, .seller-card { left: 12px; right: 12px; max-width: none; }
   .top-bar { padding: 0 0.4rem; }
   .search-box input { font-size: 0.9rem; }
+  .category-legend { max-height: 180px; font-size: 0.7rem; }
 }
