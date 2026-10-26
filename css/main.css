@@ -1,7 +1,7 @@
 /* FarmDirect B2B – main stylesheet
    Transparent top bar, full map, sidebar list, filter/product/seller cards, responsive.
    Supports seed/demo mode with category swatches, clusters, interactive map legend, marker popups, and bidirectional hover highlight.
-   Dark mode via data-theme="dark" on <html>. */
+   Dark mode via data-theme=\"dark\" on <html>. */
 
 :root {
   --top-bar-h: 56px;
@@ -22,7 +22,7 @@
   --legend-bg: rgba(255,255,255,.94);
 }
 
-[data-theme="dark"] {
+[data-theme=\"dark\"] {
   --bg: #111827;
   --text: #f3f4f6;
   --muted: #9ca3af;
@@ -40,7 +40,7 @@
 
 * { box-sizing: border-box; }
 html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: var(--text); background: #f3f4f6; }
-[data-theme="dark"] body, [data-theme="dark"] #app { background: #0f172a; }
+[data-theme=\"dark\"] body, [data-theme=\"dark\"] #app { background: #0f172a; }
 #app { position: relative; overflow: hidden; }
 
 /* Transparent top search bar */
@@ -80,7 +80,7 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   color: var(--text);
 }
 .icon-btn:hover { background: rgba(0,0,0,.06); }
-[data-theme="dark"] .icon-btn:hover { background: rgba(255,255,255,.08); }
+[data-theme=\"dark\"] .icon-btn:hover { background: rgba(255,255,255,.08); }
 .mobile-only { display: none; }
 .data-source-badge {
   font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 999px;
@@ -103,7 +103,7 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
   font-size: 0.85rem; border-bottom: 1px solid #fde68a;
 }
-[data-theme="dark"] .offline-banner { background: #422006; color: #fde68a; border-bottom-color: #78350f; }
+[data-theme=\"dark\"] .offline-banner { background: #422006; color: #fde68a; border-bottom-color: #78350f; }
 .offline-banner[hidden] { display: none !important; }
 .small-btn, .primary-btn {
   padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid var(--border);
@@ -144,7 +144,7 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
 }
 .leaflet-popup-content { margin: 10px 12px; }
 .leaflet-popup-content-wrapper { border-radius: 8px; background: var(--card-bg); color: var(--text); }
-[data-theme="dark"] .leaflet-popup-tip { background: var(--card-bg); }
+[data-theme=\"dark\"] .leaflet-popup-tip { background: var(--card-bg); }
 
 /* Category legend (Leaflet control) – interactive */
 .category-legend {
@@ -179,12 +179,12 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
 .legend-item:hover {
   background: rgba(45,106,79,.08);
 }
-[data-theme="dark"] .legend-item:hover { background: rgba(52,211,153,.12); }
+[data-theme=\"dark\"] .legend-item:hover { background: rgba(52,211,153,.12); }
 .legend-item.active {
   background: rgba(45,106,79,.16);
   font-weight: 600;
 }
-[data-theme="dark"] .legend-item.active { background: rgba(52,211,153,.2); }
+[data-theme=\"dark\"] .legend-item.active { background: rgba(52,211,153,.2); }
 .legend-item:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
@@ -266,8 +266,9 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
 .card-body h3 { margin: 0 0 0.4rem; }
 .badges { display: flex; gap: 0.3rem; flex-wrap: wrap; margin: 0.3rem 0; }
 .badge { background: #ecfdf5; color: #065f46; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; }
-[data-theme="dark"] .badge { background: #064e3b; color: #a7f3d0; }
+[data-theme=\"dark\"] .badge { background: #064e3b; color: #a7f3d0; }
 .price { font-weight: 700; color: var(--accent); }
+.card-distance { margin: 0.2rem 0 0.4rem; font-size: 0.85rem; }
 .card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
 .modal {
   position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000;

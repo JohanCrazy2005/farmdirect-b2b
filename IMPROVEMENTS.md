@@ -1,3 +1,15 @@
+## 2026-10-26 – Show distance in product cards + map scale bar (seed/demo UX)
+
+**What:** When a user location is set, the product detail card now shows the distance to the listing (e.g. “2.3 km away”) directly under the price. Also added a metric scale bar (bottom-left) to the Leaflet map for quick distance orientation. `FD_MAP.getUserLocation()` is now exported so other modules can use it.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; distance was already in the sidebar list and marker popups, so surfacing it in the product card completes the consistent Locate-me experience across list / map / detail views without new features or schema changes.
+
+**How:** Added `getUserLocation` export and `L.control.scale` in `js/map.js`. Added distance calculation + display in `showProduct` of `js/cards.js`. Minor CSS rule for `.card-distance`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Show distance in map popups (seed/demo UX)
 
 **What:** When a user location is set (via Locate me or the persisted location), each marker popup now shows the distance to that listing (e.g. “2.3 km away” or “450 m away”) below the price. Distance uses the same haversine helper and updates automatically whenever markers are rebuilt (on filter/sort/location change).
@@ -12,7 +24,7 @@
 
 ## 2026-10-26 – Show distance in listing list (seed/demo UX)
 
-**What:** When a user location is set (via Locate me or the new persistence), each sidebar listing item now shows the distance in its meta line (e.g. "2.3 km" or "450 m"). Distance is computed with the existing haversine helper and updates automatically on location change or filter/sort.
+**What:** When a user location is set (via Locate me or the new persistence), each sidebar listing item now shows the distance in its meta line (e.g. \"2.3 km\" or \"450 m\"). Distance is computed with the existing haversine helper and updates automatically on location change or filter/sort.
 
 **Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; showing distance makes the Locate-me + radius + distance-sort features immediately useful during exploration without new features or schema changes.
 

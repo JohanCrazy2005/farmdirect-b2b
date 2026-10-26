@@ -6,6 +6,8 @@
  * Persists Locate-me location so distance filters/radius overlay restore on reload (seed/demo).
  * Draws a radius circle when the radius filter is active and a user location is set.
  * Shows distance in marker popups when user location is available (seed/demo).
+ * Exposes getUserLocation for product cards and other modules.
+ * Adds a scale bar for better distance orientation.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -197,6 +199,9 @@
       maxZoom: 19
     }).addTo(map);
 
+    // Scale bar for distance orientation (seed/demo)
+    L.control.scale({ position: 'bottomleft', imperial: false, metric: true }).addTo(map);
+
     clusterGroup = L.markerClusterGroup({
       maxClusterRadius: 50,
       spiderfyOnMaxZoom: true,
@@ -263,6 +268,10 @@
 
   function getMap() {
     return map;
+  }
+
+  function getUserLocation() {
+    return currentUserLoc;
   }
 
   function getMapViewLink() {
@@ -393,6 +402,7 @@
   global.FD_MAP = {
     initMap,
     getMap,
+    getUserLocation,
     getMapViewLink,
     locateMe,
     clearLocation,

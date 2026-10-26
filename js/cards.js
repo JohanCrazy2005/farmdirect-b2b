@@ -1,6 +1,8 @@
 /**
  * FarmDirect B2B – product & seller cards + lightbox
- * Max 3 badges, friendly seller names, image lightbox. Works with seed/demo.
+ * Max 3 badges, friendly seller names, image lightbox.
+ * Shows distance in product card when user location is set (seed/demo).
+ * Works with seed/demo.
  */
 (function (global) {
   'use strict';
@@ -12,6 +14,22 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function distanceKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || !isFinite(km)) return '';
+    if (km < 1) return (km * 1000).toFixed(0) + ' m';
+    return km.toFixed(1) + ' km';
   }
 
   function getDisplayName(sellerid) {
@@ -36,22 +54,30 @@
   function showProduct(l) {
     const el = document.getElementById('product-card');
     if (!el || !l) return;
-    const badges = getTopBadges(l).map(b => `<span class="badge">${escapeHtml(b)}</span>`).join('');
+    const badges = getTopBadges(l).map(b => `<span class=\"badge\">${escapeHtml(b)}</span>`).join('');
     const price = l.price != null ? `$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units||'')}` : 'Price on request';
     const name = getDisplayName(l.sellerid);
-    const img = l.image ? `<img class="card-img" src="${escapeHtml(l.image)}" alt="" data-full="${escapeHtml(l.image)}">` : '';
+    const img = l.image ? `<img class=\"card-img\" src=\"${escapeHtml(l.image)}\" alt=\"\" data-full=\"${escapeHtml(l.image)}\">` : '';
+    let distHtml = '';
+    const userLoc = (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function') ? global.FD_MAP.getUserLocation() : null;
+    if (userLoc && l.location && l.location.lat != null && l.location.long != null) {
+      const km = distanceKm(userLoc[0], userLoc[1], l.location.lat, l.location.long);
+      const d = formatDistance(km);
+      if (d) distHtml = `<p class=\"muted card-distance\">${escapeHtml(d)} away</p>`;
+    }
     el.innerHTML = `
-      <button type="button" class="close-card" aria-label="Close">×</button>
+      <button type=\"button\" class=\"close-card\" aria-label=\"Close\">×</button>
       ${img}
-      <div class="card-body">
+      <div class=\"card-body\">
         <h3>${escapeHtml(l.headerdescription || 'Listing')}</h3>
-        <div class="badges">${badges}</div>
-        <p class="price">${price}</p>
-        <p class="muted">${escapeHtml(l.address || '')}</p>
+        <div class=\"badges\">${badges}</div>
+        <p class=\"price\">${price}</p>
+        ${distHtml}
+        <p class=\"muted\">${escapeHtml(l.address || '')}</p>
         <p>${escapeHtml(l.description || '')}</p>
-        <div class="card-actions">
-          <button type="button" class="small-btn view-seller" data-seller="${escapeHtml(l.sellerid)}">View seller: ${escapeHtml(name)}</button>
-          <button type="button" class="small-btn rfq-btn" data-id="${escapeHtml(l.id)}">Request quote</button>
+        <div class=\"card-actions\">
+          <button type=\"button\" class=\"small-btn view-seller\" data-seller=\"${escapeHtml(l.sellerid)}\">View seller: ${escapeHtml(name)}</button>
+          <button type=\"button\" class=\"small-btn rfq-btn\" data-id=\"${escapeHtml(l.id)}\">Request quote</button>
         </div>
       </div>`;
     el.classList.add('open');
@@ -80,14 +106,14 @@
     const count = listings.length;
     const avg = listings.reduce((s, l) => s + (Number(l.price)||0), 0) / (count || 1);
     el.innerHTML = `
-      <button type="button" class="close-card" aria-label="Close">×</button>
-      <div class="card-body">
+      <button type=\"button\" class=\"close-card\" aria-label=\"Close\">×</button>
+      <div class=\"card-body\">
         <h3>${escapeHtml(name)}</h3>
         ${bio ? `<p>${escapeHtml(bio)}</p>` : ''}
-        <p class="muted">${count} listing${count===1?'':'s'} · Avg $${avg.toFixed(2)}</p>
-        ${sample?.address ? `<p class="small">${escapeHtml(sample.address)}</p>` : ''}
-        <div class="card-actions">
-          <button type="button" class="small-btn filter-seller" data-seller="${escapeHtml(sellerid)}">Filter to this seller</button>
+        <p class=\"muted\">${count} listing${count===1?'':'s'} · Avg $${avg.toFixed(2)}</p>
+        ${sample?.address ? `<p class=\"small\">${escapeHtml(sample.address)}</p>` : ''}
+        <div class=\"card-actions\">
+          <button type=\"button\" class=\"small-btn filter-seller\" data-seller=\"${escapeHtml(sellerid)}\">Filter to this seller</button>
         </div>
       </div>`;
     el.classList.add('open');
