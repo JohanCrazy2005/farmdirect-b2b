@@ -2,11 +2,46 @@
  * FarmDirect B2B – main bootstrap
  * Wires Leaflet map, list, cards, search, dashboard, form, auth, options.
  * Loads listings from live Worker or falls back to seed/demo automatically.
+ * Persistent dark mode toggle for better map-first readability.
  */
 (function () {
   'use strict';
 
+  const THEME_KEY = 'fd-theme';
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    const btn = document.getElementById('theme-toggle-btn');
+    if (btn) btn.textContent = theme === 'dark' ? 'Toggle light mode' : 'Toggle dark mode';
+  }
+
+  function loadTheme() {
+    try {
+      const saved = localStorage.getItem(THEME_KEY);
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      applyTheme(theme);
+    } catch (_) {
+      applyTheme('light');
+    }
+  }
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (_) {}
+    if (window.FD_TOAST) window.FD_TOAST.show(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info');
+  }
+
   function init() {
+    loadTheme();
+
     // Map first
     if (window.FD_MAP && typeof window.FD_MAP.initMap === 'function') {
       window.FD_MAP.initMap();
@@ -70,6 +105,19 @@
       if (optionsMenu && !optionsMenu.hasAttribute('hidden') && !optionsMenu.contains(e.target) && e.target.id !== 'options-btn') {
         optionsMenu.setAttribute('hidden', '');
         document.getElementById('options-btn')?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Theme toggle
+    document.getElementById('theme-toggle-btn')?.addEventListener('click', () => {
+      toggleTheme();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const ae = document.activeElement;
+        if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+        e.preventDefault();
+        toggleTheme();
       }
     });
 
