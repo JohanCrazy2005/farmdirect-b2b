@@ -1,3 +1,15 @@
+## 2026-10-26 – Visualize radius filter as circle on map (seed/demo polish)
+
+**What:** When a user location is set (via Locate) and the radius filter is greater than 0, a translucent green circle is drawn on the map centered on the user location. The circle updates live as the radius value changes and is cleared when the filter is cleared, location is cleared, or no radius is set. A radius chip also appears in the filter chips for easy removal.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish makes the existing radius filter immediately understandable on the map-first UI so users can see the geographic scope of their search without guessing.
+
+**How:** Added setRadiusOverlay / clearRadiusOverlay in js/map.js (called from applyFilters in js/list.js and clearLocation). Updated renderChips / clearFilterKey to include the radius chip. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Persist map view across reloads (seed/demo polish)
 
 **What:** Map center and zoom are now saved to localStorage on every moveend and restored on page load (URL #map= hash still takes priority if present). Fully client-side; works in seed/demo mode so users resume the last explored area without losing context.

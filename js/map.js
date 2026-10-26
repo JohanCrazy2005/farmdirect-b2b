@@ -3,6 +3,7 @@
  * Initializes map, marker clusters, category colors, location, fit, view links, interactive category legend, and marker popups.
  * Bidirectional hover highlight sync with sidebar list items.
  * Persists map view (center + zoom) to localStorage so reloads resume the last explored area (seed/demo).
+ * Draws a radius circle when the radius filter is active and a user location is set.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -12,6 +13,7 @@
   let clusterGroup = null;
   let userMarker = null;
   let userCircle = null;
+  let radiusCircle = null;
   const markers = new Map(); // id -> marker
   const VIEW_KEY = 'fd-map-view';
 
@@ -40,7 +42,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function saveMapView() {
@@ -64,6 +66,35 @@
     return null;
   }
 
+  function setRadiusOverlay(latlng, radiusKm) {
+    if (!map || !latlng || !(radiusKm > 0)) {
+      clearRadiusOverlay();
+      return;
+    }
+    const radiusM = radiusKm * 1000;
+    if (radiusCircle) {
+      radiusCircle.setLatLng(latlng);
+      radiusCircle.setRadius(radiusM);
+    } else {
+      radiusCircle = L.circle(latlng, {
+        radius: radiusM,
+        color: '#2d6a4f',
+        weight: 2,
+        opacity: 0.7,
+        fillColor: '#2d6a4f',
+        fillOpacity: 0.08,
+        interactive: false
+      }).addTo(map);
+    }
+  }
+
+  function clearRadiusOverlay() {
+    if (radiusCircle && map) {
+      map.removeLayer(radiusCircle);
+      radiusCircle = null;
+    }
+  }
+
   function addCategoryLegend() {
     if (!map) return;
     const legend = L.control({ position: 'bottomright' });
@@ -71,7 +102,7 @@
       const div = L.DomUtil.create('div', 'category-legend card');
       const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== 'default');
       div.innerHTML = '<h4>Categories</h4>' + entries.map(([cat, color]) =>
-        `<div class="legend-item" data-category="${cat}" role="button" tabindex="0" title="Filter by ${cat}"><span class="legend-swatch" style="background:${color}"></span> ${cat}</div>`
+        `<div class=\"legend-item\" data-category=\"${cat}\" role=\"button\" tabindex=\"0\" title=\"Filter by ${cat}\"><span class=\"legend-swatch\" style=\"background:${color}\"></span> ${cat}</div>`
       ).join('');
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.disableScrollPropagation(div);
@@ -135,7 +166,7 @@
     let restored = false;
     try {
       const hash = location.hash || '';
-      const m = hash.match(/#map=([\d.-]+),([\d.-]+),(\d+)/);
+      const m = hash.match(/#map=([\\d.-]+),([\\d.-]+),(\\d+)/);
       if (m) {
         map.setView([parseFloat(m[1]), parseFloat(m[2])], parseInt(m[3], 10));
         restored = true;
@@ -151,13 +182,13 @@
 
     map.on('moveend', () => {
       saveMapView();
-      // Notify list for "only in view"
+      // Notify list for \"only in view\"
       if (global.FD_LIST && typeof global.FD_LIST.onMapMove === 'function') {
         global.FD_LIST.onMapMove();
       }
     });
 
-    // Handle "View details" buttons inside marker popups
+    // Handle \"View details\" buttons inside marker popups
     map.on('popupopen', (e) => {
       const btn = e.popup.getElement()?.querySelector('.popup-view-btn');
       if (btn) {
@@ -217,6 +248,7 @@
   function clearLocation() {
     if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
     if (userCircle) { map.removeLayer(userCircle); userCircle = null; }
+    clearRadiusOverlay();
     document.getElementById('clear-location-btn')?.setAttribute('hidden', '');
     if (global.FD_LIST && typeof global.FD_LIST.setUserLocation === 'function') {
       global.FD_LIST.setUserLocation(null);
@@ -243,18 +275,18 @@
       const color = getCategoryColor(l.category);
       const icon = L.divIcon({
         className: 'listing-marker',
-        html: `<div class="marker-dot" style="background:${color}"></div>`,
+        html: `<div class=\"marker-dot\" style=\"background:${color}\"></div>`,
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
       const marker = L.marker([l.location.lat, l.location.long], { icon, title: l.headerdescription || '' });
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units || ''}` : 'Price on request';
       const popupHtml = `
-        <div class="map-popup">
+        <div class=\"map-popup\">
           <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong><br>
-          <span class="popup-swatch" style="background:${color}"></span> ${escapeHtml(l.category || '')}<br>
+          <span class=\"popup-swatch\" style=\"background:${color}\"></span> ${escapeHtml(l.category || '')}<br>
           ${escapeHtml(price)}<br>
-          <button type="button" class="popup-view-btn small-btn" data-id="${escapeHtml(l.id)}">View details</button>
+          <button type=\"button\" class=\"popup-view-btn small-btn\" data-id=\"${escapeHtml(l.id)}\">View details</button>
         </div>`;
       marker.bindPopup(popupHtml);
       marker.on('click', () => {
@@ -305,6 +337,8 @@
     flyTo,
     highlightMarker,
     getCategoryColor,
-    updateLegendActive
+    updateLegendActive,
+    setRadiusOverlay,
+    clearRadiusOverlay
   };
 })(window);

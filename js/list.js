@@ -3,6 +3,7 @@
  * Syncs with map markers. Fully client-side for seed/demo mode.
  * Filter state is persisted to localStorage so exploration survives reloads.
  * Bidirectional hover highlight sync with map markers for map-first exploration.
+ * Visualizes active radius filter as a circle on the map when a user location is set.
  */
 (function (global) {
   'use strict';
@@ -24,7 +25,6 @@
   function saveFilterState() {
     try {
       const f = getFilterValues();
-      // Only persist non-default values to keep storage small
       const state = {};
       if (f.category) state.category = f.category;
       if (f.visibility) state.visibility = f.visibility;
@@ -95,7 +95,7 @@
     const clean = Object.fromEntries(Object.entries(state).filter(([, v]) => v != null));
     const base = location.origin + location.pathname;
     const hash = location.hash || '';
-    const mapM = hash.match(/map=([\d.-]+,[\d.-]+,\d+)/);
+    const mapM = hash.match(/map=([\\d.-]+,[\\d.-]+,\\d+)/);
     const mapPart = mapM ? `&map=${mapM[1]}` : '';
     if (!Object.keys(clean).length) {
       return mapPart ? `${base}#${mapPart.slice(1)}` : base;
@@ -205,7 +205,6 @@
       return true;
     });
 
-    // Sort
     if (f.sort === 'price-asc') filtered.sort((a, b) => (Number(a.price)||0) - (Number(b.price)||0));
     else if (f.sort === 'price-desc') filtered.sort((a, b) => (Number(b.price)||0) - (Number(a.price)||0));
     else if (f.sort === 'name') filtered.sort((a, b) => (a.headerdescription||'').localeCompare(b.headerdescription||''));
@@ -223,9 +222,16 @@
     if (global.FD_MAP && typeof global.FD_MAP.updateMarkers === 'function') {
       global.FD_MAP.updateMarkers(filtered);
     }
-    // Sync interactive legend active state
     if (global.FD_MAP && typeof global.FD_MAP.updateLegendActive === 'function') {
       global.FD_MAP.updateLegendActive(f.category || '');
+    }
+    // Visualize radius filter
+    if (global.FD_MAP && typeof global.FD_MAP.setRadiusOverlay === 'function') {
+      if (f.radius > 0 && userLocation) {
+        global.FD_MAP.setRadiusOverlay(userLocation, f.radius);
+      } else {
+        global.FD_MAP.clearRadiusOverlay();
+      }
     }
     const countEl = document.getElementById('list-count');
     if (countEl) {
@@ -243,7 +249,7 @@
     const favs = getFavorites();
     if (!filtered.length) {
       const hasActive = hasActiveFilters();
-      container.innerHTML = `<p class="muted empty-state">No listings match the current filters.${hasActive ? ' <button type="button" id="empty-clear-filters" class="small-btn">Clear filters</button>' : ''}</p>`;
+      container.innerHTML = `<p class=\"muted empty-state\">No listings match the current filters.${hasActive ? ' <button type=\"button\" id=\"empty-clear-filters\" class=\"small-btn\">Clear filters</button>' : ''}</p>`;
       if (hasActive) {
         document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
       }
@@ -255,14 +261,14 @@
       const fav = favs.has(l.id) ? '★' : '☆';
       const dist = (userLocation && l.location) ? ` · ${distanceKm(userLocation, [l.location.lat, l.location.long]).toFixed(1)} km` : '';
       return `
-        <div class="listing-item" data-id="${l.id}" role="listitem" tabindex="0">
-          <span class="cat-swatch" style="background:${color}" aria-hidden="true"></span>
-          <div class="listing-main">
-            <div class="listing-title">${escapeHtml(l.headerdescription || 'Listing')}</div>
-            <div class="listing-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')}${dist}</div>
-            <div class="listing-price">${price}</div>
+        <div class=\"listing-item\" data-id=\"${l.id}\" role=\"listitem\" tabindex=\"0\">
+          <span class=\"cat-swatch\" style=\"background:${color}\" aria-hidden=\"true\"></span>
+          <div class=\"listing-main\">
+            <div class=\"listing-title\">${escapeHtml(l.headerdescription || 'Listing')}</div>
+            <div class=\"listing-meta\">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')}${dist}</div>
+            <div class=\"listing-price\">${price}</div>
           </div>
-          <button type="button" class="fav-btn" data-id="${l.id}" title="Favorite">${fav}</button>
+          <button type=\"button\" class=\"fav-btn\" data-id=\"${l.id}\" title=\"Favorite\">${fav}</button>
         </div>`;
     }).join('');
 
@@ -271,7 +277,6 @@
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(el.dataset.id); }
       });
-      // Bidirectional hover: highlight corresponding map marker
       el.addEventListener('mouseenter', () => {
         if (global.FD_MAP && typeof global.FD_MAP.highlightMarker === 'function') {
           global.FD_MAP.highlightMarker(el.dataset.id);
@@ -296,7 +301,7 @@
       el.classList.toggle('map-hover', el.dataset.id === id && id != null);
     });
     if (id) {
-      const item = document.querySelector(`.listing-item[data-id="${id}"]`);
+      const item = document.querySelector(`.listing-item[data-id=\"${id}\"]`);
       if (item) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }
@@ -325,7 +330,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function renderChips() {
@@ -339,16 +344,16 @@
     if (f.seller) chips.push({ label: f.seller, key: 'seller' });
     if (f.favorites) chips.push({ label: 'Favorites', key: 'favorites' });
     if (f.inview) chips.push({ label: 'In view', key: 'inview' });
-    if (f.search) chips.push({ label: `"${f.search}"`, key: 'search' });
+    if (f.search) chips.push({ label: `\"${f.search}\"`, key: 'search' });
+    if (f.radius > 0) chips.push({ label: `${f.radius} km`, key: 'radius' });
     box.innerHTML = chips.map(c => {
       const color = c.key === 'category' && global.FD_MAP?.getCategoryColor ? global.FD_MAP.getCategoryColor(c.label) : null;
-      const swatch = color ? `<span class="chip-swatch" style="background:${color}"></span>` : '';
-      return `<span class="chip">${swatch}${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`;
+      const swatch = color ? `<span class=\"chip-swatch\" style=\"background:${color}\"></span>` : '';
+      return `<span class=\"chip\">${swatch}${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`;
     }).join('');
     box.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => clearFilterKey(btn.dataset.key));
     });
-    // Filter badge
     const badge = document.getElementById('filter-badge');
     if (badge) {
       const n = chips.length;
@@ -367,12 +372,13 @@
     else if (key === 'search') {
       const inp = document.getElementById('search-input');
       if (inp) inp.value = '';
+    } else if (key === 'radius') {
+      document.getElementById('filter-radius').value = '';
     }
     applyFilters();
   }
 
   function updateFilterOptions() {
-    // Populate selects once or on data change
     const cats = [...new Set(allListings.map(l => l.category).filter(Boolean))].sort();
     const units = [...new Set(allListings.map(l => l.units).filter(Boolean))].sort();
     const sellers = [...new Set(allListings.map(l => l.sellerid).filter(Boolean))].sort();
@@ -385,14 +391,14 @@
     const sel = document.getElementById(id);
     if (!sel) return;
     const current = sel.value;
-    const first = sel.querySelector('option')?.outerHTML || '<option value="">Any</option>';
-    sel.innerHTML = first + options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+    const first = sel.querySelector('option')?.outerHTML || '<option value=\"\">Any</option>';
+    sel.innerHTML = first + options.map(o => `<option value=\"${escapeHtml(o)}\">${escapeHtml(o)}</option>`).join('');
     if ([...sel.options].some(opt => opt.value === current)) sel.value = current;
   }
 
   function select(id) {
     highlightedId = id;
-    const item = document.querySelector(`.listing-item[data-id="${id}"]`);
+    const item = document.querySelector(`.listing-item[data-id=\"${id}\"]`);
     document.querySelectorAll('.listing-item').forEach(el => el.classList.remove('active'));
     if (item) {
       item.classList.add('active');
@@ -405,7 +411,6 @@
       global.FD_MAP.highlightMarker?.(id);
     }
     if (global.FD_RECENT && typeof global.FD_RECENT.add === 'function') global.FD_RECENT.add(id);
-    // Update hash
     try { history.replaceState(null, '', `#listing=${encodeURIComponent(id)}`); } catch (_) {}
   }
 
@@ -437,7 +442,7 @@
 
   function bindUI() {
     loadFilterState();
-    applyFiltersFromHash(); // hash overrides localStorage if present
+    applyFiltersFromHash();
     const filterIds = ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort','filter-favorites','filter-inview'];
     filterIds.forEach(id => {
       document.getElementById(id)?.addEventListener('change', applyFilters);
@@ -450,31 +455,36 @@
       applyFilters();
     });
     document.getElementById('clear-filters')?.addEventListener('click', clearAllFilters);
-    // Filter card toggle
     const filterBtn = document.getElementById('filter-btn');
     const filterCard = document.getElementById('filter-card');
     filterBtn?.addEventListener('click', () => {
       const open = filterCard && !filterCard.hasAttribute('hidden');
       filterCard?.toggleAttribute('hidden', open);
-      filterBtn.setAttribute('aria-expanded', String(!open));
+      filterBtn?.setAttribute('aria-expanded', String(!open));
     });
     document.getElementById('close-filter-btn')?.addEventListener('click', () => {
       filterCard?.setAttribute('hidden', '');
       filterBtn?.setAttribute('aria-expanded', 'false');
     });
+    document.addEventListener('click', (e) => {
+      if (filterCard && !filterCard.hasAttribute('hidden') && !filterCard.contains(e.target) && e.target.id !== 'filter-btn') {
+        filterCard.setAttribute('hidden', '');
+        filterBtn?.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
 
   global.FD_LIST = {
-    bindUI,
     setListings,
-    getListings,
-    select,
     setUserLocation,
-    onMapMove,
+    applyFilters,
+    select,
+    highlightListItem,
+    getFilteredViewLink,
     clearFavorites,
     exportFiltered,
-    applyFilters,
-    highlightListItem,
-    getFilteredViewLink
+    onMapMove,
+    bindUI,
+    getListings
   };
 })(window);
