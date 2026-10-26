@@ -1,1 +1,1 @@
-PLACEHOLDER_FOR_FULL_CONTENT_FROM_TMP
+$(cat /tmp/list.js)
