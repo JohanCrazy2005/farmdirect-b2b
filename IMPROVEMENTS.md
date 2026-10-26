@@ -1,3 +1,15 @@
+## 2026-10-26 – Fix HTML escaping + expose getListings (seed/demo UX)
+
+**What:** Corrected the broken `escapeHtml` helper in `js/list.js` (replacements were identity instead of entities, so `&`, `<`, `>`, `"` were not escaped in list items, chips, and selects). Also exported `getListings()` so the existing stats modal receives the full in-memory set.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; correct escaping prevents broken markup or injection risks during exploration, and stats now work as intended without new features or schema changes.
+
+**How:** Updated `js/list.js` escapeHtml and the FD_LIST export. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Map base-layer switcher respects dark mode (seed/demo UX)
 
 **What:** Updated `js/layers.js` so the Leaflet base-layer control (OSM / Light Carto / Dark Carto / Satellite) correctly detects and follows the app’s dark mode (`data-theme="dark"` on `<html>`). Previously it looked for a non-existent `.dark` class, so the auto-initial layer and the theme-observer never matched the actual preference. User-chosen layers still persist in localStorage and win over auto-sync.

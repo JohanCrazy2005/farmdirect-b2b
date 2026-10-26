@@ -2,7 +2,7 @@
  * FarmDirect B2B – listing list + filter module
  * Sidebar list, filter card, chips, favorites, sort, radius, only-in-view,
  * bidirectional hover highlight with map markers, shareable filtered view links,
- * localStorage persistence of filter state, HTML escaping, empty-state clear.
+ * localStorage persistence of filter state, correct HTML escaping, empty-state clear.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -21,10 +21,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function loadFavorites() {
@@ -481,6 +481,7 @@
     getFilteredViewLink,
     exportFiltered,
     clearFavorites,
-    getFiltered: () => filtered.slice()
+    getFiltered: () => filtered.slice(),
+    getListings: () => allListings.slice()
   };
 })(window);
