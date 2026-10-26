@@ -1,3 +1,15 @@
+## 2026-10-25 – Fix HTML escaping in map popups and list items + empty-state clear
+
+**What:** Corrected the no-op `escapeHtml` helpers in `js/map.js` and `js/list.js` so they properly replace `& < > "`. Marker popups and sidebar listing titles/meta are now safely escaped. Empty results state includes a “Clear filters” button when filters are active.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish prevents broken HTML or XSS from special characters in seed data and improves the no-matches UX during exploration.
+
+**How:** Updated escapeHtml implementations (matching the working version in cards.js); added hasActiveFilters + clearAllFilters helpers and wired the empty-state button. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Map marker popups with summary + view details
 
 **What:** Markers now open a Leaflet popup showing the listing header, category swatch, price/units, and a “View details” button that selects the listing (opens the product card) and closes the popup. Clicking a marker still selects it; fly-to from the list opens the popup.

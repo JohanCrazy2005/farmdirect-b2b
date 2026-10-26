@@ -34,10 +34,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function addCategoryLegend() {
@@ -47,7 +47,7 @@
       const div = L.DomUtil.create('div', 'category-legend card');
       const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== 'default');
       div.innerHTML = '<h4>Categories</h4>' + entries.map(([cat, color]) =>
-        `<div class=\"legend-item\" data-category=\"${cat}\" role=\"button\" tabindex=\"0\" title=\"Filter by ${cat}\"><span class=\"legend-swatch\" style=\"background:${color}\"></span> ${cat}</div>`
+        `<div class="legend-item" data-category="${cat}" role="button" tabindex="0" title="Filter by ${cat}"><span class="legend-swatch" style="background:${color}"></span> ${cat}</div>`
       ).join('');
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.disableScrollPropagation(div);
@@ -209,18 +209,18 @@
       const color = getCategoryColor(l.category);
       const icon = L.divIcon({
         className: 'listing-marker',
-        html: `<div class=\"marker-dot\" style=\"background:${color}\"></div>`,
+        html: `<div class="marker-dot" style="background:${color}"></div>`,
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
       const marker = L.marker([l.location.lat, l.location.long], { icon, title: l.headerdescription || '' });
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units || ''}` : 'Price on request';
       const popupHtml = `
-        <div class=\"map-popup\">
+        <div class="map-popup">
           <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong><br>
-          <span class=\"popup-swatch\" style=\"background:${color}\"></span> ${escapeHtml(l.category || '')}<br>
+          <span class="popup-swatch" style="background:${color}"></span> ${escapeHtml(l.category || '')}<br>
           ${escapeHtml(price)}<br>
-          <button type=\"button\" class=\"popup-view-btn small-btn\" data-id=\"${escapeHtml(l.id)}\">View details</button>
+          <button type="button" class="popup-view-btn small-btn" data-id="${escapeHtml(l.id)}">View details</button>
         </div>`;
       marker.bindPopup(popupHtml);
       marker.on('click', () => {

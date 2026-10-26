@@ -117,7 +117,11 @@
     if (!container) return;
     const favs = getFavorites();
     if (!filtered.length) {
-      container.innerHTML = '<p class=\"muted empty-state\">No listings match the current filters.</p>';
+      const hasActive = hasActiveFilters();
+      container.innerHTML = `<p class="muted empty-state">No listings match the current filters.${hasActive ? ' <button type="button" id="empty-clear-filters" class="small-btn">Clear filters</button>' : ''}</p>`;
+      if (hasActive) {
+        document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
+      }
       return;
     }
     container.innerHTML = filtered.map(l => {
@@ -126,14 +130,14 @@
       const fav = favs.has(l.id) ? '★' : '☆';
       const dist = (userLocation && l.location) ? ` · ${distanceKm(userLocation, [l.location.lat, l.location.long]).toFixed(1)} km` : '';
       return `
-        <div class=\"listing-item\" data-id=\"${l.id}\" role=\"listitem\" tabindex=\"0\">
-          <span class=\"cat-swatch\" style=\"background:${color}\" aria-hidden=\"true\"></span>
-          <div class=\"listing-main\">
-            <div class=\"listing-title\">${escapeHtml(l.headerdescription || 'Listing')}</div>
-            <div class=\"listing-meta\">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')}${dist}</div>
-            <div class=\"listing-price\">${price}</div>
+        <div class="listing-item" data-id="${l.id}" role="listitem" tabindex="0">
+          <span class="cat-swatch" style="background:${color}" aria-hidden="true"></span>
+          <div class="listing-main">
+            <div class="listing-title">${escapeHtml(l.headerdescription || 'Listing')}</div>
+            <div class="listing-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.sellerid || '')}${dist}</div>
+            <div class="listing-price">${price}</div>
           </div>
-          <button type=\"button\" class=\"fav-btn\" data-id=\"${l.id}\" title=\"Favorite\">${fav}</button>
+          <button type="button" class="fav-btn" data-id="${l.id}" title="Favorite">${fav}</button>
         </div>`;
     }).join('');
 
@@ -151,9 +155,31 @@
     });
   }
 
+  function hasActiveFilters() {
+    const f = getFilterValues();
+    return !!(f.category || f.visibility || f.units || f.seller || f.minprice > 0 || f.maxprice < Infinity || f.radius > 0 || f.favorites || f.inview || f.search);
+  }
+
+  function clearAllFilters() {
+    const filterIds = ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort','filter-favorites','filter-inview'];
+    filterIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+    });
+    const search = document.getElementById('search-input');
+    if (search) search.value = '';
+    applyFilters();
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/\"/g,'\"');
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function renderChips() {
@@ -167,11 +193,11 @@
     if (f.seller) chips.push({ label: f.seller, key: 'seller' });
     if (f.favorites) chips.push({ label: 'Favorites', key: 'favorites' });
     if (f.inview) chips.push({ label: 'In view', key: 'inview' });
-    if (f.search) chips.push({ label: `\"${f.search}\"`, key: 'search' });
+    if (f.search) chips.push({ label: `"${f.search}"`, key: 'search' });
     box.innerHTML = chips.map(c => {
       const color = c.key === 'category' && global.FD_MAP?.getCategoryColor ? global.FD_MAP.getCategoryColor(c.label) : null;
-      const swatch = color ? `<span class=\"chip-swatch\" style=\"background:${color}\"></span>` : '';
-      return `<span class=\"chip\">${swatch}${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`;
+      const swatch = color ? `<span class="chip-swatch" style="background:${color}"></span>` : '';
+      return `<span class="chip">${swatch}${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`;
     }).join('');
     box.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => clearFilterKey(btn.dataset.key));
@@ -213,14 +239,14 @@
     const sel = document.getElementById(id);
     if (!sel) return;
     const current = sel.value;
-    const first = sel.querySelector('option')?.outerHTML || '<option value=\"\">Any</option>';
-    sel.innerHTML = first + options.map(o => `<option value=\"${escapeHtml(o)}\">${escapeHtml(o)}</option>`).join('');
+    const first = sel.querySelector('option')?.outerHTML || '<option value="">Any</option>';
+    sel.innerHTML = first + options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
     if ([...sel.options].some(opt => opt.value === current)) sel.value = current;
   }
 
   function select(id) {
     highlightedId = id;
-    const item = document.querySelector(`.listing-item[data-id=\"${id}\"]`);
+    const item = document.querySelector(`.listing-item[data-id="${id}"]`);
     document.querySelectorAll('.listing-item').forEach(el => el.classList.remove('active'));
     if (item) {
       item.classList.add('active');
@@ -276,17 +302,7 @@
       if (inp) inp.value = '';
       applyFilters();
     });
-    document.getElementById('clear-filters')?.addEventListener('click', () => {
-      filterIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (el.type === 'checkbox') el.checked = false;
-        else el.value = '';
-      });
-      const search = document.getElementById('search-input');
-      if (search) search.value = '';
-      applyFilters();
-    });
+    document.getElementById('clear-filters')?.addEventListener('click', clearAllFilters);
     // Filter card toggle
     const filterBtn = document.getElementById('filter-btn');
     const filterCard = document.getElementById('filter-card');
