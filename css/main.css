@@ -53,6 +53,7 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center;
 }
 .icon-btn:hover { background: rgba(0,0,0,.06); }
+.mobile-only { display: none; }
 .data-source-badge {
   font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 999px;
   border: none; cursor: pointer; letter-spacing: .04em;
@@ -242,6 +243,7 @@ kbd { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; paddin
 
 /* Responsive */
 @media (max-width: 768px) {
+  .mobile-only { display: grid; }
   .sidebar { width: 100%; transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
   .product-card, .seller-card { left: 12px; right: 12px; max-width: none; }

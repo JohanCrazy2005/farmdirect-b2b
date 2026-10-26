@@ -34,6 +34,26 @@
       if (window.FD_DASHBOARD) window.FD_DASHBOARD.openDashboard();
     });
 
+    // Mobile sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    if (sidebar && sidebarToggle) {
+      sidebarToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = sidebar.classList.toggle('open');
+        sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+        sidebarToggle.textContent = isOpen ? '×' : '☰';
+      });
+      // Close sidebar when selecting a listing on mobile
+      document.getElementById('listing-list')?.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && e.target.closest('.listing-item')) {
+          sidebar.classList.remove('open');
+          sidebarToggle.setAttribute('aria-expanded', 'false');
+          sidebarToggle.textContent = '☰';
+        }
+      });
+    }
+
     // Options menu
     const optionsMenu = document.getElementById('options-menu');
     document.getElementById('options-btn')?.addEventListener('click', (e) => {

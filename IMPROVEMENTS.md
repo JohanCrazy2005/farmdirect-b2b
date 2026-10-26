@@ -1,3 +1,15 @@
+## 2026-10-25 – Mobile sidebar toggle for map-first list access
+
+**What:** Added a mobile-only sidebar toggle button (☰) in the transparent top bar. On screens ≤768px the listings sidebar starts off-canvas and can be opened/closed from the top bar. Selecting a listing automatically closes the sidebar. Button text switches to × when open.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; previously the list was inaccessible on small screens because the sidebar was translated off-canvas with no control. This code-only polish completes the responsive map-first shell so users can browse seed listings on phones.
+
+**How:** Added `#sidebar-toggle` to `index.html` (hidden via `.mobile-only` on desktop). CSS media query shows it and keeps the existing transform. `js/main.js` wires the toggle and auto-close on list click. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Interactive category legend (click to filter)
 
 **What:** The map category legend is now interactive. Clicking (or keyboard Enter/Space) a category sets the category filter, updates the list and markers, and highlights the active item. Clicking the same category again clears the filter. Active state stays in sync when filters change from the sidebar or chips.
