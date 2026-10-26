@@ -2,6 +2,7 @@
  * FarmDirect B2B – product & seller cards + lightbox
  * Max 3 badges, friendly seller names, image lightbox.
  * Shows distance in product card when user location is set (seed/demo).
+ * Share button copies a deep link to the listing; distance is clickable to fly the map.
  * Works with seed/demo.
  */
 (function (global) {
@@ -13,7 +14,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function distanceKm(lat1, lng1, lat2, lng2) {
@@ -51,6 +52,21 @@
     return badges.slice(0, 3);
   }
 
+  function copyListingLink(id) {
+    if (!id) return;
+    const base = location.origin + location.pathname;
+    const link = `${base}#listing=${encodeURIComponent(id)}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+      }).catch(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Link: ' + link, 'info');
+      });
+    } else if (global.FD_TOAST) {
+      global.FD_TOAST.show('Link: ' + link, 'info');
+    }
+  }
+
   function showProduct(l) {
     const el = document.getElementById('product-card');
     if (!el || !l) return;
@@ -63,7 +79,7 @@
     if (userLoc && l.location && l.location.lat != null && l.location.long != null) {
       const km = distanceKm(userLoc[0], userLoc[1], l.location.lat, l.location.long);
       const d = formatDistance(km);
-      if (d) distHtml = `<p class=\"muted card-distance\">${escapeHtml(d)} away</p>`;
+      if (d) distHtml = `<p class=\"muted card-distance\" data-id=\"${escapeHtml(l.id)}\" title=\"Fly to listing\">${escapeHtml(d)} away</p>`;
     }
     el.innerHTML = `
       <button type=\"button\" class=\"close-card\" aria-label=\"Close\">×</button>
@@ -78,6 +94,7 @@
         <div class=\"card-actions\">
           <button type=\"button\" class=\"small-btn view-seller\" data-seller=\"${escapeHtml(l.sellerid)}\">View seller: ${escapeHtml(name)}</button>
           <button type=\"button\" class=\"small-btn rfq-btn\" data-id=\"${escapeHtml(l.id)}\">Request quote</button>
+          <button type=\"button\" class=\"small-btn share-btn\" data-id=\"${escapeHtml(l.id)}\">Share listing</button>
         </div>
       </div>`;
     el.classList.add('open');
@@ -86,6 +103,12 @@
     el.querySelector('.view-seller')?.addEventListener('click', () => showSeller(l.sellerid, l));
     el.querySelector('.rfq-btn')?.addEventListener('click', () => {
       if (global.FD_RFQ) global.FD_RFQ.open(l.id);
+    });
+    el.querySelector('.share-btn')?.addEventListener('click', () => copyListingLink(l.id));
+    el.querySelector('.card-distance')?.addEventListener('click', () => {
+      if (global.FD_MAP && typeof global.FD_MAP.flyTo === 'function') {
+        global.FD_MAP.flyTo(l.id);
+      }
     });
   }
 

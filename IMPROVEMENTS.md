@@ -1,3 +1,15 @@
+## 2026-10-26 – Share listing button + clickable distance in product card (seed/demo UX)
+
+**What:** Product detail card now has a “Share listing” button that copies a deep link (`#listing=<id>`). The distance line (when a user location is set) is clickable and flies the map to that listing (opens its popup). Existing deep-link support in main.js opens the card on load.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; sharing a specific listing and jumping from the distance text to the map marker makes exploration and collaboration easier without new features or schema changes.
+
+**How:** Added `copyListingLink` + share button and distance click handler (calls `FD_MAP.flyTo`) in `js/cards.js`. Minor CSS for clickable `.card-distance`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Show distance in product cards + map scale bar (seed/demo UX)
 
 **What:** When a user location is set, the product detail card now shows the distance to the listing (e.g. “2.3 km away”) directly under the price. Also added a metric scale bar (bottom-left) to the Leaflet map for quick distance orientation. `FD_MAP.getUserLocation()` is now exported so other modules can use it.

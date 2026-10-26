@@ -268,7 +268,8 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
 .badge { background: #ecfdf5; color: #065f46; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; }
 [data-theme=\"dark\"] .badge { background: #064e3b; color: #a7f3d0; }
 .price { font-weight: 700; color: var(--accent); }
-.card-distance { margin: 0.2rem 0 0.4rem; font-size: 0.85rem; }
+.card-distance { margin: 0.2rem 0 0.4rem; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
+.card-distance:hover { color: var(--accent); }
 .card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
 .modal {
   position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000;
