@@ -1,7 +1,9 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Initializes map, marker clusters, category colors, location, fit, view links, interactive category legend, and marker popups.
- * Bidirectional hover highlight sync with sidebar list items. Fully client-side; works with seed/demo fallback.
+ * Bidirectional hover highlight sync with sidebar list items.
+ * Persists map view (center + zoom) to localStorage so reloads resume the last explored area (seed/demo).
+ * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
   'use strict';
@@ -11,6 +13,7 @@
   let userMarker = null;
   let userCircle = null;
   const markers = new Map(); // id -> marker
+  const VIEW_KEY = 'fd-map-view';
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -38,6 +41,27 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function saveMapView() {
+    if (!map) return;
+    try {
+      const c = map.getCenter();
+      const z = map.getZoom();
+      localStorage.setItem(VIEW_KEY, JSON.stringify({ lat: c.lat, lng: c.lng, zoom: z }));
+    } catch (_) {}
+  }
+
+  function loadMapView() {
+    try {
+      const raw = localStorage.getItem(VIEW_KEY);
+      if (!raw) return null;
+      const v = JSON.parse(raw);
+      if (v && typeof v.lat === 'number' && typeof v.lng === 'number' && typeof v.zoom === 'number') {
+        return v;
+      }
+    } catch (_) {}
+    return null;
   }
 
   function addCategoryLegend() {
@@ -107,16 +131,26 @@
     });
     map.addLayer(clusterGroup);
 
-    // Restore view from URL hash if present
+    // Restore view: URL hash takes priority, then localStorage, else default
+    let restored = false;
     try {
       const hash = location.hash || '';
       const m = hash.match(/#map=([\d.-]+),([\d.-]+),(\d+)/);
       if (m) {
         map.setView([parseFloat(m[1]), parseFloat(m[2])], parseInt(m[3], 10));
+        restored = true;
       }
     } catch (_) {}
 
+    if (!restored) {
+      const saved = loadMapView();
+      if (saved) {
+        map.setView([saved.lat, saved.lng], saved.zoom);
+      }
+    }
+
     map.on('moveend', () => {
+      saveMapView();
       // Notify list for "only in view"
       if (global.FD_LIST && typeof global.FD_LIST.onMapMove === 'function') {
         global.FD_LIST.onMapMove();

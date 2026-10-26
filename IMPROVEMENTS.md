@@ -1,3 +1,15 @@
+## 2026-10-26 – Persist map view across reloads (seed/demo polish)
+
+**What:** Map center and zoom are now saved to localStorage on every moveend and restored on page load (URL #map= hash still takes priority if present). Fully client-side; works in seed/demo mode so users resume the last explored area without losing context.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish complements filter persistence so multi-step map exploration survives reloads and refreshes.
+
+**How:** Added saveMapView / loadMapView helpers in js/map.js; called from moveend and initMap (after hash check). Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Shareable filtered view links (seed/demo polish)
 
 **What:** Options menu now has “Copy filtered view link”. It copies a URL whose hash encodes the current category, visibility, units, seller, price range, radius, sort, favorites, in-view, and search filters. On load, if the hash contains a filters=… payload, those filters are restored (overriding localStorage for that session). Map position hashes remain compatible.
