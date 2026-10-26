@@ -1,3 +1,15 @@
+## 2026-10-26 – Keyboard shortcuts module (seed/demo UX)
+
+**What:** Replaced the 24-byte stub `js/shortcuts.js` with a full client-side keyboard shortcuts module. It binds the Options → Keyboard shortcuts button + modal, and handles the listed keys: `/` or `s` focus search, `i` toggle filters, `o` toggle options, `l` locate, `f` fit all, `x` clear location, `d` toggle dark mode, `?`/`h` open help, ↑/↓ navigate listings (with map highlight), Enter/Space open highlighted, Esc close open panels/modals. Keypresses are ignored while typing in inputs.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; the shortcuts module was a placeholder so the documented keyboard controls and help modal did not work. This code-only change completes the expected map-first UX without new features or schema changes.
+
+**How:** New substantial `js/shortcuts.js` (exposes `FD_SHORTCUTS` with bind/open/close). Integrates with existing FD_MAP, FD_LIST, FD_CARDS, FD_TOAST. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Restore substantial list.js (seed/demo UX)
 
 **What:** Replaced the 37-byte placeholder `js/list.js` with a full client-side listing list + filter module. Implements sidebar rendering with category swatches, filter card wiring, chips with per-chip clear, favorites (localStorage), sort (price/name/distance), radius filter (with map circle), “only in view” (re-applies on map move), bidirectional hover highlight sync with markers, shareable filtered view links, filter-state persistence, HTML escaping, empty-state “Clear filters” button, filter-count badge, and export of filtered JSON.
