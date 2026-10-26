@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Initializes map, marker clusters, category colors, location, fit, view links, interactive category legend, and marker popups.
- * Fully client-side; works with seed/demo fallback.
+ * Bidirectional hover highlight sync with sidebar list items. Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
   'use strict';
@@ -226,6 +226,17 @@
       marker.on('click', () => {
         if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
           global.FD_LIST.select(l.id);
+        }
+      });
+      // Bidirectional hover: highlight corresponding list item
+      marker.on('mouseover', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.highlightListItem === 'function') {
+          global.FD_LIST.highlightListItem(l.id);
+        }
+      });
+      marker.on('mouseout', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.highlightListItem === 'function') {
+          global.FD_LIST.highlightListItem(null);
         }
       });
       clusterGroup.addLayer(marker);

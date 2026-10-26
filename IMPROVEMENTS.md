@@ -1,3 +1,15 @@
+## 2026-10-26 – Bidirectional hover highlight sync (list ↔ map)
+
+**What:** Hovering a sidebar listing item now highlights the corresponding map marker (scale + ring). Hovering a map marker highlights the matching list item (background) and scrolls it into view. Works in both directions; clears on mouseleave/mouseout. Fully client-side for seed/demo.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish improves map-first exploration so users can quickly correlate list entries with geographic markers without clicking or opening cards.
+
+**How:** Extended `js/list.js` `renderList` with mouseenter/mouseleave → `FD_MAP.highlightMarker`; added `highlightListItem` helper (class `map-hover` + scroll). Extended `js/map.js` `updateMarkers` with mouseover/mouseout → `FD_LIST.highlightListItem`. Updated `.listing-item` styles in `css/main.css` to include `.map-hover`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Persist filter state across reloads (seed/demo polish)
 
 **What:** Category, visibility, units, seller, price range, radius, sort, favorites-only, only-in-view, and search text are now saved to localStorage and restored on page load. The sidebar list header shows “filtered/total” (e.g. 3/12) whenever filters are active so the impact is immediately visible.
@@ -12,7 +24,7 @@
 
 ## 2026-10-25 – Fix HTML escaping in map popups and list items + empty-state clear
 
-**What:** Corrected the no-op `escapeHtml` helpers in `js/map.js` and `js/list.js` so they properly replace `& < > "`. Marker popups and sidebar listing titles/meta are now safely escaped. Empty results state includes a “Clear filters” button when filters are active.
+**What:** Corrected the no-op `escapeHtml` helpers in `js/map.js` and `js/list.js` so they properly replace `& < > \"`. Marker popups and sidebar listing titles/meta are now safely escaped. Empty results state includes a “Clear filters” button when filters are active.
 
 **Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish prevents broken HTML or XSS from special characters in seed data and improves the no-matches UX during exploration.
 

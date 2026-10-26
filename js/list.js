@@ -2,6 +2,7 @@
  * FarmDirect B2B – sidebar list, filters, chips, favorites, distance, only-in-view.
  * Syncs with map markers. Fully client-side for seed/demo mode.
  * Filter state is persisted to localStorage so exploration survives reloads.
+ * Bidirectional hover highlight sync with map markers for map-first exploration.
  */
 (function (global) {
   'use strict';
@@ -206,6 +207,17 @@
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(el.dataset.id); }
       });
+      // Bidirectional hover: highlight corresponding map marker
+      el.addEventListener('mouseenter', () => {
+        if (global.FD_MAP && typeof global.FD_MAP.highlightMarker === 'function') {
+          global.FD_MAP.highlightMarker(el.dataset.id);
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (global.FD_MAP && typeof global.FD_MAP.highlightMarker === 'function') {
+          global.FD_MAP.highlightMarker(null);
+        }
+      });
     });
     container.querySelectorAll('.fav-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -213,6 +225,16 @@
         toggleFavorite(btn.dataset.id);
       });
     });
+  }
+
+  function highlightListItem(id) {
+    document.querySelectorAll('.listing-item').forEach(el => {
+      el.classList.toggle('map-hover', el.dataset.id === id && id != null);
+    });
+    if (id) {
+      const item = document.querySelector(`.listing-item[data-id="${id}"]`);
+      if (item) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   }
 
   function hasActiveFilters() {
@@ -387,6 +409,7 @@
     onMapMove,
     clearFavorites,
     exportFiltered,
-    applyFilters
+    applyFilters,
+    highlightListItem
   };
 })(window);

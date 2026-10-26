@@ -1,6 +1,6 @@
 /* FarmDirect B2B – main stylesheet
    Transparent top bar, full map, sidebar list, filter/product/seller cards, responsive.
-   Supports seed/demo mode with category swatches, clusters, interactive map legend, and marker popups. */
+   Supports seed/demo mode with category swatches, clusters, interactive map legend, marker popups, and bidirectional hover highlight. */
 
 :root {
   --top-bar-h: 56px;
@@ -192,7 +192,7 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   display: flex; align-items: flex-start; gap: 0.6rem;
   padding: 0.65rem 0.85rem; border-bottom: 1px solid #f3f4f6; cursor: pointer;
 }
-.listing-item:hover, .listing-item.active { background: #f0fdf4; }
+.listing-item:hover, .listing-item.active, .listing-item.map-hover { background: #f0fdf4; }
 .listing-main { flex: 1; min-width: 0; }
 .listing-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .listing-meta, .listing-price { font-size: 0.75rem; color: var(--muted); }
