@@ -1,3 +1,15 @@
+## 2026-10-26 – Clickable distance + share button in sidebar list (seed/demo UX)
+
+**What:** Distance text in each sidebar listing item is now clickable and flies the map to that listing (opens its popup). Each list item also has a share button (🔗) that copies a deep link (`#listing=<id>`). Clicking the item body still opens the product card as before. Matches the product-card share + distance interaction.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; making distance interactive and adding one-click share in the list improves map-first exploration and collaboration without new features or schema changes.
+
+**How:** Added `copyListingLink` helper, clickable `.list-distance` span, and `.share-list-btn` in `js/list.js` renderList + event wiring. Added matching CSS rules in `css/main.css`. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Share listing button + clickable distance in product card (seed/demo UX)
 
 **What:** Product detail card now has a “Share listing” button that copies a deep link (`#listing=<id>`). The distance line (when a user location is set) is clickable and flies the map to that listing (opens its popup). Existing deep-link support in main.js opens the card on load.

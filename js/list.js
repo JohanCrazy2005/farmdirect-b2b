@@ -4,6 +4,7 @@
  * bidirectional hover highlight with map markers, shareable filtered view links,
  * localStorage persistence of filter state, correct HTML escaping, empty-state clear.
  * Shows distance to each listing when user location is available (Locate me / persisted).
+ * Distance is clickable to fly the map; each item has a share button that copies a deep link.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -25,7 +26,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function loadFavorites() {
@@ -109,6 +110,21 @@
     if (km == null || !isFinite(km)) return '';
     if (km < 1) return (km * 1000).toFixed(0) + ' m';
     return km.toFixed(1) + ' km';
+  }
+
+  function copyListingLink(id) {
+    if (!id) return;
+    const base = location.origin + location.pathname;
+    const link = `${base}#listing=${encodeURIComponent(id)}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+      }).catch(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Link: ' + link, 'info');
+      });
+    } else if (global.FD_TOAST) {
+      global.FD_TOAST.show('Link: ' + link, 'info');
+    }
   }
 
   function inCurrentView(listing) {
@@ -277,7 +293,8 @@
       let dist = '';
       if (userLocation && l.location) {
         const km = distanceKm(userLocation[0], userLocation[1], l.location.lat, l.location.long);
-        dist = ' · ' + formatDistance(km);
+        const d = formatDistance(km);
+        if (d) dist = ` · <span class=\"list-distance\" data-id=\"${escapeHtml(l.id)}\" title=\"Fly to listing\">${escapeHtml(d)}</span>`;
       }
       return `<div class=\"listing-item${isActive ? ' active' : ''}${isHover ? ' map-hover' : ''}\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\" tabindex=\"0\">
         <span class=\"cat-swatch\" style=\"background:${color}\"></span>
@@ -286,13 +303,14 @@
           <div class=\"listing-meta\">${escapeHtml(l.category || '')} · ${escapeHtml(l.address || '')}${dist}</div>
           <div class=\"listing-price\">${price}</div>
         </div>
+        <button type=\"button\" class=\"share-list-btn\" data-id=\"${escapeHtml(l.id)}\" title=\"Share listing\" aria-label=\"Share listing\">🔗</button>
         <button type=\"button\" class=\"fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"${isFav ? 'Remove favorite' : 'Add favorite'}\">${isFav ? '★' : '☆'}</button>
       </div>`;
     }).join('');
 
     list.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.fav-btn')) return;
+        if (e.target.closest('.fav-btn') || e.target.closest('.share-list-btn') || e.target.closest('.list-distance')) return;
         select(item.dataset.id);
       });
       item.addEventListener('keydown', (e) => {
@@ -320,6 +338,21 @@
         else favorites.add(id);
         saveFavorites();
         applyFilters();
+      });
+    });
+    list.querySelectorAll('.share-list-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyListingLink(btn.dataset.id);
+      });
+    });
+    list.querySelectorAll('.list-distance').forEach(span => {
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = span.dataset.id;
+        if (global.FD_MAP && typeof global.FD_MAP.flyTo === 'function') {
+          global.FD_MAP.flyTo(id);
+        }
       });
     });
   }

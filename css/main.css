@@ -232,7 +232,23 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
 .listing-main { flex: 1; min-width: 0; }
 .listing-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .listing-meta, .listing-price { font-size: 0.75rem; color: var(--muted); }
-.fav-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #d97706; }
+.list-distance {
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+.list-distance:hover { color: var(--accent); }
+.share-list-btn {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0 0.2rem;
+  line-height: 1;
+  align-self: center;
+}
+.share-list-btn:hover { color: var(--accent); }
+.fav-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #d97706; align-self: center; }
 .empty-state { padding: 1.5rem; text-align: center; }
 
 /* Cards & modals */
