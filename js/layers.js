@@ -2,6 +2,7 @@
  * FarmDirect B2B – map base-layer switcher
  * Adds a Leaflet control for OSM / light / dark / satellite tiles.
  * Persists choice in localStorage. Fully client-side; works in pure seed/demo mode.
+ * Syncs initial and auto choice with the app dark mode (data-theme attribute).
  * Improves map-first exploration while the Worker is undeployed.
  */
 (function (global) {
@@ -28,6 +29,10 @@
     }
   };
 
+  function isDarkTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+
   function getSavedLayer() {
     try {
       const name = localStorage.getItem(LAYER_KEY);
@@ -43,6 +48,14 @@
   function createLayer(name) {
     const def = BASE_LAYERS[name];
     return L.tileLayer(def.url, def.options);
+  }
+
+  function applyLayer(map, layerObjects, name) {
+    if (!layerObjects[name]) return;
+    map.eachLayer(layer => {
+      if (layer instanceof L.TileLayer) map.removeLayer(layer);
+    });
+    layerObjects[name].addTo(map);
   }
 
   function init() {
@@ -61,11 +74,10 @@
       layerObjects[name] = createLayer(name);
     });
 
-    // Prefer saved, else dark if theme is dark, else OSM
-    const isDark = document.documentElement.classList.contains('dark');
+    // Prefer saved, else match current theme, else OSM
     let initial = getSavedLayer();
     if (!initial) {
-      initial = isDark ? 'Dark (Carto)' : 'OpenStreetMap';
+      initial = isDarkTheme() ? 'Dark (Carto)' : 'OpenStreetMap';
     }
     if (!layerObjects[initial]) initial = 'OpenStreetMap';
 
@@ -81,19 +93,18 @@
       if (e.name) saveLayer(e.name);
     });
 
-    // Optional: react to theme toggle (if user hasn't locked a choice)
+    // React to theme changes only when the user has not locked a layer choice
     const observer = new MutationObserver(() => {
       if (getSavedLayer()) return; // user choice wins
-      const nowDark = document.documentElement.classList.contains('dark');
-      const target = nowDark ? 'Dark (Carto)' : 'OpenStreetMap';
+      const target = isDarkTheme() ? 'Dark (Carto)' : 'OpenStreetMap';
       if (layerObjects[target] && !map.hasLayer(layerObjects[target])) {
-        map.eachLayer(l => {
-          if (l instanceof L.TileLayer) map.removeLayer(l);
-        });
-        layerObjects[target].addTo(map);
+        applyLayer(map, layerObjects, target);
       }
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
   }
 
   function bind() {
