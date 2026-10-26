@@ -1,6 +1,6 @@
 /**
  * FarmDirect B2B – Leaflet map module
- * Initializes map, marker clusters, category colors, location, fit, view links, and interactive category legend.
+ * Initializes map, marker clusters, category colors, location, fit, view links, interactive category legend, and marker popups.
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -31,6 +31,15 @@
     return CATEGORY_COLORS[cat] || CATEGORY_COLORS.default;
   }
 
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+
   function addCategoryLegend() {
     if (!map) return;
     const legend = L.control({ position: 'bottomright' });
@@ -38,7 +47,7 @@
       const div = L.DomUtil.create('div', 'category-legend card');
       const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== 'default');
       div.innerHTML = '<h4>Categories</h4>' + entries.map(([cat, color]) =>
-        `<div class="legend-item" data-category="${cat}" role="button" tabindex="0" title="Filter by ${cat}"><span class="legend-swatch" style="background:${color}"></span> ${cat}</div>`
+        `<div class=\"legend-item\" data-category=\"${cat}\" role=\"button\" tabindex=\"0\" title=\"Filter by ${cat}\"><span class=\"legend-swatch\" style=\"background:${color}\"></span> ${cat}</div>`
       ).join('');
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.disableScrollPropagation(div);
@@ -114,6 +123,22 @@
       }
     });
 
+    // Handle "View details" buttons inside marker popups
+    map.on('popupopen', (e) => {
+      const btn = e.popup.getElement()?.querySelector('.popup-view-btn');
+      if (btn) {
+        btn.onclick = (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const id = btn.dataset.id;
+          if (id && global.FD_LIST && typeof global.FD_LIST.select === 'function') {
+            global.FD_LIST.select(id);
+          }
+          map.closePopup();
+        };
+      }
+    });
+
     addCategoryLegend();
   }
 
@@ -184,17 +209,25 @@
       const color = getCategoryColor(l.category);
       const icon = L.divIcon({
         className: 'listing-marker',
-        html: `<div class="marker-dot" style="background:${color}"></div>`,
+        html: `<div class=\"marker-dot\" style=\"background:${color}\"></div>`,
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
       const marker = L.marker([l.location.lat, l.location.long], { icon, title: l.headerdescription || '' });
+      const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units || ''}` : 'Price on request';
+      const popupHtml = `
+        <div class=\"map-popup\">
+          <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong><br>
+          <span class=\"popup-swatch\" style=\"background:${color}\"></span> ${escapeHtml(l.category || '')}<br>
+          ${escapeHtml(price)}<br>
+          <button type=\"button\" class=\"popup-view-btn small-btn\" data-id=\"${escapeHtml(l.id)}\">View details</button>
+        </div>`;
+      marker.bindPopup(popupHtml);
       marker.on('click', () => {
         if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
           global.FD_LIST.select(l.id);
         }
       });
-      marker.bindTooltip(l.headerdescription || 'Listing', { direction: 'top', offset: [0, -10] });
       clusterGroup.addLayer(marker);
       markers.set(l.id, marker);
     });
@@ -205,7 +238,7 @@
     if (marker && map) {
       const latlng = marker.getLatLng();
       map.setView(latlng, Math.max(map.getZoom(), 14));
-      marker.openTooltip();
+      marker.openPopup();
     }
   }
 
