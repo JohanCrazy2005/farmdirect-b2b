@@ -1,3 +1,15 @@
+## 2026-10-25 – Persist filter state across reloads (seed/demo polish)
+
+**What:** Category, visibility, units, seller, price range, radius, sort, favorites-only, only-in-view, and search text are now saved to localStorage and restored on page load. The sidebar list header shows “filtered/total” (e.g. 3/12) whenever filters are active so the impact is immediately visible.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish makes multi-step exploration more pleasant—filters survive reloads and refreshes without losing context.
+
+**How:** Extended `js/list.js` with `saveFilterState` / `loadFilterState` (called from `applyFilters` and `bindUI`). Updated count display. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Fix HTML escaping in map popups and list items + empty-state clear
 
 **What:** Corrected the no-op `escapeHtml` helpers in `js/map.js` and `js/list.js` so they properly replace `& < > "`. Marker popups and sidebar listing titles/meta are now safely escaped. Empty results state includes a “Clear filters” button when filters are active.

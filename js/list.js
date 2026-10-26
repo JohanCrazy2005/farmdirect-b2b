@@ -1,6 +1,7 @@
 /**
  * FarmDirect B2B – sidebar list, filters, chips, favorites, distance, only-in-view.
  * Syncs with map markers. Fully client-side for seed/demo mode.
+ * Filter state is persisted to localStorage so exploration survives reloads.
  */
 (function (global) {
   'use strict';
@@ -10,12 +11,65 @@
   let userLocation = null;
   let highlightedId = null;
   const FAV_KEY = 'fd-favorites';
+  const FILTER_KEY = 'fd-filters';
 
   function getFavorites() {
     try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]')); } catch (_) { return new Set(); }
   }
   function saveFavorites(set) {
     try { localStorage.setItem(FAV_KEY, JSON.stringify([...set])); } catch (_) {}
+  }
+
+  function saveFilterState() {
+    try {
+      const f = getFilterValues();
+      // Only persist non-default values to keep storage small
+      const state = {};
+      if (f.category) state.category = f.category;
+      if (f.visibility) state.visibility = f.visibility;
+      if (f.units) state.units = f.units;
+      if (f.seller) state.seller = f.seller;
+      if (f.minprice > 0) state.minprice = f.minprice;
+      if (f.maxprice < Infinity) state.maxprice = f.maxprice;
+      if (f.radius > 0) state.radius = f.radius;
+      if (f.sort) state.sort = f.sort;
+      if (f.favorites) state.favorites = true;
+      if (f.inview) state.inview = true;
+      if (f.search) state.search = f.search;
+      if (Object.keys(state).length) {
+        localStorage.setItem(FILTER_KEY, JSON.stringify(state));
+      } else {
+        localStorage.removeItem(FILTER_KEY);
+      }
+    } catch (_) {}
+  }
+
+  function loadFilterState() {
+    try {
+      const raw = localStorage.getItem(FILTER_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val != null) el.value = val;
+      };
+      const setChk = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val) el.checked = true;
+      };
+      setVal('filter-category', state.category);
+      setVal('filter-visibility', state.visibility);
+      setVal('filter-units', state.units);
+      setVal('filter-seller', state.seller);
+      setVal('filter-minprice', state.minprice);
+      setVal('filter-maxprice', state.maxprice);
+      setVal('filter-radius', state.radius);
+      setVal('filter-sort', state.sort);
+      setChk('filter-favorites', state.favorites);
+      setChk('filter-inview', state.inview);
+      const search = document.getElementById('search-input');
+      if (search && state.search) search.value = state.search;
+    } catch (_) {}
   }
 
   function getListings() { return allListings; }
@@ -109,7 +163,13 @@
       global.FD_MAP.updateLegendActive(f.category || '');
     }
     const countEl = document.getElementById('list-count');
-    if (countEl) countEl.textContent = filtered.length;
+    if (countEl) {
+      const total = allListings.length;
+      countEl.textContent = (filtered.length !== total && hasActiveFilters())
+        ? `${filtered.length}/${total}`
+        : String(filtered.length);
+    }
+    saveFilterState();
   }
 
   function renderList() {
@@ -291,6 +351,7 @@
   }
 
   function bindUI() {
+    loadFilterState();
     const filterIds = ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort','filter-favorites','filter-inview'];
     filterIds.forEach(id => {
       document.getElementById(id)?.addEventListener('change', applyFilters);
