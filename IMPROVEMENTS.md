@@ -1,3 +1,15 @@
+## 2026-10-25 – Map marker popups with summary + view details
+
+**What:** Markers now open a Leaflet popup showing the listing header, category swatch, price/units, and a “View details” button that selects the listing (opens the product card) and closes the popup. Clicking a marker still selects it; fly-to from the list opens the popup.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish improves map-first exploration so users can get a quick summary and open the full card without leaving the map or opening the sidebar.
+
+**How:** Updated `js/map.js` `updateMarkers` to `bindPopup` with escaped HTML; added a one-time `popupopen` listener in `initMap` to wire the view button; added `.map-popup` / `.popup-swatch` styles in `css/main.css`. Single commits via create_or_update_file. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-25 – Mobile sidebar toggle for map-first list access
 
 **What:** Added a mobile-only sidebar toggle button (☰) in the transparent top bar. On screens ≤768px the listings sidebar starts off-canvas and can be opened/closed from the top bar. Selecting a listing automatically closes the sidebar. Button text switches to × when open.
