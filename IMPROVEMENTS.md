@@ -1,3 +1,15 @@
+## 2026-10-26 – Shareable filtered view links (seed/demo polish)
+
+**What:** Options menu now has “Copy filtered view link”. It copies a URL whose hash encodes the current category, visibility, units, seller, price range, radius, sort, favorites, in-view, and search filters. On load, if the hash contains a filters=… payload, those filters are restored (overriding localStorage for that session). Map position hashes remain compatible.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is fully functional; this code-only polish lets users share or bookmark a specific filtered exploration state without new backend features.
+
+**How:** Added getFilteredViewLink / applyFiltersFromHash in js/list.js; wired the new button in index.html and js/main.js; hash parse on bindUI. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema or Worker changes. No re-enable of old runners.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Bidirectional hover highlight sync (list ↔ map)
 
 **What:** Hovering a sidebar listing item now highlights the corresponding map marker (scale + ring). Hovering a map marker highlights the matching list item (background) and scrolls it into view. Works in both directions; clears on mouseleave/mouseout. Fully client-side for seed/demo.

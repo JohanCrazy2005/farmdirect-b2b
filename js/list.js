@@ -73,6 +73,70 @@
     } catch (_) {}
   }
 
+  function getFilterStateForHash() {
+    const f = getFilterValues();
+    return {
+      category: f.category || undefined,
+      visibility: f.visibility || undefined,
+      units: f.units || undefined,
+      seller: f.seller || undefined,
+      minprice: f.minprice > 0 ? f.minprice : undefined,
+      maxprice: f.maxprice < Infinity ? f.maxprice : undefined,
+      radius: f.radius > 0 ? f.radius : undefined,
+      sort: f.sort || undefined,
+      favorites: f.favorites || undefined,
+      inview: f.inview || undefined,
+      search: f.search || undefined
+    };
+  }
+
+  function getFilteredViewLink() {
+    const state = getFilterStateForHash();
+    const clean = Object.fromEntries(Object.entries(state).filter(([, v]) => v != null));
+    const base = location.origin + location.pathname;
+    const hash = location.hash || '';
+    const mapM = hash.match(/map=([\d.-]+,[\d.-]+,\d+)/);
+    const mapPart = mapM ? `&map=${mapM[1]}` : '';
+    if (!Object.keys(clean).length) {
+      return mapPart ? `${base}#${mapPart.slice(1)}` : base;
+    }
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(clean))));
+    return `${base}#filters=${encoded}${mapPart}`;
+  }
+
+  function applyFiltersFromHash() {
+    try {
+      const hash = location.hash || '';
+      const m = hash.match(/filters=([^&]+)/);
+      if (!m) return false;
+      const state = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val != null) el.value = val;
+      };
+      const setChk = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!val;
+      };
+      setVal('filter-category', state.category);
+      setVal('filter-visibility', state.visibility);
+      setVal('filter-units', state.units);
+      setVal('filter-seller', state.seller);
+      setVal('filter-minprice', state.minprice);
+      setVal('filter-maxprice', state.maxprice);
+      setVal('filter-radius', state.radius);
+      setVal('filter-sort', state.sort);
+      setChk('filter-favorites', state.favorites);
+      setChk('filter-inview', state.inview);
+      const search = document.getElementById('search-input');
+      if (search && state.search) search.value = state.search;
+      return true;
+    } catch (e) {
+      console.warn('Could not parse filters hash', e);
+      return false;
+    }
+  }
+
   function getListings() { return allListings; }
 
   function setListings(list) {
@@ -363,8 +427,7 @@
     const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'farmdirect-filtered.json';
-    a.click();
+    a.download = 'farmdirect-filtered.json'; a.click();
     if (global.FD_TOAST) global.FD_TOAST.show(`Exported ${filtered.length} listings`, 'success');
   }
 
@@ -374,6 +437,7 @@
 
   function bindUI() {
     loadFilterState();
+    applyFiltersFromHash(); // hash overrides localStorage if present
     const filterIds = ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort','filter-favorites','filter-inview'];
     filterIds.forEach(id => {
       document.getElementById(id)?.addEventListener('change', applyFilters);
@@ -410,6 +474,7 @@
     clearFavorites,
     exportFiltered,
     applyFilters,
-    highlightListItem
+    highlightListItem,
+    getFilteredViewLink
   };
 })(window);

@@ -128,6 +128,20 @@
       optionsMenu?.setAttribute('hidden', '');
     });
 
+    // Copy filtered view link
+    document.getElementById('copy-filtered-link-btn')?.addEventListener('click', async () => {
+      if (window.FD_LIST && typeof window.FD_LIST.getFilteredViewLink === 'function') {
+        const link = window.FD_LIST.getFilteredViewLink();
+        try {
+          await navigator.clipboard.writeText(link);
+          if (window.FD_TOAST) window.FD_TOAST.show('Filtered view link copied', 'success');
+        } catch (_) {
+          if (window.FD_TOAST) window.FD_TOAST.show('Could not copy – link: ' + link, 'info');
+        }
+      }
+      optionsMenu?.setAttribute('hidden', '');
+    });
+
     // Recently viewed
     document.getElementById('show-recent-btn')?.addEventListener('click', () => {
       if (window.FD_RECENT) window.FD_RECENT.open();
