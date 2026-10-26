@@ -1,3 +1,15 @@
+## 2026-10-26 – Show distance in map popups (seed/demo UX)
+
+**What:** When a user location is set (via Locate me or the persisted location), each marker popup now shows the distance to that listing (e.g. “2.3 km away” or “450 m away”) below the price. Distance uses the same haversine helper and updates automatically whenever markers are rebuilt (on filter/sort/location change).
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; the sidebar list already shows distance, so adding it to map popups makes the Locate-me + radius features immediately useful while exploring the map without new features or schema changes.
+
+**How:** Added distanceKm/formatDistance helpers and currentUserLoc tracking in `js/map.js`. Popups in updateMarkers include the distance line when location is available. Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Show distance in listing list (seed/demo UX)
 
 **What:** When a user location is set (via Locate me or the new persistence), each sidebar listing item now shows the distance in its meta line (e.g. "2.3 km" or "450 m"). Distance is computed with the existing haversine helper and updates automatically on location change or filter/sort.

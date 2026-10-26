@@ -5,6 +5,7 @@
  * Persists map view (center + zoom) to localStorage so reloads resume the last explored area (seed/demo).
  * Persists Locate-me location so distance filters/radius overlay restore on reload (seed/demo).
  * Draws a radius circle when the radius filter is active and a user location is set.
+ * Shows distance in marker popups when user location is available (seed/demo).
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -15,6 +16,7 @@
   let userMarker = null;
   let userCircle = null;
   let radiusCircle = null;
+  let currentUserLoc = null; // [lat, lng] or null – for popup distances
   const markers = new Map(); // id -> marker
   const VIEW_KEY = 'fd-map-view';
   const LOC_KEY = 'fd-user-loc';
@@ -45,6 +47,22 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function distanceKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || !isFinite(km)) return '';
+    if (km < 1) return (km * 1000).toFixed(0) + ' m';
+    return km.toFixed(1) + ' km';
   }
 
   function saveMapView() {
@@ -126,7 +144,7 @@
       const div = L.DomUtil.create('div', 'category-legend card');
       const entries = Object.entries(CATEGORY_COLORS).filter(([k]) => k !== 'default');
       div.innerHTML = '<h4>Categories</h4>' + entries.map(([cat, color]) =>
-        `<div class="legend-item" data-category="${cat}" role="button" tabindex="0" title="Filter by ${cat}"><span class="legend-swatch" style="background:${color}"></span> ${cat}</div>`
+        `<div class=\"legend-item\" data-category=\"${cat}\" role=\"button\" tabindex=\"0\" title=\"Filter by ${cat}\"><span class=\"legend-swatch\" style=\"background:${color}\"></span> ${cat}</div>`
       ).join('');
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.disableScrollPropagation(div);
@@ -206,13 +224,13 @@
 
     map.on('moveend', () => {
       saveMapView();
-      // Notify list for "only in view"
+      // Notify list for \"only in view\"
       if (global.FD_LIST && typeof global.FD_LIST.onMapMove === 'function') {
         global.FD_LIST.onMapMove();
       }
     });
 
-    // Handle "View details" buttons inside marker popups
+    // Handle \"View details\" buttons inside marker popups
     map.on('popupopen', (e) => {
       const btn = e.popup.getElement()?.querySelector('.popup-view-btn');
       if (btn) {
@@ -233,6 +251,7 @@
     // Restore persisted Locate-me location (seed/demo)
     const savedLoc = loadUserLocation();
     if (savedLoc) {
+      currentUserLoc = savedLoc;
       userMarker = L.marker(savedLoc, { title: 'You are here' }).addTo(map).bindPopup('Your location');
       userCircle = L.circle(savedLoc, { radius: 500, color: '#2563eb', fillOpacity: 0.1 }).addTo(map);
       document.getElementById('clear-location-btn')?.removeAttribute('hidden');
@@ -262,6 +281,7 @@
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const latlng = [pos.coords.latitude, pos.coords.longitude];
+        currentUserLoc = latlng;
         if (userMarker) map.removeLayer(userMarker);
         if (userCircle) map.removeLayer(userCircle);
         userMarker = L.marker(latlng, { title: 'You are here' }).addTo(map).bindPopup('Your location');
@@ -282,6 +302,7 @@
   }
 
   function clearLocation() {
+    currentUserLoc = null;
     if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
     if (userCircle) { map.removeLayer(userCircle); userCircle = null; }
     clearRadiusOverlay();
@@ -312,18 +333,24 @@
       const color = getCategoryColor(l.category);
       const icon = L.divIcon({
         className: 'listing-marker',
-        html: `<div class="marker-dot" style="background:${color}"></div>`,
+        html: `<div class=\"marker-dot\" style=\"background:${color}\"></div>`,
         iconSize: [18, 18],
         iconAnchor: [9, 9]
       });
       const marker = L.marker([l.location.lat, l.location.long], { icon, title: l.headerdescription || '' });
       const price = l.price != null ? `$${Number(l.price).toFixed(2)}/${l.units || ''}` : 'Price on request';
+      let distHtml = '';
+      if (currentUserLoc && l.location) {
+        const km = distanceKm(currentUserLoc[0], currentUserLoc[1], l.location.lat, l.location.long);
+        const d = formatDistance(km);
+        if (d) distHtml = `<br><span class=\"popup-distance\">${escapeHtml(d)} away</span>`;
+      }
       const popupHtml = `
-        <div class="map-popup">
+        <div class=\"map-popup\">
           <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong><br>
-          <span class="popup-swatch" style="background:${color}"></span> ${escapeHtml(l.category || '')}<br>
-          ${escapeHtml(price)}<br>
-          <button type="button" class="popup-view-btn small-btn" data-id="${escapeHtml(l.id)}">View details</button>
+          <span class=\"popup-swatch\" style=\"background:${color}\"></span> ${escapeHtml(l.category || '')}<br>
+          ${escapeHtml(price)}${distHtml}<br>
+          <button type=\"button\" class=\"popup-view-btn small-btn\" data-id=\"${escapeHtml(l.id)}\">View details</button>
         </div>`;
       marker.bindPopup(popupHtml);
       marker.on('click', () => {
