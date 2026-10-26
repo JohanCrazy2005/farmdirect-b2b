@@ -1,6 +1,6 @@
 /* FarmDirect B2B – main stylesheet
    Transparent top bar, full map, sidebar list, filter/product/seller cards, responsive.
-   Supports seed/demo mode with category swatches, clusters, and interactive map legend. */
+   Supports seed/demo mode with category swatches, clusters, interactive map legend, and marker popups. */
 
 :root {
   --top-bar-h: 56px;
@@ -91,6 +91,29 @@ html, body, #app { height: 100%; margin: 0; font-family: system-ui, -apple-syste
   box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
 .listing-marker.highlight .marker-dot { transform: scale(1.35); box-shadow: 0 0 0 4px rgba(255,255,255,.6); }
+
+/* Marker popups */
+.map-popup {
+  font-size: 0.85rem;
+  line-height: 1.35;
+  min-width: 160px;
+}
+.map-popup strong { display: block; margin-bottom: 0.2rem; }
+.popup-swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+  border: 1px solid rgba(0,0,0,.15);
+}
+.popup-view-btn {
+  margin-top: 0.4rem;
+  width: 100%;
+}
+.leaflet-popup-content { margin: 10px 12px; }
+.leaflet-popup-content-wrapper { border-radius: 8px; }
 
 /* Category legend (Leaflet control) – interactive */
 .category-legend {
