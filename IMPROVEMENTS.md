@@ -1,3 +1,15 @@
+## 2026-10-26 – Persist Locate-me location across reloads (seed/demo UX)
+
+**What:** User location from “Locate me” is now saved to localStorage. On map init the marker, accuracy circle, clear-location button, and `FD_LIST.setUserLocation` are restored automatically so distance sort/filter and the radius overlay survive page reloads. Clear location removes the stored value.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seed/demo mode is the functional path; previously Locate me was session-only, forcing re-location after every refresh during exploration. This code-only polish improves map-first distance UX without new features or schema changes.
+
+**How:** Added `LOC_KEY` persistence helpers and restore logic in `js/map.js` (initMap, locateMe, clearLocation). Single commit via push_files. Appended this entry to IMPROVEMENTS.md. No schema, Worker, or runner changes.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish workflow works end-to-end. Seed/demo remains fully usable in the meantime.
+
+---
+
 ## 2026-10-26 – Restore substantial js/api.js with seed/demo fallback (seed/demo UX)
 
 **What:** Replaced the 33-byte placeholder `js/api.js` with a full client-side API module. It tries the live Worker (`/api/v1/listings`), falls back to `data/seed-listings.json` on any error or empty response, and supports demo mode via localStorage overrides so local edits persist until the Worker is live. Exposes `fetchListings` (returns `{listings, source, count}`), `exportDemoData`, and `resetDemoListings` as expected by `main.js` and the options menu.
