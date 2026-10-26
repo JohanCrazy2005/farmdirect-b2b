@@ -3,6 +3,7 @@
  * Sidebar list, filter card, chips, favorites, sort, radius, only-in-view,
  * bidirectional hover highlight with map markers, shareable filtered view links,
  * localStorage persistence of filter state, correct HTML escaping, empty-state clear.
+ * Shows distance to each listing when user location is available (Locate me / persisted).
  * Fully client-side; works with seed/demo fallback.
  */
 (function (global) {
@@ -102,6 +103,12 @@
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLng / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || !isFinite(km)) return '';
+    if (km < 1) return (km * 1000).toFixed(0) + ' m';
+    return km.toFixed(1) + ' km';
   }
 
   function inCurrentView(listing) {
@@ -205,7 +212,7 @@
     if (!box) return;
     const chips = [];
     const add = (label, clearKey) => {
-      chips.push(`<span class="chip">${escapeHtml(label)} <button type="button" data-clear="${clearKey}" aria-label="Clear ${escapeHtml(label)}">×</button></span>`);
+      chips.push(`<span class=\"chip\">${escapeHtml(label)} <button type=\"button\" data-clear=\"${clearKey}\" aria-label=\"Clear ${escapeHtml(label)}\">×</button></span>`);
     };
     if (state.category) add(state.category, 'category');
     if (state.visibility) add(state.visibility, 'visibility');
@@ -253,9 +260,9 @@
       const hasFilters = state.category || state.visibility || state.units || state.seller ||
         state.minprice || state.maxprice || state.radius || state.sort || state.favorites ||
         state.inview || state.search;
-      list.innerHTML = `<div class="empty-state">
+      list.innerHTML = `<div class=\"empty-state\">
         <p>No listings match the current filters.</p>
-        ${hasFilters ? '<button type="button" id="empty-clear-filters" class="small-btn">Clear filters</button>' : ''}
+        ${hasFilters ? '<button type=\"button\" id=\"empty-clear-filters\" class=\"small-btn\">Clear filters</button>' : ''}
       </div>`;
       document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
       return;
@@ -267,14 +274,19 @@
       const isFav = favorites.has(l.id);
       const isActive = l.id === activeId;
       const isHover = l.id === highlightedId;
-      return `<div class="listing-item${isActive ? ' active' : ''}${isHover ? ' map-hover' : ''}" data-id="${escapeHtml(l.id)}" role="listitem" tabindex="0">
-        <span class="cat-swatch" style="background:${color}"></span>
-        <div class="listing-main">
-          <div class="listing-title">${escapeHtml(l.headerdescription || 'Listing')}</div>
-          <div class="listing-meta">${escapeHtml(l.category || '')} · ${escapeHtml(l.address || '')}</div>
-          <div class="listing-price">${price}</div>
+      let dist = '';
+      if (userLocation && l.location) {
+        const km = distanceKm(userLocation[0], userLocation[1], l.location.lat, l.location.long);
+        dist = ' · ' + formatDistance(km);
+      }
+      return `<div class=\"listing-item${isActive ? ' active' : ''}${isHover ? ' map-hover' : ''}\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\" tabindex=\"0\">
+        <span class=\"cat-swatch\" style=\"background:${color}\"></span>
+        <div class=\"listing-main\">
+          <div class=\"listing-title\">${escapeHtml(l.headerdescription || 'Listing')}</div>
+          <div class=\"listing-meta\">${escapeHtml(l.category || '')} · ${escapeHtml(l.address || '')}${dist}</div>
+          <div class=\"listing-price\">${price}</div>
         </div>
-        <button type="button" class="fav-btn" data-id="${escapeHtml(l.id)}" aria-label="${isFav ? 'Remove favorite' : 'Add favorite'}">${isFav ? '★' : '☆'}</button>
+        <button type=\"button\" class=\"fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"${isFav ? 'Remove favorite' : 'Add favorite'}\">${isFav ? '★' : '☆'}</button>
       </div>`;
     }).join('');
 
@@ -374,8 +386,8 @@
       const sel = document.getElementById(id);
       if (!sel) return;
       const current = sel.value;
-      sel.innerHTML = `<option value="">${anyLabel}</option>` +
-        values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+      sel.innerHTML = `<option value=\"\">${anyLabel}</option>` +
+        values.map(v => `<option value=\"${escapeHtml(v)}\">${escapeHtml(v)}</option>`).join('');
       if (values.includes(current)) sel.value = current;
     };
     fill('filter-category', cats, 'All');
