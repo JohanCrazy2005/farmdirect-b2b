@@ -1,3 +1,13 @@
+## 2026-10-27 – Correct HTML escaping in list and map (seed UX)
+
+**What:** Fixed the no-op `escapeHtml` helpers in `js/list.js` and `js/map.js` so `&`, `<`, `>`, and `"` are properly converted to entities. Addresses, descriptions, seller names, and other seed fields now render safely in list items, chips, popups, and filter options.
+
+**Why:** The previous implementations replaced characters with themselves, so special characters in seed data could break markup or display incorrectly. This is a code-only polish that improves seed/demo reliability while the live Worker remains undeployed.
+
+**How:** github___push_files (js/list.js, js/map.js). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Clickable seller badges in list and map popups (seed UX)
 
 **What:** Seller names (core schema field) are now rendered as clickable badges in the sidebar list and map popups. Clicking sets the seller filter (mirroring category, visibility, and units badges) with toast feedback.
