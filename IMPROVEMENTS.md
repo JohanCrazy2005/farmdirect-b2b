@@ -1,3 +1,15 @@
+## 2026-10-27 – Complete listing list + filter module (seed UX)
+
+**What:** Replaced the stub `js/list.js` with a full sidebar list + filter module. Supports category/visibility/units/seller/price/radius/sort/favorites/only-in-view filters, filter chips with clear, distance display (clickable to fly map), share buttons, favorites (localStorage), hover sync with markers, empty-state clear, filter count badge, persistence, and shareable filtered view links. Seller names come from seed-sellers.json. Works fully in seed/demo mode.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). The list module was still a placeholder, so the sidebar, filters, and map-list sync were non-functional. Completing it makes the map-first UX fully usable without new features or schema changes.
+
+**How:** Implemented `js/list.js` (escapeHtml, haversine, populateFilters, applyFilters, renderList, chips, bindUI, select/flyTo, favorites, export). Single commit via push_files. Appended this entry.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish works end-to-end and the badge switches to LIVE.
+
+---
+
 ## 2026-10-27 – CSS polish for seller directory, stats, and compare modals
 
 **What:** Added dedicated styles in `css/main.css` for seller directory items (`.seller-dir-item`, headers, counts, bio), statistics summary rows and lists, and the compare table. These elements were previously unstyled beyond base card/modal rules.
@@ -35,4 +47,11 @@
 ---
 
 ## 2026-10-26 – Seller filter uses display names (seed UX)
-...
+
+**What:** Seller filter dropdown and active chips now show human-readable names from `data/seed-sellers.json` instead of raw sellerids.
+
+**Why:** Highest unfinished items remain user-owned (P1). Raw IDs were hard to scan in the filter card during seed/demo exploration.
+
+**How:** Updated list module to look up display names. Appended this entry.
+
+**Next:** User runs the auth-migration.sql command.
