@@ -4,7 +4,7 @@
  * clickable visibility, category, units, and seller badges, favorites (localStorage), filtered view links, JSON export.
  * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
  * Distance sort + distance display in list items; removable filter chips.
- * List items now show address and clickable units/seller for better seed/demo context.
+ * List items now show clickable address (Google Maps) and clickable units/seller for better seed/demo context.
  * Fully client-side; works with seed/demo.
  */
 (function (global) {
@@ -59,6 +59,14 @@
     const lng = Number(loc.long);
     if (isNaN(lat) || isNaN(lng)) return null;
     return haversine(pos.lat, pos.lng, lat, lng);
+  }
+
+  function mapsUrlFor(listing) {
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return '';
+    return `https://www.google.com/maps?q=${lat},${lng}`;
   }
 
   function getFilters() {
@@ -160,7 +168,12 @@
       const units = escapeHtml(l.units || '');
       const dist = pos ? getDistanceKm(l, pos) : null;
       const distStr = dist != null ? ` · ${dist.toFixed(1)} km` : '';
-      const addr = l.address ? `<div class="address-small muted">${escapeHtml(l.address)}</div>` : '';
+      const mapsUrl = mapsUrlFor(l);
+      const addr = l.address
+        ? (mapsUrl
+          ? `<div class="address-small muted"><a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(l.address)}</a></div>`
+          : `<div class="address-small muted">${escapeHtml(l.address)}</div>`)
+        : '';
       return `
         <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
           <div><strong>${escapeHtml(l.headerdescription || 'Listing')}</strong> ${isFav ? '★' : ''}</div>
@@ -178,7 +191,7 @@
 
     el.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.classList.contains('list-vis') || e.target.classList.contains('list-cat') || e.target.classList.contains('list-units') || e.target.classList.contains('list-seller')) return;
+        if (e.target.closest('.list-vis, .list-cat, .list-units, .list-seller, .address-link')) return;
         select(item.dataset.id);
       });
     });

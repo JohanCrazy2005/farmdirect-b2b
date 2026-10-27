@@ -83,6 +83,9 @@ body {
 }
 .listing-item:hover, .listing-item.highlighted { background: var(--accent-soft); }
 .listing-item .meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+.address-small { font-size: 0.75rem; margin-top: 0.2rem; }
+.address-link { color: var(--accent); text-decoration: underline; }
+.address-link:hover { opacity: 0.85; }
 
 /* Cards */
 .card {

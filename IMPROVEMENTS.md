@@ -1,3 +1,13 @@
+## 2026-10-27 – Clickable addresses in list and product cards (seed UX)
+
+**What:** Addresses (core schema field) are now rendered as clickable Google Maps links in the sidebar list and product cards when coordinates exist, matching the existing map-popup behavior. Clicking does not select the listing.
+
+**Why:** Address + location are core fields. Making them interactive improves map-first exploration and location context in seed/demo mode while the live Worker remains undeployed.
+
+**How:** github___push_files (js/list.js, js/cards.js, css/main.css). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Correct HTML escaping in list and map (seed UX)
 
 **What:** Fixed the no-op `escapeHtml` helpers in `js/list.js` and `js/map.js` so `&`, `<`, `>`, and `"` are properly converted to entities. Addresses, descriptions, seller names, and other seed fields now render safely in list items, chips, popups, and filter options.

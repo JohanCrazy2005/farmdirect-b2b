@@ -3,6 +3,7 @@
  * Renders detailed product cards (visibility badge, price/units, seller display name
  * from seed-sellers.json, RFQ, favorite, share) and seller cards.
  * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
+ * Address is now a clickable Google Maps link when coordinates exist.
  */
 (function (global) {
   'use strict';
@@ -26,6 +27,14 @@
     return map[v] || v || 'Unknown';
   }
 
+  function mapsUrlFor(listing) {
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return '';
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+
   function openProduct(listing) {
     const el = document.getElementById('product-card');
     if (!el || !listing) return;
@@ -35,6 +44,12 @@
     const favs = (global.FD_LIST && typeof global.FD_LIST.getFavorites === 'function')
       ? global.FD_LIST.getFavorites() : new Set();
     const isFav = favs.has ? favs.has(listing.id) : false;
+    const mapsUrl = mapsUrlFor(listing);
+    const addressHtml = listing.address
+      ? (mapsUrl
+        ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(listing.address)}</a>`
+        : escapeHtml(listing.address))
+      : '';
     el.innerHTML = `
       <button type="button" class="close-card" aria-label="Close">×</button>
       ${listing.image ? `<img class="card-image" src="${escapeHtml(listing.image)}" alt="" data-full="${escapeHtml(listing.image)}">` : ''}
@@ -46,7 +61,7 @@
           ${listing.units ? `<button type="button" class="units-badge card-units" data-units="${escapeHtml(listing.units)}">${escapeHtml(listing.units)}</button>` : ''}
           <span class="price">${escapeHtml(fmtPrice(listing.price, listing.units))}</span>
         </div>
-        <p class="address muted">${escapeHtml(listing.address || '')}</p>
+        <p class="address muted">${addressHtml}</p>
         <p class="description">${escapeHtml(listing.description || '')}</p>
         <div class="seller-link">Seller: <button type="button" class="link-btn open-seller" data-seller="${escapeHtml(listing.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
         <div class="card-actions">
