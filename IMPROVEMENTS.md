@@ -1,3 +1,13 @@
+## 2026-10-27 – Clickable seller badges in list and map popups (seed UX)
+
+**What:** Seller names (core schema field) are now rendered as clickable badges in the sidebar list and map popups. Clicking sets the seller filter (mirroring category, visibility, and units badges) with toast feedback.
+
+**Why:** Seller filter already existed via dropdown, but interactive badges speed up map-first exploration and comparison of sellers in seed/demo mode while the Worker remains undeployed. Uses display names from seed-sellers.json.
+
+**How:** github___create_or_update_file (js/list.js, js/map.js, css/main.css). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Clickable units badges in list, map popups, and product cards (seed UX)
 
 **What:** Units (core schema field) are now rendered as clickable badges in the sidebar list, map popups, and product cards. Clicking sets the units filter (mirroring category and visibility badges) with toast feedback. Product card badges also close the card after filtering.
