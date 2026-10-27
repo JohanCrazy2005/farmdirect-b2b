@@ -1,1 +1,1 @@
-PLACEHOLDER_LIST
+$(cat /tmp/list-full.js)
