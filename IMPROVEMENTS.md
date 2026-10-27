@@ -1,3 +1,15 @@
+## 2026-10-27 – Visibility badge + seller name in map popups (seed UX)
+
+**What:** Map marker popups now display a visibility badge (worldwide / country / province) and the seller display name (from seed-sellers.json). HTML is properly escaped. Consistent with product cards and sidebar list items.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Visibility is a core schema field; surfacing it (and human-readable seller names) directly on the map improves seed/demo scanability without new features or schema changes.
+
+**How:** Updated `js/map.js` (`buildPopupHtml`, added escapeHtml + visibilityLabel helpers, FD_SELLERS lookup). Single commit via push_files. Appended this entry.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish works end-to-end and the badge switches to LIVE.
+
+---
+
 ## 2026-10-27 – Complete listing list + filter module (seed UX)
 
 **What:** Replaced the stub `js/list.js` with a full sidebar list + filter module. Supports category/visibility/units/seller/price/radius/sort/favorites/only-in-view filters, filter chips with clear, distance display (clickable to fly map), share buttons, favorites (localStorage), hover sync with markers, empty-state clear, filter count badge, persistence, and shareable filtered view links. Seller names come from seed-sellers.json. Works fully in seed/demo mode.

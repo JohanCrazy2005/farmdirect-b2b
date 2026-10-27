@@ -2,7 +2,8 @@
  * FarmDirect B2B – Leaflet map module
  * Clusters, category-colored markers, favorite star overlay, radius circle,
  * user location, scale, legend, shareable map view, hover sync, flyTo.
- * Works fully in seed/demo fallback (no Worker required).
+ * Map popups now show visibility badge and seller display name for consistency
+ * with product cards and sidebar list. Works fully in seed/demo fallback.
  */
 (function (global) {
   'use strict';
@@ -30,6 +31,20 @@
   let radiusCircle = null;
   let legend = null;
 
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function visibilityLabel(v) {
+    const map = { worldwide: 'Worldwide', country: 'Country', province: 'Province' };
+    return map[v] || v || 'Unknown';
+  }
+
   function getCategoryColor(cat) {
     if (!cat) return CATEGORY_COLORS.default;
     const key = String(cat).toLowerCase();
@@ -48,14 +63,21 @@
   }
 
   function buildPopupHtml(listing) {
-    const price = listing.price != null ? `$${Number(listing.price).toFixed(2)} / ${listing.units || ''}` : 'Price on request';
+    const price = listing.price != null ? `$${Number(listing.price).toFixed(2)} / ${escapeHtml(listing.units || '')}` : 'Price on request';
     const color = getCategoryColor(listing.category);
+    const sellerName = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(listing.sellerid)
+      : (listing.sellerid || '');
+    const vis = listing.visibility || '';
+    const visLabel = visibilityLabel(vis);
     return `
       <div class="map-popup">
-        <strong>${listing.headerdescription || 'Listing'}</strong><br>
-        <span class="muted" style="color:${color}">${listing.category || ''}</span><br>
+        <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong><br>
+        <span class="muted" style="color:${color}">${escapeHtml(listing.category || '')}</span>
+        <span class="visibility-badge vis-${escapeHtml(vis)}" style="margin-left:0.35rem;font-size:0.7rem">${escapeHtml(visLabel)}</span><br>
         ${price}<br>
-        <button type="button" class="small-btn popup-open" data-id="${listing.id}">View details</button>
+        <span class="muted small">${escapeHtml(sellerName)}</span><br>
+        <button type="button" class="small-btn popup-open" data-id="${escapeHtml(listing.id)}">View details</button>
       </div>`;
   }
 
