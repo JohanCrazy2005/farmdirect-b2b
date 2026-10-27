@@ -3,6 +3,7 @@
  * Initializes map, MarkerCluster, custom category-colored markers, popups with
  * clickable visibility badges (calls FD_LIST.setVisibilityFilter), locate/fit,
  * and view-link generation. Fully client-side; works with seed/demo fallback.
+ * Exposes user position and bounds so list filters (radius / in-view) work offline.
  */
 (function (global) {
   'use strict';
@@ -12,6 +13,7 @@
   let markersById = new Map();
   let userMarker = null;
   let userCircle = null;
+  let userPos = null;
 
   const CATEGORY_COLORS = {
     produce: '#2d6a4f',
@@ -31,10 +33,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function getColor(category) {
@@ -167,6 +169,14 @@
       return div;
     };
     legend.addTo(map);
+
+    // Re-filter when map moves if in-view is active
+    map.on('moveend zoomend', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.applyFilters === 'function') {
+        const inview = document.getElementById('filter-inview');
+        if (inview && inview.checked) global.FD_LIST.applyFilters();
+      }
+    });
   }
 
   function getMapViewLink() {
@@ -185,6 +195,7 @@
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+        userPos = { lat: latitude, lng: longitude };
         if (userMarker) map.removeLayer(userMarker);
         if (userCircle) map.removeLayer(userCircle);
         userMarker = L.circleMarker([latitude, longitude], {
@@ -194,21 +205,36 @@
         map.setView([latitude, longitude], 14);
         document.getElementById('clear-location-btn')?.removeAttribute('hidden');
         if (global.FD_TOAST) global.FD_TOAST.show('Located', 'success');
+        if (global.FD_LIST && typeof global.FD_LIST.applyFilters === 'function') {
+          global.FD_LIST.applyFilters();
+        }
       },
       () => { if (global.FD_TOAST) global.FD_TOAST.show('Location denied', 'error'); }
     );
   }
 
   function clearLocation() {
+    userPos = null;
     if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
     if (userCircle) { map.removeLayer(userCircle); userCircle = null; }
     document.getElementById('clear-location-btn')?.setAttribute('hidden', '');
+    if (global.FD_LIST && typeof global.FD_LIST.applyFilters === 'function') {
+      global.FD_LIST.applyFilters();
+    }
   }
 
   function fitAll() {
     if (!cluster || !map) return;
     const bounds = cluster.getBounds();
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40] });
+  }
+
+  function getUserPosition() {
+    return userPos;
+  }
+
+  function getBounds() {
+    return map ? map.getBounds() : null;
   }
 
   global.FD_MAP = {
@@ -218,6 +244,8 @@
     getMapViewLink,
     locateMe,
     clearLocation,
-    fitAll
+    fitAll,
+    getUserPosition,
+    getBounds
   };
 })(window);

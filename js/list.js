@@ -2,7 +2,7 @@
  * FarmDirect B2B – listings list, filters, favorites, and visibility helpers
  * Renders sidebar list, applies filters (category/visibility/units/seller/price/radius/sort/favorites/in-view),
  * clickable visibility badges, favorites (localStorage), filtered view links, JSON export.
- * Calls FD_MAP.updateMarkers. Fully client-side; works with seed/demo.
+ * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds(). Fully client-side; works with seed/demo.
  */
 (function (global) {
   'use strict';
@@ -26,10 +26,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function visibilityLabel(v) {
@@ -85,10 +85,32 @@
     });
     if (f.favorites) list = list.filter(l => favorites.has(l.id));
 
-    // Radius (after locate) – approximate if user marker exists
-    if (f.radius > 0 && global.FD_MAP && document.getElementById('clear-location-btn') && !document.getElementById('clear-location-btn').hasAttribute('hidden')) {
-      // Simple: use map center as proxy if no exact user pos exposed
-      // For demo, skip precise if no marker; still functional
+    // Radius filter (km) using current user position from map
+    if (f.radius > 0 && global.FD_MAP && typeof global.FD_MAP.getUserPosition === 'function') {
+      const pos = global.FD_MAP.getUserPosition();
+      if (pos && pos.lat != null && pos.lng != null) {
+        list = list.filter(l => {
+          const loc = l.location || {};
+          const lat = Number(loc.lat);
+          const lng = Number(loc.long);
+          if (isNaN(lat) || isNaN(lng)) return false;
+          return haversine(pos.lat, pos.lng, lat, lng) <= f.radius;
+        });
+      }
+    }
+
+    // In-view filter using current map bounds
+    if (f.inview && global.FD_MAP && typeof global.FD_MAP.getBounds === 'function') {
+      const bounds = global.FD_MAP.getBounds();
+      if (bounds) {
+        list = list.filter(l => {
+          const loc = l.location || {};
+          const lat = Number(loc.lat);
+          const lng = Number(loc.long);
+          if (isNaN(lat) || isNaN(lng)) return false;
+          return bounds.contains([lat, lng]);
+        });
+      }
     }
 
     if (f.sort === 'price-asc') list.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
@@ -151,6 +173,8 @@
     if (f.seller) chips.push(`Seller: ${getSellerName(f.seller)}`);
     if (f.favorites) chips.push('Favorites');
     if (f.search) chips.push(`Search: ${f.search}`);
+    if (f.radius > 0) chips.push(`Radius: ${f.radius} km`);
+    if (f.inview) chips.push('In view');
     el.innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('');
   }
 
@@ -235,6 +259,7 @@
     if (f.visibility) params.set('visibility', f.visibility);
     if (f.seller) params.set('seller', f.seller);
     if (f.search) params.set('q', f.search);
+    if (f.radius > 0) params.set('radius', f.radius);
     return `${location.origin}${location.pathname}?${params.toString()}`;
   }
 
@@ -290,6 +315,7 @@
     getListings: () => allListings,
     getFavorites: () => favorites,
     getFilteredViewLink,
-    exportFiltered
+    exportFiltered,
+    applyFilters
   };
 })(window);

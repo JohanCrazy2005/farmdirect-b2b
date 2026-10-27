@@ -1,3 +1,13 @@
+## 2026-10-27 – Functional radius + in-view filters (seed UX)
+
+**What:** Implemented real radius filtering (haversine from user geolocation) and in-view filtering (map bounds) in js/list.js. Exposed getUserPosition/getBounds from js/map.js; map move/zoom and locate/clear now re-apply filters. Fixed broken escapeHtml (was no-op) in both modules so special characters render safely.
+
+**Why:** Radius and in-view checkboxes existed in the filter card but did nothing useful in seed/demo mode. Correct HTML escaping prevents display bugs and XSS risk on untrusted seed data.
+
+**How:** github___push_files. Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Implement full map.js + list.js modules (seed UX)
 
 **What:** Replaced truncated stubs in js/map.js and js/list.js with complete modules. Map: Leaflet init, MarkerCluster, category-colored markers, popups with clickable visibility badges. List: filters, chips, favorites (localStorage), clickable visibility, export, deep-link select, calls map update.
