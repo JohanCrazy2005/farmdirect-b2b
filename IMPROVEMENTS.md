@@ -1,3 +1,15 @@
+## 2026-10-26 – Seed fallback when Worker is live but empty
+
+**What:** When the live Worker health check succeeds but `/api/v1/listings` returns no published rows, `fetchListings` now loads and returns the seed listings while setting source to `'api-empty'`. The map and sidebar stay populated. The top-bar badge reads `API+SEED` and the offline banner explains that seed is shown and points to the auth migration. Added CSS classes `.source-api` and `.source-api-empty` (including dark mode) so the badge is visually distinct.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Previously an empty live response left the map blank, which hurt seed/demo UX while waiting for the migration. This keeps the map-first experience fully usable and still clearly signals the data source.
+
+**How:** Updated `js/api.js` (api-empty path loads seed), `js/main.js` (badge/banner/toast wording), and `css/main.css` (badge styles). Single commit via push_files. Appended this entry.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish works end-to-end and the badge switches to LIVE.
+
+---
+
 ## 2026-10-26 – Health-aware seed/demo data-source status
 
 **What:** Added `checkHealth()` in `js/api.js` that probes `/api/v1/health`. `fetchListings` now returns a `health` object and a new source `'api-empty'` when the Worker is reachable but returns no published listings. The top-bar badge and offline banner in `js/main.js` distinguish “API live + empty”, “API up but falling back to seed”, and “fully offline seed” so users see exactly why they are seeing demo data.

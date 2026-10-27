@@ -3,6 +3,7 @@
  * Wires Leaflet map, list, cards, search, dashboard, form, auth, options.
  * Loads listings from live Worker or falls back to seed/demo automatically.
  * Health-aware data-source badge distinguishes API-live-empty from offline.
+ * When Worker is live but empty, seed listings are still shown for usable map UX.
  * Persistent dark mode toggle for better map-first readability.
  */
 (function () {
@@ -300,8 +301,8 @@
       badge.title = 'Live Worker data';
       badge.className = 'data-source-badge source-api';
     } else if (source === 'api-empty') {
-      badge.textContent = 'API';
-      badge.title = 'Worker reachable but no published listings yet – click for deploy / migration steps';
+      badge.textContent = 'API+SEED';
+      badge.title = 'Worker reachable but no published listings – showing seed. Click for migration steps.';
       badge.className = 'data-source-badge source-api-empty';
     } else if (source === 'seed') {
       badge.textContent = health && health.ok ? 'SEED (API up)' : 'SEED';
@@ -328,12 +329,12 @@
     } catch (_) {}
     if (source === 'seed') {
       text.textContent = health && health.ok
-        ? 'Worker is reachable but returned no published listings. Using seed data. Apply auth migration and publish listings for live data.'
+        ? 'Worker is reachable but returned no published listings. Showing seed data. Apply auth migration and publish listings for live data.'
         : 'Using seed listings (Worker offline or undeployed). Changes are not saved until the Worker is live.';
     } else if (source === 'demo') {
       text.textContent = 'Demo mode – local changes persist. Connect the live Worker via Options for real data.';
     } else if (source === 'api-empty') {
-      text.textContent = 'Worker is live but has no published listings yet. Apply the auth migration and publish from the dashboard.';
+      text.textContent = 'Worker is live but has no published listings yet. Showing seed data so the map stays usable. Apply the auth migration and publish from the dashboard for live listings.';
     } else {
       return;
     }
@@ -350,7 +351,7 @@
       updateDataSourceBadge(src, health);
       if (window.FD_TOAST) {
         const msg = src === 'api' ? `Loaded ${result.count || result.listings.length} live listings` :
-                    src === 'api-empty' ? 'Worker live but no published listings yet' :
+                    src === 'api-empty' ? `Worker live but empty – showing ${result.count || 0} seed listings` :
                     src === 'demo' ? 'Demo mode (local changes persist)' :
                     src === 'seed' ? (health && health.ok ? 'Using seed (Worker reachable)' : 'Using seed listings (Worker offline)') :
                     'No listings loaded';

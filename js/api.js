@@ -3,6 +3,8 @@
  * Tries the live Worker first; falls back to data/seed-listings.json.
  * Demo mode: localStorage overrides persist local edits until the Worker is live.
  * Health check distinguishes “API reachable but empty” from “API offline”.
+ * When API is reachable but returns no published listings, seed data is still shown
+ * so the map-first UI stays usable while the precise status is reported.
  * Fully client-side; works offline / undeployed.
  */
 (function (global) {
@@ -94,7 +96,9 @@
 
   /**
    * Fetch listings from live API or fall back to seed/demo.
-   * @returns {Promise<{listings: any[], source: 'api'|'seed'|'demo', count: number, health?: object, error?: string}>}
+   * On API-empty (reachable but no published listings) still returns seed data
+   * so the map remains populated, with source 'api-empty'.
+   * @returns {Promise<{listings: any[], source: 'api'|'api-empty'|'seed'|'demo', count: number, health?: object, error?: string}>}
    */
   async function fetchListings() {
     const apiBase = getApiBase();
@@ -113,11 +117,12 @@
             health,
           };
         }
-        // API reachable but no published listings yet
+        // API reachable but no published listings yet – still show seed so UI is usable
+        const seed = await loadSeedListings();
         return {
-          listings: [],
+          listings: seed,
           source: 'api-empty',
-          count: 0,
+          count: seed.length,
           health,
         };
       } catch (err) {
