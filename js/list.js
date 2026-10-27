@@ -1,10 +1,10 @@
 /**
  * FarmDirect B2B – listings list, filters, favorites, and visibility helpers
  * Renders sidebar list, applies filters (category/visibility/units/seller/price/radius/sort/favorites/in-view),
- * clickable visibility, category, and units badges, favorites (localStorage), filtered view links, JSON export.
+ * clickable visibility, category, units, and seller badges, favorites (localStorage), filtered view links, JSON export.
  * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
  * Distance sort + distance display in list items; removable filter chips.
- * List items now show address and clickable units for better seed/demo context.
+ * List items now show address and clickable units/seller for better seed/demo context.
  * Fully client-side; works with seed/demo.
  */
 (function (global) {
@@ -29,10 +29,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
   function visibilityLabel(v) {
@@ -169,7 +169,7 @@
             <button type="button" class="visibility-badge vis-${vis} list-vis" data-vis="${vis}">${escapeHtml(visibilityLabel(l.visibility))}</button>
             ${units ? `<button type="button" class="units-badge list-units" data-units="${units}">${units}</button>` : ''}
             · $${Number(l.price || 0).toFixed(2)}
-            · ${seller}${distStr}
+            · <button type="button" class="seller-badge list-seller" data-seller="${escapeHtml(l.sellerid)}">${seller}</button>${distStr}
           </div>
           ${addr}
         </div>
@@ -178,7 +178,7 @@
 
     el.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.classList.contains('list-vis') || e.target.classList.contains('list-cat') || e.target.classList.contains('list-units')) return;
+        if (e.target.classList.contains('list-vis') || e.target.classList.contains('list-cat') || e.target.classList.contains('list-units') || e.target.classList.contains('list-seller')) return;
         select(item.dataset.id);
       });
     });
@@ -198,6 +198,12 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         setUnitsFilter(btn.dataset.units);
+      });
+    });
+    el.querySelectorAll('.list-seller').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSellerFilter(btn.dataset.seller);
       });
     });
   }
@@ -292,6 +298,14 @@
     const sel = document.getElementById('filter-units');
     if (sel) {
       sel.value = units || '';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function setSellerFilter(sellerid) {
+    const sel = document.getElementById('filter-seller');
+    if (sel) {
+      sel.value = sellerid || '';
       sel.dispatchEvent(new Event('change', { bubbles: true }));
     }
   }
@@ -400,6 +414,7 @@
     setVisibilityFilter,
     setCategoryFilter,
     setUnitsFilter,
+    setSellerFilter,
     toggleFavorite,
     clearFavorites,
     getListings: () => allListings,
