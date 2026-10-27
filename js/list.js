@@ -2,7 +2,9 @@
  * FarmDirect B2B – listings list, filters, favorites, and visibility helpers
  * Renders sidebar list, applies filters (category/visibility/units/seller/price/radius/sort/favorites/in-view),
  * clickable visibility badges, favorites (localStorage), filtered view links, JSON export.
- * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds(). Fully client-side; works with seed/demo.
+ * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
+ * Distance sort + distance display in list items; removable filter chips.
+ * Fully client-side; works with seed/demo.
  */
 (function (global) {
   'use strict';
@@ -49,6 +51,15 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
+  function getDistanceKm(listing, pos) {
+    if (!pos || pos.lat == null || pos.lng == null) return null;
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return null;
+    return haversine(pos.lat, pos.lng, lat, lng);
+  }
+
   function getFilters() {
     return {
       category: document.getElementById('filter-category')?.value || '',
@@ -90,11 +101,8 @@
       const pos = global.FD_MAP.getUserPosition();
       if (pos && pos.lat != null && pos.lng != null) {
         list = list.filter(l => {
-          const loc = l.location || {};
-          const lat = Number(loc.lat);
-          const lng = Number(loc.long);
-          if (isNaN(lat) || isNaN(lng)) return false;
-          return haversine(pos.lat, pos.lng, lat, lng) <= f.radius;
+          const d = getDistanceKm(l, pos);
+          return d != null && d <= f.radius;
         });
       }
     }
@@ -113,9 +121,18 @@
       }
     }
 
+    const pos = (global.FD_MAP && typeof global.FD_MAP.getUserPosition === 'function') ? global.FD_MAP.getUserPosition() : null;
+
     if (f.sort === 'price-asc') list.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
     else if (f.sort === 'price-desc') list.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
     else if (f.sort === 'name') list.sort((a, b) => (a.headerdescription || '').localeCompare(b.headerdescription || ''));
+    else if (f.sort === 'distance' && pos && pos.lat != null) {
+      list.sort((a, b) => {
+        const da = getDistanceKm(a, pos) ?? Infinity;
+        const db = getDistanceKm(b, pos) ?? Infinity;
+        return da - db;
+      });
+    }
 
     filtered = list;
     renderList();
@@ -133,10 +150,13 @@
       el.innerHTML = '<p class="muted" style="padding:1rem">No listings match filters.</p>';
       return;
     }
+    const pos = (global.FD_MAP && typeof global.FD_MAP.getUserPosition === 'function') ? global.FD_MAP.getUserPosition() : null;
     el.innerHTML = filtered.map(l => {
       const isFav = favorites.has(l.id);
       const seller = escapeHtml(getSellerName(l.sellerid));
       const vis = escapeHtml(l.visibility || '');
+      const dist = pos ? getDistanceKm(l, pos) : null;
+      const distStr = dist != null ? ` · ${dist.toFixed(1)} km` : '';
       return `
         <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
           <div><strong>${escapeHtml(l.headerdescription || 'Listing')}</strong> ${isFav ? '★' : ''}</div>
@@ -144,7 +164,7 @@
             <span class="category-badge">${escapeHtml(l.category || '')}</span>
             <button type="button" class="visibility-badge vis-${vis} list-vis" data-vis="${vis}">${escapeHtml(visibilityLabel(l.visibility))}</button>
             · $${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || '')}
-            · ${seller}
+            · ${seller}${distStr}
           </div>
         </div>
       `;
@@ -168,14 +188,18 @@
     const el = document.getElementById('filter-chips');
     if (!el) return;
     const chips = [];
-    if (f.category) chips.push(`Category: ${f.category}`);
-    if (f.visibility) chips.push(`Visibility: ${visibilityLabel(f.visibility)}`);
-    if (f.seller) chips.push(`Seller: ${getSellerName(f.seller)}`);
-    if (f.favorites) chips.push('Favorites');
-    if (f.search) chips.push(`Search: ${f.search}`);
-    if (f.radius > 0) chips.push(`Radius: ${f.radius} km`);
-    if (f.inview) chips.push('In view');
-    el.innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('');
+    if (f.category) chips.push({ label: `Category: ${f.category}`, clear: 'category' });
+    if (f.visibility) chips.push({ label: `Visibility: ${visibilityLabel(f.visibility)}`, clear: 'visibility' });
+    if (f.seller) chips.push({ label: `Seller: ${getSellerName(f.seller)}`, clear: 'seller' });
+    if (f.units) chips.push({ label: `Units: ${f.units}`, clear: 'units' });
+    if (f.minprice > 0) chips.push({ label: `Min: $${f.minprice}`, clear: 'minprice' });
+    if (f.maxprice < Infinity) chips.push({ label: `Max: $${f.maxprice}`, clear: 'maxprice' });
+    if (f.favorites) chips.push({ label: 'Favorites', clear: 'favorites' });
+    if (f.search) chips.push({ label: `Search: ${f.search}`, clear: 'search' });
+    if (f.radius > 0) chips.push({ label: `Radius: ${f.radius} km`, clear: 'radius' });
+    if (f.inview) chips.push({ label: 'In view', clear: 'inview' });
+    if (f.sort) chips.push({ label: `Sort: ${f.sort}`, clear: 'sort' });
+    el.innerHTML = chips.map(c => `<span class="chip" data-clear="${escapeHtml(c.clear)}" title="Click to remove">${escapeHtml(c.label)} ×</span>`).join('');
   }
 
   function updateCount() {
@@ -252,6 +276,26 @@
     if (global.FD_TOAST) global.FD_TOAST.show('Favorites cleared', 'info');
   }
 
+  function clearOneFilter(key) {
+    const map = {
+      category: () => { const el = document.getElementById('filter-category'); if (el) el.value = ''; },
+      visibility: () => { const el = document.getElementById('filter-visibility'); if (el) el.value = ''; },
+      units: () => { const el = document.getElementById('filter-units'); if (el) el.value = ''; },
+      seller: () => { const el = document.getElementById('filter-seller'); if (el) el.value = ''; },
+      minprice: () => { const el = document.getElementById('filter-minprice'); if (el) el.value = ''; },
+      maxprice: () => { const el = document.getElementById('filter-maxprice'); if (el) el.value = ''; },
+      radius: () => { const el = document.getElementById('filter-radius'); if (el) el.value = ''; },
+      sort: () => { const el = document.getElementById('filter-sort'); if (el) el.value = ''; },
+      favorites: () => { const el = document.getElementById('filter-favorites'); if (el) el.checked = false; },
+      inview: () => { const el = document.getElementById('filter-inview'); if (el) el.checked = false; },
+      search: () => { const el = document.getElementById('search-input'); if (el) el.value = ''; }
+    };
+    if (map[key]) {
+      map[key]();
+      applyFilters();
+    }
+  }
+
   function getFilteredViewLink() {
     const f = getFilters();
     const params = new URLSearchParams();
@@ -260,6 +304,7 @@
     if (f.seller) params.set('seller', f.seller);
     if (f.search) params.set('q', f.search);
     if (f.radius > 0) params.set('radius', f.radius);
+    if (f.sort) params.set('sort', f.sort);
     return `${location.origin}${location.pathname}?${params.toString()}`;
   }
 
@@ -302,6 +347,14 @@
     });
     document.getElementById('close-filter-btn')?.addEventListener('click', () => {
       document.getElementById('filter-card')?.setAttribute('hidden', '');
+    });
+
+    // Removable chips via event delegation
+    document.getElementById('filter-chips')?.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip[data-clear]');
+      if (chip) {
+        clearOneFilter(chip.dataset.clear);
+      }
     });
   }
 

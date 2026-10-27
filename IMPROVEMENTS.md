@@ -1,3 +1,13 @@
+## 2026-10-27 – Distance sort, distance labels, and removable filter chips (seed UX)
+
+**What:** Implemented distance sorting (haversine from user geolocation) and displayed distance in list items when located. Made filter chips clickable to remove individual filters (including search, radius, in-view, sort, price bounds). Updated CSS so chips show pointer and hover state.
+
+**Why:** The Sort dropdown already offered “Distance” but it did nothing. Showing km distances and letting users clear single filters improves map-first seed/demo usability without requiring the live Worker.
+
+**How:** github___push_files (js/list.js + css/main.css). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Functional radius + in-view filters (seed UX)
 
 **What:** Implemented real radius filtering (haversine from user geolocation) and in-view filtering (map bounds) in js/list.js. Exposed getUserPosition/getBounds from js/map.js; map move/zoom and locate/clear now re-apply filters. Fixed broken escapeHtml (was no-op) in both modules so special characters render safely.

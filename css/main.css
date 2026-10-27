@@ -75,7 +75,8 @@ body {
 .sidebar-header { padding: 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .sidebar-tools { display: flex; gap: 0.3rem; }
 .filter-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.5rem 0.75rem; }
-.filter-chips .chip { background: var(--accent-soft); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; }
+.filter-chips .chip { background: var(--accent-soft); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; cursor: pointer; user-select: none; }
+.filter-chips .chip:hover { opacity: 0.85; }
 .listing-list { flex: 1; overflow-y: auto; padding: 0.25rem; }
 .listing-item {
   padding: 0.6rem 0.75rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.25rem;
