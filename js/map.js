@@ -1,10 +1,10 @@
 /**
  * FarmDirect B2B – Leaflet map module
  * Initializes map, MarkerCluster, custom category-colored markers, popups with
- * clickable visibility, category, and units badges (calls FD_LIST.setVisibilityFilter / setCategoryFilter / setUnitsFilter), locate/fit,
+ * clickable visibility, category, units, and seller badges (calls FD_LIST.setVisibilityFilter / setCategoryFilter / setUnitsFilter / setSellerFilter), locate/fit,
  * and view-link generation. Fully client-side; works with seed/demo fallback.
  * Exposes user position and bounds so list filters (radius / in-view) work offline.
- * Popups now include clickable address linking to Google Maps and units for better seed/demo exploration.
+ * Popups now include clickable address linking to Google Maps and units/seller for better seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -34,10 +34,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
   function getColor(category) {
@@ -84,7 +84,7 @@
         ${units ? `<button type="button" class="units-badge popup-units" data-units="${units}" title="Filter by units">${units}</button>` : ''}<br>
         ${price ? price + (units ? ' / ' + units : '') + '<br>' : ''}
         ${addressHtml ? addressHtml + '<br>' : ''}
-        <span class="muted small">${escapeHtml(seller)}</span>
+        <button type="button" class="seller-badge popup-seller" data-seller="${escapeHtml(listing.sellerid || '')}" title="Filter by seller">${escapeHtml(seller)}</button>
       </div>
     `;
   }
@@ -118,6 +118,16 @@
         if (u && global.FD_LIST && typeof global.FD_LIST.setUnitsFilter === 'function') {
           global.FD_LIST.setUnitsFilter(u);
           if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${u}`, 'info');
+        }
+      });
+    });
+    popupEl.querySelectorAll('.popup-seller').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sid = btn.dataset.seller;
+        if (sid && global.FD_LIST && typeof global.FD_LIST.setSellerFilter === 'function') {
+          global.FD_LIST.setSellerFilter(sid);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.textContent.trim()}`, 'info');
         }
       });
     });
