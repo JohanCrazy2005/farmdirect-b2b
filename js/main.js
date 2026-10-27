@@ -2,6 +2,7 @@
  * FarmDirect B2B – main bootstrap
  * Wires Leaflet map, list, cards, search, dashboard, form, auth, options.
  * Loads listings from live Worker or falls back to seed/demo automatically.
+ * Health-aware data-source badge distinguishes API-live-empty from offline.
  * Persistent dark mode toggle for better map-first readability.
  */
 (function () {
@@ -79,7 +80,6 @@
         sidebarToggle.setAttribute('aria-expanded', String(isOpen));
         sidebarToggle.textContent = isOpen ? '×' : '☰';
       });
-      // Close sidebar when selecting a listing on mobile
       document.getElementById('listing-list')?.addEventListener('click', (e) => {
         if (window.innerWidth <= 768 && e.target.closest('.listing-item')) {
           sidebar.classList.remove('open');
@@ -149,7 +149,7 @@
       if (e.target.id === 'deploy-modal') e.target.classList.remove('open');
     });
 
-    // Data-source badge click → deploy modal (seed/demo UX)
+    // Data-source badge click → deploy modal
     document.getElementById('data-source-badge')?.addEventListener('click', () => {
       openDeployModal();
       if (window.FD_TOAST) window.FD_TOAST.show('Deploy steps for live data', 'info');
@@ -230,7 +230,7 @@
       optionsMenu?.setAttribute('hidden', '');
     });
 
-    // JSON export (uses existing FD_LIST.exportFiltered)
+    // JSON export
     document.getElementById('export-json-btn')?.addEventListener('click', () => {
       if (window.FD_LIST && typeof window.FD_LIST.exportFiltered === 'function') {
         window.FD_LIST.exportFiltered();
@@ -291,26 +291,35 @@
     loadListings();
   }
 
-  function updateDataSourceBadge(source) {
+  function updateDataSourceBadge(source, health) {
     const badge = document.getElementById('data-source-badge');
     if (!badge) return;
-    if (source === 'seed') {
-      badge.textContent = 'SEED';
-      badge.title = 'Using seed listings (Worker offline or undeployed) – click for deploy steps';
+    badge.hidden = false;
+    if (source === 'api') {
+      badge.textContent = 'LIVE';
+      badge.title = 'Live Worker data';
+      badge.className = 'data-source-badge source-api';
+    } else if (source === 'api-empty') {
+      badge.textContent = 'API';
+      badge.title = 'Worker reachable but no published listings yet – click for deploy / migration steps';
+      badge.className = 'data-source-badge source-api-empty';
+    } else if (source === 'seed') {
+      badge.textContent = health && health.ok ? 'SEED (API up)' : 'SEED';
+      badge.title = health && health.ok
+        ? 'Using seed (Worker reachable but listings empty or failed) – click for steps'
+        : 'Using seed listings (Worker offline or undeployed) – click for deploy steps';
       badge.className = 'data-source-badge source-seed';
-      badge.hidden = false;
     } else if (source === 'demo') {
       badge.textContent = 'DEMO';
       badge.title = 'Demo mode – local changes persist until Worker is live – click for deploy steps';
       badge.className = 'data-source-badge source-demo';
-      badge.hidden = false;
     } else {
       badge.hidden = true;
       badge.textContent = '';
     }
   }
 
-  function showOfflineBanner(source) {
+  function showOfflineBanner(source, health) {
     const banner = document.getElementById('offline-banner');
     const text = document.getElementById('offline-banner-text');
     if (!banner || !text) return;
@@ -318,9 +327,13 @@
       if (sessionStorage.getItem('fd-offline-banner-dismissed') === '1') return;
     } catch (_) {}
     if (source === 'seed') {
-      text.textContent = 'Using seed listings (Worker offline or undeployed). Changes are not saved until the Worker is live.';
+      text.textContent = health && health.ok
+        ? 'Worker is reachable but returned no published listings. Using seed data. Apply auth migration and publish listings for live data.'
+        : 'Using seed listings (Worker offline or undeployed). Changes are not saved until the Worker is live.';
     } else if (source === 'demo') {
       text.textContent = 'Demo mode – local changes persist. Connect the live Worker via Options for real data.';
+    } else if (source === 'api-empty') {
+      text.textContent = 'Worker is live but has no published listings yet. Apply the auth migration and publish from the dashboard.';
     } else {
       return;
     }
@@ -333,15 +346,17 @@
       const result = await window.FD_API.fetchListings();
       window.FD_LIST.setListings(result.listings || []);
       const src = result.source || 'unknown';
-      updateDataSourceBadge(src);
+      const health = result.health;
+      updateDataSourceBadge(src, health);
       if (window.FD_TOAST) {
         const msg = src === 'api' ? `Loaded ${result.count || result.listings.length} live listings` :
+                    src === 'api-empty' ? 'Worker live but no published listings yet' :
                     src === 'demo' ? 'Demo mode (local changes persist)' :
-                    src === 'seed' ? 'Using seed listings (Worker offline)' :
+                    src === 'seed' ? (health && health.ok ? 'Using seed (Worker reachable)' : 'Using seed listings (Worker offline)') :
                     'No listings loaded';
         window.FD_TOAST.show(msg, src === 'api' ? 'success' : 'info');
       }
-      showOfflineBanner(src);
+      showOfflineBanner(src, health);
       // Deep link support
       const hash = location.hash || '';
       const m = hash.match(/#listing=([^&]+)/);

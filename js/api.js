@@ -2,6 +2,7 @@
  * FarmDirect B2B – client API + seed/demo fallback
  * Tries the live Worker first; falls back to data/seed-listings.json.
  * Demo mode: localStorage overrides persist local edits until the Worker is live.
+ * Health check distinguishes “API reachable but empty” from “API offline”.
  * Fully client-side; works offline / undeployed.
  */
 (function (global) {
@@ -72,26 +73,55 @@
   }
 
   /**
+   * Probe the Worker health endpoint.
+   * @returns {Promise<{ok: boolean, status?: string, features?: string[], error?: string}>}
+   */
+  async function checkHealth() {
+    const apiBase = getApiBase();
+    if (!apiBase) return { ok: false, error: 'No API base configured' };
+    try {
+      const data = await fetchJson(`${apiBase}/api/v1/health`);
+      return {
+        ok: true,
+        status: data.status || 'ok',
+        features: data.features || [],
+        database: data.database,
+      };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Health check failed' };
+    }
+  }
+
+  /**
    * Fetch listings from live API or fall back to seed/demo.
-   * @returns {Promise<{listings: any[], source: 'api'|'seed'|'demo', count: number, error?: string}>}
+   * @returns {Promise<{listings: any[], source: 'api'|'seed'|'demo', count: number, health?: object, error?: string}>}
    */
   async function fetchListings() {
     const apiBase = getApiBase();
+    let health = null;
     if (apiBase) {
+      health = await checkHealth();
       try {
         const data = await fetchJson(`${apiBase}/api/v1/listings`);
         const listings = Array.isArray(data.listings) ? data.listings : (Array.isArray(data) ? data : []);
         if (listings.length || data.source === 'd1') {
-          // Clear demo override when live data arrives
           clearDemoListings();
           return {
             listings,
             source: 'api',
             count: listings.length,
+            health,
           };
         }
+        // API reachable but no published listings yet
+        return {
+          listings: [],
+          source: 'api-empty',
+          count: 0,
+          health,
+        };
       } catch (err) {
-        console.info('Live API unavailable, using seed/demo fallback', err.message || err);
+        console.info('Live API listings unavailable, using seed/demo fallback', err.message || err);
       }
     }
 
@@ -102,6 +132,7 @@
         listings: demo,
         source: 'demo',
         count: demo.length,
+        health,
       };
     }
 
@@ -110,12 +141,10 @@
       listings: seed,
       source: 'seed',
       count: seed.length,
+      health,
     };
   }
 
-  /**
-   * Persist the current in-memory listings as demo data (local only).
-   */
   async function exportDemoData() {
     try {
       if (!global.FD_LIST || typeof global.FD_LIST.getListings !== 'function') {
@@ -129,22 +158,17 @@
     }
   }
 
-  /**
-   * Clear local demo overrides so the next load uses fresh seed (or live API).
-   */
   function resetDemoListings() {
     clearDemoListings();
   }
 
-  /**
-   * Optional helper for other modules that want to know current source.
-   */
   function getLastSource() {
     try { return localStorage.getItem(SOURCE_KEY) || null; } catch (_) { return null; }
   }
 
   global.FD_API = {
     fetchListings,
+    checkHealth,
     exportDemoData,
     resetDemoListings,
     getLastSource,
