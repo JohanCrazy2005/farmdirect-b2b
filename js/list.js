@@ -4,6 +4,7 @@
  * clickable visibility badges, favorites (localStorage), filtered view links, JSON export.
  * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
  * Distance sort + distance display in list items; removable filter chips.
+ * List items now show address for better seed/demo context.
  * Fully client-side; works with seed/demo.
  */
 (function (global) {
@@ -157,6 +158,7 @@
       const vis = escapeHtml(l.visibility || '');
       const dist = pos ? getDistanceKm(l, pos) : null;
       const distStr = dist != null ? ` · ${dist.toFixed(1)} km` : '';
+      const addr = l.address ? `<div class="address-small muted">${escapeHtml(l.address)}</div>` : '';
       return `
         <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
           <div><strong>${escapeHtml(l.headerdescription || 'Listing')}</strong> ${isFav ? '★' : ''}</div>
@@ -166,6 +168,7 @@
             · $${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || '')}
             · ${seller}${distStr}
           </div>
+          ${addr}
         </div>
       `;
     }).join('');

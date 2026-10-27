@@ -1,3 +1,13 @@
+## 2026-10-27 – Show address in map popups (clickable) and sidebar list items (seed UX)
+
+**What:** Map popups now display the listing address as a clickable link that opens Google Maps at the coordinates. Sidebar list items also show the address under the meta line. Improves context for seed/demo exploration of the map-first marketplace.
+
+**Why:** Address is a core schema field. Previous popups and list items omitted it, making it harder to understand location without opening the full product card. Clickable maps link is useful while Worker remains undeployed.
+
+**How:** github___push_files (js/map.js + js/list.js). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Distance sort, distance labels, and removable filter chips (seed UX)
 
 **What:** Implemented distance sorting (haversine from user geolocation) and displayed distance in list items when located. Made filter chips clickable to remove individual filters (including search, radius, in-view, sort, price bounds). Updated CSS so chips show pointer and hover state.

@@ -4,6 +4,7 @@
  * clickable visibility badges (calls FD_LIST.setVisibilityFilter), locate/fit,
  * and view-link generation. Fully client-side; works with seed/demo fallback.
  * Exposes user position and bounds so list filters (radius / in-view) work offline.
+ * Popups now include clickable address linking to Google Maps for better seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -66,12 +67,20 @@
       ? global.FD_SELLERS.getDisplayName(listing.sellerid) : (listing.sellerid || '');
     const price = listing.price != null ? `$${Number(listing.price).toFixed(2)} / ${escapeHtml(listing.units || '')}` : '';
     const vis = escapeHtml(listing.visibility || '');
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    const mapsUrl = (!isNaN(lat) && !isNaN(lng)) ? `https://www.google.com/maps?q=${lat},${lng}` : '';
+    const addressHtml = listing.address
+      ? (mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="popup-address" title="Open in maps">${escapeHtml(listing.address)}</a>` : escapeHtml(listing.address))
+      : '';
     return `
       <div class="map-popup">
         <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong><br>
         <span class="category-badge">${escapeHtml(listing.category || '')}</span>
         <button type="button" class="visibility-badge vis-${vis} popup-vis" data-vis="${vis}" title="Filter by visibility">${escapeHtml(visibilityLabel(listing.visibility))}</button><br>
         ${price ? price + '<br>' : ''}
+        ${addressHtml ? addressHtml + '<br>' : ''}
         <span class="muted small">${escapeHtml(seller)}</span>
       </div>
     `;
