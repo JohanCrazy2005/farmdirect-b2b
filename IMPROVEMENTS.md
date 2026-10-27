@@ -1,3 +1,15 @@
+## 2026-10-27 – CSS polish for seller directory, stats, and compare modals
+
+**What:** Added dedicated styles in `css/main.css` for seller directory items (`.seller-dir-item`, headers, counts, bio), statistics summary rows and lists, and the compare table. These elements were previously unstyled beyond base card/modal rules.
+
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). Seller directory, stats, and compare are part of the map-first options UX and work fully in seed/demo mode; styling them improves readability and consistency without new features.
+
+**How:** Appended CSS rules using existing design tokens (variables, badges, dark mode). Single commit via push_files. Appended this entry.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors). Then register/login + publish works end-to-end and the badge switches to LIVE.
+
+---
+
 ## 2026-10-27 – Complete cards module + map-first CSS shell
 
 **What:** Replaced stub `js/cards.js` with a full product/seller card module (visibility badge, price/units, seller display names from seed-sellers.json, RFQ/favorite/share actions, lightbox). Replaced stub `css/main.css` with a complete map-first stylesheet (transparent top bar, sidebar, cards, clusters, dark mode, responsive, visibility badges).
