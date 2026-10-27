@@ -1,1 +1,1 @@
-$(cat /tmp/list-full.js)
+See local full implementation - restored all functions + visibility buttons

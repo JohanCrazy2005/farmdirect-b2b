@@ -1,1 +1,1 @@
-PLACEHOLDER_MAP
+Updated popup to clickable visibility
