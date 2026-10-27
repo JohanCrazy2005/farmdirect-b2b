@@ -235,3 +235,25 @@ button.units-badge:hover {
   background: #312e81;
   color: #e0e7ff;
 }
+
+/* Seller badges (clickable filter, seed UX) */
+.seller-badge {
+  background: #f3e8ff;
+  color: #6b21a8;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+button.seller-badge {
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+button.seller-badge:hover {
+  opacity: 0.85;
+}
+[data-theme="dark"] .seller-badge {
+  background: #581c87;
+  color: #f3e8ff;
+}
