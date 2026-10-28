@@ -1,7 +1,7 @@
 /**
  * FarmDirect B2B – product & seller cards + lightbox
  * Renders detailed product cards (visibility badge, price/units, seller display name
- * from seed-sellers.json, RFQ, favorite, share) and seller cards.
+ * from seed-sellers.json, RFQ, favorite, share, compare) and seller cards.
  * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
  * Address is now a clickable Google Maps link when coordinates exist.
  */
@@ -11,10 +11,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
   function fmtPrice(price, units) {
@@ -67,6 +67,7 @@
         <div class="card-actions">
           <button type="button" class="small-btn rfq-btn" data-id="${escapeHtml(listing.id)}">Request quote</button>
           <button type="button" class="small-btn fav-btn" data-id="${escapeHtml(listing.id)}">${isFav ? '★ Unfavorite' : '☆ Favorite'}</button>
+          <button type="button" class="small-btn compare-btn" data-id="${escapeHtml(listing.id)}">Compare</button>
           <button type="button" class="small-btn share-btn" data-id="${escapeHtml(listing.id)}">Share</button>
         </div>
       </div>
@@ -81,6 +82,12 @@
     el.querySelector('.fav-btn')?.addEventListener('click', () => {
       if (global.FD_LIST && typeof global.FD_LIST.toggleFavorite === 'function') global.FD_LIST.toggleFavorite(listing.id);
       openProduct(listing);
+    });
+    el.querySelector('.compare-btn')?.addEventListener('click', () => {
+      if (global.FD_COMPARE && typeof global.FD_COMPARE.toggle === 'function') {
+        global.FD_COMPARE.toggle(listing.id);
+        openProduct(listing); // refresh button state
+      }
     });
     el.querySelector('.share-btn')?.addEventListener('click', async () => {
       const url = location.origin + location.pathname + '#listing=' + encodeURIComponent(listing.id);
@@ -118,6 +125,9 @@
         closeProduct();
       });
     });
+    if (global.FD_COMPARE && typeof global.FD_COMPARE.updateButtons === 'function') {
+      global.FD_COMPARE.updateButtons();
+    }
   }
 
   function closeProduct() {
