@@ -81,3 +81,9 @@ PLACEHOLDER
 **Why:** Highest unfinished code item was P6. This focused CSS-only change makes the map-first UI less cluttered and more usable on phones without inventing features or requiring the live Worker.
 **How:** Expanded the `@media (max-width: 768px)` block in `css/main.css` (sets `--top-h`, flex-wrap, larger targets, safe-area, hides `#fullscreen-btn`). Marked P6 complete in GOAL.md. Fully client-side; works with seed/demo fallback.
 **Next:** Optional user items remain (RFQ migration, GH Actions secrets, live E2E). Further code runs can polish remaining seed UX if needed.
+
+## 2026-10-28 (America/Denver) – Fix HTML escaping in product and seller cards
+**What:** Corrected the broken `escapeHtml` helper in `js/cards.js` so that `& < > "` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title, description, address, or seller name containing special characters could break the product/seller card HTML or inject markup.
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only correctness fix improves seed/demo robustness for the product and seller cards, matching the earlier list.js fix and preventing rendering glitches when special characters appear in seed data.
+**How:** Updated the four `.replace` calls in `escapeHtml` inside js/cards.js. Fully client-side; works with seed/demo fallback. Single commit.
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification.
