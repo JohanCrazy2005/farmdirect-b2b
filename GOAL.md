@@ -31,12 +31,12 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 - [x] `.github/workflows/deploy.yml` present
 - [ ] User adds `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` secrets
 
-### P6 – Phone view declutter + CSS polish (NEXT CODE RUN)
-- [ ] Make phone / narrow viewport less cluttered (top bar, sidebar list, filter card, map controls, product/seller cards)
-- [ ] Improve and organize `css/main.css` (responsive breakpoints, spacing, touch targets, reduce overlapping UI on small screens)
-- [ ] Prefer progressive disclosure on mobile: collapse secondary controls, larger list rows, readable type, safe-area padding
+### P6 – Phone view declutter + CSS polish (DONE)
+- [x] Make phone / narrow viewport less cluttered (top bar, sidebar list, filter card, map controls, product/seller cards)
+- [x] Improve and organize `css/main.css` (responsive breakpoints, spacing, touch targets, reduce overlapping UI on small screens)
+- [x] Prefer progressive disclosure on mobile: collapse secondary controls, larger list rows, readable type, safe-area padding
 
-**Note for builders:** When optional user items (E2E check, RFQ migration, GH secrets) are not blocking, work **P6** next—one shippable CSS/mobile change per run. Do not invent unrelated features.
+**Note for builders:** P6 mobile CSS polish shipped. Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). Next code runs can continue seed/demo UX polish or other code-only items without inventing unrelated features.
 
 ## Schema (canonical)
 `location{lat,long}`, `visibility(worldwide|country|province)`, `address`, `sellerid`, `category`, `headerdescription`, `price`, `units`, `description`, `image`

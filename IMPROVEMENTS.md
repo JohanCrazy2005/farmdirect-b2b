@@ -75,3 +75,9 @@ PLACEHOLDER
 **Why:** User requested an explicit goal for the next run to make phone view less cluttered and improve CSS files.
 **How:** Docs-only update to GOAL.md + this IMPROVEMENTS note. No CSS code change in this commit—implementation is for the next builder run (one shippable change).
 **Next:** Next code run should pick the highest unfinished P6 item and ship one focused mobile/CSS improvement.
+
+## 2026-10-28 (America/Denver) – P6 phone view declutter + mobile CSS polish
+**What:** Shipped responsive CSS improvements for narrow/phone viewports. Top bar now wraps (full-width search above action row), icon buttons have 44px touch targets, list rows are larger and more readable, cards/filter/options menus use full available width with better positioning, safe-area insets applied for notches/home indicators, and the fullscreen button is hidden on small screens to reduce top-bar clutter (map is already immersive). Sidebar, offline banner, and product cards adjust correctly with the taller top bar.
+**Why:** Highest unfinished code item was P6. This focused CSS-only change makes the map-first UI less cluttered and more usable on phones without inventing features or requiring the live Worker.
+**How:** Expanded the `@media (max-width: 768px)` block in `css/main.css` (sets `--top-h`, flex-wrap, larger targets, safe-area, hides `#fullscreen-btn`). Marked P6 complete in GOAL.md. Fully client-side; works with seed/demo fallback.
+**Next:** Optional user items remain (RFQ migration, GH Actions secrets, live E2E). Further code runs can polish remaining seed UX if needed.
