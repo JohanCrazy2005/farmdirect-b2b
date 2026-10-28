@@ -29,7 +29,7 @@ PLACEHOLDER
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
 
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in sidebar list
-**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > \\"` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
+**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > \"` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
 **Why:** Highest unfinished items remain user-owned (P1). This code-only correctness fix improves seed/demo robustness and prevents rendering glitches in the sidebar.
 **How:** Updated the four `.replace` calls in `escapeHtml`. Fully client-side.
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
@@ -50,4 +50,10 @@ PLACEHOLDER
 **What:** Each active filter chip (search, category, visibility, units, seller, price range, radius, favorites, in-view, sort) now has a working × button that removes only that filter and re-applies the rest. Shows a brief toast. Improves seed/demo filter UX so users can refine results without opening the full filter card or clearing everything.
 **Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). This code-only polish completes the previously optional chip-remove enhancement, making multi-filter exploration smoother while the live Worker/auth migration is pending.
 **How:** Updated `renderChips` in js/list.js to emit data-key attributes and wired `.chip-remove` clicks to a new `removeChip` helper that clears the matching control then calls `applyFilters`. Fully client-side.
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
+## 2026-10-28 (America/Denver) – Working compare selection from list and product cards
+**What:** Compare feature is now usable in seed/demo mode. Each sidebar listing item and the product card has a Compare button that toggles selection (max 4). Options menu "Compare listings" opens the side-by-side modal with seller display names and distance after Locate. Fixed broken distance lookup (`getUserLatLng` → `getUserLocation`).
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). The compare module existed but had no entry points in the UI and a broken map API call, so multi-listing comparison was inaccessible offline. This code-only polish completes the existing feature for better seed/demo exploration.
+**How:** Added `.compare-btn` toggles in js/list.js renderList and js/cards.js openProduct, wired to FD_COMPARE.toggle + updateButtons. Updated js/compare.js for correct user location, seller display names, and robustness. Fully client-side. Single commit.
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
