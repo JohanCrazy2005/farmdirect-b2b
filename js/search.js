@@ -5,6 +5,8 @@
  * Fully client-side; works in pure seed/demo mode. Complements existing filters/search.
  * + Prefers friendly seller display names (from seed meta) in matches and results.
  * + Category color swatches for visual consistency with the map legend.
+ * + Shows approximate distance (km) when user has used Locate.
+ * + Selection always flies the map via FD_MAP.flyToListing for reliable sync.
  */
 (function (global) {
   'use strict';
@@ -48,6 +50,22 @@
     return [];
   }
 
+  function getUserLocation() {
+    return (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function')
+      ? global.FD_MAP.getUserLocation()
+      : null;
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
   function matchesQuery(listing, q) {
     if (!q) return false;
     const lower = q.toLowerCase();
@@ -75,16 +93,28 @@
       return;
     }
 
+    const userPos = getUserLocation();
+
     box.innerHTML = currentMatches.map((l, i) => {
       const price = Number(l.price);
       const priceStr = isNaN(price) ? '' : ` · $${price.toFixed(2)}/${escapeHtml(l.units || '')}`;
       const seller = escapeHtml(getDisplayName(l.sellerid));
       const color = CATEGORY_COLORS[l.category] || CATEGORY_COLORS.default;
       const swatch = `<span class="suggestion-swatch" style="background:${color}" aria-hidden="true"></span>`;
+      let distStr = '';
+      if (userPos) {
+        const loc = l.location || {};
+        const lat = Number(loc.lat);
+        const lng = Number(loc.long);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          const dist = haversineKm(userPos.lat, userPos.lng, lat, lng);
+          distStr = ` · ~${dist.toFixed(1)} km`;
+        }
+      }
       return `
         <div class="suggestion-item" data-index="${i}" data-id="${escapeHtml(l.id)}" role="option" tabindex="-1">
           <div class="suggestion-title">${swatch}${escapeHtml(l.headerdescription || 'Listing')}</div>
-          <div class="suggestion-meta">${escapeHtml(l.category || '')} · ${seller}${priceStr}</div>
+          <div class="suggestion-meta">${escapeHtml(l.category || '')} · ${seller}${priceStr}${distStr}</div>
         </div>`;
     }).join('');
 
@@ -110,6 +140,16 @@
   function selectSuggestion(id) {
     if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
       global.FD_LIST.select(id);
+    }
+    // Ensure map flies even if list.select does not (or is a no-op)
+    if (global.FD_MAP && typeof global.FD_MAP.flyToListing === 'function') {
+      let listing = currentMatches.find(m => String(m.id) === String(id));
+      if (!listing && global.FD_LIST && typeof global.FD_LIST.getListings === 'function') {
+        listing = (global.FD_LIST.getListings() || []).find(l => String(l.id) === String(id));
+      }
+      if (listing) {
+        try { global.FD_MAP.flyToListing(listing); } catch (_) {}
+      }
     }
     hideSuggestions();
     const input = document.getElementById('search-input');

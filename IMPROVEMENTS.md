@@ -29,7 +29,13 @@ PLACEHOLDER
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
 
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in sidebar list
-**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > "` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
+**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > \"` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
 **Why:** Highest unfinished items remain user-owned (P1). This code-only correctness fix improves seed/demo robustness and prevents rendering glitches in the sidebar.
 **How:** Updated the four `.replace` calls in `escapeHtml`. Fully client-side.
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
+## 2026-10-28 (America/Denver) – Distance in search suggestions + reliable fly-to
+**What:** Search typeahead suggestions now show approximate distance (~km) after the user has used Locate. Selecting a suggestion (click, Enter, or keyboard) always flies the map to the listing and opens its popup via `FD_MAP.flyToListing`, in addition to calling `FD_LIST.select`. Improves seed/demo exploration so search results stay visually tied to the map.
+**Why:** Highest unfinished items remain user-owned (P1 auth migration). This code-only polish extends the existing Locate + distance pattern from the sidebar into the top search bar, making discovery faster without opening the filter card.
+**How:** Added `getUserLocation` + `haversineKm` helpers to `js/search.js`. Updated `renderSuggestions` to append distance when user position is known. Enhanced `selectSuggestion` to look up the listing and call `flyToListing`. Fully client-side; works with seed/demo fallback.
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
