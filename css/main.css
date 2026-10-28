@@ -195,3 +195,13 @@ kbd { background: var(--bg); border: 1px solid var(--border); padding: 0.1rem 0.
 .mobile-only { display: none; }
 .checkbox { display: flex !important; align-items: center; gap: 0.35rem; }
 .checkbox input { width: auto !important; margin: 0; }
+
+/* Clickable seller names in list (seed UX polish) */
+.listing-seller.seller-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.listing-seller.seller-link:hover {
+  color: var(--primary, #2d6a4f);
+}

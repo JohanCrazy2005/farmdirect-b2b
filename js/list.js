@@ -212,7 +212,7 @@
               <span class="cat-badge">${escapeHtml(l.category || '')}</span>
               <span class="price-small">${priceStr}</span>
             </div>
-            <div class="listing-seller muted small">${seller}</div>
+            <div class="listing-seller muted small seller-link" data-seller="${escapeHtml(l.sellerid)}" title="Filter by this seller">${seller}</div>
           </div>
         </div>`;
     }).join('');
@@ -223,6 +223,16 @@
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           select(el.dataset.id);
+        }
+      });
+    });
+    container.querySelectorAll('.seller-link').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sid = el.dataset.seller;
+        if (sid) {
+          setSellerFilter(sid);
+          if (global.FD_TOAST) global.FD_TOAST.show('Filtered by seller', 'info');
         }
       });
     });
