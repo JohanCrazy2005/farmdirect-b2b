@@ -87,3 +87,9 @@ PLACEHOLDER
 **Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only correctness fix improves seed/demo robustness for the product and seller cards, matching the earlier list.js fix and preventing rendering glitches when special characters appear in seed data.
 **How:** Updated the four `.replace` calls in `escapeHtml` inside js/cards.js. Fully client-side; works with seed/demo fallback. Single commit.
 **Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification.
+
+## 2026-10-28 (America/Denver) – Accurate next-step guidance in data-source modal
+**What:** Updated the data-source details modal (opened from the SEED/DEMO/API+SEED badge) so it no longer tells users to re-run the already-applied auth migration. Next command is now the optional RFQ migration; explanatory text points to registering + creating/publishing a listing for live E2E, or the optional RFQ step.
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). Auth migration was applied; the modal still instructed the old next step, which could confuse users. This code-only polish keeps seed/demo UX accurate while the live Worker is ready for verification.
+**How:** Edited openDatasourceModal in js/main.js (nextCmd, api-empty and seed explanations). Fully client-side. Single commit.
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke (register → create draft → publish) still pending user verification.
