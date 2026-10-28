@@ -69,3 +69,9 @@ PLACEHOLDER
 **Why:** Highest unfinished items are still user-owned (optional RFQ migration + GH Actions secrets). The Worker already exposes RFQ routes and the frontend RFQ module already called `FD_API.createRfq`, but the method was missing from the client API layer. Completing it makes the quote-request flow work end-to-end in both live (post-migration) and seed/demo modes without inventing new UI.
 **How:** Extended the authenticated `apiRequest` helpers already used for listings. Single commit; no schema or feature changes. Appended this entry.
 **Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification.
+
+## 2026-10-28 (America/Denver) – Goal: P6 phone declutter + CSS polish
+**What:** Added **P6 – Phone view declutter + CSS polish** to GOAL.md as the preferred next code-only run target: less cluttered narrow/phone layout (top bar, list, filter card, map controls, cards), improve and organize `css/main.css` (breakpoints, spacing, touch targets, overlap), progressive disclosure on mobile.
+**Why:** User requested an explicit goal for the next run to make phone view less cluttered and improve CSS files.
+**How:** Docs-only update to GOAL.md + this IMPROVEMENTS note. No CSS code change in this commit—implementation is for the next builder run (one shippable change).
+**Next:** Next code run should pick the highest unfinished P6 item and ship one focused mobile/CSS improvement.
