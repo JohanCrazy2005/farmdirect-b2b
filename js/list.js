@@ -5,6 +5,7 @@
  * Exposes FD_LIST for main.js, cards.js, search.js, map.js, etc.
  * Fully client-side; works in pure seed/demo mode.
  * Uses seller display names from FD_SELLERS when available.
+ * Empty state now offers clear-filters + Locate tips for better seed UX.
  */
 (function (global) {
   'use strict';
@@ -162,7 +163,36 @@
     if (countEl) countEl.textContent = String(filtered.length);
 
     if (!filtered.length) {
-      container.innerHTML = '<p class="muted" style="padding:1rem">No listings match the current filters.</p>';
+      const hasFilters = [
+        document.getElementById('filter-category')?.value,
+        document.getElementById('filter-visibility')?.value,
+        document.getElementById('filter-units')?.value,
+        document.getElementById('filter-seller')?.value,
+        document.getElementById('filter-minprice')?.value,
+        document.getElementById('filter-maxprice')?.value,
+        document.getElementById('filter-radius')?.value,
+        document.getElementById('filter-favorites')?.checked,
+        document.getElementById('filter-inview')?.checked,
+        getSearchQuery()
+      ].some(Boolean);
+      const tip = hasFilters
+        ? 'Try clearing filters or widening the radius after using Locate.'
+        : 'Seed data is loaded. Use Locate + radius, or open the filter card to explore categories.';
+      container.innerHTML = `
+        <div style="padding:1rem">
+          <p class="muted">No listings match the current filters.</p>
+          <p class="muted small">${escapeHtml(tip)}</p>
+          ${hasFilters ? '<button type="button" class="small-btn" id="empty-clear-filters">Clear filters</button>' : ''}
+          <button type="button" class="small-btn" id="empty-locate" style="margin-left:0.5rem">Locate me</button>
+        </div>`;
+      document.getElementById('empty-clear-filters')?.addEventListener('click', () => {
+        document.getElementById('clear-filters')?.click();
+      });
+      document.getElementById('empty-locate')?.addEventListener('click', () => {
+        if (global.FD_MAP && typeof global.FD_MAP.locateMe === 'function') {
+          global.FD_MAP.locateMe();
+        }
+      });
       return;
     }
 
