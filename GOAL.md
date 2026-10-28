@@ -31,6 +31,13 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 - [x] `.github/workflows/deploy.yml` present
 - [ ] User adds `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` secrets
 
+### P6 – Phone view declutter + CSS polish (NEXT CODE RUN)
+- [ ] Make phone / narrow viewport less cluttered (top bar, sidebar list, filter card, map controls, product/seller cards)
+- [ ] Improve and organize `css/main.css` (responsive breakpoints, spacing, touch targets, reduce overlapping UI on small screens)
+- [ ] Prefer progressive disclosure on mobile: collapse secondary controls, larger list rows, readable type, safe-area padding
+
+**Note for builders:** When optional user items (E2E check, RFQ migration, GH secrets) are not blocking, work **P6** next—one shippable CSS/mobile change per run. Do not invent unrelated features.
+
 ## Schema (canonical)
 `location{lat,long}`, `visibility(worldwide|country|province)`, `address`, `sellerid`, `category`, `headerdescription`, `price`, `units`, `description`, `image`
 
