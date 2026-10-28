@@ -5,11 +5,13 @@
  * Health-aware data-source badge distinguishes API-live-empty from offline.
  * When Worker is live but empty, seed listings are still shown for usable map UX.
  * Persistent dark mode toggle for better map-first readability.
+ * Data-source badge opens a details modal with explanation and quick actions.
  */
 (function () {
   'use strict';
 
   const THEME_KEY = 'fd-theme';
+  let lastLoadResult = null;
 
   function applyTheme(theme) {
     const root = document.documentElement;
@@ -150,10 +152,17 @@
       if (e.target.id === 'deploy-modal') e.target.classList.remove('open');
     });
 
-    // Data-source badge click → deploy modal
+    // Data-source badge click → details modal
     document.getElementById('data-source-badge')?.addEventListener('click', () => {
-      openDeployModal();
-      if (window.FD_TOAST) window.FD_TOAST.show('Deploy steps for live data', 'info');
+      openDatasourceModal();
+    });
+
+    // Datasource modal close
+    document.getElementById('close-datasource-btn')?.addEventListener('click', () => {
+      document.getElementById('datasource-modal')?.classList.remove('open');
+    });
+    document.getElementById('datasource-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'datasource-modal') e.target.classList.remove('open');
     });
 
     // Reload listings
@@ -292,27 +301,92 @@
     loadListings();
   }
 
+  function openDatasourceModal() {
+    const modal = document.getElementById('datasource-modal');
+    const content = document.getElementById('datasource-content');
+    if (!modal || !content) return;
+    const src = lastLoadResult?.source || 'unknown';
+    const health = lastLoadResult?.health;
+    const count = lastLoadResult?.count || lastLoadResult?.listings?.length || 0;
+    let explanation = '';
+    let actions = '';
+    if (src === 'api') {
+      explanation = `<p>Live data from the Worker. ${count} published listing(s) loaded.</p>`;
+    } else if (src === 'api-empty') {
+      explanation = `<p>Worker is reachable but has no published listings yet. Showing ${count} seed listing(s) so the map stays usable.</p>
+        <p class="muted small">Apply the auth migration (see Deploy steps) and publish listings from your dashboard for live data.</p>`;
+      actions = `<button type="button" class="small-btn" id="ds-deploy">Deploy / migration steps</button> `;
+    } else if (src === 'seed') {
+      explanation = `<p>Using seed listings (${count}). ${health && health.ok ? 'Worker is reachable but listings unavailable or empty.' : 'Worker offline or undeployed.'}</p>
+        <p class="muted small">Demo changes can be made and will persist locally until you connect live data.</p>`;
+      actions = `<button type="button" class="small-btn" id="ds-deploy">Deploy / migration steps</button> `;
+    } else if (src === 'demo') {
+      explanation = `<p>Demo mode – local changes persist (${count} listings). These override seed until reset or Worker goes live with data.</p>`;
+      actions = `<button type="button" class="small-btn" id="ds-export">Export demo data</button>
+        <button type="button" class="small-btn" id="ds-reset">Reset to seed</button> `;
+    } else {
+      explanation = `<p>Unknown data source.</p>`;
+    }
+    content.innerHTML = `
+      <p><strong>Source:</strong> ${src.toUpperCase()}</p>
+      ${health ? `<p class="muted small">Health: ${health.ok ? 'OK' : (health.error || 'failed')}</p>` : ''}
+      ${explanation}
+      <div class="card-actions" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem">
+        ${actions}
+        <button type="button" class="small-btn" id="ds-reload">Reload</button>
+        <button type="button" class="small-btn" id="ds-close">Close</button>
+      </div>
+    `;
+    modal.classList.add('open');
+    // Wire action buttons
+    document.getElementById('ds-deploy')?.addEventListener('click', () => {
+      modal.classList.remove('open');
+      document.getElementById('deploy-modal')?.classList.add('open');
+    });
+    document.getElementById('ds-export')?.addEventListener('click', async () => {
+      if (window.FD_API && window.FD_API.exportDemoData) {
+        const res = await window.FD_API.exportDemoData();
+        if (window.FD_TOAST) window.FD_TOAST.show(res.ok ? `Exported ${res.count} listings` : (res.error || 'Export failed'), res.ok ? 'success' : 'error');
+      }
+    });
+    document.getElementById('ds-reset')?.addEventListener('click', () => {
+      if (confirm('Reset local demo listings to seed data?')) {
+        if (window.FD_API && window.FD_API.resetDemoListings) window.FD_API.resetDemoListings();
+        if (window.FD_TOAST) window.FD_TOAST.show('Demo reset – reloading', 'info');
+        setTimeout(() => location.reload(), 500);
+      }
+    });
+    document.getElementById('ds-reload')?.addEventListener('click', () => {
+      loadListings();
+      modal.classList.remove('open');
+      if (window.FD_TOAST) window.FD_TOAST.show('Reloading listings…', 'info');
+    });
+    document.getElementById('ds-close')?.addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+  }
+
   function updateDataSourceBadge(source, health) {
     const badge = document.getElementById('data-source-badge');
     if (!badge) return;
     badge.hidden = false;
     if (source === 'api') {
       badge.textContent = 'LIVE';
-      badge.title = 'Live Worker data';
+      badge.title = 'Live Worker data – click for details';
       badge.className = 'data-source-badge source-api';
     } else if (source === 'api-empty') {
       badge.textContent = 'API+SEED';
-      badge.title = 'Worker reachable but no published listings – showing seed. Click for migration steps.';
+      badge.title = 'Worker reachable but no published listings – showing seed. Click for details.';
       badge.className = 'data-source-badge source-api-empty';
     } else if (source === 'seed') {
       badge.textContent = health && health.ok ? 'SEED (API up)' : 'SEED';
       badge.title = health && health.ok
-        ? 'Using seed (Worker reachable but listings empty or failed) – click for steps'
-        : 'Using seed listings (Worker offline or undeployed) – click for deploy steps';
+        ? 'Using seed (Worker reachable but listings empty or failed) – click for details'
+        : 'Using seed listings (Worker offline or undeployed) – click for details';
       badge.className = 'data-source-badge source-seed';
     } else if (source === 'demo') {
       badge.textContent = 'DEMO';
-      badge.title = 'Demo mode – local changes persist until Worker is live – click for deploy steps';
+      badge.title = 'Demo mode – local changes persist until Worker is live – click for details';
       badge.className = 'data-source-badge source-demo';
     } else {
       badge.hidden = true;
@@ -345,6 +419,7 @@
     if (!window.FD_API || !window.FD_LIST) return;
     try {
       const result = await window.FD_API.fetchListings();
+      lastLoadResult = result;
       window.FD_LIST.setListings(result.listings || []);
       const src = result.source || 'unknown';
       const health = result.health;
