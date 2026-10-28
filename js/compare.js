@@ -3,6 +3,7 @@
  * Select 2–4 listings from the sidebar (or product card) and open a side-by-side
  * comparison modal. Fully client-side; works in pure seed/demo mode.
  * Selection persists briefly in localStorage. Complements existing filters/favorites.
+ * Uses seller display names and map user location for distance.
  */
 (function (global) {
   'use strict';
@@ -33,10 +34,16 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+
+  function getDisplayName(sellerid) {
+    return (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(sellerid)
+      : (sellerid || '');
   }
 
   function getListing(id) {
@@ -108,8 +115,8 @@
       return;
     }
 
-    const user = (global.FD_MAP && typeof global.FD_MAP.getUserLatLng === 'function')
-      ? global.FD_MAP.getUserLatLng()
+    const user = (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function')
+      ? global.FD_MAP.getUserLocation()
       : null;
 
     function distLabel(l) {
@@ -124,7 +131,7 @@
       { label: 'Product', html: l => `<strong>${escapeHtml(l.headerdescription || '')}</strong>` },
       { label: 'Category', html: l => escapeHtml(l.category || '—') },
       { label: 'Price', html: l => `$${Number(l.price || 0).toFixed(2)} / ${escapeHtml(l.units || '')}` },
-      { label: 'Seller', html: l => escapeHtml(l.sellerid || '—') },
+      { label: 'Seller', html: l => escapeHtml(getDisplayName(l.sellerid) || '—') },
       { label: 'Visibility', html: l => escapeHtml(l.visibility || '—') },
       { label: 'Address', html: l => escapeHtml(l.address || '—') },
       { label: 'Distance', html: l => distLabel(l) },
