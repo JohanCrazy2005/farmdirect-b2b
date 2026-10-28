@@ -63,3 +63,9 @@ PLACEHOLDER
 **Why:** User confirmed the D1 auth migration is applied. Dashboard and form already called these methods, but the client API layer only had read/fallback helpers, so publish workflow could not complete end-to-end against the Worker.
 **How:** Added `authHeaders` + `apiRequest` helpers and the mutation suite; demo fallback keeps seed UX intact. Updated GOAL.md (P1 migration checked, P3 client API marked done). Single commit.
 **Next:** Optional RFQ migration; live E2E smoke (register → create draft → publish). GitHub Actions secrets still optional.
+
+## 2026-10-28 (America/Denver) – Client RFQ API methods + demo fallback
+**What:** Added `createRfq` and `fetchMyRfqs` to `js/api.js`. Both prefer the live Worker (`POST /api/v1/rfqs`, `GET /api/v1/rfqs/mine`) with Bearer auth when available, and fall back to the existing `fd-rfqs` localStorage used by the RFQ modal. Demo/seed mode remains fully functional even before the optional RFQ migration.
+**Why:** Highest unfinished items are still user-owned (optional RFQ migration + GH Actions secrets). The Worker already exposes RFQ routes and the frontend RFQ module already called `FD_API.createRfq`, but the method was missing from the client API layer. Completing it makes the quote-request flow work end-to-end in both live (post-migration) and seed/demo modes without inventing new UI.
+**How:** Extended the authenticated `apiRequest` helpers already used for listings. Single commit; no schema or feature changes. Appended this entry.
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification.
