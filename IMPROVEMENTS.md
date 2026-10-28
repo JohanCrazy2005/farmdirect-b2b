@@ -29,7 +29,7 @@ PLACEHOLDER
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
 
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in sidebar list
-**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > \"` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
+**What:** Corrected the broken `escapeHtml` helper in `js/list.js` so that `& < > \\"` are properly turned into entities. Previously the replacements were identity (no-op), so any listing title/description/address containing special characters could break the list HTML or inject markup.
 **Why:** Highest unfinished items remain user-owned (P1). This code-only correctness fix improves seed/demo robustness and prevents rendering glitches in the sidebar.
 **How:** Updated the four `.replace` calls in `escapeHtml`. Fully client-side.
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
@@ -44,4 +44,10 @@ PLACEHOLDER
 **What:** Replaced the stub `js/list.js` (empty methods + placeholder comment) with a full, substantial implementation. Sidebar now fully renders filtered listings, applies every filter-card control + top search, supports sort (price/name/distance), favorites (localStorage), radius/in-view, chips, selection (opens product card + map fly-to), clickable seller names, distance display after Locate, contextual empty-state tips with action buttons, keyboard navigation, filtered JSON export, and deep-link hash support. Proper HTML escaping. Fully client-side; works with seed/demo fallback.
 **Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). The list module had become a non-functional stub, breaking the core map-first sidebar experience. Completing it restores usable seed/demo UX without inventing new features.
 **How:** Implemented bindUI, setListings, applyFilters, renderList, chips, empty state, filter setters, favorites, export, deep links, and keyboard nav. Integrates with FD_MAP (updateMarkers, flyToListing, updateFilterRadius, isInView, getUserLocation), FD_CARDS (openProduct), FD_SELLERS (display names), FD_TOAST, and FD_RECENT. Single commit.
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
+## 2026-10-28 (America/Denver) – Individual filter chip removal
+**What:** Each active filter chip (search, category, visibility, units, seller, price range, radius, favorites, in-view, sort) now has a working × button that removes only that filter and re-applies the rest. Shows a brief toast. Improves seed/demo filter UX so users can refine results without opening the full filter card or clearing everything.
+**Why:** Highest unfinished items remain user-owned (P1 wrangler login + auth-migration.sql). This code-only polish completes the previously optional chip-remove enhancement, making multi-filter exploration smoother while the live Worker/auth migration is pending.
+**How:** Updated `renderChips` in js/list.js to emit data-key attributes and wired `.chip-remove` clicks to a new `removeChip` helper that clears the matching control then calls `applyFilters`. Fully client-side.
 **Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
