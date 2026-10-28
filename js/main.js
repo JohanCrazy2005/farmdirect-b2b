@@ -6,6 +6,7 @@
  * When Worker is live but empty, seed listings are still shown for usable map UX.
  * Persistent dark mode toggle for better map-first readability.
  * Data-source badge opens a details modal with explanation and quick actions.
+ * Modal now includes exact next wrangler command and D1 ID while P1 user actions are pending.
  */
 (function () {
   'use strict';
@@ -308,22 +309,33 @@
     const src = lastLoadResult?.source || 'unknown';
     const health = lastLoadResult?.health;
     const count = lastLoadResult?.count || lastLoadResult?.listings?.length || 0;
+    const d1Id = 'ad22b284-cafd-4f74-a8bc-6205056d38f8';
+    const nextCmd = 'npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql';
     let explanation = '';
     let actions = '';
     if (src === 'api') {
       explanation = `<p>Live data from the Worker. ${count} published listing(s) loaded.</p>`;
     } else if (src === 'api-empty') {
       explanation = `<p>Worker is reachable but has no published listings yet. Showing ${count} seed listing(s) so the map stays usable.</p>
-        <p class="muted small">Apply the auth migration (see Deploy steps) and publish listings from your dashboard for live data.</p>`;
-      actions = `<button type="button" class="small-btn" id="ds-deploy">Deploy / migration steps</button> `;
+        <p class="muted small">Next: run the auth migration so you can publish listings.</p>
+        <pre class="deploy-pre" style="font-size:0.75rem;white-space:pre-wrap">${nextCmd}</pre>
+        <p class="muted small">D1: b2bistening (${d1Id}). Ignore duplicate-column errors.</p>`;
+      actions = `<button type="button" class="small-btn" id="ds-deploy">Full deploy steps</button>
+        <button type="button" class="small-btn" id="ds-copy-cmd">Copy migration command</button> `;
     } else if (src === 'seed') {
       explanation = `<p>Using seed listings (${count}). ${health && health.ok ? 'Worker is reachable but listings unavailable or empty.' : 'Worker offline or undeployed.'}</p>
-        <p class="muted small">Demo changes can be made and will persist locally until you connect live data.</p>`;
-      actions = `<button type="button" class="small-btn" id="ds-deploy">Deploy / migration steps</button> `;
+        <p class="muted small">Demo changes can be made and will persist locally until you connect live data.</p>
+        <p class="muted small">To go live: login then run migration.</p>
+        <pre class="deploy-pre" style="font-size:0.75rem;white-space:pre-wrap">npx wrangler login\n${nextCmd}</pre>
+        <p class="muted small">D1: b2bistening (${d1Id})</p>`;
+      actions = `<button type="button" class="small-btn" id="ds-deploy">Full deploy steps</button>
+        <button type="button" class="small-btn" id="ds-copy-cmd">Copy migration command</button> `;
     } else if (src === 'demo') {
-      explanation = `<p>Demo mode – local changes persist (${count} listings). These override seed until reset or Worker goes live with data.</p>`;
+      explanation = `<p>Demo mode – local changes persist (${count} listings). These override seed until reset or Worker goes live with data.</p>
+        <p class="muted small">After migration + publish, live data will take over.</p>`;
       actions = `<button type="button" class="small-btn" id="ds-export">Export demo data</button>
-        <button type="button" class="small-btn" id="ds-reset">Reset to seed</button> `;
+        <button type="button" class="small-btn" id="ds-reset">Reset to seed</button>
+        <button type="button" class="small-btn" id="ds-deploy">Deploy steps</button> `;
     } else {
       explanation = `<p>Unknown data source.</p>`;
     }
@@ -342,6 +354,14 @@
     document.getElementById('ds-deploy')?.addEventListener('click', () => {
       modal.classList.remove('open');
       document.getElementById('deploy-modal')?.classList.add('open');
+    });
+    document.getElementById('ds-copy-cmd')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(nextCmd);
+        if (window.FD_TOAST) window.FD_TOAST.show('Migration command copied', 'success');
+      } catch (_) {
+        if (window.FD_TOAST) window.FD_TOAST.show(nextCmd, 'info');
+      }
     });
     document.getElementById('ds-export')?.addEventListener('click', async () => {
       if (window.FD_API && window.FD_API.exportDemoData) {
@@ -403,7 +423,7 @@
     } catch (_) {}
     if (source === 'seed') {
       text.textContent = health && health.ok
-        ? 'Worker is reachable but returned no published listings. Showing seed data. Apply auth migration and publish listings for live data.'
+        ? 'Worker is reachable but returned no published listings. Showing seed data. Run auth migration then publish for live data.'
         : 'Using seed listings (Worker offline or undeployed). Changes are not saved until the Worker is live.';
     } else if (source === 'demo') {
       text.textContent = 'Demo mode – local changes persist. Connect the live Worker via Options for real data.';
@@ -427,21 +447,14 @@
       if (window.FD_TOAST) {
         const msg = src === 'api' ? `Loaded ${result.count || result.listings.length} live listings` :
                     src === 'api-empty' ? `Worker live but empty – showing ${result.count || 0} seed listings` :
-                    src === 'demo' ? 'Demo mode (local changes persist)' :
-                    src === 'seed' ? (health && health.ok ? 'Using seed (Worker reachable)' : 'Using seed listings (Worker offline)') :
-                    'No listings loaded';
-        window.FD_TOAST.show(msg, src === 'api' ? 'success' : 'info');
+                    src === 'demo' ? `Loaded ${result.count || 0} demo listings` :
+                    `Loaded ${result.count || 0} seed listings`;
+        window.FD_TOAST.show(msg, 'info');
       }
       showOfflineBanner(src, health);
-      // Deep link support
-      const hash = location.hash || '';
-      const m = hash.match(/#listing=([^&]+)/);
-      if (m && window.FD_LIST.select) {
-        window.FD_LIST.select(decodeURIComponent(m[1]));
-      }
     } catch (err) {
-      console.error(err);
-      if (window.FD_TOAST) window.FD_TOAST.show('Failed to load listings', 'error');
+      console.error('Failed to load listings', err);
+      if (window.FD_TOAST) window.FD_TOAST.show('Could not load listings', 'error');
     }
   }
 
