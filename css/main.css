@@ -260,3 +260,34 @@ button.seller-badge:hover {
   background: #581c87;
   color: #f3e8ff;
 }
+
+/* Clickable favorite star in list items (seed UX) */
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.item-header strong {
+  flex: 1;
+  min-width: 0;
+}
+.fav-star-btn {
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+  color: #f59e0b;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.fav-star-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.12);
+}
+.fav-star-btn:focus {
+  outline: 1px solid var(--accent);
+  border-radius: 4px;
+}

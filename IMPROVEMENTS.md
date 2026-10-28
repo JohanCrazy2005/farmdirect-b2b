@@ -1,3 +1,13 @@
+## 2026-10-27 – Clickable favorite stars in sidebar list (seed UX)
+
+**What:** Favorite stars in the sidebar list are now interactive buttons. Clicking toggles the listing in/out of favorites (localStorage) with toast feedback and does not open the product card. Markers update automatically via the existing applyFilters path.
+
+**Why:** Favorites already worked from the product card, but requiring a full card open for a quick star was slower for map-first seed/demo exploration. Direct list toggles match the style of the other clickable badges (category, visibility, units, seller, address).
+
+**How:** github___push_files (js/list.js, css/main.css). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Clickable addresses in list and product cards (seed UX)
 
 **What:** Addresses (core schema field) are now rendered as clickable Google Maps links in the sidebar list and product cards when coordinates exist, matching the existing map-popup behavior. Clicking does not select the listing.

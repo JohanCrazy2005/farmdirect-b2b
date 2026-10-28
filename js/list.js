@@ -4,7 +4,7 @@
  * clickable visibility, category, units, and seller badges, favorites (localStorage), filtered view links, JSON export.
  * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
  * Distance sort + distance display in list items; removable filter chips.
- * List items now show clickable address (Google Maps) and clickable units/seller for better seed/demo context.
+ * List items now show clickable address (Google Maps), clickable units/seller, and clickable favorite star for better seed/demo context.
  * Fully client-side; works with seed/demo.
  */
 (function (global) {
@@ -176,7 +176,10 @@
         : '';
       return `
         <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
-          <div><strong>${escapeHtml(l.headerdescription || 'Listing')}</strong> ${isFav ? '★' : ''}</div>
+          <div class="item-header">
+            <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong>
+            <button type="button" class="fav-star-btn list-fav" data-id="${escapeHtml(l.id)}" title="${isFav ? 'Unfavorite' : 'Favorite'}" aria-label="${isFav ? 'Unfavorite' : 'Favorite'}">${isFav ? '★' : '☆'}</button>
+          </div>
           <div class="meta">
             <button type="button" class="category-badge list-cat" data-cat="${cat}">${cat}</button>
             <button type="button" class="visibility-badge vis-${vis} list-vis" data-vis="${vis}">${escapeHtml(visibilityLabel(l.visibility))}</button>
@@ -191,7 +194,7 @@
 
     el.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.list-vis, .list-cat, .list-units, .list-seller, .address-link')) return;
+        if (e.target.closest('.list-vis, .list-cat, .list-units, .list-seller, .address-link, .list-fav')) return;
         select(item.dataset.id);
       });
     });
@@ -217,6 +220,16 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         setSellerFilter(btn.dataset.seller);
+      });
+    });
+    el.querySelectorAll('.list-fav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavorite(btn.dataset.id);
+        if (global.FD_TOAST) {
+          const nowFav = favorites.has(btn.dataset.id);
+          global.FD_TOAST.show(nowFav ? 'Added to favorites' : 'Removed from favorites', 'info');
+        }
       });
     });
   }
