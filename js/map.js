@@ -275,8 +275,21 @@
     return userPos;
   }
 
+  function getUserLocation() {
+    return userPos;
+  }
+
   function getBounds() {
     return map ? map.getBounds() : null;
+  }
+
+  function isInView(listing) {
+    if (!map) return true;
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return false;
+    return map.getBounds().contains(L.latLng(lat, lng));
   }
 
   global.FD_MAP = {
@@ -288,6 +301,8 @@
     clearLocation,
     fitAll,
     getUserPosition,
-    getBounds
+    getUserLocation,
+    getBounds,
+    isInView
   };
 })(window);

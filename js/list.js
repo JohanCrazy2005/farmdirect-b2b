@@ -287,7 +287,7 @@
       const cur = sellerSel.value;
       sellerSel.innerHTML = '<option value="">Any</option>' +
         [...sellers].sort().map(s => `<option value="${escapeHtml(s)}">${escapeHtml(getDisplayName(s))}</option>`).join('');
-      if ([...sellers].has ? [...sellers].includes(cur) : false) sellerSel.value = cur;
+      if ([...sellers].includes(cur)) sellerSel.value = cur;
     }
   }
 
@@ -366,6 +366,14 @@
     const sel = document.getElementById('filter-units');
     if (sel) {
       sel.value = units || '';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function setSellerFilter(sid) {
+    const sel = document.getElementById('filter-seller');
+    if (sel) {
+      sel.value = sid || '';
       sel.dispatchEvent(new Event('change', { bubbles: true }));
     }
   }
@@ -476,6 +484,7 @@
     setCategoryFilter,
     setVisibilityFilter,
     setUnitsFilter,
+    setSellerFilter,
     getFilteredViewLink,
     exportFiltered,
     applyFilters
