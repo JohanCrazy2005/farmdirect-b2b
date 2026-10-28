@@ -1,3 +1,13 @@
+## 2026-10-27 – Thumbnail images in sidebar list (seed UX)
+
+**What:** Sidebar list items now show a small thumbnail from the schema `image` field (when present). Clicking the thumbnail opens the existing lightbox without selecting the listing or opening the product card.
+
+**Why:** All seed listings include images. Visual thumbnails make map-first exploration and scanning faster in seed/demo mode while the live Worker remains undeployed. Matches the product card image + lightbox pattern.
+
+**How:** github___push_files (js/list.js, css/main.css). Appended this.
+
+**Next:** User runs `npx wrangler login` then `npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql` (ignore duplicate-column errors).
+
 ## 2026-10-27 – Clickable favorite stars in sidebar list (seed UX)
 
 **What:** Favorite stars in the sidebar list are now interactive buttons. Clicking toggles the listing in/out of favorites (localStorage) with toast feedback and does not open the product card. Markers update automatically via the existing applyFilters path.
@@ -20,7 +30,7 @@
 
 ## 2026-10-27 – Correct HTML escaping in list and map (seed UX)
 
-**What:** Fixed the no-op `escapeHtml` helpers in `js/list.js` and `js/map.js` so `&`, `<`, `>`, and `"` are properly converted to entities. Addresses, descriptions, seller names, and other seed fields now render safely in list items, chips, popups, and filter options.
+**What:** Fixed the no-op `escapeHtml` helpers in `js/list.js` and `js/map.js` so `&`, `<`, `>`, and `\"` are properly converted to entities. Addresses, descriptions, seller names, and other seed fields now render safely in list items, chips, popups, and filter options.
 
 **Why:** The previous implementations replaced characters with themselves, so special characters in seed data could break markup or display incorrectly. This is a code-only polish that improves seed/demo reliability while the live Worker remains undeployed.
 

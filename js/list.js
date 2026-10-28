@@ -4,7 +4,8 @@
  * clickable visibility, category, units, and seller badges, favorites (localStorage), filtered view links, JSON export.
  * Radius uses FD_MAP.getUserPosition(); in-view uses FD_MAP.getBounds().
  * Distance sort + distance display in list items; removable filter chips.
- * List items now show clickable address (Google Maps), clickable units/seller, and clickable favorite star for better seed/demo context.
+ * List items now show clickable address (Google Maps), clickable units/seller, clickable favorite star,
+ * and thumbnail images (schema image field, click opens lightbox) for better seed/demo context.
  * Fully client-side; works with seed/demo.
  */
 (function (global) {
@@ -32,7 +33,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function visibilityLabel(v) {
@@ -156,7 +157,7 @@
     const el = document.getElementById('listing-list');
     if (!el) return;
     if (!filtered.length) {
-      el.innerHTML = '<p class="muted" style="padding:1rem">No listings match filters.</p>';
+      el.innerHTML = '<p class=\"muted\" style=\"padding:1rem\">No listings match filters.</p>';
       return;
     }
     const pos = (global.FD_MAP && typeof global.FD_MAP.getUserPosition === 'function') ? global.FD_MAP.getUserPosition() : null;
@@ -171,30 +172,36 @@
       const mapsUrl = mapsUrlFor(l);
       const addr = l.address
         ? (mapsUrl
-          ? `<div class="address-small muted"><a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(l.address)}</a></div>`
-          : `<div class="address-small muted">${escapeHtml(l.address)}</div>`)
+          ? `<div class=\"address-small muted\"><a href=\"${escapeHtml(mapsUrl)}\" target=\"_blank\" rel=\"noopener\" class=\"address-link\" title=\"Open in Google Maps\">${escapeHtml(l.address)}</a></div>`
+          : `<div class=\"address-small muted\">${escapeHtml(l.address)}</div>`)
+        : '';
+      const thumb = l.image
+        ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" data-full=\"${escapeHtml(l.image)}\" title=\"View image\">`
         : '';
       return `
-        <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem">
-          <div class="item-header">
-            <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong>
-            <button type="button" class="fav-star-btn list-fav" data-id="${escapeHtml(l.id)}" title="${isFav ? 'Unfavorite' : 'Favorite'}" aria-label="${isFav ? 'Unfavorite' : 'Favorite'}">${isFav ? '★' : '☆'}</button>
+        <div class=\"listing-item\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\">
+          ${thumb}
+          <div class=\"item-content\">
+            <div class=\"item-header\">
+              <strong>${escapeHtml(l.headerdescription || 'Listing')}</strong>
+              <button type=\"button\" class=\"fav-star-btn list-fav\" data-id=\"${escapeHtml(l.id)}\" title=\"${isFav ? 'Unfavorite' : 'Favorite'}\" aria-label=\"${isFav ? 'Unfavorite' : 'Favorite'}\">${isFav ? '★' : '☆'}</button>
+            </div>
+            <div class=\"meta\">
+              <button type=\"button\" class=\"category-badge list-cat\" data-cat=\"${cat}\">${cat}</button>
+              <button type=\"button\" class=\"visibility-badge vis-${vis} list-vis\" data-vis=\"${vis}\">${escapeHtml(visibilityLabel(l.visibility))}</button>
+              ${units ? `<button type=\"button\" class=\"units-badge list-units\" data-units=\"${units}\">${units}</button>` : ''}
+              · $${Number(l.price || 0).toFixed(2)}
+              · <button type=\"button\" class=\"seller-badge list-seller\" data-seller=\"${escapeHtml(l.sellerid)}\">${seller}</button>${distStr}
+            </div>
+            ${addr}
           </div>
-          <div class="meta">
-            <button type="button" class="category-badge list-cat" data-cat="${cat}">${cat}</button>
-            <button type="button" class="visibility-badge vis-${vis} list-vis" data-vis="${vis}">${escapeHtml(visibilityLabel(l.visibility))}</button>
-            ${units ? `<button type="button" class="units-badge list-units" data-units="${units}">${units}</button>` : ''}
-            · $${Number(l.price || 0).toFixed(2)}
-            · <button type="button" class="seller-badge list-seller" data-seller="${escapeHtml(l.sellerid)}">${seller}</button>${distStr}
-          </div>
-          ${addr}
         </div>
       `;
     }).join('');
 
     el.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.list-vis, .list-cat, .list-units, .list-seller, .address-link, .list-fav')) return;
+        if (e.target.closest('.list-vis, .list-cat, .list-units, .list-seller, .address-link, .list-fav, .list-thumb')) return;
         select(item.dataset.id);
       });
     });
@@ -232,6 +239,15 @@
         }
       });
     });
+    el.querySelectorAll('.list-thumb').forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const src = img.dataset.full || img.src;
+        if (src && global.FD_CARDS && typeof global.FD_CARDS.openLightbox === 'function') {
+          global.FD_CARDS.openLightbox(src);
+        }
+      });
+    });
   }
 
   function renderChips(f) {
@@ -249,7 +265,7 @@
     if (f.radius > 0) chips.push({ label: `Radius: ${f.radius} km`, clear: 'radius' });
     if (f.inview) chips.push({ label: 'In view', clear: 'inview' });
     if (f.sort) chips.push({ label: `Sort: ${f.sort}`, clear: 'sort' });
-    el.innerHTML = chips.map(c => `<span class="chip" data-clear="${escapeHtml(c.clear)}" title="Click to remove">${escapeHtml(c.label)} ×</span>`).join('');
+    el.innerHTML = chips.map(c => `<span class=\"chip\" data-clear=\"${escapeHtml(c.clear)}\" title=\"Click to remove\">${escapeHtml(c.label)} ×</span>`).join('');
   }
 
   function updateCount() {
@@ -265,19 +281,19 @@
     const catSel = document.getElementById('filter-category');
     if (catSel) {
       const cur = catSel.value;
-      catSel.innerHTML = '<option value="">All</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      catSel.innerHTML = '<option value=\"\">All</option>' + cats.map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
       catSel.value = cur;
     }
     const unitSel = document.getElementById('filter-units');
     if (unitSel) {
       const cur = unitSel.value;
-      unitSel.innerHTML = '<option value="">Any</option>' + units.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+      unitSel.innerHTML = '<option value=\"\">Any</option>' + units.map(u => `<option value=\"${escapeHtml(u)}\">${escapeHtml(u)}</option>`).join('');
       unitSel.value = cur;
     }
     const sellSel = document.getElementById('filter-seller');
     if (sellSel) {
       const cur = sellSel.value;
-      sellSel.innerHTML = '<option value="">Any</option>' + sellers.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(getSellerName(s))}</option>`).join('');
+      sellSel.innerHTML = '<option value=\"\">Any</option>' + sellers.map(s => `<option value=\"${escapeHtml(s)}\">${escapeHtml(getSellerName(s))}</option>`).join('');
       sellSel.value = cur;
     }
   }
