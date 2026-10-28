@@ -1,1 +1,1 @@
-$(cat /tmp/list.js)
+PLACEHOLDER_FOR_LIST
