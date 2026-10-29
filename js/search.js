@@ -7,6 +7,7 @@
  * + Category color swatches for visual consistency with the map legend.
  * + Shows approximate distance (km) when user has used Locate.
  * + Selection always flies the map via FD_MAP.flyToListing for reliable sync.
+ * + Clear button resets input, hides suggestions, and re-applies list filters.
  */
 (function (global) {
   'use strict';
@@ -166,6 +167,17 @@
     currentMatches = [];
   }
 
+  function clearSearch() {
+    const input = document.getElementById('search-input');
+    if (input) {
+      input.value = '';
+      // Dispatch input so list filters (and badge) update immediately
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    hideSuggestions();
+    if (global.FD_TOAST) global.FD_TOAST.show('Search cleared', 'info');
+  }
+
   function onInput() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
@@ -218,9 +230,9 @@
       }
     });
 
-    // Also hide when clear-search is clicked
-    document.getElementById('clear-search')?.addEventListener('click', hideSuggestions);
+    // Clear button: reset query, hide suggestions, re-apply filters
+    document.getElementById('clear-search')?.addEventListener('click', clearSearch);
   }
 
-  global.FD_SEARCH = { bind };
+  global.FD_SEARCH = { bind, clearSearch };
 })(window);

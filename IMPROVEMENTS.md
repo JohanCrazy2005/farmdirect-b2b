@@ -1,3 +1,15 @@
+## 2026-10-29 (America/Denver) – Wire clear-search button (seed/demo UX)
+
+**What:** The top-bar × clear-search button now fully resets the search query, hides typeahead suggestions, and re-applies list filters + map markers (via the existing input event). Previously it only hid the suggestions dropdown, leaving the query active.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only polish makes the map-first search UX complete and predictable in seed/demo mode.
+
+**How:** Updated `js/search.js` (`clearSearch` + bind). Fully client-side. Single commit via push_files. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-29 (America/Denver) – Implement full js/list.js sidebar module
 
 **What:** Replaced the `PLACEHOLDER_WILL_FAIL` stub in `js/list.js` with a complete sidebar listing list. It now renders listings, applies every filter-card control + top search, supports sort, favorites (localStorage), radius/in-view (using map helpers), filter chips, selection (opens product card + map fly), keyboard nav, filtered JSON export, seller display names, and deep-link hash. Exposes the full `FD_LIST` API expected by main/map/cards/search/sellers.
