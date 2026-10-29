@@ -1,3 +1,15 @@
+## 2026-10-28 (America/Denver) – Fix HTML escaping in map popups
+
+**What:** Fixed the `escapeHtml` helper in `js/map.js` so that `& < > "` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, or category containing special characters could break map popup HTML or inject markup.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This completes the HTML-escaping correctness pass started for list.js/cards.js, improving seed/demo robustness for map popups.
+
+**How:** Updated the four `.replace` calls in `js/map.js` and added a brief comment. Fully client-side; works with seed/demo fallback. Single commit via push_files. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-28 (America/Denver) – Complete main.js bootstrap + expose map.getMap
 
 **What:** Replaced the stub `js/main.js` with a full bootstrap that initializes the Leaflet map, loads listings via `FD_API.fetchListings` (seed/demo fallback), binds every module (`FD_LIST`, auth, dashboard, form, RFQ, search, sellers, compare, recent, shortcuts, stats, layers, CSV, GeoJSON, fullscreen), wires top-bar / options / filter / profile / data-source modal / offline banner / theme / URL map-view deep links, and updates the data-source badge. Also added `getMap()` to `js/map.js` so layer switcher and fullscreen can access the map instance.

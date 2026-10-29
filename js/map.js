@@ -6,6 +6,7 @@
  * Exposes user position and bounds so list filters (radius / in-view) work offline.
  * Popups now include clickable address linking to Google Maps and units/seller for better seed/demo exploration.
  * Draws a dashed filter-radius circle around the user location when the radius filter is set (syncs with list).
+ * HTML escaping fixed so special characters in titles/addresses cannot break popups.
  */
 (function (global) {
   'use strict';
@@ -36,10 +37,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function getColor(category) {
