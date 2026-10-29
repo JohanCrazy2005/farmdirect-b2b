@@ -6,6 +6,7 @@
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
  * Applies URL query params (q, cat, vis, seller, units, minprice, maxprice, sort, radius, fav, inview) on load.
  * Category color swatches in the list for visual consistency with the map.
+ * Removable individual filter chips under the sidebar header.
  */
 (function (global) {
   'use strict';
@@ -213,14 +214,63 @@
     });
   }
 
+  function clearOneFilter(kind) {
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = val || '';
+    };
+    if (kind === 'q') setVal('search-input', '');
+    else if (kind === 'cat') setVal('filter-category', '');
+    else if (kind === 'vis') setVal('filter-visibility', '');
+    else if (kind === 'units') setVal('filter-units', '');
+    else if (kind === 'seller') setVal('filter-seller', '');
+    else if (kind === 'minprice') setVal('filter-minprice', '');
+    else if (kind === 'maxprice') setVal('filter-maxprice', '');
+    else if (kind === 'radius') setVal('filter-radius', '');
+    else if (kind === 'sort') setVal('filter-sort', '');
+    else if (kind === 'fav') setVal('filter-favorites', '');
+    else if (kind === 'inview') setVal('filter-inview', '');
+    applyFilters();
+  }
+
   function renderChips() {
     const box = document.getElementById('filter-chips');
     if (!box) return;
     const chips = [];
-    const add = (label, clearFn) => chips.push(`<span class="chip">${escapeHtml(label)} <button type="button" class="chip-remove" data-clear="1">×</button></span>`);
-    // Simplified: show active count instead of individual removable for now; full chip removal can be extended
-    const active = countActiveFilters();
-    box.innerHTML = active ? `<span class="chip">${active} active filter${active === 1 ? '' : 's'}</span>` : '';
+    const add = (kind, label) => {
+      chips.push(`<span class="chip">${escapeHtml(label)} <button type="button" class="chip-remove" data-kind="${kind}" aria-label="Remove filter">×</button></span>`);
+    };
+
+    const q = (document.getElementById('search-input')?.value || '').trim();
+    if (q) add('q', `Search: ${q.length > 18 ? q.slice(0, 16) + '…' : q}`);
+    const cat = document.getElementById('filter-category')?.value;
+    if (cat) add('cat', `Category: ${cat}`);
+    const vis = document.getElementById('filter-visibility')?.value;
+    if (vis) add('vis', `Visibility: ${vis}`);
+    const units = document.getElementById('filter-units')?.value;
+    if (units) add('units', `Units: ${units}`);
+    const seller = document.getElementById('filter-seller')?.value;
+    if (seller) add('seller', `Seller: ${getDisplayName(seller)}`);
+    const minP = document.getElementById('filter-minprice')?.value;
+    if (minP) add('minprice', `Min $${minP}`);
+    const maxP = document.getElementById('filter-maxprice')?.value;
+    if (maxP) add('maxprice', `Max $${maxP}`);
+    const radius = document.getElementById('filter-radius')?.value;
+    if (radius) add('radius', `≤ ${radius} km`);
+    const sort = document.getElementById('filter-sort')?.value;
+    if (sort) add('sort', `Sort: ${sort}`);
+    if (document.getElementById('filter-favorites')?.checked) add('fav', 'Favorites');
+    if (document.getElementById('filter-inview')?.checked) add('inview', 'In view');
+
+    box.innerHTML = chips.join('');
+    box.querySelectorAll('.chip-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearOneFilter(btn.dataset.kind);
+      });
+    });
   }
 
   function countActiveFilters() {

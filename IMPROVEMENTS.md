@@ -1,3 +1,13 @@
+## 2026-10-29 – Seed/demo UX: individual removable filter chips
+
+**What:** Sidebar now shows each active filter (search, category, visibility, units, seller, min/max price, radius, sort, favorites, in-view) as its own dismissible chip. Clicking × clears only that filter and re-applies. Seller chips use display names. Fully client-side; works in seed/demo and live modes.
+
+**Why:** Highest unfinished items remain user-owned (P1/P5). The filter-chips container and styles already existed but only showed a count. Individual removal improves discoverability and reduces trips to the filter card while the map-first seed/demo path is primary.
+
+**How:** `js/list.js` `renderChips` builds one chip per active control with `data-kind`; `clearOneFilter` resets the matching input/select/checkbox then calls `applyFilters`. Existing badge count and URL params continue to work.
+
+**Files:** `js/list.js`, `IMPROVEMENTS.md`.
+
 ## 2026-10-29 – Seed/demo UX polish: badge → details + persistent banner dismiss
 
 **What:** Made the top-bar data-source badge (SEED/DEMO/EMPTY) open the data-source details modal on click. Banner dismiss now persists per source in localStorage (cleared on live API or demo reset). Details modal content is source-aware with concrete next-step guidance for seed, demo, and api-empty cases. Toast messages also distinguish api-empty.
