@@ -4,6 +4,7 @@
  * favorites (localStorage), sort, selection (product card + map fly),
  * filter chips, keyboard navigation, filtered JSON export, and deep-link hash.
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
+ * + Applies URL query params (q, cat, vis, seller) on load so copied filtered view links restore filters.
  */
 (function (global) {
   'use strict';
@@ -103,6 +104,30 @@
     if ([...cats].includes(curCat)) catSel.value = curCat;
     if ([...units].includes(curUnits)) unitsSel.value = curUnits;
     if (sellers.has(curSeller)) sellerSel.value = curSeller;
+  }
+
+  function applyFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q != null) {
+      const input = document.getElementById('search-input');
+      if (input) input.value = q;
+    }
+    const cat = params.get('cat');
+    if (cat) {
+      const sel = document.getElementById('filter-category');
+      if (sel && [...sel.options].some(o => o.value === cat)) sel.value = cat;
+    }
+    const vis = params.get('vis');
+    if (vis) {
+      const sel = document.getElementById('filter-visibility');
+      if (sel && [...sel.options].some(o => o.value === vis)) sel.value = vis;
+    }
+    const seller = params.get('seller');
+    if (seller) {
+      const sel = document.getElementById('filter-seller');
+      if (sel && [...sel.options].some(o => o.value === seller)) sel.value = seller;
+    }
   }
 
   function getFilterState() {
@@ -303,6 +328,7 @@
   function setListings(arr) {
     listings = Array.isArray(arr) ? arr : [];
     populateFilterOptions();
+    applyFromUrl();
     applyFilters();
   }
 
