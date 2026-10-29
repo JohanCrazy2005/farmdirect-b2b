@@ -1,3 +1,15 @@
+## 2026-10-29 (America/Denver) – Implement full js/list.js sidebar module
+
+**What:** Replaced the `PLACEHOLDER_WILL_FAIL` stub in `js/list.js` with a complete sidebar listing list. It now renders listings, applies every filter-card control + top search, supports sort, favorites (localStorage), radius/in-view (using map helpers), filter chips, selection (opens product card + map fly), keyboard nav, filtered JSON export, seller display names, and deep-link hash. Exposes the full `FD_LIST` API expected by main/map/cards/search/sellers.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). The list module was the last broken piece of the P2 frontend shell; without it the map-first UI could not show or filter listings in seed/demo mode.
+
+**How:** New substantial `js/list.js` module. Fully client-side; works with seed/demo fallback. Single commit via push_files. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in compare modal
 
 **What:** Fixed the `escapeHtml` helper in `js/compare.js` so that `& < > \"` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, description, or category containing special characters could break the side-by-side comparison table HTML or inject markup.
