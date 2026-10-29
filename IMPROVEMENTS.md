@@ -1,3 +1,15 @@
+## 2026-10-28 (America/Denver) – Fix HTML escaping in compare modal
+
+**What:** Fixed the `escapeHtml` helper in `js/compare.js` so that `& < > \"` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, description, or category containing special characters could break the side-by-side comparison table HTML or inject markup.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This completes the HTML-escaping correctness pass for the remaining compare module, improving seed/demo robustness.
+
+**How:** Updated the four `.replace` calls in `js/compare.js`. Fully client-side; works with seed/demo fallback. Single commit via push_files. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-29 (America/Denver) – Seed/demo UX: color-coded badge with count + last-loaded time
 
 **What:** Data-source badge now applies the existing `.source-seed` / `.source-demo` / `.source-api` / `.source-api-empty` CSS classes for color coding, shows listing count (e.g. "SEED · 12"), and sets a richer title with relative load time. Data-source modal adds "Last loaded: Xs ago (time)" so users can see freshness without inventing new features.
