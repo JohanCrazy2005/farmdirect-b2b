@@ -34,6 +34,7 @@
       <span id="offline-banner-text">Using seed listings (Worker offline or undeployed). Demo changes persist locally.</span>
       <div style="display:flex;gap:0.4rem;flex-shrink:0">
         <button type="button" id="banner-retry-btn" class="small-btn">Retry</button>
+        <button type="button" id="banner-details-btn" class="small-btn">Details</button>
         <button type="button" id="banner-deploy-btn" class="small-btn">Deploy steps</button>
         <button type="button" id="dismiss-offline-banner" class="small-btn">Dismiss</button>
       </div>
@@ -116,7 +117,7 @@
       <button id="show-deploy-btn" type="button" class="small-btn">Show deploy commands</button>
       <button id="export-demo-btn" type="button" class="small-btn">Export demo data</button>
       <button id="reset-demo-btn" type="button" class="small-btn">Reset demo listings</button>
-      <p class="muted small">Seed fallback is automatic when the Worker is unreachable. See README for D1 migration.</p>
+      <p class="muted small">Seed fallback is automatic when the Worker is unreachable. See README for D1 migration and optional RFQ.</p>
     </div>
 
     <!-- Product card -->
@@ -200,7 +201,7 @@ npx wrangler d1 execute b2bistening --remote --file=./schema/auth-migration.sql
 
 # 5. Smoke test
 curl https://farmdirect-b2b.fehrjohan65.workers.dev/api/v1/health</pre>
-        <p class="muted small">See README.md for full details and GitHub Actions secrets. Database: b2bistening (ad22b284-cafd-4f74-a8bc-6205056d38f8). After migration, register/login from the Profile menu.</p>
+        <p class="muted small">See README.md for full details and GitHub Actions secrets (CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID). Database: b2bistening (ad22b284-cafd-4f74-a8bc-6205056d38f8). Auth migration already applied. After optional RFQ, quote requests persist to D1.</p>
       </div>
     </div>
 

@@ -98,18 +98,18 @@
       title = 'Worker reachable but empty – showing seed';
       showBanner = true;
       sourceClass = 'source-api-empty';
-      if (bannerText) bannerText.textContent = 'Worker is live but has no published listings. Showing seed data for map UX.';
+      if (bannerText) bannerText.textContent = 'Worker is live but has no published listings. Showing seed data so the map stays usable. Optional RFQ migration still available.';
     } else if (source === 'demo') {
       label = 'DEMO';
       title = 'Demo listings (localStorage)';
       showBanner = true;
       sourceClass = 'source-demo';
-      if (bannerText) bannerText.textContent = 'Using demo listings (local edits). Changes persist until reset or live publish.';
+      if (bannerText) bannerText.textContent = 'Using demo listings (your local edits). Changes persist until reset or you publish to the live Worker.';
     } else {
       label = 'SEED';
       title = 'Using seed listings (Worker offline or unreachable)';
       sourceClass = 'source-seed';
-      if (bannerText) bannerText.textContent = 'Using seed listings (Worker offline or undeployed). Demo changes persist locally.';
+      if (bannerText) bannerText.textContent = 'Using seed listings (Worker offline or undeployed). Demo changes persist locally. See Details for status and next steps.';
     }
 
     badge.className = 'data-source-badge ' + sourceClass;
@@ -145,7 +145,7 @@
     if (health) {
       html += `<p>Health: ${health.ok ? 'ok' : 'error'} ${health.status || ''} ${health.error || ''}</p>`;
     }
-    html += `<p class="muted small">Seed fallback is automatic. Auth migration has been applied. Optional RFQ migration and GH Actions secrets remain user actions.</p>`;
+    html += `<p class="muted small">Seed fallback is automatic. Auth migration has been applied. Optional RFQ migration and GitHub Actions secrets (see Deploy steps / README) remain user actions if you want persistence and auto-deploy.</p>`;
     html += `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.75rem">`;
     html += `<button type="button" class="small-btn" id="ds-reload">Reload listings</button>`;
     html += `<button type="button" class="small-btn" id="ds-deploy">Deploy steps</button>`;
@@ -262,6 +262,7 @@
     });
 
     document.getElementById('banner-retry-btn')?.addEventListener('click', reloadListings);
+    document.getElementById('banner-details-btn')?.addEventListener('click', openDataSourceModal);
     document.getElementById('banner-deploy-btn')?.addEventListener('click', () => {
       document.getElementById('deploy-modal')?.classList.add('open');
     });
