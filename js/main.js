@@ -4,6 +4,7 @@
  * Loads listings from live Worker or falls back to seed/demo automatically.
  * Health-aware data-source badge + modal. Persistent theme. URL map view + deep links.
  * Fully client-side; works with seed/demo fallback. Completes the frontend shell.
+ * Includes import demo data for local backup/restore of seed/demo listings.
  */
 (function () {
   'use strict';
@@ -104,7 +105,7 @@
       title = 'Demo listings (localStorage)';
       showBanner = true;
       sourceClass = 'source-demo';
-      if (bannerText) bannerText.textContent = 'Using demo listings (your local edits). Changes persist until reset or you publish to the live Worker.';
+      if (bannerText) bannerText.textContent = 'Using demo listings (your local edits). Changes persist until reset or you publish to the live Worker. Import/export JSON for backup.';
     } else {
       label = 'SEED';
       title = 'Using seed listings (Worker offline or unreachable)';
@@ -145,11 +146,12 @@
     if (health) {
       html += `<p>Health: ${health.ok ? 'ok' : 'error'} ${health.status || ''} ${health.error || ''}</p>`;
     }
-    html += `<p class="muted small">Seed fallback is automatic. Auth migration has been applied. Optional RFQ migration and GitHub Actions secrets (see Deploy steps / README) remain user actions if you want persistence and auto-deploy.</p>`;
+    html += `<p class="muted small">Seed fallback is automatic. Auth migration has been applied. Optional RFQ migration and GitHub Actions secrets (see Deploy steps / README) remain user actions if you want persistence and auto-deploy. Import/export demo JSON for local backup.</p>`;
     html += `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.75rem">`;
     html += `<button type="button" class="small-btn" id="ds-reload">Reload listings</button>`;
     html += `<button type="button" class="small-btn" id="ds-deploy">Deploy steps</button>`;
     html += `<button type="button" class="small-btn" id="ds-export">Export demo</button>`;
+    html += `<button type="button" class="small-btn" id="ds-import">Import demo JSON</button>`;
     html += `</div>`;
     content.innerHTML = html;
 
@@ -164,8 +166,40 @@
         if (window.FD_TOAST) window.FD_TOAST.show(r.ok ? `Demo data saved (${r.count})` : r.error, r.ok ? 'success' : 'error');
       }
     });
+    document.getElementById('ds-import')?.addEventListener('click', () => {
+      triggerImportDemo();
+      modal.classList.remove('open');
+    });
 
     modal.classList.add('open');
+  }
+
+  function triggerImportDemo() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) { input.remove(); return; }
+      try {
+        const text = await file.text();
+        if (window.FD_API && window.FD_API.importDemoData) {
+          const r = await window.FD_API.importDemoData(text);
+          if (r.ok) {
+            await reloadListings();
+            if (window.FD_TOAST) window.FD_TOAST.show(`Imported ${r.count} listings into demo`, 'success');
+          } else {
+            if (window.FD_TOAST) window.FD_TOAST.show(r.error || 'Import failed', 'error');
+          }
+        }
+      } catch (err) {
+        if (window.FD_TOAST) window.FD_TOAST.show('Could not read file', 'error');
+      }
+      input.remove();
+    };
+    input.click();
   }
 
   async function loadAndDisplay() {
@@ -325,6 +359,7 @@
         if (window.FD_TOAST) window.FD_TOAST.show(r.ok ? `Demo exported (${r.count} listings)` : (r.error || 'Failed'), r.ok ? 'success' : 'error');
       }
     });
+    document.getElementById('import-demo-btn')?.addEventListener('click', triggerImportDemo);
     document.getElementById('reset-demo-btn')?.addEventListener('click', async () => {
       if (!confirm('Reset demo listings? Local edits will be lost.')) return;
       if (window.FD_API && window.FD_API.resetDemoListings) window.FD_API.resetDemoListings();

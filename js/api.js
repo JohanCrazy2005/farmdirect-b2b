@@ -8,6 +8,7 @@
  * After auth migration: create/update/delete/publish + fetchMyListings with Bearer token.
  * RFQ create/fetchMy with demo fallback (works before or after optional rfq-migration.sql).
  * Fully client-side; works offline / undeployed.
+ * Import/export demo data for local persistence and backup.
  */
 (function (global) {
   'use strict';
@@ -374,6 +375,46 @@
     }
   }
 
+  /**
+   * Import demo listings from a JSON array (file or string).
+   * Replaces current demo data. Used for seed/demo UX backup/restore.
+   */
+  async function importDemoData(listingsOrJson) {
+    try {
+      let listings = listingsOrJson;
+      if (typeof listingsOrJson === 'string') {
+        listings = JSON.parse(listingsOrJson);
+      }
+      if (!Array.isArray(listings)) {
+        return { ok: false, error: 'Expected a JSON array of listings' };
+      }
+      const cleaned = listings.map((l, i) => {
+        if (!l || typeof l !== 'object') return null;
+        return {
+          id: l.id || ('demo-import-' + Date.now().toString(36) + '-' + i),
+          location: l.location || { lat: 0, long: 0 },
+          visibility: l.visibility || 'province',
+          address: l.address || '',
+          sellerid: l.sellerid || 'demo-seller',
+          category: l.category || 'Other',
+          headerdescription: l.headerdescription || 'Imported listing',
+          price: typeof l.price === 'number' ? l.price : 0,
+          units: l.units || 'unit',
+          description: l.description || '',
+          image: l.image || '',
+          status: l.status || 'published',
+          published_at: l.published_at || null,
+          created_at: l.created_at || new Date().toISOString(),
+        };
+      }).filter(Boolean);
+      if (!cleaned.length) return { ok: false, error: 'No valid listings in import' };
+      saveDemoListings(cleaned);
+      return { ok: true, count: cleaned.length, message: 'Demo data imported' };
+    } catch (err) {
+      return { ok: false, error: err.message || 'Import failed (invalid JSON?)' };
+    }
+  }
+
   global.FD_API = {
     fetchListings,
     checkHealth,
@@ -391,5 +432,6 @@
     archiveListing,
     createRfq,
     fetchMyRfqs,
+    importDemoData,
   };
 })(window);

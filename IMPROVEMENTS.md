@@ -1,5 +1,15 @@
 # FarmDirect B2B – Improvements Log
 
+## 2026-10-29 – Seed/demo fallback UX: import demo data from JSON
+
+- Added `importDemoData` to `js/api.js`: accepts a JSON array (string or object), lightly validates/normalizes fields (location, sellerid, category, etc.), assigns missing ids, and saves to localStorage demo store.
+- New “Import demo data (JSON)” button in the Options menu and in the data-source modal.
+- File picker lets users restore a previously exported demo backup; reloads listings and shows toast with count.
+- Updated banner/demo copy to mention import/export for local backup.
+- Improves usability of the automatic seed/demo fallback (offline, empty Worker, or before full live data) by making local edits portable.
+
+Highest remaining items are still user-owned (optional RFQ migration, GitHub Actions secrets, live E2E).
+
 ## 2026-10-29 – Seed/demo fallback UX: clearer banner + data-source guidance
 
 - Added a “Details” button on the offline/seed banner that opens the data-source modal (next to Retry / Deploy steps / Dismiss).
