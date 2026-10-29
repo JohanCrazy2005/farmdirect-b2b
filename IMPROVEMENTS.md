@@ -1,3 +1,15 @@
+## 2026-10-29 (America/Denver) – Seed/demo UX: loading state + Retry on offline banner
+
+**What:** Added a visible LOADING… state on the data-source badge during `fetchListings` and a Retry button on the offline/seed banner that triggers a reload. CSS styles the loading badge (neutral, cursor wait).
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only polish improves feedback when the Worker is unreachable or empty so the map-first UI stays usable with seed/demo fallback.
+
+**How:** Updated `index.html` (Retry button), `js/main.js` (setBadgeLoading + banner-retry handler), and `css/main.css` (loading class). Fully client-side. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in map popups
 
 **What:** Fixed the `escapeHtml` helper in `js/map.js` so that `& < > "` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, or category containing special characters could break map popup HTML or inject markup.
