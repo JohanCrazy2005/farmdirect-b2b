@@ -32,11 +32,26 @@
     if (window.FD_TOAST) window.FD_TOAST.show(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info');
   }
 
+  function setBadgeLoading(isLoading) {
+    const badge = document.getElementById('data-source-badge');
+    if (!badge) return;
+    if (isLoading) {
+      badge.textContent = 'LOADING…';
+      badge.title = 'Fetching listings…';
+      badge.classList.add('loading');
+      badge.hidden = false;
+    } else {
+      badge.classList.remove('loading');
+    }
+  }
+
   function updateDataSourceBadge(result) {
     const badge = document.getElementById('data-source-badge');
     const banner = document.getElementById('offline-banner');
     const bannerText = document.getElementById('offline-banner-text');
     if (!badge) return;
+
+    setBadgeLoading(false);
 
     const source = result?.source || 'seed';
     let label = 'SEED';
@@ -116,6 +131,7 @@
 
   async function loadAndDisplay() {
     if (!window.FD_API || !window.FD_API.fetchListings) return;
+    setBadgeLoading(true);
     try {
       const result = await window.FD_API.fetchListings();
       lastLoadResult = result;
@@ -125,6 +141,7 @@
       updateDataSourceBadge(result);
     } catch (err) {
       console.error('Load failed', err);
+      setBadgeLoading(false);
       if (window.FD_TOAST) window.FD_TOAST.show('Failed to load listings', 'error');
     }
   }
@@ -205,6 +222,7 @@
       if (e.target.id === 'datasource-modal') document.getElementById('datasource-modal')?.classList.remove('open');
     });
 
+    document.getElementById('banner-retry-btn')?.addEventListener('click', reloadListings);
     document.getElementById('banner-deploy-btn')?.addEventListener('click', () => {
       document.getElementById('deploy-modal')?.classList.add('open');
     });
