@@ -1,3 +1,15 @@
+## 2026-10-29 (America/Denver) – Expand filtered view URL params for full filter restore
+
+**What:** Copied filtered view links now include and restore units, min/max price, sort, radius, favorites-only, and only-in-view (in addition to existing q/cat/vis/seller). Previously only the four basic params were serialized and applied on load.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only polish makes shared map-first filtered views more complete and reliable in seed/demo mode.
+
+**How:** Extended `getFilteredViewLink` and `applyFromUrl` in `js/list.js`. Fully client-side. Single commit via push_files. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-29 (America/Denver) – Apply URL query params for filters on load
 
 **What:** Copied filtered view links (`?q=...&cat=...&vis=...&seller=...`) now restore the search query and corresponding filter controls when the page loads (after listings populate). Previously the link was generated but filters were not applied from the URL.

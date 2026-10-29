@@ -4,7 +4,7 @@
  * favorites (localStorage), sort, selection (product card + map fly),
  * filter chips, keyboard navigation, filtered JSON export, and deep-link hash.
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
- * + Applies URL query params (q, cat, vis, seller) on load so copied filtered view links restore filters.
+ * + Applies URL query params (q, cat, vis, seller, units, minprice, maxprice, sort, radius, fav, inview) on load so copied filtered view links restore filters.
  */
 (function (global) {
   'use strict';
@@ -127,6 +127,39 @@
     if (seller) {
       const sel = document.getElementById('filter-seller');
       if (sel && [...sel.options].some(o => o.value === seller)) sel.value = seller;
+    }
+    const units = params.get('units');
+    if (units) {
+      const sel = document.getElementById('filter-units');
+      if (sel && [...sel.options].some(o => o.value === units)) sel.value = units;
+    }
+    const minprice = params.get('minprice');
+    if (minprice != null) {
+      const el = document.getElementById('filter-minprice');
+      if (el) el.value = minprice;
+    }
+    const maxprice = params.get('maxprice');
+    if (maxprice != null) {
+      const el = document.getElementById('filter-maxprice');
+      if (el) el.value = maxprice;
+    }
+    const sort = params.get('sort');
+    if (sort) {
+      const sel = document.getElementById('filter-sort');
+      if (sel && [...sel.options].some(o => o.value === sort)) sel.value = sort;
+    }
+    const radius = params.get('radius');
+    if (radius != null) {
+      const el = document.getElementById('filter-radius');
+      if (el) el.value = radius;
+    }
+    if (params.get('fav') === '1') {
+      const el = document.getElementById('filter-favorites');
+      if (el) el.checked = true;
+    }
+    if (params.get('inview') === '1') {
+      const el = document.getElementById('filter-inview');
+      if (el) el.checked = true;
     }
   }
 
@@ -394,6 +427,13 @@
     if (f.category) params.set('cat', f.category);
     if (f.visibility) params.set('vis', f.visibility);
     if (f.seller) params.set('seller', f.seller);
+    if (f.units) params.set('units', f.units);
+    if (!isNaN(f.minPrice)) params.set('minprice', String(f.minPrice));
+    if (!isNaN(f.maxPrice)) params.set('maxprice', String(f.maxPrice));
+    if (f.sort) params.set('sort', f.sort);
+    if (!isNaN(f.radius) && f.radius > 0) params.set('radius', String(f.radius));
+    if (f.favoritesOnly) params.set('fav', '1');
+    if (f.inView) params.set('inview', '1');
     const base = location.origin + location.pathname;
     return params.toString() ? `${base}?${params}` : base;
   }
