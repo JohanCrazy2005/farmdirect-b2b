@@ -55,6 +55,12 @@ html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Seg
   font-size: 0.7rem; padding: 0.2rem 0.45rem; border-radius: 999px; border: none; cursor: pointer;
   font-weight: 600;
 }
+.data-source-badge.loading {
+  background: #e2e8f0; color: #64748b; cursor: wait;
+}
+[data-theme="dark"] .data-source-badge.loading {
+  background: #334155; color: #94a3b8;
+}
 .source-seed { background: #fef3c7; color: #92400e; }
 .source-demo { background: #dbeafe; color: #1e40af; }
 .source-api { background: #dcfce7; color: #166534; }
