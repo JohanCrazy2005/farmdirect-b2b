@@ -11,6 +11,7 @@
   const THEME_KEY = 'fd-theme';
   let lastLoadResult = null;
   let lastLoadedAt = null;
+  let badgeTimer = null;
 
   function applyTheme() {
     try {
@@ -56,6 +57,19 @@
     if (min < 60) return min + 'm ago';
     const hr = Math.round(min / 60);
     return hr + 'h ago';
+  }
+
+  function refreshBadgeTitle() {
+    const badge = document.getElementById('data-source-badge');
+    if (!badge || !lastLoadResult || !lastLoadedAt) return;
+    const source = lastLoadResult.source || 'seed';
+    const count = lastLoadResult.count || (lastLoadResult.listings ? lastLoadResult.listings.length : 0);
+    let title = 'Using seed listings';
+    if (source === 'api') title = 'Live listings from Worker';
+    else if (source === 'api-empty') title = 'Worker reachable but empty – showing seed';
+    else if (source === 'demo') title = 'Demo listings (localStorage)';
+    else title = 'Using seed listings (Worker offline or unreachable)';
+    badge.title = title + ' · ' + count + ' listings · loaded ' + relativeTime(lastLoadedAt);
   }
 
   function updateDataSourceBadge(result) {
@@ -108,6 +122,10 @@
       if (showBanner) banner.removeAttribute('hidden');
       else banner.setAttribute('hidden', '');
     }
+
+    // Keep relative time fresh without reloading
+    if (badgeTimer) clearInterval(badgeTimer);
+    badgeTimer = setInterval(refreshBadgeTitle, 15000);
   }
 
   function openDataSourceModal() {

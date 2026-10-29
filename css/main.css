@@ -23,7 +23,7 @@
   color-scheme: light;
 }
 
-html.dark {
+html[data-theme="dark"] {
   --bg: #0f1410;
   --surface: #1a221c;
   --text: #e8f0e8;
@@ -54,7 +54,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
   border-bottom: 1px solid rgba(0,0,0,.06);
   height: var(--top-h);
 }
-html.dark .top-bar { background: rgba(15,20,16,.72); border-bottom-color: rgba(255,255,255,.08); }
+html[data-theme="dark"] .top-bar { background: rgba(15,20,16,.72); border-bottom-color: rgba(255,255,255,.08); }
 
 .search-box {
   flex: 1;
@@ -113,7 +113,14 @@ html.dark .top-bar { background: rgba(15,20,16,.72); border-bottom-color: rgba(2
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
 }
+.data-source-badge.source-api { background: #166534; }
+.data-source-badge.source-api-empty { background: #a16207; }
+.data-source-badge.source-seed { background: #1d4ed8; }
+.data-source-badge.source-demo { background: #7c3aed; }
+.data-source-badge.loading { background: #64748b; opacity: .85; }
 .filter-badge, .badge-count {
   position: absolute;
   top: 2px; right: 2px;
@@ -142,7 +149,7 @@ html.dark .top-bar { background: rgba(15,20,16,.72); border-bottom-color: rgba(2
   color: #92400e;
   font-size: .85rem;
 }
-html.dark .offline-banner { background: #422006; color: #fde68a; }
+html[data-theme="dark"] .offline-banner { background: #422006; color: #fde68a; }
 .offline-banner .small-btn { background: rgba(0,0,0,.06); padding: .25rem .5rem; font-size: .8rem; }
 
 /* Map */
@@ -153,7 +160,7 @@ html.dark .offline-banner { background: #422006; color: #fde68a; }
   background: #dbe4d8;
 }
 .leaflet-container { font: inherit; background: #dbe4d8; }
-html.dark .leaflet-container { filter: brightness(.85) contrast(1.05); }
+html[data-theme="dark"] .leaflet-container { filter: brightness(.85) contrast(1.05); }
 
 /* Sidebar */
 .sidebar {
