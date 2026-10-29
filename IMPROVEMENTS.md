@@ -1,3 +1,15 @@
+## 2026-10-29 (America/Denver) – Seed/demo UX: color-coded badge with count + last-loaded time
+
+**What:** Data-source badge now applies the existing `.source-seed` / `.source-demo` / `.source-api` / `.source-api-empty` CSS classes for color coding, shows listing count (e.g. "SEED · 12"), and sets a richer title with relative load time. Data-source modal adds "Last loaded: Xs ago (time)" so users can see freshness without inventing new features.
+
+**Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only polish makes the seed/demo fallback status clearer and more actionable in the map-first UI.
+
+**How:** Updated `js/main.js` (`updateDataSourceBadge`, `openDataSourceModal`, `relativeTime` helper, `lastLoadedAt`). CSS classes already existed. Fully client-side. Appended this entry.
+
+**Next:** Optional: user runs `npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`. Live E2E smoke for auth+publish still pending user verification. Further seed/demo UX polish available.
+
+---
+
 ## 2026-10-29 (America/Denver) – Seed/demo UX: loading state + Retry on offline banner
 
 **What:** Added a visible LOADING… state on the data-source badge during `fetchListings` and a Retry button on the offline/seed banner that triggers a reload. CSS styles the loading badge (neutral, cursor wait).
@@ -12,7 +24,7 @@
 
 ## 2026-10-28 (America/Denver) – Fix HTML escaping in map popups
 
-**What:** Fixed the `escapeHtml` helper in `js/map.js` so that `& < > "` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, or category containing special characters could break map popup HTML or inject markup.
+**What:** Fixed the `escapeHtml` helper in `js/map.js` so that `& < > \"` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, address, seller name, or category containing special characters could break map popup HTML or inject markup.
 
 **Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This completes the HTML-escaping correctness pass started for list.js/cards.js, improving seed/demo robustness for map popups.
 
@@ -36,7 +48,7 @@
 
 ## 2026-10-28 (America/Denver) – Correct HTML escaping in list and cards
 
-**What:** Fixed the `escapeHtml` helpers in `js/list.js` and `js/cards.js` so that `& < > "` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, description, address, or seller name containing special characters could break sidebar list HTML, product/seller cards, or inject markup.
+**What:** Fixed the `escapeHtml` helpers in `js/list.js` and `js/cards.js` so that `& < > \"` are properly converted to HTML entities. Previously the replacements were identity (no-op), so any listing title, description, address, or seller name containing special characters could break sidebar list HTML, product/seller cards, or inject markup.
 
 **Why:** Highest unfinished items remain user-owned (optional RFQ migration, GH Actions secrets, live E2E). This code-only correctness fix improves seed/demo robustness for the core list and card UI.
 

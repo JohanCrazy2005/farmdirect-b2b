@@ -9,6 +9,8 @@
   'use strict';
 
   const THEME_KEY = 'fd-theme';
+  let lastLoadResult = null;
+  let lastLoadedAt = null;
 
   function applyTheme() {
     try {
@@ -38,11 +40,22 @@
     if (isLoading) {
       badge.textContent = 'LOADING…';
       badge.title = 'Fetching listings…';
-      badge.classList.add('loading');
+      badge.className = 'data-source-badge loading';
       badge.hidden = false;
     } else {
       badge.classList.remove('loading');
     }
+  }
+
+  function relativeTime(ts) {
+    if (!ts) return '';
+    const sec = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (sec < 10) return 'just now';
+    if (sec < 60) return sec + 's ago';
+    const min = Math.round(sec / 60);
+    if (min < 60) return min + 'm ago';
+    const hr = Math.round(min / 60);
+    return hr + 'h ago';
   }
 
   function updateDataSourceBadge(result) {
@@ -52,34 +65,42 @@
     if (!badge) return;
 
     setBadgeLoading(false);
+    lastLoadedAt = Date.now();
 
     const source = result?.source || 'seed';
+    const count = result?.count || (result?.listings ? result.listings.length : 0);
     let label = 'SEED';
     let title = 'Using seed listings';
     let showBanner = true;
+    let sourceClass = 'source-seed';
 
     if (source === 'api') {
       label = 'LIVE';
       title = 'Live listings from Worker';
       showBanner = false;
+      sourceClass = 'source-api';
     } else if (source === 'api-empty') {
       label = 'API+SEED';
       title = 'Worker reachable but empty – showing seed';
       showBanner = true;
+      sourceClass = 'source-api-empty';
       if (bannerText) bannerText.textContent = 'Worker is live but has no published listings. Showing seed data for map UX.';
     } else if (source === 'demo') {
       label = 'DEMO';
       title = 'Demo listings (localStorage)';
       showBanner = true;
+      sourceClass = 'source-demo';
       if (bannerText) bannerText.textContent = 'Using demo listings (local edits). Changes persist until reset or live publish.';
     } else {
       label = 'SEED';
       title = 'Using seed listings (Worker offline or unreachable)';
+      sourceClass = 'source-seed';
       if (bannerText) bannerText.textContent = 'Using seed listings (Worker offline or undeployed). Demo changes persist locally.';
     }
 
-    badge.textContent = label;
-    badge.title = title;
+    badge.className = 'data-source-badge ' + sourceClass;
+    badge.textContent = label + (count ? ' · ' + count : '');
+    badge.title = title + ' · ' + count + ' listings · loaded ' + relativeTime(lastLoadedAt);
     badge.hidden = false;
     badge.dataset.source = source;
 
@@ -96,11 +117,13 @@
 
     const badge = document.getElementById('data-source-badge');
     const source = badge?.dataset.source || 'seed';
-    const count = (window.FD_LIST && window.FD_LIST.getListings) ? window.FD_LIST.getListings().length : 0;
+    const count = (window.FD_LIST && window.FD_LIST.getListings) ? window.FD_LIST.getListings().length : (lastLoadResult?.count || 0);
     const health = lastLoadResult?.health;
+    const loaded = lastLoadedAt ? relativeTime(lastLoadedAt) + ' (' + new Date(lastLoadedAt).toLocaleTimeString() + ')' : 'unknown';
 
     let html = `<p><strong>Current source:</strong> ${source.toUpperCase()}</p>`;
     html += `<p>Listings loaded: ${count}</p>`;
+    html += `<p>Last loaded: ${loaded}</p>`;
     if (health) {
       html += `<p>Health: ${health.ok ? 'ok' : 'error'} ${health.status || ''} ${health.error || ''}</p>`;
     }
@@ -126,8 +149,6 @@
 
     modal.classList.add('open');
   }
-
-  let lastLoadResult = null;
 
   async function loadAndDisplay() {
     if (!window.FD_API || !window.FD_API.fetchListings) return;
