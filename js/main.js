@@ -3,17 +3,45 @@
  * Wires map, list, search, filters, offline banner, data-source badge,
  * options, dashboard, auth, theme, and modals. Loads listings via FD_API
  * (live or seed/demo fallback). Fully client-side; works when Worker is undeployed.
+ * Seed/demo polish: badge opens details; banner dismiss persists per source.
  */
 (function (global) {
   'use strict';
 
   function $(id) { return document.getElementById(id); }
 
+  let currentSource = 'seed';
+
+  function isBannerDismissed(source) {
+    try {
+      const raw = localStorage.getItem('fd-banner-dismissed');
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      return data && data.source === source;
+    } catch (_) { return false; }
+  }
+
+  function setBannerDismissed(source) {
+    try {
+      localStorage.setItem('fd-banner-dismissed', JSON.stringify({ source, at: Date.now() }));
+    } catch (_) {}
+  }
+
+  function clearBannerDismissed() {
+    try { localStorage.removeItem('fd-banner-dismissed'); } catch (_) {}
+  }
+
   function showBanner(source, health) {
+    currentSource = source || 'seed';
     const banner = $('offline-banner');
     const text = $('offline-banner-text');
     if (!banner || !text) return;
     if (source === 'api') {
+      banner.hidden = true;
+      clearBannerDismissed();
+      return;
+    }
+    if (isBannerDismissed(source)) {
       banner.hidden = true;
       return;
     }
@@ -32,7 +60,27 @@
     badge.className = 'data-source-badge source-' + (source || 'seed');
     const labels = { api: 'LIVE', 'api-empty': 'EMPTY', seed: 'SEED', demo: 'DEMO' };
     badge.textContent = labels[source] || 'SEED';
-    badge.title = 'Data source: ' + (source || 'seed');
+    badge.title = 'Data source: ' + (source || 'seed') + ' (click for details)';
+  }
+
+  function openDatasourceModal() {
+    const modal = $('datasource-modal');
+    const content = $('datasource-content');
+    if (!content) return;
+    const src = currentSource;
+    let html = '<p>Data is loaded from the live Worker when reachable, otherwise from <code>data/seed-listings.json</code> or local demo storage (localStorage).</p>';
+    if (src === 'api') {
+      html += '<p><strong>Current:</strong> Live published listings from the Worker.</p>';
+    } else if (src === 'api-empty') {
+      html += '<p><strong>Current:</strong> Worker reachable but empty. Seed data is shown so the map stays usable.</p><p class="muted small">Next: register, create a draft, then publish from the dashboard so it appears on the live map.</p>';
+    } else if (src === 'demo') {
+      html += '<p><strong>Current:</strong> Local demo listings (your edits persist in this browser).</p><p class="muted small">Next: use Export/Download in Options to back up, or Reset to return to seed. Publish via dashboard once the Worker is fully live.</p>';
+    } else {
+      html += '<p><strong>Current:</strong> Seed listings (Worker offline or undeployed).</p><p class="muted small">Next: see Deploy steps for wrangler commands. Auth migration is already applied; optional RFQ migration remains user-owned. Changes you make can be saved as demo data.</p>';
+    }
+    html += '<p class="muted small">See README for deploy and migration steps. Auth migration is already applied; optional RFQ migration + GitHub Actions secrets remain user-owned.</p>';
+    content.innerHTML = html;
+    modal?.classList.add('open');
   }
 
   async function loadAndRender() {
@@ -57,6 +105,7 @@
     if (global.FD_TOAST) {
       const msg = source === 'api' ? `Loaded ${listings.length} live listings` :
                   source === 'demo' ? `Loaded ${listings.length} demo listings` :
+                  source === 'api-empty' ? `Worker empty — showing ${listings.length} seed listings` :
                   `Loaded ${listings.length} seed listings`;
       global.FD_TOAST.show(msg, 'success');
     }
@@ -187,22 +236,22 @@
     $('reset-demo-btn')?.addEventListener('click', () => {
       if (confirm('Reset local demo listings and reload seed?')) {
         global.FD_API?.resetDemoListings?.();
+        clearBannerDismissed();
         loadAndRender();
       }
     });
 
     // Banner actions
     $('banner-retry-btn')?.addEventListener('click', loadAndRender);
-    $('banner-details-btn')?.addEventListener('click', () => {
-      const modal = $('datasource-modal');
-      const content = $('datasource-content');
-      if (content) {
-        content.innerHTML = '<p>Data is loaded from the live Worker when reachable, otherwise from <code>data/seed-listings.json</code> or local demo storage.</p><p class="muted small">See README for deploy and migration steps. Auth migration is already applied; optional RFQ migration remains user-owned.</p>';
-      }
-      modal?.classList.add('open');
-    });
+    $('banner-details-btn')?.addEventListener('click', openDatasourceModal);
     $('banner-deploy-btn')?.addEventListener('click', () => $('deploy-modal')?.classList.add('open'));
-    $('dismiss-offline-banner')?.addEventListener('click', () => { $('offline-banner').hidden = true; });
+    $('dismiss-offline-banner')?.addEventListener('click', () => {
+      $('offline-banner').hidden = true;
+      setBannerDismissed(currentSource);
+    });
+
+    // Data-source badge opens details
+    $('data-source-badge')?.addEventListener('click', openDatasourceModal);
 
     // Sidebar / locate / fit
     $('sidebar-toggle')?.addEventListener('click', () => {
@@ -287,5 +336,5 @@
     init();
   }
 
-  global.FD_MAIN = { loadAndRender, toggleTheme };
+  global.FD_MAIN = { loadAndRender, toggleTheme, openDatasourceModal };
 })(window);
