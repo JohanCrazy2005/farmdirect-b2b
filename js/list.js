@@ -7,6 +7,8 @@
  * Applies URL query params (q, cat, vis, seller, units, minprice, maxprice, sort, radius, fav, inview) on load.
  * Category color swatches in the list for visual consistency with the map.
  * Removable individual filter chips under the sidebar header.
+ * + Thumbnail images (or color placeholder) on each list row for faster scanning.
+ * + Actionable empty state with one-click clear-all-filters.
  */
 (function (global) {
   'use strict';
@@ -79,6 +81,27 @@
 
   function getUserPos() {
     return (global.FD_MAP && global.FD_MAP.getUserLocation) ? global.FD_MAP.getUserLocation() : null;
+  }
+
+  function clearAllFilters() {
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = val || '';
+    };
+    setVal('search-input', '');
+    setVal('filter-category', '');
+    setVal('filter-visibility', '');
+    setVal('filter-units', '');
+    setVal('filter-seller', '');
+    setVal('filter-minprice', '');
+    setVal('filter-maxprice', '');
+    setVal('filter-radius', '');
+    setVal('filter-sort', '');
+    setVal('filter-favorites', '');
+    setVal('filter-inview', '');
+    applyFilters();
   }
 
   function applyFilters() {
@@ -159,7 +182,12 @@
     if (countEl) countEl.textContent = String(filtered.length);
 
     if (!filtered.length) {
-      container.innerHTML = '<div class="empty-state">No listings match the current filters.</div>';
+      const hasFilters = countActiveFilters() > 0;
+      container.innerHTML = `<div class="empty-state">
+        <p>No listings match the current filters.</p>
+        ${hasFilters ? '<button type="button" class="small-btn" id="empty-clear-filters">Clear all filters</button>' : ''}
+      </div>`;
+      document.getElementById('empty-clear-filters')?.addEventListener('click', clearAllFilters);
       return;
     }
 
@@ -178,19 +206,25 @@
         if (isFinite(d)) dist = `<span class="distance">~${d.toFixed(1)} km</span>`;
       }
       const fav = favs.has(l.id);
+      const thumb = l.image
+        ? `<img class="listing-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">`
+        : `<div class="listing-thumb listing-thumb-placeholder" style="background:${color}"></div>`;
       return `
         <div class="listing-item" data-id="${escapeHtml(l.id)}" role="listitem" tabindex="0">
-          <div class="listing-header">
-            <div class="listing-title">${swatch}${escapeHtml(l.headerdescription || 'Listing')}</div>
-            <button type="button" class="fav-toggle" data-id="${escapeHtml(l.id)}" title="${fav ? 'Unfavorite' : 'Favorite'}">${fav ? '★' : '☆'}</button>
+          ${thumb}
+          <div class="listing-body">
+            <div class="listing-header">
+              <div class="listing-title">${swatch}${escapeHtml(l.headerdescription || 'Listing')}</div>
+              <button type="button" class="fav-toggle" data-id="${escapeHtml(l.id)}" title="${fav ? 'Unfavorite' : 'Favorite'}">${fav ? '★' : '☆'}</button>
+            </div>
+            <div class="listing-meta">
+              <span class="category-badge" style="background:${color}">${escapeHtml(l.category || '')}</span>
+              ${priceStr ? `<span class="price">${priceStr}${l.units ? ' / ' + escapeHtml(l.units) : ''}</span>` : ''}
+              ${dist}
+            </div>
+            <div class="listing-seller">${seller}</div>
+            ${l.address ? `<div class="listing-address muted small">${escapeHtml(l.address)}</div>` : ''}
           </div>
-          <div class="listing-meta">
-            <span class="category-badge" style="background:${color}">${escapeHtml(l.category || '')}</span>
-            ${priceStr ? `<span class="price">${priceStr}${l.units ? ' / ' + escapeHtml(l.units) : ''}</span>` : ''}
-            ${dist}
-          </div>
-          <div class="listing-seller">${seller}</div>
-          ${l.address ? `<div class="listing-address muted small">${escapeHtml(l.address)}</div>` : ''}
         </div>`;
     }).join('');
 
@@ -307,6 +341,8 @@
     if (!listing) return;
     if (global.FD_CARDS && typeof global.FD_CARDS.showProduct === 'function') {
       global.FD_CARDS.showProduct(listing);
+    } else if (global.FD_CARDS && typeof global.FD_CARDS.openProduct === 'function') {
+      global.FD_CARDS.openProduct(listing);
     }
     if (!fromMap && global.FD_MAP && typeof global.FD_MAP.flyToListing === 'function') {
       global.FD_MAP.flyToListing(listing);
@@ -454,6 +490,7 @@
     getFavorites,
     toggleFavorite,
     clearFavorites,
+    clearAllFilters,
     exportFiltered,
     getFilteredViewLink
   };

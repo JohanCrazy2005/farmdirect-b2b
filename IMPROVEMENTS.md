@@ -1,3 +1,13 @@
+## 2026-10-29 – Seed/demo UX: listing thumbnails + actionable empty state
+
+**What:** Sidebar listing rows now show a small thumbnail (lazy-loaded image or category-colored placeholder). Empty filtered results show a clear “Clear all filters” button. Category swatches are styled. Fully client-side; works in seed/demo and live modes.
+
+**Why:** Highest unfinished items remain user-owned (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets). Thumbnails make the map-first list more scannable using the existing image field. An actionable empty state reduces friction when filters over-constrain results while the Worker path is optional.
+
+**How:** `js/list.js` `renderList` emits a `.listing-thumb` (img or placeholder), wraps content in `.listing-body`, and renders an empty-state button wired to new `clearAllFilters`. CSS adds flex layout, thumb sizing, swatch, and empty-state button styles. Existing chips, favorites, URL params, and map sync unchanged.
+
+**Files:** `js/list.js`, `css/main.css`, `IMPROVEMENTS.md`.
+
 ## 2026-10-29 – Seed/demo UX: individual removable filter chips
 
 **What:** Sidebar now shows each active filter (search, category, visibility, units, seller, min/max price, radius, sort, favorites, in-view) as its own dismissible chip. Clicking × clears only that filter and re-applies. Seller chips use display names. Fully client-side; works in seed/demo and live modes.
