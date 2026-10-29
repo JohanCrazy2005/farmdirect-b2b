@@ -11,10 +11,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '"');
+      .replace(/&/g, '\u0026amp;')
+      .replace(/</g, '\u0026lt;')
+      .replace(/>/g, '\u0026gt;')
+      .replace(/"/g, '\u0026quot;');
   }
 
   function fmtPrice(price, units) {
