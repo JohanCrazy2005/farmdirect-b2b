@@ -1,1 +1,191 @@
-PLACEHOLDER_FIX_ME
+/**
+ * FarmDirect B2B – product & seller cards + lightbox
+ * Renders detailed product cards (visibility badge, price/units, seller display name
+ * from seed-sellers.json, RFQ, favorite, share, compare) and seller cards.
+ * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
+ * Address is now a clickable Google Maps link when coordinates exist.
+ */
+(function (global) {
+  'use strict';
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+
+  function fmtPrice(price, units) {
+    if (price == null || isNaN(Number(price))) return 'Price on request';
+    return '$' + Number(price).toFixed(2) + (units ? ' / ' + units : '');
+  }
+
+  function visibilityLabel(v) {
+    const map = { worldwide: 'Worldwide', country: 'Country', province: 'Province' };
+    return map[v] || v || 'Unknown';
+  }
+
+  function mapsUrlFor(listing) {
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return '';
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+
+  function openProduct(listing) {
+    const el = document.getElementById('product-card');
+    if (!el || !listing) return;
+    const sellerName = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(listing.sellerid)
+      : (listing.sellerid || '');
+    const favs = (global.FD_LIST && typeof global.FD_LIST.getFavorites === 'function')
+      ? global.FD_LIST.getFavorites() : new Set();
+    const isFav = favs.has ? favs.has(listing.id) : false;
+    const mapsUrl = mapsUrlFor(listing);
+    const addressHtml = listing.address
+      ? (mapsUrl
+        ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(listing.address)}</a>`
+        : escapeHtml(listing.address))
+      : '';
+    el.innerHTML = `
+      <button type="button" class="close-card" aria-label="Close">×</button>
+      ${listing.image ? `<img class="card-image" src="${escapeHtml(listing.image)}" alt="" data-full="${escapeHtml(listing.image)}">` : ''}
+      <div class="card-body">
+        <h3>${escapeHtml(listing.headerdescription || 'Listing')}</h3>
+        <div class="card-meta">
+          <button type="button" class="category-badge card-cat" data-cat="${escapeHtml(listing.category || '')}">${escapeHtml(listing.category || '')}</button>
+          <button type="button" class="visibility-badge vis-${escapeHtml(listing.visibility || '')} card-vis" data-vis="${escapeHtml(listing.visibility || '')}">${escapeHtml(visibilityLabel(listing.visibility))}</button>
+          ${listing.units ? `<button type="button" class="units-badge card-units" data-units="${escapeHtml(listing.units)}">${escapeHtml(listing.units)}</button>` : ''}
+          <span class="price">${escapeHtml(fmtPrice(listing.price, listing.units))}</span>
+        </div>
+        <p class="address muted">${addressHtml}</p>
+        <p class="description">${escapeHtml(listing.description || '')}</p>
+        <div class="seller-link">Seller: <button type="button" class="link-btn open-seller" data-seller="${escapeHtml(listing.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
+        <div class="card-actions">
+          <button type="button" class="small-btn rfq-btn" data-id="${escapeHtml(listing.id)}">Request quote</button>
+          <button type="button" class="small-btn fav-btn" data-id="${escapeHtml(listing.id)}">${isFav ? '★ Unfavorite' : '☆ Favorite'}</button>
+          <button type="button" class="small-btn compare-btn" data-id="${escapeHtml(listing.id)}">Compare</button>
+          <button type="button" class="small-btn share-btn" data-id="${escapeHtml(listing.id)}">Share</button>
+        </div>
+      </div>
+    `;
+    el.classList.add('open');
+    el.querySelector('.close-card')?.addEventListener('click', () => closeProduct());
+    el.querySelector('.card-image')?.addEventListener('click', () => openLightbox(listing.image));
+    el.querySelector('.open-seller')?.addEventListener('click', () => openSeller(listing.sellerid));
+    el.querySelector('.rfq-btn')?.addEventListener('click', () => {
+      if (global.FD_RFQ && typeof global.FD_RFQ.open === 'function') global.FD_RFQ.open(listing.id);
+    });
+    el.querySelector('.fav-btn')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.toggleFavorite === 'function') global.FD_LIST.toggleFavorite(listing.id);
+      openProduct(listing);
+    });
+    el.querySelector('.compare-btn')?.addEventListener('click', () => {
+      if (global.FD_COMPARE && typeof global.FD_COMPARE.toggle === 'function') {
+        global.FD_COMPARE.toggle(listing.id);
+        openProduct(listing);
+      }
+    });
+    el.querySelector('.share-btn')?.addEventListener('click', async () => {
+      const url = location.origin + location.pathname + '#listing=' + encodeURIComponent(listing.id);
+      try {
+        await navigator.clipboard.writeText(url);
+        if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+      } catch (_) {
+        if (global.FD_TOAST) global.FD_TOAST.show(url, 'info');
+      }
+    });
+    el.querySelectorAll('.card-cat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setCategoryFilter === 'function') {
+          global.FD_LIST.setCategoryFilter(btn.dataset.cat);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.cat}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    el.querySelectorAll('.card-vis').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setVisibilityFilter === 'function') {
+          global.FD_LIST.setVisibilityFilter(btn.dataset.vis);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.vis}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    el.querySelectorAll('.card-units').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setUnitsFilter === 'function') {
+          global.FD_LIST.setUnitsFilter(btn.dataset.units);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.units}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    if (global.FD_COMPARE && typeof global.FD_COMPARE.updateButtons === 'function') {
+      global.FD_COMPARE.updateButtons();
+    }
+  }
+
+  function closeProduct() {
+    document.getElementById('product-card')?.classList.remove('open');
+  }
+
+  function openSeller(sellerid) {
+    const el = document.getElementById('seller-card');
+    if (!el || !sellerid) return;
+    const name = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(sellerid) : sellerid;
+    const bio = (global.FD_SELLERS && typeof global.FD_SELLERS.getBio === 'function')
+      ? global.FD_SELLERS.getBio(sellerid) : '';
+    el.innerHTML = `
+      <button type="button" class="close-card" aria-label="Close">×</button>
+      <div class="card-body">
+        <h3>${escapeHtml(name)}</h3>
+        ${bio ? `<p class="description">${escapeHtml(bio)}</p>` : ''}
+        <p class="muted">ID: ${escapeHtml(sellerid)}</p>
+        <button type="button" class="small-btn filter-seller" data-seller="${escapeHtml(sellerid)}">Show their listings</button>
+      </div>
+    `;
+    el.classList.add('open');
+    el.querySelector('.close-card')?.addEventListener('click', () => closeSeller());
+    el.querySelector('.filter-seller')?.addEventListener('click', () => {
+      const sel = document.getElementById('filter-seller');
+      if (sel) {
+        sel.value = sellerid;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      closeSeller();
+      closeProduct();
+      if (global.FD_TOAST) global.FD_TOAST.show('Filtered to ' + name, 'info');
+    });
+  }
+
+  function closeSeller() {
+    document.getElementById('seller-card')?.classList.remove('open');
+  }
+
+  function openLightbox(src) {
+    const lb = document.getElementById('image-lightbox');
+    const img = document.getElementById('lightbox-img');
+    if (!lb || !img || !src) return;
+    img.src = src;
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('image-lightbox')?.classList.remove('open');
+  }
+
+  global.FD_CARDS = {
+    openProduct,
+    closeProduct,
+    openSeller,
+    closeSeller,
+    openLightbox,
+    closeLightbox
+  };
+})(window);
