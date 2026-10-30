@@ -12,6 +12,7 @@
  * Listing thumbnails fall back to category-color placeholder on image load error.
  * List count is clickable when filtered to clear all filters.
  * Radius filter without a user location shows a Locate prompt toast.
+ * Empty state in seed/demo includes a one-click Try sample listing button.
  */
 (function (global) {
   'use strict';
@@ -30,7 +31,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/\"/g, '&quot;');
   }
 
   function getFavorites() {
@@ -168,7 +169,7 @@
     if (f.radius > 0) chips.push({ label: f.radius + ' km', clear: () => { $('filter-radius').value = ''; applyFilters(); } });
     if (f.fav) chips.push({ label: 'Favorites', clear: () => { $('filter-favorites').checked = false; applyFilters(); } });
     if (f.inview) chips.push({ label: 'In view', clear: () => { $('filter-inview').checked = false; applyFilters(); } });
-    el.innerHTML = chips.map((c, i) => `<span class="filter-chip">${escapeHtml(c.label)} <button type="button" data-i="${i}" aria-label="Clear">×</button></span>`).join('');
+    el.innerHTML = chips.map((c, i) => `<span class=\"filter-chip\">${escapeHtml(c.label)} <button type=\"button\" data-i=\"${i}\" aria-label=\"Clear\">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => chips[Number(btn.dataset.i)].clear());
     });
@@ -178,13 +179,21 @@
     const el = $('listing-list');
     if (!el) return;
     if (!filtered.length) {
-      const isSeed = !(global.FD_API && global.FD_API.isLive && global.FD_API.isLive());
-      el.innerHTML = `<div class="empty-state muted">
+      const isSeedOrDemo = !(global.FD_API && global.FD_API.isLive && global.FD_API.isLive());
+      el.innerHTML = `<div class=\"empty-state muted\">
         <p>No listings match the current filters.</p>
-        ${isSeed ? '<p class="small">Seed/demo mode: try clearing filters or check the data-source badge for next steps.</p>' : ''}
-        <button type="button" class="small-btn" id="empty-clear">Clear filters</button>
+        ${isSeedOrDemo ? '<p class=\"small\">Seed/demo mode: try clearing filters, open the data-source badge, or create a sample listing.</p>' : ''}
+        <div style=\"display:flex;gap:0.4rem;flex-wrap:wrap;justify-content:center;margin-top:0.5rem\">
+          <button type=\"button\" class=\"small-btn\" id=\"empty-clear\">Clear filters</button>
+          ${isSeedOrDemo ? '<button type=\"button\" class=\"small-btn\" id=\"empty-sample\">Try sample listing</button>' : ''}
+        </div>
       </div>`;
       el.querySelector('#empty-clear')?.addEventListener('click', clearAllFilters);
+      el.querySelector('#empty-sample')?.addEventListener('click', () => {
+        if (global.FD_FORM && typeof global.FD_FORM.openSampleForm === 'function') {
+          global.FD_FORM.openSampleForm();
+        }
+      });
       return;
     }
     const favs = getFavorites();
@@ -195,25 +204,25 @@
       let dist = '';
       if (userLocation && l.location && l.location.lat != null) {
         const km = haversine(userLocation.lat, userLocation.long || userLocation.lng, l.location.lat, l.location.long);
-        dist = `<span class="distance small muted">${formatDistance(km)}</span>`;
+        dist = `<span class=\"distance small muted\">${formatDistance(km)}</span>`;
       }
       const priceStr = l.price != null ? '$' + Number(l.price).toFixed(2) + (l.units ? ' / ' + l.units : '') : 'Price on request';
       const active = l.id === highlightedId ? ' active' : '';
-      const img = l.image ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="" onerror="this.style.background='#ddd';this.src=''">` : `<div class="list-thumb placeholder" data-cat="${escapeHtml(l.category || '')}"></div>`;
-      return `<div class="listing-item${active}" data-id="${escapeHtml(l.id)}" role="listitem" tabindex="0">
+      const img = l.image ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\" onerror=\"this.style.background='#ddd';this.src=''\">` : `<div class=\"list-thumb placeholder\" data-cat=\"${escapeHtml(l.category || '')}\"></div>`;
+      return `<div class=\"listing-item${active}\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\" tabindex=\"0\">
         ${img}
-        <div class="list-body">
-          <div class="list-title">${escapeHtml(l.headerdescription || 'Untitled')}</div>
-          <div class="list-meta">
-            <button type="button" class="category-badge" data-cat="${escapeHtml(l.category || '')}">${escapeHtml(l.category || '')}</button>
-            <button type="button" class="visibility-badge vis-${escapeHtml(l.visibility || '')}" data-vis="${escapeHtml(l.visibility || '')}">${escapeHtml(l.visibility || '')}</button>
-            ${l.units ? `<button type="button" class="units-badge" data-units="${escapeHtml(l.units)}">${escapeHtml(l.units)}</button>` : ''}
-            <span class="price small">${escapeHtml(priceStr)}</span>
+        <div class=\"list-body\">
+          <div class=\"list-title\">${escapeHtml(l.headerdescription || 'Untitled')}</div>
+          <div class=\"list-meta\">
+            <button type=\"button\" class=\"category-badge\" data-cat=\"${escapeHtml(l.category || '')}\">${escapeHtml(l.category || '')}</button>
+            <button type=\"button\" class=\"visibility-badge vis-${escapeHtml(l.visibility || '')}\" data-vis=\"${escapeHtml(l.visibility || '')}\">${escapeHtml(l.visibility || '')}</button>
+            ${l.units ? `<button type=\"button\" class=\"units-badge\" data-units=\"${escapeHtml(l.units)}\">${escapeHtml(l.units)}</button>` : ''}
+            <span class=\"price small\">${escapeHtml(priceStr)}</span>
             ${dist}
           </div>
-          <div class="list-seller small muted">Seller: <button type="button" class="link-btn seller-link" data-seller="${escapeHtml(l.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
+          <div class=\"list-seller small muted\">Seller: <button type=\"button\" class=\"link-btn seller-link\" data-seller=\"${escapeHtml(l.sellerid || '')}\">${escapeHtml(sellerName)}</button></div>
         </div>
-        <button type="button" class="fav-btn icon-btn" data-id="${escapeHtml(l.id)}" aria-label="Favorite">${isFav ? '★' : '☆'}</button>
+        <button type=\"button\" class=\"fav-btn icon-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"Favorite\">${isFav ? '★' : '☆'}</button>
       </div>`;
     }).join('');
     el.querySelectorAll('.listing-item').forEach(item => {
@@ -266,7 +275,7 @@
     if (global.FD_MAP && typeof global.FD_MAP.flyTo === 'function') global.FD_MAP.flyTo(listing);
     if (global.FD_CARDS && typeof global.FD_CARDS.openProduct === 'function') global.FD_CARDS.openProduct(listing);
     if (global.FD_RECENT && typeof global.FD_RECENT.add === 'function') global.FD_RECENT.add(id);
-    const el = document.querySelector(`.listing-item[data-id="${CSS.escape(id)}"]`);
+    const el = document.querySelector(`.listing-item[data-id=\"${CSS.escape(id)}\"]`);
     if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
@@ -284,21 +293,21 @@
     const catSel = $('filter-category');
     if (catSel) {
       const cur = catSel.value;
-      catSel.innerHTML = '<option value="">All</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      catSel.innerHTML = '<option value=\"\">All</option>' + cats.map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
       if (cats.includes(cur)) catSel.value = cur;
     }
     const unitSel = $('filter-units');
     if (unitSel) {
       const cur = unitSel.value;
-      unitSel.innerHTML = '<option value="">Any</option>' + units.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+      unitSel.innerHTML = '<option value=\"\">Any</option>' + units.map(u => `<option value=\"${escapeHtml(u)}\">${escapeHtml(u)}</option>`).join('');
       if (units.includes(cur)) unitSel.value = cur;
     }
     const selSel = $('filter-seller');
     if (selSel) {
       const cur = selSel.value;
-      selSel.innerHTML = '<option value="">Any</option>' + sellers.map(s => {
+      selSel.innerHTML = '<option value=\"\">Any</option>' + sellers.map(s => {
         const name = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function') ? global.FD_SELLERS.getDisplayName(s) : s;
-        return `<option value="${escapeHtml(s)}">${escapeHtml(name)}</option>`;
+        return `<option value=\"${escapeHtml(s)}\">${escapeHtml(name)}</option>`;
       }).join('');
       if (sellers.includes(cur)) selSel.value = cur;
     }

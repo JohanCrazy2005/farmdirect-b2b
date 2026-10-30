@@ -6,6 +6,7 @@
  * Prefills sellerid from current dashboard session when available.
  * Shows draft guidance and toast feedback for the publish workflow.
  * openSampleForm() pre-fills a valid Denver-area listing for seed/demo UX.
+ * After successful create in seed/demo, success status includes a one-click Open dashboard button.
  */
 (function (global) {
   'use strict';
@@ -15,10 +16,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;');
   }
 
   function openForm(listing) {
@@ -27,7 +28,7 @@
     modal.classList.add('open');
     const form = document.getElementById('listing-form');
     const title = document.getElementById('form-title');
-    const submitBtn = form?.querySelector('button[type="submit"]');
+    const submitBtn = form?.querySelector('button[type=\"submit\"]');
     const status = document.getElementById('form-status');
     const preview = document.getElementById('image-preview');
     const draftNote = document.getElementById('form-draft-note');
@@ -153,7 +154,7 @@
     const file = e.target.files?.[0];
     const status = document.getElementById('form-status');
     const preview = document.getElementById('image-preview');
-    const urlInput = document.querySelector('#listing-form input[name="image"]');
+    const urlInput = document.querySelector('#listing-form input[name=\"image\"]');
     if (!file || !urlInput) return;
     if (!file.type.startsWith('image/')) {
       if (status) { status.textContent = 'Please choose an image file'; status.className = 'form-status error'; }
@@ -238,8 +239,20 @@
 
     if (result.ok) {
       const msg = result.message || (editingId ? 'Listing updated' : 'Listing created as draft');
-      status.textContent = msg + (editingId ? '' : ' – publish it from your dashboard.');
+      const isCreate = !editingId;
+      status.innerHTML = escapeHtml(msg) + (isCreate ? ' – publish it from your dashboard. ' : '') +
+        (isCreate && !(global.FD_API && global.FD_API.isLive && global.FD_API.isLive())
+          ? '<button type=\"button\" class=\"small-btn\" id=\"form-open-dash\" style=\"margin-left:0.4rem\">Open dashboard</button>'
+          : '');
       status.className = 'form-status success';
+      if (isCreate) {
+        document.getElementById('form-open-dash')?.addEventListener('click', () => {
+          closeForm();
+          if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.openDashboard === 'function') {
+            global.FD_DASHBOARD.openDashboard();
+          }
+        });
+      }
       if (global.FD_TOAST && typeof global.FD_TOAST.show === 'function') {
         global.FD_TOAST.show(msg, 'success');
       }
@@ -250,7 +263,7 @@
           global.FD_LIST.setListings(fresh.listings);
         }
       }
-      setTimeout(closeForm, 1800);
+      setTimeout(closeForm, 2800);
     } else {
       status.textContent = result.error || 'Failed to save listing';
       status.className = 'form-status error';

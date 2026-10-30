@@ -1,3 +1,11 @@
+## 2026-10-30 – Seed/demo UX: actionable empty state + post-create dashboard shortcut
+
+**What:** Sidebar empty state (when filters match nothing) now includes a “Try sample listing” button in seed/demo mode that calls `FD_FORM.openSampleForm()`. After a successful create in seed/demo, the form status shows an “Open dashboard” button that closes the form and opens the seller dashboard so the user can immediately publish the new draft.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned. This removes friction between “no results” / “just created a draft” and the next useful action without inventing unrelated features.
+
+**How:** `js/list.js` (empty-state button), `js/form.js` (success status button + slightly longer auto-close). Fully client-side; no schema, Worker, or API changes. Works with existing seed fallback and localStorage demo store.
+
 ## 2026-10-30 – Seed/demo UX: one-click sample listing prefill
 
 **What:** Added a “Try sample” button on the offline/seed banner and a “Try sample listing” action in the data-source modal. Both call `FD_FORM.openSampleForm()`, which opens the create form pre-filled with a valid Denver-area produce listing (matching the seed geography and schema). Users can immediately edit, save (persists to local demo), then publish from the dashboard.
