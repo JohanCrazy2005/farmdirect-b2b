@@ -1,3 +1,11 @@
+## 2026-10-30 – Seed/demo UX: shareable filtered view deep links + seller chip names
+
+**What:** Implemented the missing `FD_LIST.getFilteredViewLink()` so the existing Options → “Copy filtered view link” button now produces a shareable URL with current filters as query params (`q`, `cat`, `vis`, `units`, `seller`, `minprice`, `maxprice`, `radius`, `sort`, `fav`, `inview`). On load, those params are applied once after the filter selects are populated, restoring the filtered view. Seller filter chips now show the human-readable display name instead of the generic “Seller” label.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned. The copy-filtered-link control was already in the UI but non-functional; making it work improves exploration and sharing without inventing features or schema changes.
+
+**How:** `js/list.js` (new `getFilteredViewLink` + `applyUrlParams`, seller chip label). Fully client-side; no schema, Worker, or API changes. Works with existing seed fallback and localStorage demo store.
+
 ## 2026-10-30 – Seed/demo UX: actionable empty state + post-create dashboard shortcut
 
 **What:** Sidebar empty state (when filters match nothing) now includes a “Try sample listing” button in seed/demo mode that calls `FD_FORM.openSampleForm()`. After a successful create in seed/demo, the form status shows an “Open dashboard” button that closes the form and opens the seller dashboard so the user can immediately publish the new draft.

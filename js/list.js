@@ -13,6 +13,8 @@
  * List count is clickable when filtered to clear all filters.
  * Radius filter without a user location shows a Locate prompt toast.
  * Empty state in seed/demo includes a one-click Try sample listing button.
+ * getFilteredViewLink builds a shareable URL with current filters as query params.
+ * URL params are applied once on load so shared filtered views restore correctly.
  */
 (function (global) {
   'use strict';
@@ -22,6 +24,7 @@
   let filtered = [];
   let highlightedId = null;
   let userLocation = null;
+  let urlParamsApplied = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -80,6 +83,43 @@
       fav: $('filter-favorites')?.checked || false,
       inview: $('filter-inview')?.checked || false
     };
+  }
+
+  function getFilteredViewLink() {
+    const f = getFilters();
+    const params = new URLSearchParams();
+    if (f.q) params.set('q', f.q);
+    if (f.cat) params.set('cat', f.cat);
+    if (f.vis) params.set('vis', f.vis);
+    if (f.units) params.set('units', f.units);
+    if (f.seller) params.set('seller', f.seller);
+    if (f.minprice > 0) params.set('minprice', String(f.minprice));
+    if (f.maxprice < Infinity) params.set('maxprice', String(f.maxprice));
+    if (f.radius > 0) params.set('radius', String(f.radius));
+    if (f.sort) params.set('sort', f.sort);
+    if (f.fav) params.set('fav', '1');
+    if (f.inview) params.set('inview', '1');
+    const qs = params.toString();
+    const base = location.origin + location.pathname;
+    return qs ? base + '?' + qs : base;
+  }
+
+  function applyUrlParams() {
+    if (urlParamsApplied) return;
+    const params = new URLSearchParams(location.search);
+    if (!params.toString()) { urlParamsApplied = true; return; }
+    if (params.has('q') && $('search-input')) $('search-input').value = params.get('q');
+    if (params.has('cat') && $('filter-category')) $('filter-category').value = params.get('cat');
+    if (params.has('vis') && $('filter-visibility')) $('filter-visibility').value = params.get('vis');
+    if (params.has('units') && $('filter-units')) $('filter-units').value = params.get('units');
+    if (params.has('seller') && $('filter-seller')) $('filter-seller').value = params.get('seller');
+    if (params.has('minprice') && $('filter-minprice')) $('filter-minprice').value = params.get('minprice');
+    if (params.has('maxprice') && $('filter-maxprice')) $('filter-maxprice').value = params.get('maxprice');
+    if (params.has('radius') && $('filter-radius')) $('filter-radius').value = params.get('radius');
+    if (params.has('sort') && $('filter-sort')) $('filter-sort').value = params.get('sort');
+    if (params.has('fav') && $('filter-favorites')) $('filter-favorites').checked = params.get('fav') === '1';
+    if (params.has('inview') && $('filter-inview')) $('filter-inview').checked = params.get('inview') === '1';
+    urlParamsApplied = true;
   }
 
   function applyFilters() {
@@ -163,7 +203,11 @@
     if (f.cat) chips.push({ label: f.cat, clear: () => { $('filter-category').value = ''; applyFilters(); } });
     if (f.vis) chips.push({ label: f.vis, clear: () => { $('filter-visibility').value = ''; applyFilters(); } });
     if (f.units) chips.push({ label: f.units, clear: () => { $('filter-units').value = ''; applyFilters(); } });
-    if (f.seller) chips.push({ label: 'Seller', clear: () => { $('filter-seller').value = ''; applyFilters(); } });
+    if (f.seller) {
+      const name = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+        ? global.FD_SELLERS.getDisplayName(f.seller) : f.seller;
+      chips.push({ label: 'Seller: ' + name, clear: () => { $('filter-seller').value = ''; applyFilters(); } });
+    }
     if (f.minprice > 0) chips.push({ label: 'Min $' + f.minprice, clear: () => { $('filter-minprice').value = ''; applyFilters(); } });
     if (f.maxprice < Infinity) chips.push({ label: 'Max $' + f.maxprice, clear: () => { $('filter-maxprice').value = ''; applyFilters(); } });
     if (f.radius > 0) chips.push({ label: f.radius + ' km', clear: () => { $('filter-radius').value = ''; applyFilters(); } });
@@ -283,6 +327,7 @@
     listings = Array.isArray(list) ? list : [];
     listings.forEach((l, i) => { if (!l.id) l.id = 'l' + i; });
     populateSelects();
+    applyUrlParams();
     applyFilters();
   }
 
@@ -375,6 +420,7 @@
     toggleFavorite,
     clearFavorites: () => { setFavorites([]); applyFilters(); },
     exportFiltered,
-    setUserLocation: loc => { userLocation = loc; applyFilters(); }
+    setUserLocation: loc => { userLocation = loc; applyFilters(); },
+    getFilteredViewLink
   };
 })(window);
