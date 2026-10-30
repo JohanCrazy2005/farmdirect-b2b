@@ -1,1 +1,44 @@
 PLACEHOLDER
+
+## 2026-10-30 – Frontend shell completed (map / list / bootstrap)
+
+- Replaced placeholder `index.html`, `js/map.js`, `js/list.js`, and `js/main.js` with a working map-first shell.
+- `index.html` wires the transparent top bar, Leaflet map, sidebar list, filter card, options menu, product/seller cards, and all modals expected by existing modules (auth, dashboard, form, sellers, deploy, shortcuts, data-source, lightbox).
+- `js/map.js` initializes Leaflet, renders category-colored markers, supports fly-to and user location, and updates with filtered listings.
+- `js/list.js` holds listings, applies search + filter chips (category, seller, visibility, units, price, favorites), renders the sidebar, handles selection (opens product card + flies map), and persists favorites.
+- `js/main.js` bootstraps everything: loads via `FD_API.fetchListings` (seed/demo fallback), shows data-source badge + offline banner with Details modal, wires theme / options / sidebar / filters / profile, and calls bind() on the other modules.
+- Seed/demo UX remains fully usable when the Worker is offline or empty. No unrelated features added.
+
+## 2026-10-30 – Random listing picker (seed/demo UX)
+
+**What:** Added a “Random” button in the sidebar header that picks a listing at random from the current filtered set, opens its product card, and flies the map to it.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is empty or offline. A one-click random explorer makes the map-first UI easier to scan without inventing new features.
+
+**How:**
+- `index.html`: new `#random-listing-btn` next to Add / Sample.
+- `js/list.js`: `pickRandom()` selects from `filtered`, calls `select()`, and shows a toast with the header description. Wired in `bind()`.
+- Exposed on `FD_LIST.pickRandom`. Works fully client-side with seed or demo data.
+
+## 2026-10-30 – Nearby quick filter (seed/demo UX)
+
+**What:** Added a “Nearby” button in the sidebar that filters the current set to listings within 25 km of the user’s location and sorts them by distance. Distance is shown on list rows. A removable chip appears.
+
+**Why:** Seed/demo mode is the main experience while the live Worker is offline or empty. Proximity exploration helps users scan the map-first UI without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#nearby-btn` next to Random.
+- `js/map.js`: `locateUser` now accepts an optional success callback so the filter can activate after geolocation.
+- `js/list.js`: `enableNearby()` requests location if needed, sets `filters.nearby`, applies a ≤25 km Haversine filter, sorts by distance, and renders a chip. Distance shown in list meta. Chip removal and Clear filters turn it off. Fully client-side.
+- Exposed on `FD_LIST.enableNearby`.
+
+## 2026-10-30 – Sidebar sort control (seed/demo UX)
+
+**What:** Added a Sort select in the sidebar (Default / Price ↑ / Price ↓ / Distance). Price sorts are numeric; Distance requests geolocation if needed and sorts by Haversine km. A removable chip shows the active sort. Distance is also shown on list rows whenever location is known.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. Sorting helps scan price or proximity without inventing unrelated features.
+
+**How:**
+- `index.html`: new `.sidebar-sort` with `#sort-select` under the header tools.
+- `css/main.css`: styles for the sort row (flex, compact select).
+- `js/list.js`: `filters.sort`, applied after filtering in `applyFilters()`. Nearby still forces distance sort. Chip removal and Clear reset to default. `setSort()` exposed. Fully client-side.
