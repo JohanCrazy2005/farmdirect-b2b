@@ -4,6 +4,7 @@
  * options, dashboard, auth, theme, and modals. Loads listings via FD_API
  * (live or seed/demo fallback). Fully client-side; works when Worker is undeployed.
  * Seed/demo polish: badge opens details; banner dismiss persists per source.
+ * Data-source modal now includes actionable next-step buttons for seed/demo UX.
  */
 (function (global) {
   'use strict';
@@ -78,8 +79,48 @@
     } else {
       html += '<p><strong>Current:</strong> Seed listings (Worker offline or undeployed).</p><p class="muted small">Next: see Deploy steps for wrangler commands. Auth migration is already applied; optional RFQ migration remains user-owned. Changes you make can be saved as demo data.</p>';
     }
-    html += '<p class="muted small">See README for deploy and migration steps. Auth migration is already applied; optional RFQ migration + GitHub Actions secrets remain user-owned.</p>';
+    html += '<div class="card-actions" style="margin-top:0.75rem;flex-wrap:wrap;gap:0.4rem">';
+    if (src !== 'api') {
+      html += '<button type="button" class="small-btn" id="ds-open-dashboard">Open dashboard</button>';
+      html += '<button type="button" class="small-btn" id="ds-show-deploy">Deploy steps</button>';
+    }
+    if (src === 'demo' || src === 'seed' || src === 'api-empty') {
+      html += '<button type="button" class="small-btn" id="ds-export-demo">Export demo</button>';
+      html += '<button type="button" class="small-btn" id="ds-download-demo">Download backup</button>';
+    }
+    if (src === 'demo') {
+      html += '<button type="button" class="small-btn" id="ds-reset-demo">Reset to seed</button>';
+    }
+    html += '</div>';
+    html += '<p class="muted small" style="margin-top:0.75rem">See README for deploy and migration steps. Auth migration is already applied; optional RFQ migration + GitHub Actions secrets remain user-owned.</p>';
     content.innerHTML = html;
+
+    // Wire action buttons
+    content.querySelector('#ds-open-dashboard')?.addEventListener('click', () => {
+      modal?.classList.remove('open');
+      global.FD_DASHBOARD?.open?.() || global.FD_AUTH?.open?.();
+    });
+    content.querySelector('#ds-show-deploy')?.addEventListener('click', () => {
+      modal?.classList.remove('open');
+      $('deploy-modal')?.classList.add('open');
+    });
+    content.querySelector('#ds-export-demo')?.addEventListener('click', async () => {
+      const r = await global.FD_API?.exportDemoData?.();
+      if (global.FD_TOAST) global.FD_TOAST.show(r?.ok ? `Exported ${r.count} listings to demo` : (r?.error || 'Export failed'), r?.ok ? 'success' : 'error');
+    });
+    content.querySelector('#ds-download-demo')?.addEventListener('click', () => {
+      const r = global.FD_API?.downloadDemoBackup?.();
+      if (global.FD_TOAST) global.FD_TOAST.show(r?.ok ? 'Demo backup downloaded' : (r?.error || 'Download failed'), r?.ok ? 'success' : 'error');
+    });
+    content.querySelector('#ds-reset-demo')?.addEventListener('click', () => {
+      if (confirm('Reset local demo listings and reload seed?')) {
+        global.FD_API?.resetDemoListings?.();
+        clearBannerDismissed();
+        modal?.classList.remove('open');
+        loadAndRender();
+      }
+    });
+
     modal?.classList.add('open');
   }
 

@@ -5,6 +5,7 @@
  * individual removable filter chips, category color swatches,
  * keyboard navigation, filtered JSON export, and deep-link URL params.
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
+ * Empty state is now source-aware with next-step guidance for seed/demo UX.
  */
 (function (global) {
   'use strict';
@@ -153,8 +154,16 @@
 
     if (!filtered.length) {
       const hasFilters = hasActiveFilters();
-      el.innerHTML = `<div class="empty-state muted">No matching listings.${hasFilters ? '<br><button type="button" class="small-btn" id="empty-clear">Clear filters</button>' : ''}</div>`;
+      const source = (global.FD_MAIN && global.FD_MAIN.getCurrentSource) ? global.FD_MAIN.getCurrentSource() : 'seed';
+      let emptyMsg = 'No matching listings.';
+      if (!hasFilters && (source === 'seed' || source === 'demo' || source === 'api-empty')) {
+        emptyMsg = 'No listings loaded yet. Seed data should appear automatically, or create one in demo mode from the dashboard.';
+      }
+      el.innerHTML = `<div class="empty-state muted">${emptyMsg}${hasFilters ? '<br><button type="button" class="small-btn" id="empty-clear">Clear filters</button>' : ''}${!hasFilters && source !== 'api' ? '<br><button type="button" class="small-btn" id="empty-create" style="margin-top:0.4rem">Create listing</button>' : ''}</div>`;
       $('empty-clear')?.addEventListener('click', clearAllFilters);
+      $('empty-create')?.addEventListener('click', () => {
+        global.FD_FORM?.open?.() || global.FD_DASHBOARD?.open?.();
+      });
       return;
     }
 

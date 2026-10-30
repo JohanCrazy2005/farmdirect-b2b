@@ -1,3 +1,15 @@
+## 2026-10-29 – Actionable seed/demo data-source modal + empty-state guidance
+
+**What:** Enhanced the data-source modal (opened from the top-bar badge or banner Details) with source-specific actionable buttons: Open dashboard, Deploy steps, Export demo, Download backup, and Reset to seed. Updated the sidebar empty state to be source-aware, offering a Create listing button and clearer guidance when no listings match in seed/demo/api-empty modes.
+
+**Why:** Further seed/demo UX polish so offline or undeployed users have clear next steps without hunting through Options. Highest unfinished code-only item after prior list.js restore; P1 optional RFQ migration and P5 secrets remain user-owned.
+
+**How:** Single commit via `push_files` updating `js/main.js` (modal buttons + wiring) and `js/list.js` (empty-state HTML + click handlers), plus this log entry.
+
+**Next:** User can still apply optional RFQ migration or add Cloudflare secrets; seed/demo fallback remains fully usable offline with improved guidance.
+
+---
+
 ## 2026-10-29 – Restore complete sidebar list module (seed/demo UX)
 
 **What:** Replaced the stub `js/list.js` with a full client-side sidebar module.
