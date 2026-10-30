@@ -6,6 +6,8 @@
  * Seed/demo polish: badge opens details; banner dismiss persists per source.
  * Data-source modal now includes actionable next-step buttons for seed/demo UX.
  * Banner + modal offer one-click sample listing prefill.
+ * Banner and data-source modal now include listing counts and a quick summary
+ * (categories + price range) to make seed/demo exploration clearer.
  */
 (function (global) {
   'use strict';
@@ -33,7 +35,7 @@
     try { localStorage.removeItem('fd-banner-dismissed'); } catch (_) {}
   }
 
-  function showBanner(source, health) {
+  function showBanner(source, health, count) {
     currentSource = source || 'seed';
     const banner = $('offline-banner');
     const text = $('offline-banner-text');
@@ -47,10 +49,11 @@
       banner.hidden = true;
       return;
     }
-    let msg = 'Using seed listings (Worker offline or undeployed). Demo changes persist locally.';
-    if (source === 'demo') msg = 'Using local demo listings. Changes persist in this browser until reset or live publish.';
-    else if (source === 'api-empty') msg = 'Worker is reachable but has no published listings yet. Showing seed data so the map stays usable.';
-    else if (source === 'seed') msg = 'Using seed listings (Worker offline or undeployed). Demo changes persist locally.';
+    const n = typeof count === 'number' ? count : 0;
+    let msg = `Using ${n} seed listings (Worker offline or undeployed). Demo changes persist locally.`;
+    if (source === 'demo') msg = `Using ${n} local demo listings. Changes persist in this browser until reset or live publish.`;
+    else if (source === 'api-empty') msg = `Worker is reachable but has no published listings yet. Showing ${n} seed listings so the map stays usable.`;
+    else if (source === 'seed') msg = `Using ${n} seed listings (Worker offline or undeployed). Demo changes persist locally.`;
     text.textContent = msg;
     banner.hidden = false;
   }
@@ -70,6 +73,14 @@
     const content = $('datasource-content');
     if (!content) return;
     const src = currentSource;
+    const listings = (global.FD_LIST && typeof global.FD_LIST.getListings === 'function') ? (global.FD_LIST.getListings() || []) : [];
+    const count = listings.length;
+    const cats = [...new Set(listings.map(l => l.category).filter(Boolean))].sort();
+    const prices = listings.map(l => Number(l.price)).filter(p => !isNaN(p) && p >= 0);
+    const minP = prices.length ? Math.min(...prices).toFixed(2) : '—';
+    const maxP = prices.length ? Math.max(...prices).toFixed(2) : '—';
+    const catSummary = cats.length ? cats.slice(0, 6).join(', ') + (cats.length > 6 ? '…' : '') : 'none';
+
     let html = '<p>Data is loaded from the live Worker when reachable, otherwise from <code>data/seed-listings.json</code> or local demo storage (localStorage).</p>';
     if (src === 'api') {
       html += '<p><strong>Current:</strong> Live published listings from the Worker.</p>';
@@ -80,12 +91,15 @@
     } else {
       html += '<p><strong>Current:</strong> Seed listings (Worker offline or undeployed).</p><p class="muted small">Next: see Deploy steps for wrangler commands. Auth migration is already applied; optional RFQ migration remains user-owned. Changes you make can be saved as demo data.</p>';
     }
+    html += `<p class="muted small" style="margin-top:0.5rem"><strong>Summary:</strong> ${count} listings · Categories: ${catSummary} · Price range $${minP}–$${maxP}</p>`;
     html += '<div class="card-actions" style="margin-top:0.75rem;flex-wrap:wrap;gap:0.4rem">';
     if (src !== 'api') {
       html += '<button type="button" class="small-btn" id="ds-open-dashboard">Open dashboard</button>';
       html += '<button type="button" class="small-btn" id="ds-show-deploy">Deploy steps</button>';
       html += '<button type="button" class="small-btn" id="ds-try-sample">Try sample listing</button>';
     }
+    html += '<button type="button" class="small-btn" id="ds-fit-all">Fit all on map</button>';
+    html += '<button type="button" class="small-btn" id="ds-clear-filters">Clear filters</button>';
     if (src === 'demo' || src === 'seed' || src === 'api-empty') {
       html += '<button type="button" class="small-btn" id="ds-export-demo">Export demo</button>';
       html += '<button type="button" class="small-btn" id="ds-download-demo">Download backup</button>';
@@ -109,6 +123,18 @@
     content.querySelector('#ds-try-sample')?.addEventListener('click', () => {
       modal?.classList.remove('open');
       global.FD_FORM?.openSampleForm?.();
+    });
+    content.querySelector('#ds-fit-all')?.addEventListener('click', () => {
+      modal?.classList.remove('open');
+      global.FD_MAP?.fitAll?.();
+    });
+    content.querySelector('#ds-clear-filters')?.addEventListener('click', () => {
+      if ($('search-input')) $('search-input').value = '';
+      ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort'].forEach(id => { const el = $(id); if (el) el.value = ''; });
+      const fav = $('filter-favorites'); if (fav) fav.checked = false;
+      const inv = $('filter-inview'); if (inv) inv.checked = false;
+      global.FD_LIST?.applyFilters?.();
+      if (global.FD_TOAST) global.FD_TOAST.show('Filters cleared', 'info');
     });
     content.querySelector('#ds-export-demo')?.addEventListener('click', async () => {
       const r = await global.FD_API?.exportDemoData?.();
@@ -143,7 +169,7 @@
       global.FD_MAP.updateMarkers(listings);
     }
 
-    showBanner(source, result.health);
+    showBanner(source, result.health, listings.length);
     updateBadge(source);
 
     // Populate filter dropdowns from data

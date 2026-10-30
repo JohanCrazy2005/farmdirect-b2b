@@ -1,3 +1,11 @@
+## 2026-10-30 – Seed/demo UX: listing counts + summary in banner and data-source modal
+
+**What:** Offline/seed banner now includes the current listing count (seed, demo, or api-empty). Data-source modal adds a one-line summary (count, top categories, price range) plus “Fit all on map” and “Clear filters” buttons so users can explore the loaded data without leaving the modal.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned. Showing counts and a quick summary makes the fallback data immediately understandable and actionable without inventing new features or schema changes.
+
+**How:** `js/main.js` (showBanner accepts count; openDatasourceModal computes summary from FD_LIST.getListings and wires two new buttons). Fully client-side; no schema, Worker, or API changes. Works with existing seed fallback and localStorage demo store.
+
 ## 2026-10-30 – Seed/demo UX: shareable filtered view deep links + seller chip names
 
 **What:** Implemented the missing `FD_LIST.getFilteredViewLink()` so the existing Options → “Copy filtered view link” button now produces a shareable URL with current filters as query params (`q`, `cat`, `vis`, `units`, `seller`, `minprice`, `maxprice`, `radius`, `sort`, `fav`, `inview`). On load, those params are applied once after the filter selects are populated, restoring the filtered view. Seller filter chips now show the human-readable display name instead of the generic “Seller” label.
