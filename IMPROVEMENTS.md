@@ -19,3 +19,15 @@ PLACEHOLDER
 - `index.html`: new `#random-listing-btn` next to Add / Sample.
 - `js/list.js`: `pickRandom()` selects from `filtered`, calls `select()`, and shows a toast with the header description. Wired in `bind()`.
 - Exposed on `FD_LIST.pickRandom`. Works fully client-side with seed or demo data.
+
+## 2026-10-30 – Nearby quick filter (seed/demo UX)
+
+**What:** Added a “Nearby” button in the sidebar that filters the current set to listings within 25 km of the user’s location and sorts them by distance. Distance is shown on list rows. A removable chip appears.
+
+**Why:** Seed/demo mode is the main experience while the live Worker is offline or empty. Proximity exploration helps users scan the map-first UI without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#nearby-btn` next to Random.
+- `js/map.js`: `locateUser` now accepts an optional success callback so the filter can activate after geolocation.
+- `js/list.js`: `enableNearby()` requests location if needed, sets `filters.nearby`, applies a ≤25 km Haversine filter, sorts by distance, and renders a chip. Distance shown in list meta. Chip removal and Clear filters turn it off. Fully client-side.
+- Exposed on `FD_LIST.enableNearby`.

@@ -3,6 +3,7 @@
  * Initializes the map, renders markers for listings, supports fly-to and user location.
  * Works fully with seed/demo fallback. Clustering via simple DivIcon groups is optional;
  * markers use category-colored pins. Exposes getMap / flyToListing / getUserLocation / setListings.
+ * locateUser now accepts an optional success callback so Nearby filter can activate after geolocation.
  */
 (function (global) {
   'use strict';
@@ -137,8 +138,11 @@
     });
   }
 
-  function locateUser() {
-    if (!navigator.geolocation || !map) return;
+  function locateUser(onSuccess) {
+    if (!navigator.geolocation || !map) {
+      if (global.FD_TOAST) global.FD_TOAST.show('Geolocation not available', 'error');
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
@@ -152,6 +156,7 @@
         }).addTo(map).bindPopup('Your location');
         map.flyTo([userLocation.lat, userLocation.lng], 13);
         if (global.FD_TOAST) global.FD_TOAST.show('Location updated', 'info');
+        if (typeof onSuccess === 'function') onSuccess(userLocation);
       },
       () => {
         if (global.FD_TOAST) global.FD_TOAST.show('Could not get location', 'error');

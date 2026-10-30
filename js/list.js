@@ -3,12 +3,14 @@
  * Holds the current set of listings (from API / seed / demo), applies filters,
  * renders the list, handles selection (opens product card + flies map),
  * favorites (localStorage), and navigation. Fully client-side.
- * Includes random listing picker from the current filtered set for easier seed/demo exploration.
+ * Includes random listing picker and Nearby quick filter (25 km + distance sort)
+ * from the current set for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
 
   const FAV_KEY = 'fd-favorites';
+  const NEARBY_KM = 25;
   let allListings = [];
   let filtered = [];
   let selectedId = null;
@@ -20,7 +22,8 @@
     units: '',
     minPrice: null,
     maxPrice: null,
-    favoritesOnly: false
+    favoritesOnly: false,
+    nearby: false
   };
 
   function getFavorites() {
@@ -57,9 +60,34 @@
       : (sellerid || '');
   }
 
+  function getUserLocation() {
+    return (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function')
+      ? global.FD_MAP.getUserLocation()
+      : null;
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function distanceFor(listing, userPos) {
+    if (!userPos || !listing || !listing.location) return null;
+    const lat = Number(listing.location.lat);
+    const lng = Number(listing.location.long);
+    if (isNaN(lat) || isNaN(lng)) return null;
+    return haversineKm(userPos.lat, userPos.lng, lat, lng);
+  }
+
   function applyFilters() {
     const q = (filters.q || '').toLowerCase();
     const favs = filters.favoritesOnly ? new Set(getFavorites()) : null;
+    const userPos = filters.nearby ? getUserLocation() : null;
     filtered = allListings.filter(l => {
       if (filters.category && l.category !== filters.category) return false;
       if (filters.seller && l.sellerid !== filters.seller) return false;
@@ -69,6 +97,10 @@
       if (filters.minPrice != null && !isNaN(filters.minPrice) && (isNaN(price) || price < filters.minPrice)) return false;
       if (filters.maxPrice != null && !isNaN(filters.maxPrice) && (isNaN(price) || price > filters.maxPrice)) return false;
       if (favs && !favs.has(l.id)) return false;
+      if (userPos) {
+        const d = distanceFor(l, userPos);
+        if (d == null || d > NEARBY_KM) return false;
+      }
       if (q) {
         const hay = [
           l.headerdescription, l.description, l.category,
@@ -78,6 +110,14 @@
       }
       return true;
     });
+    // Sort by distance when Nearby is active
+    if (userPos && filtered.length) {
+      filtered.sort((a, b) => {
+        const da = distanceFor(a, userPos) ?? Infinity;
+        const db = distanceFor(b, userPos) ?? Infinity;
+        return da - db;
+      });
+    }
   }
 
   function escapeHtml(s) {
@@ -98,6 +138,8 @@
       return;
     }
 
+    const userPos = filters.nearby ? getUserLocation() : null;
+
     listEl.innerHTML = filtered.map(l => {
       const seller = escapeHtml(getDisplayName(l.sellerid));
       const price = l.price != null ? `$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units || '')}` : '';
@@ -105,6 +147,11 @@
       const thumb = l.image
         ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="">`
         : `<div class="list-thumb placeholder">${escapeHtml((l.category || '?').slice(0, 3).toUpperCase())}</div>`;
+      let distHtml = '';
+      if (userPos) {
+        const d = distanceFor(l, userPos);
+        if (d != null) distHtml = `<span class="muted">~${d.toFixed(1)} km</span>`;
+      }
       return `
         <div class="listing-item${selectedId === l.id ? ' active' : ''}" data-id="${escapeHtml(l.id)}" role="listitem" tabindex="0">
           ${thumb}
@@ -113,6 +160,7 @@
             <div class="list-meta">
               <span class="category-badge">${escapeHtml(l.category || '')}</span>
               <span>${escapeHtml(price)}</span>
+              ${distHtml}
             </div>
             <div class="list-seller muted small">${seller}</div>
           </div>
@@ -181,13 +229,14 @@
     if (filters.visibility) chips.push({ key: 'visibility', label: filters.visibility });
     if (filters.units) chips.push({ key: 'units', label: filters.units });
     if (filters.favoritesOnly) chips.push({ key: 'favoritesOnly', label: 'Favorites' });
+    if (filters.nearby) chips.push({ key: 'nearby', label: `Nearby ≤${NEARBY_KM} km` });
     if (filters.minPrice != null) chips.push({ key: 'minPrice', label: `Min $${filters.minPrice}` });
     if (filters.maxPrice != null) chips.push({ key: 'maxPrice', label: `Max $${filters.maxPrice}` });
     el.innerHTML = chips.map(c => `<span class="filter-chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.key;
-        if (key === 'favoritesOnly') filters.favoritesOnly = false;
+        if (key === 'favoritesOnly' || key === 'nearby') filters[key] = false;
         else if (key === 'minPrice' || key === 'maxPrice') filters[key] = null;
         else filters[key] = '';
         syncFilterUI();
@@ -223,10 +272,11 @@
     filters.minPrice = min !== '' && min != null ? Number(min) : null;
     filters.maxPrice = max !== '' && max != null ? Number(max) : null;
     filters.favoritesOnly = !!document.getElementById('filter-favorites')?.checked;
+    // nearby is toggled only via the Nearby button / chip
   }
 
   function clearFilters() {
-    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false };
+    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false, nearby: false };
     syncFilterUI();
     render();
     if (global.FD_TOAST) global.FD_TOAST.show('Filters cleared', 'info');
@@ -299,6 +349,30 @@
     }
   }
 
+  /**
+   * Enable Nearby filter: listings within 25 km of user location, sorted by distance.
+   * Requests geolocation if needed. Fully client-side for seed/demo UX.
+   */
+  function enableNearby() {
+    const existing = getUserLocation();
+    if (existing) {
+      filters.nearby = true;
+      render();
+      if (global.FD_TOAST) global.FD_TOAST.show(`Nearby: ≤${NEARBY_KM} km, sorted by distance`, 'info');
+      return;
+    }
+    if (global.FD_MAP && typeof global.FD_MAP.locateUser === 'function') {
+      if (global.FD_TOAST) global.FD_TOAST.show('Getting your location…', 'info');
+      global.FD_MAP.locateUser(() => {
+        filters.nearby = true;
+        render();
+        if (global.FD_TOAST) global.FD_TOAST.show(`Nearby: ≤${NEARBY_KM} km, sorted by distance`, 'success');
+      });
+    } else {
+      if (global.FD_TOAST) global.FD_TOAST.show('Location unavailable', 'error');
+    }
+  }
+
   function setListings(listings) {
     allListings = Array.isArray(listings) ? listings : [];
     render();
@@ -327,6 +401,8 @@
     });
     // Random picker (seed/demo UX)
     document.getElementById('random-listing-btn')?.addEventListener('click', pickRandom);
+    // Nearby quick filter (seed/demo UX)
+    document.getElementById('nearby-btn')?.addEventListener('click', enableNearby);
   }
 
   global.FD_LIST = {
@@ -336,6 +412,7 @@
     select,
     navigate,
     pickRandom,
+    enableNearby,
     toggleFavorite,
     isFavorite,
     getFavorites,
