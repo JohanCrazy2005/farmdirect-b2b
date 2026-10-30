@@ -1,1 +1,1 @@
-PLACEHOLDER
+## 2026-10-30 – Clickable visibility & units badges... full content
