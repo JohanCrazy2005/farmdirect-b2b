@@ -293,6 +293,200 @@
     });
   }
 
-  // rest of the file continues with renderChips, clearChip, etc. as in original + the new handlers already included above.
-  // Full file content is the cleaned version from /tmp/list.js
+  function renderChips() {
+    const el = $('filter-chips');
+    if (!el) return;
+    const chips = [];
+    const q = ($('search-input')?.value || '').trim();
+    if (q) chips.push({ key: 'q', label: `Search: ${q}` });
+    const cat = $('filter-category')?.value;
+    if (cat) chips.push({ key: 'cat', label: `Category: ${cat}` });
+    const vis = $('filter-visibility')?.value;
+    if (vis) chips.push({ key: 'vis', label: `Visibility: ${vis}` });
+    const units = $('filter-units')?.value;
+    if (units) chips.push({ key: 'units', label: `Units: ${units}` });
+    const seller = $('filter-seller')?.value;
+    if (seller) chips.push({ key: 'seller', label: `Seller: ${getSellerName(seller)}` });
+    const minP = $('filter-minprice')?.value;
+    if (minP) chips.push({ key: 'minprice', label: `Min ≥ $${minP}` });
+    const maxP = $('filter-maxprice')?.value;
+    if (maxP) chips.push({ key: 'maxprice', label: `Max ≤ $${maxP}` });
+    const radius = $('filter-radius')?.value;
+    if (radius) chips.push({ key: 'radius', label: `Radius ≤ ${radius} km` });
+    if ($('filter-favorites')?.checked) chips.push({ key: 'fav', label: 'Favorites' });
+    if ($('filter-inview')?.checked) chips.push({ key: 'inview', label: 'In view' });
+    const sort = $('filter-sort')?.value;
+    if (sort) chips.push({ key: 'sort', label: `Sort: ${sort}` });
+
+    el.innerHTML = chips.map(c => `<span class=\"chip\" data-key=\"${c.key}\">${escapeHtml(c.label)} <button type=\"button\" class=\"chip-remove\" aria-label=\"Remove\">×</button></span>`).join('');
+    el.querySelectorAll('.chip-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.parentElement.dataset.key;
+        clearChip(key);
+      });
+    });
+  }
+
+  function clearChip(key) {
+    if (key === 'q') { const s = $('search-input'); if (s) s.value = ''; }
+    else if (key === 'cat') { const e = $('filter-category'); if (e) e.value = ''; }
+    else if (key === 'vis') { const e = $('filter-visibility'); if (e) e.value = ''; }
+    else if (key === 'units') { const e = $('filter-units'); if (e) e.value = ''; }
+    else if (key === 'seller') { const e = $('filter-seller'); if (e) e.value = ''; }
+    else if (key === 'minprice') { const e = $('filter-minprice'); if (e) e.value = ''; }
+    else if (key === 'maxprice') { const e = $('filter-maxprice'); if (e) e.value = ''; }
+    else if (key === 'radius') { const e = $('filter-radius'); if (e) e.value = ''; }
+    else if (key === 'fav') { const e = $('filter-favorites'); if (e) e.checked = false; }
+    else if (key === 'inview') { const e = $('filter-inview'); if (e) e.checked = false; }
+    else if (key === 'sort') { const e = $('filter-sort'); if (e) e.value = ''; }
+    applyFilters();
+  }
+
+  function hasActiveFilters() {
+    return !!(($('search-input')?.value || '').trim() ||
+      $('filter-category')?.value ||
+      $('filter-visibility')?.value ||
+      $('filter-units')?.value ||
+      $('filter-seller')?.value ||
+      $('filter-minprice')?.value ||
+      $('filter-maxprice')?.value ||
+      $('filter-radius')?.value ||
+      $('filter-favorites')?.checked ||
+      $('filter-inview')?.checked ||
+      $('filter-sort')?.value);
+  }
+
+  function updateFilterBadge() {
+    const badge = $('filter-badge');
+    if (!badge) return;
+    const n = [
+      ($('search-input')?.value || '').trim() ? 1 : 0,
+      $('filter-category')?.value ? 1 : 0,
+      $('filter-visibility')?.value ? 1 : 0,
+      $('filter-units')?.value ? 1 : 0,
+      $('filter-seller')?.value ? 1 : 0,
+      $('filter-minprice')?.value ? 1 : 0,
+      $('filter-maxprice')?.value ? 1 : 0,
+      $('filter-radius')?.value ? 1 : 0,
+      $('filter-favorites')?.checked ? 1 : 0,
+      $('filter-inview')?.checked ? 1 : 0
+    ].reduce((a, b) => a + b, 0);
+    badge.textContent = n;
+    badge.hidden = n === 0;
+  }
+
+  function clearAllFilters() {
+    ['filter-category','filter-visibility','filter-units','filter-seller','filter-minprice','filter-maxprice','filter-radius','filter-sort'].forEach(id => {
+      const el = $(id); if (el) el.value = '';
+    });
+    const fav = $('filter-favorites'); if (fav) fav.checked = false;
+    const inv = $('filter-inview'); if (inv) inv.checked = false;
+    const search = $('search-input'); if (search) search.value = '';
+    applyFilters();
+  }
+
+  function select(id) {
+    highlightedId = id;
+    const l = listings.find(x => x.id === id);
+    if (!l) return;
+    renderList();
+    if (global.FD_CARDS && typeof global.FD_CARDS.showProduct === 'function') {
+      global.FD_CARDS.showProduct(l);
+    }
+    if (global.FD_MAP && typeof global.FD_MAP.flyTo === 'function' && l.location) {
+      global.FD_MAP.flyTo(l.location.lat, l.location.long);
+    }
+    if (global.FD_RECENT && typeof global.FD_RECENT.add === 'function') {
+      global.FD_RECENT.add(l);
+    }
+  }
+
+  function updateUrl() {
+    const params = new URLSearchParams();
+    const q = ($('search-input')?.value || '').trim();
+    if (q) params.set('q', q);
+    const cat = $('filter-category')?.value; if (cat) params.set('cat', cat);
+    const vis = $('filter-visibility')?.value; if (vis) params.set('vis', vis);
+    const units = $('filter-units')?.value; if (units) params.set('units', units);
+    const seller = $('filter-seller')?.value; if (seller) params.set('seller', seller);
+    const minP = $('filter-minprice')?.value; if (minP) params.set('minprice', minP);
+    const maxP = $('filter-maxprice')?.value; if (maxP) params.set('maxprice', maxP);
+    const radius = $('filter-radius')?.value; if (radius) params.set('radius', radius);
+    const sort = $('filter-sort')?.value; if (sort) params.set('sort', sort);
+    if ($('filter-favorites')?.checked) params.set('fav', '1');
+    if ($('filter-inview')?.checked) params.set('inview', '1');
+    const qs = params.toString();
+    const url = location.pathname + (qs ? '?' + qs : '') + location.hash;
+    history.replaceState(null, '', url);
+  }
+
+  function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const set = (id, val) => { const el = $(id); if (el && val != null) el.value = val; };
+    if (params.has('q')) set('search-input', params.get('q'));
+    if (params.has('cat')) set('filter-category', params.get('cat'));
+    if (params.has('vis')) set('filter-visibility', params.get('vis'));
+    if (params.has('units')) set('filter-units', params.get('units'));
+    if (params.has('seller')) set('filter-seller', params.get('seller'));
+    if (params.has('minprice')) set('filter-minprice', params.get('minprice'));
+    if (params.has('maxprice')) set('filter-maxprice', params.get('maxprice'));
+    if (params.has('radius')) set('filter-radius', params.get('radius'));
+    if (params.has('sort')) set('filter-sort', params.get('sort'));
+    if (params.get('fav') === '1') { const e = $('filter-favorites'); if (e) e.checked = true; }
+    if (params.get('inview') === '1') { const e = $('filter-inview'); if (e) e.checked = true; }
+  }
+
+  function getFilteredViewLink() {
+    return location.href;
+  }
+
+  function exportFiltered() {
+    const data = filtered.map(l => ({ ...l }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'farmdirect-filtered.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function setListings(arr) {
+    listings = Array.isArray(arr) ? arr.slice() : [];
+    restoreFromUrl();
+    applyFilters();
+  }
+
+  function getListings() { return listings.slice(); }
+
+  function getFiltered() { return filtered.slice(); }
+
+  // Keyboard nav support (called from shortcuts if desired)
+  function navigate(dir) {
+    if (!filtered.length) return;
+    let idx = filtered.findIndex(l => l.id === highlightedId);
+    if (idx < 0) idx = 0;
+    else idx = (idx + dir + filtered.length) % filtered.length;
+    select(filtered[idx].id);
+    const item = document.querySelector(`.listing-item[data-id=\"${filtered[idx].id}\"]`);
+    item?.scrollIntoView({ block: 'nearest' });
+  }
+
+  global.FD_LIST = {
+    setListings,
+    getListings,
+    getFiltered,
+    applyFilters,
+    select,
+    setCategoryFilter: (v) => { const e = $('filter-category'); if (e) { e.value = v || ''; applyFilters(); } },
+    setVisibilityFilter: (v) => { const e = $('filter-visibility'); if (e) { e.value = v || ''; applyFilters(); } },
+    setUnitsFilter: (v) => { const e = $('filter-units'); if (e) { e.value = v || ''; applyFilters(); } },
+    setSellerFilter: (v) => { const e = $('filter-seller'); if (e) { e.value = v || ''; applyFilters(); } },
+    getFavorites,
+    toggleFavorite,
+    clearFavorites,
+    exportFiltered,
+    getFilteredViewLink,
+    navigate,
+    clearAllFilters
+  };
 })(window);
