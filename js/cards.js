@@ -5,6 +5,8 @@
  * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
  * Address is now a clickable Google Maps link when coordinates exist.
  * Shows distance from user location (when Locate is used). Favorites state is correctly detected.
+ * Product card includes Prev/Next buttons (and position indicator) that cycle through
+ * the current filtered set via FD_LIST.navigate for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -12,10 +14,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '\u0026amp;')
-      .replace(/</g, '\u0026lt;')
-      .replace(/>/g, '\u0026gt;')
-      .replace(/"/g, '\u0026quot;');
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
   }
 
   function fmtPrice(price, units) {
@@ -50,6 +52,16 @@
     return km.toFixed(1) + ' km';
   }
 
+  function getFilteredPosition(listing) {
+    if (!global.FD_LIST || typeof global.FD_LIST.getListings !== 'function') return null;
+    // Use the currently filtered set if available via a new method; otherwise fall back
+    const all = global.FD_LIST.getListings() || [];
+    // Prefer filtered if we can access it indirectly; for now show among all loaded
+    const idx = all.findIndex(l => l.id === listing.id);
+    if (idx < 0) return null;
+    return { idx: idx + 1, total: all.length };
+  }
+
   function openProduct(listing) {
     const el = document.getElementById('product-card');
     if (!el || !listing) return;
@@ -71,11 +83,18 @@
       const km = haversine(userLoc.lat, userLoc.long || userLoc.lng, listing.location.lat, listing.location.long);
       distHtml = `<span class="distance muted small" title="From your location">${formatDistance(km)} away</span>`;
     }
+    // Position among filtered (best-effort)
+    let posHtml = '';
+    if (global.FD_LIST && typeof global.FD_LIST.getFiltered === 'function') {
+      const filt = global.FD_LIST.getFiltered() || [];
+      const fi = filt.findIndex(l => l.id === listing.id);
+      if (fi >= 0) posHtml = `<span class="muted small" style="margin-left:0.5rem">${fi + 1} of ${filt.length}</span>`;
+    }
     el.innerHTML = `
       <button type="button" class="close-card" aria-label="Close">×</button>
       ${listing.image ? `<img class="card-image" src="${escapeHtml(listing.image)}" alt="" data-full="${escapeHtml(listing.image)}">` : ''}
       <div class="card-body">
-        <h3>${escapeHtml(listing.headerdescription || 'Listing')}</h3>
+        <h3>${escapeHtml(listing.headerdescription || 'Listing')} ${posHtml}</h3>
         <div class="card-meta">
           <button type="button" class="category-badge card-cat" data-cat="${escapeHtml(listing.category || '')}">${escapeHtml(listing.category || '')}</button>
           <button type="button" class="visibility-badge vis-${escapeHtml(listing.visibility || '')} card-vis" data-vis="${escapeHtml(listing.visibility || '')}">${escapeHtml(visibilityLabel(listing.visibility))}</button>
@@ -87,6 +106,8 @@
         <p class="description">${escapeHtml(listing.description || '')}</p>
         <div class="seller-link">Seller: <button type="button" class="link-btn open-seller" data-seller="${escapeHtml(listing.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
         <div class="card-actions">
+          <button type="button" class="small-btn nav-prev" data-id="${escapeHtml(listing.id)}">← Prev</button>
+          <button type="button" class="small-btn nav-next" data-id="${escapeHtml(listing.id)}">Next →</button>
           <button type="button" class="small-btn rfq-btn" data-id="${escapeHtml(listing.id)}">Request quote</button>
           <button type="button" class="small-btn fav-btn" data-id="${escapeHtml(listing.id)}">${isFav ? '★ Unfavorite' : '☆ Favorite'}</button>
           <button type="button" class="small-btn compare-btn" data-id="${escapeHtml(listing.id)}">Compare</button>
@@ -98,6 +119,12 @@
     el.querySelector('.close-card')?.addEventListener('click', () => closeProduct());
     el.querySelector('.card-image')?.addEventListener('click', () => openLightbox(listing.image));
     el.querySelector('.open-seller')?.addEventListener('click', () => openSeller(listing.sellerid));
+    el.querySelector('.nav-prev')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.navigate === 'function') global.FD_LIST.navigate(-1);
+    });
+    el.querySelector('.nav-next')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.navigate === 'function') global.FD_LIST.navigate(1);
+    });
     el.querySelector('.rfq-btn')?.addEventListener('click', () => {
       if (global.FD_RFQ && typeof global.FD_RFQ.open === 'function') global.FD_RFQ.open(listing.id);
     });
