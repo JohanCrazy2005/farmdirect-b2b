@@ -8,3 +8,14 @@ PLACEHOLDER
 - `js/list.js` holds listings, applies search + filter chips (category, seller, visibility, units, price, favorites), renders the sidebar, handles selection (opens product card + flies map), and persists favorites.
 - `js/main.js` bootstraps everything: loads via `FD_API.fetchListings` (seed/demo fallback), shows data-source badge + offline banner with Details modal, wires theme / options / sidebar / filters / profile, and calls bind() on the other modules.
 - Seed/demo UX remains fully usable when the Worker is offline or empty. No unrelated features added.
+
+## 2026-10-30 – Random listing picker (seed/demo UX)
+
+**What:** Added a “Random” button in the sidebar header that picks a listing at random from the current filtered set, opens its product card, and flies the map to it.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is empty or offline. A one-click random explorer makes the map-first UI easier to scan without inventing new features.
+
+**How:**
+- `index.html`: new `#random-listing-btn` next to Add / Sample.
+- `js/list.js`: `pickRandom()` selects from `filtered`, calls `select()`, and shows a toast with the header description. Wired in `bind()`.
+- Exposed on `FD_LIST.pickRandom`. Works fully client-side with seed or demo data.
