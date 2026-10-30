@@ -3,6 +3,7 @@
  * Holds the current set of listings (from API / seed / demo), applies filters,
  * renders the list, handles selection (opens product card + flies map),
  * favorites (localStorage), and navigation. Fully client-side.
+ * Includes random listing picker from the current filtered set for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -81,7 +82,7 @@
 
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
   }
 
   function render() {
@@ -279,6 +280,25 @@
     select(filtered[idx].id);
   }
 
+  /**
+   * Pick a random listing from the current filtered set and select it
+   * (opens product card + flies map). Useful for seed/demo exploration.
+   */
+  function pickRandom() {
+    applyFilters();
+    if (!filtered.length) {
+      if (global.FD_TOAST) global.FD_TOAST.show('No listings in the current filter set', 'info');
+      return;
+    }
+    const idx = Math.floor(Math.random() * filtered.length);
+    const listing = filtered[idx];
+    select(listing.id);
+    if (global.FD_TOAST) {
+      const name = listing.headerdescription || listing.category || 'listing';
+      global.FD_TOAST.show(`Random: ${name}`, 'info');
+    }
+  }
+
   function setListings(listings) {
     allListings = Array.isArray(listings) ? listings : [];
     render();
@@ -305,6 +325,8 @@
       readFiltersFromUI();
       render();
     });
+    // Random picker (seed/demo UX)
+    document.getElementById('random-listing-btn')?.addEventListener('click', pickRandom);
   }
 
   global.FD_LIST = {
@@ -313,6 +335,7 @@
     getFiltered,
     select,
     navigate,
+    pickRandom,
     toggleFavorite,
     isFavorite,
     getFavorites,
