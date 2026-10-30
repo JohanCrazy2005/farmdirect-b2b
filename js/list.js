@@ -1,1 +1,1 @@
-$(cat /tmp/list.js)
+PLACEHOLDER_WILL_REPLACE
