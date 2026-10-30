@@ -1,3 +1,11 @@
+## 2026-10-30 – Seed/demo UX: next/prev navigation + listing deep links
+
+**What:** Product card now has “← Prev” / “Next →” buttons and a “N of M” position indicator that cycle through the current filtered set via new `FD_LIST.navigate(delta)`. Keyboard arrows already navigate the list; the buttons make the same flow available while the card is open. Shared individual listing links of the form `#listing=id` are now applied on load so the product card opens automatically.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned. Next/prev + deep links make sequential exploration and sharing of specific seed listings frictionless without inventing features or schema changes.
+
+**How:** `js/list.js` (navigate, applyHash, getFiltered), `js/cards.js` (prev/next buttons + position). Fully client-side; no schema, Worker, or API changes. Works with existing seed fallback and localStorage demo store.
+
 ## 2026-10-30 – Seed/demo UX: random listing picker
 
 **What:** Added “Random” buttons in the offline banner, sidebar header, and Options menu, plus keyboard shortcut <kbd>r</kbd>. Calls new `FD_LIST.selectRandom()` which picks a random listing from the current filtered set, selects it (opens product card), and flies the map to it. Toast confirms the pick.
