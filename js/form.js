@@ -5,6 +5,7 @@
  * Image: accepts https URL or local file (resized to data URL).
  * Prefills sellerid from current dashboard session when available.
  * Shows draft guidance and toast feedback for the publish workflow.
+ * openSampleForm() pre-fills a valid Denver-area listing for seed/demo UX.
  */
 (function (global) {
   'use strict';
@@ -67,6 +68,35 @@
         : '';
       if (sellerInput) sellerInput.value = current || 'seller-demo';
     }
+  }
+
+  /**
+   * Opens the create form pre-filled with a valid sample listing
+   * so users can immediately try the seed/demo create → persist → publish flow.
+   */
+  function openSampleForm() {
+    openForm(null);
+    setTimeout(() => {
+      const form = document.getElementById('listing-form');
+      const preview = document.getElementById('image-preview');
+      if (!form) return;
+      form.lat.value = '39.7392';
+      form.long.value = '-104.9903';
+      form.visibility.value = 'country';
+      form.address.value = 'Demo Farm, 123 Green Valley Rd, Denver, CO 80202';
+      form.category.value = 'produce';
+      form.headerdescription.value = 'Sample demo vine-ripened tomatoes';
+      form.price.value = '1.50';
+      form.units.value = 'kg';
+      form.description.value = 'This is a sample listing created in seed/demo mode. Edit it, save, then publish from your dashboard. Changes persist locally in this browser.';
+      const sampleImage = 'https://images.unsplash.com/photo-1592924357228-91a4daeaa8c9?w=400&h=300&fit=crop';
+      form.image.value = sampleImage;
+      if (preview) {
+        preview.src = sampleImage;
+        preview.style.display = 'block';
+      }
+      if (global.FD_TOAST) global.FD_TOAST.show('Sample listing pre-filled — edit and create to try demo mode', 'info');
+    }, 40);
   }
 
   function closeForm() {
@@ -244,5 +274,5 @@
     });
   }
 
-  global.FD_FORM = { openForm, closeForm, bindForm };
+  global.FD_FORM = { openForm, closeForm, bindForm, openSampleForm };
 })(window);

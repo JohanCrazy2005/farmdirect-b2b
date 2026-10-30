@@ -5,6 +5,7 @@
  * (live or seed/demo fallback). Fully client-side; works when Worker is undeployed.
  * Seed/demo polish: badge opens details; banner dismiss persists per source.
  * Data-source modal now includes actionable next-step buttons for seed/demo UX.
+ * Banner + modal offer one-click sample listing prefill.
  */
 (function (global) {
   'use strict';
@@ -83,6 +84,7 @@
     if (src !== 'api') {
       html += '<button type="button" class="small-btn" id="ds-open-dashboard">Open dashboard</button>';
       html += '<button type="button" class="small-btn" id="ds-show-deploy">Deploy steps</button>';
+      html += '<button type="button" class="small-btn" id="ds-try-sample">Try sample listing</button>';
     }
     if (src === 'demo' || src === 'seed' || src === 'api-empty') {
       html += '<button type="button" class="small-btn" id="ds-export-demo">Export demo</button>';
@@ -103,6 +105,10 @@
     content.querySelector('#ds-show-deploy')?.addEventListener('click', () => {
       modal?.classList.remove('open');
       $('deploy-modal')?.classList.add('open');
+    });
+    content.querySelector('#ds-try-sample')?.addEventListener('click', () => {
+      modal?.classList.remove('open');
+      global.FD_FORM?.openSampleForm?.();
     });
     content.querySelector('#ds-export-demo')?.addEventListener('click', async () => {
       const r = await global.FD_API?.exportDemoData?.();
@@ -286,6 +292,7 @@
     $('banner-retry-btn')?.addEventListener('click', loadAndRender);
     $('banner-details-btn')?.addEventListener('click', openDatasourceModal);
     $('banner-deploy-btn')?.addEventListener('click', () => $('deploy-modal')?.classList.add('open'));
+    $('banner-sample-btn')?.addEventListener('click', () => global.FD_FORM?.openSampleForm?.());
     $('dismiss-offline-banner')?.addEventListener('click', () => {
       $('offline-banner').hidden = true;
       setBannerDismissed(currentSource);

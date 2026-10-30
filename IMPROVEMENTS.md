@@ -1,3 +1,11 @@
+## 2026-10-30 – Seed/demo UX: one-click sample listing prefill
+
+**What:** Added a “Try sample” button on the offline/seed banner and a “Try sample listing” action in the data-source modal. Both call `FD_FORM.openSampleForm()`, which opens the create form pre-filled with a valid Denver-area produce listing (matching the seed geography and schema). Users can immediately edit, save (persists to local demo), then publish from the dashboard.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned. This gives a zero-friction way to experience the full create → persist → publish loop while the Worker is offline or empty, without inventing unrelated features.
+
+**How:** `js/form.js` (new `openSampleForm`), `js/main.js` (wiring in banner + modal), `index.html` (banner button). Fully client-side; no schema, Worker, or API changes. Works with existing seed fallback and localStorage demo store.
+
 ## 2026-10-30 – Complete css/main.css (layout + seed/demo polish)
 
 **What:** Replaced the 15-byte `PLACEHOLDER_CSS` with a full, substantial stylesheet. It implements the transparent top bar (backdrop blur), map, sidebar list (thumbs, badges, chips, empty state), filter/options cards, product/seller cards, all modals, custom Leaflet markers & clusters, legend, offline banner, data-source badge, toasts, and dark-mode variables. Responsive breakpoints declutter the phone view (collapsible sidebar, progressive disclosure of controls, safe-area padding, larger touch targets).
