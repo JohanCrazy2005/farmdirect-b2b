@@ -1,3 +1,15 @@
+## 2026-10-29 – Clickable category badges, seller links + thumbnails in list rows (seed/demo UX)
+
+**What:** Updated sidebar list rows to show listing thumbnails (or color placeholder), clickable category badges that filter the list, and clickable seller names that filter by seller. Uses existing CSS classes for consistency. Fully client-side; works in seed/demo mode.
+
+**Why:** Further seed/demo UX polish so users can quickly drill into category or seller from the list without opening the product card. Aligns with prior intent and existing styles. Highest unfinished code-only item; P1 optional RFQ and P5 secrets remain user-owned.
+
+**How:** Single commit via push_files updating js/list.js (renderList + event handlers) and this log entry.
+
+**Next:** User can still apply optional RFQ migration or add Cloudflare secrets; seed/demo fallback remains fully usable offline with improved list interactions.
+
+---
+
 ## 2026-10-29 – Actionable seed/demo data-source modal + empty-state guidance
 
 **What:** Enhanced the data-source modal (opened from the top-bar badge or banner Details) with source-specific actionable buttons: Open dashboard, Deploy steps, Export demo, Download backup, and Reset to seed. Updated the sidebar empty state to be source-aware, offering a Create listing button and clearer guidance when no listings match in seed/demo/api-empty modes.

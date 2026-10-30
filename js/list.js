@@ -6,6 +6,7 @@
  * keyboard navigation, filtered JSON export, and deep-link URL params.
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
  * Empty state is now source-aware with next-step guidance for seed/demo UX.
+ * List rows include thumbnails + clickable category badges and seller links for quick filtering.
  */
 (function (global) {
   'use strict';
@@ -172,15 +173,24 @@
       const color = categoryColor(l.category);
       const name = getSellerName(l.sellerid);
       const price = l.price != null ? `$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units || '')}` : '';
+      const thumb = l.image
+        ? `<img class="listing-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">`
+        : `<div class="listing-thumb listing-thumb-placeholder" style="background:${color}"></div>`;
       return `
         <div class="listing-item${highlightedId === l.id ? ' highlighted' : ''}" role="listitem" data-id="${escapeHtml(l.id)}" tabindex="0">
-          <div class="listing-swatch" style="background:${color}" title="${escapeHtml(l.category || '')}"></div>
+          ${thumb}
           <div class="listing-body">
             <div class="listing-header">
               <strong>${escapeHtml(l.headerdescription || 'Untitled')}</strong>
               <button type="button" class="fav-btn${fav ? ' active' : ''}" data-id="${escapeHtml(l.id)}" title="${fav ? 'Remove favorite' : 'Add favorite'}" aria-label="Favorite">${fav ? '★' : '☆'}</button>
             </div>
-            <div class="listing-meta muted small">${escapeHtml(name)} · ${escapeHtml(l.category || '')} · ${price}</div>
+            <div class="listing-meta muted small">
+              <button type="button" class="category-filter-btn category-badge" data-cat="${escapeHtml(l.category || '')}" style="background:${color};color:#fff;border:none" title="Filter by ${escapeHtml(l.category || 'category')}">${escapeHtml(l.category || '')}</button>
+              <span class="price">${price}</span>
+            </div>
+            <div class="listing-seller muted small">
+              <button type="button" class="seller-link" data-seller="${escapeHtml(l.sellerid || '')}" title="Filter by seller">${escapeHtml(name)}</button>
+            </div>
             <div class="listing-addr muted small">${escapeHtml(l.address || '')}</div>
           </div>
         </div>
@@ -189,7 +199,7 @@
 
     el.querySelectorAll('.listing-item').forEach(item => {
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.fav-btn')) return;
+        if (e.target.closest('.fav-btn, .category-filter-btn, .seller-link')) return;
         select(item.dataset.id);
       });
       item.addEventListener('keydown', (e) => {
@@ -200,6 +210,28 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(btn.dataset.id);
+      });
+    });
+    el.querySelectorAll('.category-filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cat = btn.dataset.cat;
+        if (cat) {
+          const sel = $('filter-category');
+          if (sel) { sel.value = cat; applyFilters(); }
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${cat}`, 'info');
+        }
+      });
+    });
+    el.querySelectorAll('.seller-link').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sid = btn.dataset.seller;
+        if (sid) {
+          const sel = $('filter-seller');
+          if (sel) { sel.value = sid; applyFilters(); }
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.textContent}`, 'info');
+        }
       });
     });
   }
