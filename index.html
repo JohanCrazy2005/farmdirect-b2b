@@ -51,6 +51,15 @@
           <button type="button" id="nearby-btn" class="small-btn" title="Filter to listings within 25 km of your location (sorts by distance)">Nearby</button>
         </div>
       </div>
+      <div class="sidebar-sort">
+        <label for="sort-select" class="muted small">Sort</label>
+        <select id="sort-select" aria-label="Sort listings">
+          <option value="default">Default</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="distance">Distance (if known)</option>
+        </select>
+      </div>
       <div id="filter-chips" class="filter-chips"></div>
       <div id="listing-list" class="listing-list" role="list"></div>
     </aside>
@@ -104,7 +113,7 @@
     <div id="product-card" class="card product-card"></div>
     <div id="seller-card" class="card seller-card"></div>
 
-    <!-- Modals -->
+    <!-- Modals (unchanged from previous) -->
     <div id="auth-modal" class="modal">
       <div class="modal-content card">
         <button type="button" id="close-auth-btn" class="close-card" aria-label="Close">×</button>

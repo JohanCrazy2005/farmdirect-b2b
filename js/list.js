@@ -3,8 +3,8 @@
  * Holds the current set of listings (from API / seed / demo), applies filters,
  * renders the list, handles selection (opens product card + flies map),
  * favorites (localStorage), and navigation. Fully client-side.
- * Includes random listing picker and Nearby quick filter (25 km + distance sort)
- * from the current set for easier seed/demo exploration.
+ * Includes random listing picker, Nearby quick filter (25 km + distance sort),
+ * and sidebar sort (price ↑/↓ or distance when location is known) for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -23,7 +23,8 @@
     minPrice: null,
     maxPrice: null,
     favoritesOnly: false,
-    nearby: false
+    nearby: false,
+    sort: 'default'
   };
 
   function getFavorites() {
@@ -87,7 +88,7 @@
   function applyFilters() {
     const q = (filters.q || '').toLowerCase();
     const favs = filters.favoritesOnly ? new Set(getFavorites()) : null;
-    const userPos = filters.nearby ? getUserLocation() : null;
+    const userPos = (filters.nearby || filters.sort === 'distance') ? getUserLocation() : null;
     filtered = allListings.filter(l => {
       if (filters.category && l.category !== filters.category) return false;
       if (filters.seller && l.sellerid !== filters.seller) return false;
@@ -97,7 +98,7 @@
       if (filters.minPrice != null && !isNaN(filters.minPrice) && (isNaN(price) || price < filters.minPrice)) return false;
       if (filters.maxPrice != null && !isNaN(filters.maxPrice) && (isNaN(price) || price > filters.maxPrice)) return false;
       if (favs && !favs.has(l.id)) return false;
-      if (userPos) {
+      if (filters.nearby && userPos) {
         const d = distanceFor(l, userPos);
         if (d == null || d > NEARBY_KM) return false;
       }
@@ -110,19 +111,40 @@
       }
       return true;
     });
-    // Sort by distance when Nearby is active
-    if (userPos && filtered.length) {
+
+    // Apply sort
+    const sortKey = filters.sort || 'default';
+    if (sortKey === 'price-asc') {
       filtered.sort((a, b) => {
-        const da = distanceFor(a, userPos) ?? Infinity;
-        const db = distanceFor(b, userPos) ?? Infinity;
-        return da - db;
+        const pa = Number(a.price); const pb = Number(b.price);
+        if (isNaN(pa) && isNaN(pb)) return 0;
+        if (isNaN(pa)) return 1;
+        if (isNaN(pb)) return -1;
+        return pa - pb;
       });
+    } else if (sortKey === 'price-desc') {
+      filtered.sort((a, b) => {
+        const pa = Number(a.price); const pb = Number(b.price);
+        if (isNaN(pa) && isNaN(pb)) return 0;
+        if (isNaN(pa)) return 1;
+        if (isNaN(pb)) return -1;
+        return pb - pa;
+      });
+    } else if (sortKey === 'distance' || filters.nearby) {
+      const pos = userPos || getUserLocation();
+      if (pos && filtered.length) {
+        filtered.sort((a, b) => {
+          const da = distanceFor(a, pos) ?? Infinity;
+          const db = distanceFor(b, pos) ?? Infinity;
+          return da - db;
+        });
+      }
     }
   }
 
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function render() {
@@ -138,7 +160,7 @@
       return;
     }
 
-    const userPos = filters.nearby ? getUserLocation() : null;
+    const userPos = getUserLocation();
 
     listEl.innerHTML = filtered.map(l => {
       const seller = escapeHtml(getDisplayName(l.sellerid));
@@ -232,12 +254,17 @@
     if (filters.nearby) chips.push({ key: 'nearby', label: `Nearby ≤${NEARBY_KM} km` });
     if (filters.minPrice != null) chips.push({ key: 'minPrice', label: `Min $${filters.minPrice}` });
     if (filters.maxPrice != null) chips.push({ key: 'maxPrice', label: `Max $${filters.maxPrice}` });
+    if (filters.sort && filters.sort !== 'default') {
+      const labels = { 'price-asc': 'Price ↑', 'price-desc': 'Price ↓', 'distance': 'Distance' };
+      chips.push({ key: 'sort', label: labels[filters.sort] || filters.sort });
+    }
     el.innerHTML = chips.map(c => `<span class="filter-chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.key;
         if (key === 'favoritesOnly' || key === 'nearby') filters[key] = false;
         else if (key === 'minPrice' || key === 'maxPrice') filters[key] = null;
+        else if (key === 'sort') filters.sort = 'default';
         else filters[key] = '';
         syncFilterUI();
         render();
@@ -253,6 +280,7 @@
     const min = document.getElementById('filter-min-price');
     const max = document.getElementById('filter-max-price');
     const fav = document.getElementById('filter-favorites');
+    const sortSel = document.getElementById('sort-select');
     if (cat) cat.value = filters.category || '';
     if (seller) seller.value = filters.seller || '';
     if (vis) vis.value = filters.visibility || '';
@@ -260,6 +288,7 @@
     if (min) min.value = filters.minPrice != null ? filters.minPrice : '';
     if (max) max.value = filters.maxPrice != null ? filters.maxPrice : '';
     if (fav) fav.checked = !!filters.favoritesOnly;
+    if (sortSel) sortSel.value = filters.sort || 'default';
   }
 
   function readFiltersFromUI() {
@@ -272,11 +301,11 @@
     filters.minPrice = min !== '' && min != null ? Number(min) : null;
     filters.maxPrice = max !== '' && max != null ? Number(max) : null;
     filters.favoritesOnly = !!document.getElementById('filter-favorites')?.checked;
-    // nearby is toggled only via the Nearby button / chip
+    // nearby and sort are toggled via their controls
   }
 
   function clearFilters() {
-    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false, nearby: false };
+    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false, nearby: false, sort: 'default' };
     syncFilterUI();
     render();
     if (global.FD_TOAST) global.FD_TOAST.show('Filters cleared', 'info');
@@ -373,6 +402,19 @@
     }
   }
 
+  function setSort(sort) {
+    filters.sort = sort || 'default';
+    syncFilterUI();
+    render();
+    if (filters.sort === 'distance' && !getUserLocation()) {
+      if (global.FD_MAP && typeof global.FD_MAP.locateUser === 'function') {
+        global.FD_MAP.locateUser(() => render());
+      } else if (global.FD_TOAST) {
+        global.FD_TOAST.show('Location needed for distance sort', 'info');
+      }
+    }
+  }
+
   function setListings(listings) {
     allListings = Array.isArray(listings) ? listings : [];
     render();
@@ -403,6 +445,10 @@
     document.getElementById('random-listing-btn')?.addEventListener('click', pickRandom);
     // Nearby quick filter (seed/demo UX)
     document.getElementById('nearby-btn')?.addEventListener('click', enableNearby);
+    // Sort select (seed/demo UX)
+    document.getElementById('sort-select')?.addEventListener('change', (e) => {
+      setSort(e.target.value);
+    });
   }
 
   global.FD_LIST = {
@@ -413,6 +459,7 @@
     navigate,
     pickRandom,
     enableNearby,
+    setSort,
     toggleFavorite,
     isFavorite,
     getFavorites,
