@@ -1,3 +1,15 @@
+## 2026-10-29 – Distance display + favorites consistency (seed/demo UX)
+
+**What:** Show distance from the user’s location (after Locate) in sidebar list rows, product cards, and map popups. Fixed favorites state so stars correctly appear on map markers and in product cards (getFavorites returns an array; callers now normalize to a Set or use includes).
+
+**Why:** Further seed/demo UX polish so offline or undeployed users can judge proximity without extra clicks, and favorites work reliably across list, map, and cards. Highest unfinished code-only item; P1 optional RFQ migration and P5 GitHub Actions secrets remain user-owned.
+
+**How:** Single commit via push_files updating js/list.js (distance in rows + format helper), js/cards.js (distance + correct isFav), js/map.js (distance in popups + favs Set), and this log entry.
+
+**Next:** User can still apply optional RFQ migration or add Cloudflare secrets; seed/demo fallback remains fully usable offline with improved proximity information.
+
+---
+
 ## 2026-10-29 – Clickable category badges, seller links + thumbnails in list rows (seed/demo UX)
 
 **What:** Updated sidebar list rows to show listing thumbnails (or color placeholder), clickable category badges that filter the list, and clickable seller names that filter by seller. Uses existing CSS classes for consistency. Fully client-side; works in seed/demo mode.

@@ -7,6 +7,7 @@
  * Popups now include clickable address linking to Google Maps and units/seller for better seed/demo exploration.
  * Draws a dashed filter-radius circle around the user location when the radius filter is set (syncs with list).
  * HTML escaping fixed so special characters in titles/addresses cannot break popups.
+ * Favorites stars on markers are correctly detected (array from localStorage). Popups show distance when located.
  */
 (function (global) {
   'use strict';
@@ -52,6 +53,20 @@
     return map[v] || v || 'Unknown';
   }
 
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || isNaN(km)) return '';
+    if (km < 1) return Math.round(km * 1000) + ' m';
+    return km.toFixed(1) + ' km';
+  }
+
   function createIcon(listing, isFav) {
     const color = getColor(listing.category);
     const star = isFav ? '<span class="fav-star">★</span>' : '';
@@ -79,6 +94,11 @@
     const addressHtml = listing.address
       ? (mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="popup-address" title="Open in maps">${escapeHtml(listing.address)}</a>` : escapeHtml(listing.address))
       : '';
+    let distHtml = '';
+    if (userPos && !isNaN(lat) && !isNaN(lng)) {
+      const km = haversine(userPos.lat, userPos.lng, lat, lng);
+      distHtml = `<br><span class="distance" title="From your location">${formatDistance(km)} away</span>`;
+    }
     return `
       <div class="map-popup">
         <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong><br>
@@ -88,6 +108,7 @@
         ${price ? price + (units ? ' / ' + units : '') + '<br>' : ''}
         ${addressHtml ? addressHtml + '<br>' : ''}
         <button type="button" class="seller-badge popup-seller" data-seller="${escapeHtml(listing.sellerid || '')}" title="Filter by seller">${escapeHtml(seller)}</button>
+        ${distHtml}
       </div>
     `;
   }
@@ -138,7 +159,8 @@
 
   function updateMarkers(listings) {
     if (!map || !cluster) return;
-    const favs = (global.FD_LIST && global.FD_LIST.getFavorites) ? global.FD_LIST.getFavorites() : new Set();
+    const favsArr = (global.FD_LIST && global.FD_LIST.getFavorites) ? global.FD_LIST.getFavorites() : [];
+    const favs = new Set(Array.isArray(favsArr) ? favsArr : []);
     cluster.clearLayers();
     markersById.clear();
     (listings || []).forEach(l => {

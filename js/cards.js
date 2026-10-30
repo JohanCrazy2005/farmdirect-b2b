@@ -4,6 +4,7 @@
  * from seed-sellers.json, RFQ, favorite, share, compare) and seller cards.
  * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
  * Address is now a clickable Google Maps link when coordinates exist.
+ * Shows distance from user location (when Locate is used). Favorites state is correctly detected.
  */
 (function (global) {
   'use strict';
@@ -35,21 +36,41 @@
     return `https://www.google.com/maps?q=${lat},${lng}`;
   }
 
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || isNaN(km)) return '';
+    if (km < 1) return Math.round(km * 1000) + ' m';
+    return km.toFixed(1) + ' km';
+  }
+
   function openProduct(listing) {
     const el = document.getElementById('product-card');
     if (!el || !listing) return;
     const sellerName = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
       ? global.FD_SELLERS.getDisplayName(listing.sellerid)
       : (listing.sellerid || '');
-    const favs = (global.FD_LIST && typeof global.FD_LIST.getFavorites === 'function')
-      ? global.FD_LIST.getFavorites() : new Set();
-    const isFav = favs.has ? favs.has(listing.id) : false;
+    const favsArr = (global.FD_LIST && typeof global.FD_LIST.getFavorites === 'function')
+      ? global.FD_LIST.getFavorites() : [];
+    const isFav = Array.isArray(favsArr) ? favsArr.includes(listing.id) : false;
     const mapsUrl = mapsUrlFor(listing);
     const addressHtml = listing.address
       ? (mapsUrl
         ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(listing.address)}</a>`
         : escapeHtml(listing.address))
       : '';
+    let distHtml = '';
+    const userLoc = (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function') ? global.FD_MAP.getUserLocation() : null;
+    if (userLoc && listing.location && listing.location.lat != null && listing.location.long != null) {
+      const km = haversine(userLoc.lat, userLoc.long || userLoc.lng, listing.location.lat, listing.location.long);
+      distHtml = `<span class="distance muted small" title="From your location">${formatDistance(km)} away</span>`;
+    }
     el.innerHTML = `
       <button type="button" class="close-card" aria-label="Close">×</button>
       ${listing.image ? `<img class="card-image" src="${escapeHtml(listing.image)}" alt="" data-full="${escapeHtml(listing.image)}">` : ''}
@@ -60,6 +81,7 @@
           <button type="button" class="visibility-badge vis-${escapeHtml(listing.visibility || '')} card-vis" data-vis="${escapeHtml(listing.visibility || '')}">${escapeHtml(visibilityLabel(listing.visibility))}</button>
           ${listing.units ? `<button type="button" class="units-badge card-units" data-units="${escapeHtml(listing.units)}">${escapeHtml(listing.units)}</button>` : ''}
           <span class="price">${escapeHtml(fmtPrice(listing.price, listing.units))}</span>
+          ${distHtml}
         </div>
         <p class="address muted">${addressHtml}</p>
         <p class="description">${escapeHtml(listing.description || '')}</p>

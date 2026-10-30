@@ -7,6 +7,7 @@
  * Uses seller display names from FD_SELLERS. Fully client-side; works with seed/demo.
  * Empty state is now source-aware with next-step guidance for seed/demo UX.
  * List rows include thumbnails + clickable category badges and seller links for quick filtering.
+ * Shows distance from user location (when Locate is used) in each row.
  */
 (function (global) {
   'use strict';
@@ -75,6 +76,12 @@
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || isNaN(km)) return '';
+    if (km < 1) return Math.round(km * 1000) + ' m';
+    return km.toFixed(1) + ' km';
   }
 
   function getUserLocation() {
@@ -168,11 +175,18 @@
       return;
     }
 
+    const userLoc = getUserLocation();
+
     el.innerHTML = filtered.map(l => {
       const fav = isFavorite(l.id);
       const color = categoryColor(l.category);
       const name = getSellerName(l.sellerid);
       const price = l.price != null ? `$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units || '')}` : '';
+      let distHtml = '';
+      if (userLoc && l.location && l.location.lat != null && l.location.long != null) {
+        const km = haversine(userLoc.lat, userLoc.long || userLoc.lng, l.location.lat, l.location.long);
+        distHtml = `<span class="distance" title="Distance from your location">${formatDistance(km)}</span>`;
+      }
       const thumb = l.image
         ? `<img class="listing-thumb" src="${escapeHtml(l.image)}" alt="" loading="lazy">`
         : `<div class="listing-thumb listing-thumb-placeholder" style="background:${color}"></div>`;
@@ -187,6 +201,7 @@
             <div class="listing-meta muted small">
               <button type="button" class="category-filter-btn category-badge" data-cat="${escapeHtml(l.category || '')}" style="background:${color};color:#fff;border:none" title="Filter by ${escapeHtml(l.category || 'category')}">${escapeHtml(l.category || '')}</button>
               <span class="price">${price}</span>
+              ${distHtml}
             </div>
             <div class="listing-seller muted small">
               <button type="button" class="seller-link" data-seller="${escapeHtml(l.sellerid || '')}" title="Filter by seller">${escapeHtml(name)}</button>
