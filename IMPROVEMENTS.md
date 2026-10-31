@@ -64,3 +64,14 @@ PLACEHOLDER
 - `index.html`: new `#map-legend` div (hidden until populated).
 - `css/main.css`: absolute positioning (bottom-right, safe-area aware) plus heading styles; existing swatch/item rules reused.
 - `js/map.js`: `updateLegend()` aggregates categories from `currentListings`, renders clickable items, and is called at the end of `setListings()`. Fully client-side.
+
+## 2026-10-31 – GeoJSON export button (seed/demo UX)
+
+**What:** Wired the existing `js/geojson.js` exporter into the Options menu with an “Export GeoJSON” button. It downloads the currently filtered listings as a GeoJSON FeatureCollection of Points.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. Exposing the already-implemented client-side GeoJSON export lets users save or share the filtered map view without inventing new features.
+
+**How:**
+- `index.html`: new `#export-geojson-btn` in the options menu (next to other export actions).
+- `js/main.js`: calls `FD_GEOJSON.bind()` during bootstrap so the button listener is attached.
+- Existing `exportGeoJSON()` uses `FD_LIST.getFiltered()`, builds a FeatureCollection with schema properties, and triggers a download. Fully client-side.
