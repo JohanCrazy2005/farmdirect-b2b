@@ -105,6 +105,7 @@
       <hr style="border:0;border-top:1px solid var(--border);margin:0.75rem 0">
       <button type="button" id="open-sellers" class="small-btn">Seller directory</button>
       <button type="button" id="open-deploy" class="small-btn">Show deploy commands</button>
+      <button type="button" id="compare-btn" class="small-btn" title="Open side-by-side comparison of selected listings (2–4)">Compare listings</button>
       <button type="button" id="export-demo" class="small-btn">Export demo data</button>
       <button type="button" id="export-geojson-btn" class="small-btn" title="Download currently filtered listings as GeoJSON">Export GeoJSON</button>
       <button type="button" id="download-demo" class="small-btn">Download demo backup</button>
@@ -212,6 +213,14 @@ curl https://farmdirect-b2b.fehrjohan65.workers.dev/api/v1/health</pre>
         <h3>Data source</h3>
         <div id="source-content" class="muted"></div>
         <p class="small">Seed and demo data keep the map usable while the Worker is offline or empty. Apply remaining migrations and deploy for live listings.</p>
+      </div>
+    </div>
+
+    <div id="compare-modal" class="modal">
+      <div class="modal-content card" style="width:min(720px,100%)">
+        <button type="button" id="close-compare-btn" class="close-card" aria-label="Close">×</button>
+        <h3>Compare listings</h3>
+        <div id="compare-content"></div>
       </div>
     </div>
 

@@ -75,3 +75,14 @@ PLACEHOLDER
 - `index.html`: new `#export-geojson-btn` in the options menu (next to other export actions).
 - `js/main.js`: calls `FD_GEOJSON.bind()` during bootstrap so the button listener is attached.
 - Existing `exportGeoJSON()` uses `FD_LIST.getFiltered()`, builds a FeatureCollection with schema properties, and triggers a download. Fully client-side.
+
+## 2026-10-30 – Wire compare module into UI (seed/demo UX)
+
+**What:** Completed the existing `js/compare.js` module by adding the `#compare-modal` markup, an Options-menu “Compare listings” button (`#compare-btn`), and basic table styles. Product-card Compare buttons already called `FD_COMPARE.toggle`; the modal now opens side-by-side for 2–4 selected listings.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. The comparison feature was already implemented client-side (and partially wired in cards) but missing its UI surface, so users could not open it.
+
+**How:**
+- `index.html`: new `#compare-btn` in the options menu and `#compare-modal` / `#compare-content`.
+- `css/main.css`: `.compare-table` styles and `.compare-btn.active` highlight.
+- Existing `FD_COMPARE.bind()` (already called from `main.js`) attaches the listeners. Fully client-side; no schema or Worker changes.
