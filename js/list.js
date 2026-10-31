@@ -162,7 +162,7 @@
 
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+    return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
   }
 
   function render() {
@@ -188,7 +188,7 @@
     if (!listEl) return;
 
     if (!filtered.length) {
-      listEl.innerHTML = `<div class=\"empty-state\"><p>No listings match the current filters.</p><button type=\"button\" class=\"small-btn\" id=\"clear-from-empty\">Clear filters</button></div>`;
+      listEl.innerHTML = `<div class="empty-state"><p>No listings match the current filters.</p><button type="button" class="small-btn" id="clear-from-empty">Clear filters</button></div>`;
       document.getElementById('clear-from-empty')?.addEventListener('click', clearFilters);
       // Still update map
       if (global.FD_MAP && typeof global.FD_MAP.setListings === 'function') {
@@ -208,26 +208,26 @@
       const price = l.price != null ? `$${Number(l.price).toFixed(2)} / ${escapeHtml(l.units || '')}` : '';
       const fav = isFavorite(l.id);
       const thumb = l.image
-        ? `<img class=\"list-thumb\" src=\"${escapeHtml(l.image)}\" alt=\"\">`
-        : `<div class=\"list-thumb placeholder\">${escapeHtml((l.category || '?').slice(0, 3).toUpperCase())}</div>`;
+        ? `<img class="list-thumb" src="${escapeHtml(l.image)}" alt="">`
+        : `<div class="list-thumb placeholder">${escapeHtml((l.category || '?').slice(0, 3).toUpperCase())}</div>`;
       let distHtml = '';
       if (userPos) {
         const d = distanceFor(l, userPos);
-        if (d != null) distHtml = `<span class=\"muted\">~${d.toFixed(1)} km</span>`;
+        if (d != null) distHtml = `<span class="muted">~${d.toFixed(1)} km</span>`;
       }
       return `
-        <div class=\"listing-item${selectedId === l.id ? ' active' : ''}\" data-id=\"${escapeHtml(l.id)}\" role=\"listitem\" tabindex=\"0\">
+        <div class="listing-item${selectedId === l.id ? ' active' : ''}" data-id="${escapeHtml(l.id)}" role="listitem" tabindex="0">
           ${thumb}
-          <div class=\"list-body\">
-            <div class=\"list-title\">${escapeHtml(l.headerdescription || 'Listing')}</div>
-            <div class=\"list-meta\">
-              <span class=\"category-badge\">${escapeHtml(l.category || '')}</span>
+          <div class="list-body">
+            <div class="list-title">${escapeHtml(l.headerdescription || 'Listing')}</div>
+            <div class="list-meta">
+              <span class="category-badge">${escapeHtml(l.category || '')}</span>
               <span>${escapeHtml(price)}</span>
               ${distHtml}
             </div>
-            <div class=\"list-seller muted small\">${seller}</div>
+            <div class="list-seller muted small">${seller}</div>
           </div>
-          <button type=\"button\" class=\"icon-btn fav-btn\" data-id=\"${escapeHtml(l.id)}\" aria-label=\"${fav ? 'Unfavorite' : 'Favorite'}\">${fav ? '★' : '☆'}</button>
+          <button type="button" class="icon-btn fav-btn" data-id="${escapeHtml(l.id)}" aria-label="${fav ? 'Unfavorite' : 'Favorite'}">${fav ? '★' : '☆'}</button>
         </div>`;
     }).join('');
 
@@ -320,9 +320,9 @@
     const curSeller = sellerSel.value;
     const curUnits = unitsSel.value;
 
-    catSel.innerHTML = '<option value=\"\">All categories</option>' + cats.map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
-    sellerSel.innerHTML = '<option value=\"\">All sellers</option>' + sellers.map(s => `<option value=\"${escapeHtml(s)}\">${escapeHtml(getDisplayName(s))}</option>`).join('');
-    unitsSel.innerHTML = '<option value=\"\">Any units</option>' + units.map(u => `<option value=\"${escapeHtml(u)}\">${escapeHtml(u)}</option>`).join('');
+    catSel.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    sellerSel.innerHTML = '<option value="">All sellers</option>' + sellers.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(getDisplayName(s))}</option>`).join('');
+    unitsSel.innerHTML = '<option value="">Any units</option>' + units.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
 
     if (cats.includes(curCat)) catSel.value = curCat;
     if (sellers.includes(curSeller)) sellerSel.value = curSeller;
@@ -346,7 +346,7 @@
       const labels = { 'price-asc': 'Price ↑', 'price-desc': 'Price ↓', 'distance': 'Distance' };
       chips.push({ key: 'sort', label: labels[filters.sort] || filters.sort });
     }
-    el.innerHTML = chips.map(c => `<span class=\"filter-chip\">${escapeHtml(c.label)} <button type=\"button\" data-key=\"${c.key}\" aria-label=\"Remove\">×</button></span>`).join('');
+    el.innerHTML = chips.map(c => `<span class="filter-chip">${escapeHtml(c.label)} <button type="button" data-key="${c.key}" aria-label="Remove">×</button></span>`).join('');
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.key;
