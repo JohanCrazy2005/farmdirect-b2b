@@ -1,3 +1,17 @@
+## 2026-10-31 – Polish seed/demo list layout + wire CSV/GeoJSON exports
+
+**What:** Completed visual layout for sidebar list items (thumbs, meta, group headers, empty state) and wired the existing CSV and GeoJSON export modules into the options menu.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. list.js already rendered structured items and group-by-seller, but CSS lacked the matching rules so thumbs and sections did not display correctly. Export modules (csv.js, geojson.js) existed but their buttons were missing from the UI, so filtered seed data could not be exported client-side.
+
+**How:**
+- `css/main.css`: flex layout for `.listing-item`, styles for `.list-thumb` / placeholder, `.list-body`, `.list-meta`, `.fav-btn`, `.seller-group` / `.group-header`, and `.empty-state`.
+- `index.html`: added `#export-csv-btn` and `#export-geojson-btn` in the options menu (bind already present in the modules).
+
+Seed/demo fallback continues to work fully offline. Live E2E verification remains user action after optional migrations.
+
+---
+
 ## 2026-10-31 – Complete and wire list.js for seed/demo UX
 
 **What:** Replaced the truncated/placeholder `js/list.js` with a complete module that matches the index.html shell.

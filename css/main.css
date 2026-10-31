@@ -114,9 +114,29 @@ html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Seg
 .sidebar-tools { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); align-items: center; }
 .listings-list { flex: 1; overflow: auto; padding: 8px; }
 .listing-item {
+  display: flex; gap: 10px; align-items: flex-start;
   padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 6px; border: 1px solid transparent;
 }
 .listing-item:hover, .listing-item.selected { background: var(--surface); border-color: var(--border); }
+.list-thumb {
+  width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--surface);
+}
+.list-thumb.placeholder {
+  display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--muted); text-align: center;
+}
+.list-body { flex: 1; min-width: 0; }
+.list-title { font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+.list-seller { margin-top: 2px; }
+.fav-btn { margin-left: auto; flex-shrink: 0; }
+.seller-group { margin-bottom: 10px; }
+.group-header {
+  margin: 6px 0 4px; padding: 4px 0; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.group-header:hover { text-decoration: underline; }
+.empty-state { padding: 24px 12px; text-align: center; color: var(--muted); }
+.empty-state p { margin: 0 0 12px; }
 .listing-item .price { font-weight: 600; color: var(--accent); }
 .small-btn {
   padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); color: var(--fg);
