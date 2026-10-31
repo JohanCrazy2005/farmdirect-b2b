@@ -129,3 +129,14 @@ PLACEHOLDER
 
 **How:**
 - `js/main.js`: `maybeOpenHashListing()` parses `location.hash` for `listing=`, then calls `FD_LIST.select(id)` after a short delay. Invoked at the end of `loadAndRender()` and on `hashchange`. Fully client-side.
+
+## 2026-10-31 – Keyboard shortcuts polish (seed/demo UX)
+
+**What:** Fixed the keyboard shortcuts module so it correctly calls the existing client-side APIs (`FD_MAP.locateUser`, `FD_MAP.fitAll`, `FD_LIST.pickRandom`) and expanded the help modal to document the full set of map-first controls.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. The shortcuts previously referenced non-existent methods, so keyboard exploration of the map and list did not work. Making them functional improves scanning without inventing new features.
+
+**How:**
+- `js/shortcuts.js`: rewired locate / fit / random / favorites / theme to the real methods already exposed by map.js and list.js; cleaned panel-closing logic to use the actual card classes.
+- `index.html`: updated `#shortcuts-modal` list to show the working shortcuts (`/`, `I`, `O`, `L`, `F`, `R`, `D`, `V`, arrows, Enter, Esc, etc.).
+- Fully client-side; no schema, Worker, or unrelated feature changes.
