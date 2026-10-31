@@ -107,6 +107,7 @@
       <button type="button" id="open-deploy" class="small-btn">Show deploy commands</button>
       <button type="button" id="compare-btn" class="small-btn" title="Open side-by-side comparison of selected listings (2–4)">Compare listings</button>
       <button type="button" id="open-recent" class="small-btn" title="Recently viewed listings (last 8 product cards)">Recently viewed</button>
+      <button type="button" id="open-stats" class="small-btn" title="Summary statistics of current listings (counts, prices, categories)">Listings stats</button>
       <button type="button" id="export-demo" class="small-btn">Export demo data</button>
       <button type="button" id="export-csv-btn" class="small-btn" title="Download currently filtered listings as CSV">Export CSV</button>
       <button type="button" id="export-geojson-btn" class="small-btn" title="Download currently filtered listings as GeoJSON">Export GeoJSON</button>
@@ -234,6 +235,14 @@ curl https://farmdirect-b2b.fehrjohan65.workers.dev/api/v1/health</pre>
         <div class="card-actions" style="margin-top:0.75rem">
           <button type="button" id="clear-recent-btn" class="small-btn">Clear history</button>
         </div>
+      </div>
+    </div>
+
+    <div id="stats-modal" class="modal">
+      <div class="modal-content card" style="width:min(480px,100%)">
+        <button type="button" id="close-stats-btn" class="close-card" aria-label="Close">×</button>
+        <h3>Listings statistics</h3>
+        <div id="stats-content"></div>
       </div>
     </div>
 

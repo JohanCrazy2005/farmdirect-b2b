@@ -108,3 +108,15 @@ PLACEHOLDER
 - `index.html`: new `#open-recent` in the options menu and `#recent-modal` / `#recent-list` / `#clear-recent-btn`.
 - `js/main.js`: `FD_RECENT.bind()` in `init()` plus the options-menu click handler that opens the modal.
 - `js/list.js`: `select()` now calls `FD_RECENT.track(listing.id)` so every card open is recorded. Fully client-side; no schema or Worker changes.
+
+## 2026-10-31 – Wire listings stats module (seed/demo UX)
+
+**What:** Completed the existing `js/stats.js` module by adding the `#stats-modal` markup, an Options-menu “Listings stats” button (`#open-stats`), calling `FD_STATS.bind()` from bootstrap, and basic styles for the summary rows and lists. Opening it computes counts, unique sellers, price range/average, and breakdowns by category / visibility / units from the current in-memory listings.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. The stats feature was already implemented client-side but missing its UI surface, so users could not view a quick summary of the loaded set.
+
+**How:**
+- `index.html`: new `#open-stats` in the options menu and `#stats-modal` / `#stats-content`.
+- `js/main.js`: `FD_STATS.bind()` in `init()` plus the options-menu click handler that opens the modal (and adds it to the outside-click closer).
+- `css/main.css`: `.stats-summary`, `.stat-row`, and `.stats-list` styles.
+- Existing `computeStats` / `renderStats` / `open` use `FD_LIST.getListings()`. Fully client-side; no schema or Worker changes.

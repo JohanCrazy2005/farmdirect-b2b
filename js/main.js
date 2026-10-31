@@ -114,6 +114,10 @@
       menu?.setAttribute('hidden', '');
       if (global.FD_RECENT && typeof global.FD_RECENT.open === 'function') global.FD_RECENT.open();
     });
+    document.getElementById('open-stats')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_STATS && typeof global.FD_STATS.open === 'function') global.FD_STATS.open();
+    });
     document.getElementById('export-demo')?.addEventListener('click', async () => {
       if (global.FD_API && global.FD_API.exportDemoData) {
         const res = await global.FD_API.exportDemoData();
@@ -162,7 +166,7 @@
   }
 
   function setupModalsClose() {
-    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'compare-modal', 'recent-modal'].forEach(id => {
+    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal?.addEventListener('click', (e) => {
         if (e.target.id === id) modal.classList.remove('open');
@@ -232,6 +236,7 @@
     if (global.FD_CSV && typeof global.FD_CSV.bind === 'function') global.FD_CSV.bind();
     if (global.FD_GEOJSON && typeof global.FD_GEOJSON.bind === 'function') global.FD_GEOJSON.bind();
     if (global.FD_RECENT && typeof global.FD_RECENT.bind === 'function') global.FD_RECENT.bind();
+    if (global.FD_STATS && typeof global.FD_STATS.bind === 'function') global.FD_STATS.bind();
 
     setupOptions();
     setupFilterCard();
