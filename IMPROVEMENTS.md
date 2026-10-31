@@ -1,3 +1,17 @@
+## 2026-10-31 – Polish seed fallback UX with Deploy steps banner button
+
+**What:** Added a “Deploy steps” button to the offline/seed banner that opens the existing deploy modal, and expanded the data-source modal + deploy modal with the exact optional next commands (RFQ migration + GH Actions secrets).
+
+**Why:** P1 optional items and P5 secrets are user-owned; highest unfinished code-only work is seed/demo UX polish so offline users immediately see how to go live.
+
+**How:**
+- `index.html`: banner now has Details + Deploy steps + dismiss; deploy modal lists the three optional commands.
+- `js/main.js`: wired `#banner-deploy` to open `#deploy-modal`; richer source-modal next-steps list.
+
+Seed/demo fallback continues to work fully offline. Live E2E verification remains user action after optional migrations.
+
+---
+
 ## 2026-10-31 – Complete frontend shell (index.html + css/main.css)
 
 **What:** Replaced placeholder `index.html` and `css/main.css` with a complete map-first shell.
