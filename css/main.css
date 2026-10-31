@@ -532,6 +532,12 @@ body {
   font-weight: 500;
 }
 .small-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.small-btn.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
 .primary-btn {
   background: var(--accent);
   color: #fff;

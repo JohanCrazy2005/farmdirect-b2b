@@ -140,3 +140,15 @@ PLACEHOLDER
 - `js/shortcuts.js`: rewired locate / fit / random / favorites / theme to the real methods already exposed by map.js and list.js; cleaned panel-closing logic to use the actual card classes.
 - `index.html`: updated `#shortcuts-modal` list to show the working shortcuts (`/`, `I`, `O`, `L`, `F`, `R`, `D`, `V`, arrows, Enter, Esc, etc.).
 - Fully client-side; no schema, Worker, or unrelated feature changes.
+
+## 2026-10-31 – Only in current map view filter (seed/demo UX)
+
+**What:** Added an “In view” toggle in the sidebar tools that filters the list and markers to listings whose coordinates fall inside the current Leaflet map bounds. The filter re-applies automatically on pan or zoom. A removable chip shows when active, and the button highlights.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. After panning or zooming, users can quickly limit the sidebar to what is currently visible on the map without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#in-view-btn` next to Nearby / Fit map.
+- `js/list.js`: `filters.inView`, `isInCurrentView()` using `FD_MAP.getMap().getBounds()`, applied in `applyFilters()`. `toggleInView()` flips the flag. Chip removal and Clear filters turn it off. `moveend` listener re-renders while active. Button gets `.active` class.
+- `css/main.css`: `.small-btn.active` highlight (reused from compare).
+- Fully client-side; no schema or Worker changes.

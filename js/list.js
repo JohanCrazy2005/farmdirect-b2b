@@ -4,8 +4,8 @@
  * renders the list, handles selection (opens product card + flies map),
  * favorites (localStorage), and navigation. Fully client-side.
  * Includes random listing picker, Nearby quick filter (25 km + distance sort),
- * sidebar sort (price ↑/↓ or distance when location is known), and Fit map
- * for easier seed/demo exploration.
+ * sidebar sort (price ↑/↓ or distance when location is known), Fit map,
+ * and Only-in-map-view filter for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -25,6 +25,7 @@
     maxPrice: null,
     favoritesOnly: false,
     nearby: false,
+    inView: false,
     sort: 'default'
   };
 
@@ -86,6 +87,19 @@
     return haversineKm(userPos.lat, userPos.lng, lat, lng);
   }
 
+  function isInCurrentView(listing) {
+    if (!filters.inView) return true;
+    const map = (global.FD_MAP && typeof global.FD_MAP.getMap === 'function') ? global.FD_MAP.getMap() : null;
+    if (!map || typeof map.getBounds !== 'function') return true;
+    const bounds = map.getBounds();
+    if (!bounds) return true;
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return false;
+    return bounds.contains([lat, lng]);
+  }
+
   function applyFilters() {
     const q = (filters.q || '').toLowerCase();
     const favs = filters.favoritesOnly ? new Set(getFavorites()) : null;
@@ -103,6 +117,7 @@
         const d = distanceFor(l, userPos);
         if (d == null || d > NEARBY_KM) return false;
       }
+      if (!isInCurrentView(l)) return false;
       if (q) {
         const hay = [
           l.headerdescription, l.description, l.category,
@@ -158,6 +173,12 @@
     if (!filtered.length) {
       listEl.innerHTML = `<div class="empty-state"><p>No listings match the current filters.</p><button type="button" class="small-btn" id="clear-from-empty">Clear filters</button></div>`;
       document.getElementById('clear-from-empty')?.addEventListener('click', clearFilters);
+      // Still update map
+      if (global.FD_MAP && typeof global.FD_MAP.setListings === 'function') {
+        global.FD_MAP.setListings(filtered);
+      }
+      renderChips();
+      updateInViewButton();
       return;
     }
 
@@ -218,6 +239,14 @@
     // Populate filter dropdowns once
     populateFilterOptions();
     renderChips();
+    updateInViewButton();
+  }
+
+  function updateInViewButton() {
+    const btn = document.getElementById('in-view-btn');
+    if (!btn) return;
+    btn.classList.toggle('active', !!filters.inView);
+    btn.setAttribute('aria-pressed', filters.inView ? 'true' : 'false');
   }
 
   function populateFilterOptions() {
@@ -253,6 +282,7 @@
     if (filters.units) chips.push({ key: 'units', label: filters.units });
     if (filters.favoritesOnly) chips.push({ key: 'favoritesOnly', label: 'Favorites' });
     if (filters.nearby) chips.push({ key: 'nearby', label: `Nearby ≤${NEARBY_KM} km` });
+    if (filters.inView) chips.push({ key: 'inView', label: 'In map view' });
     if (filters.minPrice != null) chips.push({ key: 'minPrice', label: `Min $${filters.minPrice}` });
     if (filters.maxPrice != null) chips.push({ key: 'maxPrice', label: `Max $${filters.maxPrice}` });
     if (filters.sort && filters.sort !== 'default') {
@@ -263,7 +293,7 @@
     el.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.key;
-        if (key === 'favoritesOnly' || key === 'nearby') filters[key] = false;
+        if (key === 'favoritesOnly' || key === 'nearby' || key === 'inView') filters[key] = false;
         else if (key === 'minPrice' || key === 'maxPrice') filters[key] = null;
         else if (key === 'sort') filters.sort = 'default';
         else filters[key] = '';
@@ -290,6 +320,7 @@
     if (max) max.value = filters.maxPrice != null ? filters.maxPrice : '';
     if (fav) fav.checked = !!filters.favoritesOnly;
     if (sortSel) sortSel.value = filters.sort || 'default';
+    updateInViewButton();
   }
 
   function readFiltersFromUI() {
@@ -302,11 +333,11 @@
     filters.minPrice = min !== '' && min != null ? Number(min) : null;
     filters.maxPrice = max !== '' && max != null ? Number(max) : null;
     filters.favoritesOnly = !!document.getElementById('filter-favorites')?.checked;
-    // nearby and sort are toggled via their controls
+    // nearby, inView and sort are toggled via their controls
   }
 
   function clearFilters() {
-    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false, nearby: false, sort: 'default' };
+    filters = { q: filters.q, category: '', seller: '', visibility: '', units: '', minPrice: null, maxPrice: null, favoritesOnly: false, nearby: false, inView: false, sort: 'default' };
     syncFilterUI();
     render();
     if (global.FD_TOAST) global.FD_TOAST.show('Filters cleared', 'info');
@@ -407,6 +438,19 @@
     }
   }
 
+  /**
+   * Toggle the “Only in current map view” filter.
+   * When on, only listings whose coordinates lie inside the Leaflet bounds are shown.
+   * The list re-filters automatically on pan/zoom. Fully client-side.
+   */
+  function toggleInView() {
+    filters.inView = !filters.inView;
+    render();
+    if (global.FD_TOAST) {
+      global.FD_TOAST.show(filters.inView ? 'Showing only listings in current map view' : 'Map-view filter off', 'info');
+    }
+  }
+
   function setSort(sort) {
     filters.sort = sort || 'default';
     syncFilterUI();
@@ -450,6 +494,8 @@
     document.getElementById('random-listing-btn')?.addEventListener('click', pickRandom);
     // Nearby quick filter (seed/demo UX)
     document.getElementById('nearby-btn')?.addEventListener('click', enableNearby);
+    // Only in map view (seed/demo UX)
+    document.getElementById('in-view-btn')?.addEventListener('click', toggleInView);
     // Sort select (seed/demo UX)
     document.getElementById('sort-select')?.addEventListener('change', (e) => {
       setSort(e.target.value);
@@ -460,6 +506,19 @@
         global.FD_MAP.fitAll();
       }
     });
+
+    // Re-filter when the map is panned/zoomed if the in-view filter is active
+    const tryAttachMapListener = () => {
+      const map = (global.FD_MAP && typeof global.FD_MAP.getMap === 'function') ? global.FD_MAP.getMap() : null;
+      if (map && typeof map.on === 'function') {
+        map.on('moveend', () => {
+          if (filters.inView) render();
+        });
+      } else {
+        setTimeout(tryAttachMapListener, 100);
+      }
+    };
+    tryAttachMapListener();
   }
 
   global.FD_LIST = {
@@ -470,6 +529,7 @@
     navigate,
     pickRandom,
     enableNearby,
+    toggleInView,
     setSort,
     toggleFavorite,
     isFavorite,
