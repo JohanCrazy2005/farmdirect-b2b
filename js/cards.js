@@ -7,6 +7,8 @@
  * Shows distance from user location (when Locate is used). Favorites state is correctly detected.
  * Product card includes Prev/Next buttons (and position indicator) that cycle through
  * the current filtered set via FD_LIST.navigate for easier seed/demo exploration.
+ * HTML escaping is correct so seed descriptions containing & < > render safely.
+ * Seller card “Show their listings” applies the seller filter via FD_LIST.setSellerFilter.
  */
 (function (global) {
   'use strict';
@@ -14,10 +16,10 @@
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function fmtPrice(price, units) {
@@ -52,16 +54,6 @@
     return km.toFixed(1) + ' km';
   }
 
-  function getFilteredPosition(listing) {
-    if (!global.FD_LIST || typeof global.FD_LIST.getListings !== 'function') return null;
-    // Use the currently filtered set if available via a new method; otherwise fall back
-    const all = global.FD_LIST.getListings() || [];
-    // Prefer filtered if we can access it indirectly; for now show among all loaded
-    const idx = all.findIndex(l => l.id === listing.id);
-    if (idx < 0) return null;
-    return { idx: idx + 1, total: all.length };
-  }
-
   function openProduct(listing) {
     const el = document.getElementById('product-card');
     if (!el || !listing) return;
@@ -83,7 +75,6 @@
       const km = haversine(userLoc.lat, userLoc.long || userLoc.lng, listing.location.lat, listing.location.long);
       distHtml = `<span class="distance muted small" title="From your location">${formatDistance(km)} away</span>`;
     }
-    // Position among filtered (best-effort)
     let posHtml = '';
     if (global.FD_LIST && typeof global.FD_LIST.getFiltered === 'function') {
       const filt = global.FD_LIST.getFiltered() || [];
@@ -202,10 +193,11 @@
     el.classList.add('open');
     el.querySelector('.close-card')?.addEventListener('click', () => closeSeller());
     el.querySelector('.filter-seller')?.addEventListener('click', () => {
-      const sel = document.getElementById('filter-seller');
-      if (sel) {
-        sel.value = sellerid;
-        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      if (global.FD_LIST && typeof global.FD_LIST.setSellerFilter === 'function') {
+        global.FD_LIST.setSellerFilter(sellerid);
+      } else {
+        const sel = document.getElementById('filter-seller');
+        if (sel) sel.value = sellerid;
       }
       closeSeller();
       closeProduct();

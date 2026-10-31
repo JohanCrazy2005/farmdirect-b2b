@@ -1,3 +1,17 @@
+## 2026-10-31 – Fix product/seller card escaping and seller filter
+
+**What:** Corrected HTML escaping in `js/cards.js` and wired the seller card “Show their listings” button so it applies the filter.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. Product cards used a broken `escapeHtml` (replacements were no-ops), so any seed description containing `&`, `<`, or `>` would break rendering or inject markup. The seller-card button only set a select value and never applied the filter.
+
+**How:**
+- `js/cards.js`: proper `escapeHtml` (`&amp;`, `&lt;`, `&gt;`, `&quot;`); seller button now calls `FD_LIST.setSellerFilter`.
+- `js/list.js`: exported `setSellerFilter` (mirrors existing setCategory/Visibility/Units helpers) so cards can filter reliably.
+
+Seed/demo fallback continues to work fully offline. Live E2E verification remains user action after optional migrations.
+
+---
+
 ## 2026-10-31 – Polish seed/demo list layout + wire CSV/GeoJSON exports
 
 **What:** Completed visual layout for sidebar list items (thumbs, meta, group headers, empty state) and wired the existing CSV and GeoJSON export modules into the options menu.

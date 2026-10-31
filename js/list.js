@@ -10,6 +10,7 @@
  * and a clickable filtered/total count in the sidebar header (seed/demo UX).
  * Includes Group-by-seller toggle that sections the sidebar by seller display name
  * (click a header to filter to that seller). Fully client-side.
+ * setSellerFilter (and the other set*Filter helpers) are used by product/seller cards.
  */
 (function (global) {
   'use strict';
@@ -445,11 +446,12 @@
   function setCategoryFilter(cat) { filters.category = cat || ''; syncFilterUI(); render(); }
   function setVisibilityFilter(vis) { filters.visibility = vis || ''; syncFilterUI(); render(); }
   function setUnitsFilter(u) { filters.units = u || ''; syncFilterUI(); render(); }
+  function setSellerFilter(sellerid) { filters.seller = sellerid || ''; syncFilterUI(); render(); }
 
   global.FD_LIST = {
     setListings, getListings, getFiltered, select, navigate, pickRandom, enableNearby,
     setSort, toggleFavorite, isFavorite, getFavorites, setCategoryFilter, setVisibilityFilter,
-    setUnitsFilter, setSearch, clearFilters, clearAndFit, copyFilteredLink, serializeFilters,
+    setUnitsFilter, setSellerFilter, setSearch, clearFilters, clearAndFit, copyFilteredLink, serializeFilters,
     applyFiltersFromParams, bind
   };
 })(window);
