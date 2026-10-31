@@ -120,3 +120,12 @@ PLACEHOLDER
 - `js/main.js`: `FD_STATS.bind()` in `init()` plus the options-menu click handler that opens the modal (and adds it to the outside-click closer).
 - `css/main.css`: `.stats-summary`, `.stat-row`, and `.stats-list` styles.
 - Existing `computeStats` / `renderStats` / `open` use `FD_LIST.getListings()`. Fully client-side; no schema or Worker changes.
+
+## 2026-10-31 – Deep-link support for #listing=ID (seed/demo UX)
+
+**What:** Shared listing links (`#listing=ID`) now open the matching product card and fly the map after listings load. The product-card Share button already copied these URLs; they now work on page load and on hashchange.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. Making the existing Share links functional improves exploration and sharing without inventing new features.
+
+**How:**
+- `js/main.js`: `maybeOpenHashListing()` parses `location.hash` for `listing=`, then calls `FD_LIST.select(id)` after a short delay. Invoked at the end of `loadAndRender()` and on `hashchange`. Fully client-side.

@@ -3,6 +3,7 @@
  * Initializes map, list, loads listings via FD_API (seed/demo fallback),
  * wires top-bar UI, options, banners, and calls bind() on other modules.
  * Fully client-side; works offline with seed data.
+ * Supports deep links: #listing=ID opens the matching product card after load.
  */
 (function (global) {
   'use strict';
@@ -48,6 +49,23 @@
     modal.classList.add('open');
   }
 
+  /**
+   * If the URL hash contains #listing=ID, select that listing once the list is loaded.
+   * Makes Share links work in seed/demo mode. Fully client-side.
+   */
+  function maybeOpenHashListing() {
+    const hash = (location.hash || '').replace(/^#/, '');
+    const params = new URLSearchParams(hash);
+    const id = params.get('listing');
+    if (!id) return;
+    if (global.FD_LIST && typeof global.FD_LIST.select === 'function') {
+      // Small delay so list render finishes
+      setTimeout(() => {
+        global.FD_LIST.select(id);
+      }, 120);
+    }
+  }
+
   async function loadAndRender() {
     if (!global.FD_API || typeof global.FD_API.fetchListings !== 'function') {
       console.warn('FD_API unavailable');
@@ -61,6 +79,7 @@
     if (global.FD_TOAST && result.source !== 'api') {
       global.FD_TOAST.show(`Loaded ${result.count || 0} listings (${result.source})`, 'info');
     }
+    maybeOpenHashListing();
   }
 
   function setupTheme() {
@@ -246,6 +265,9 @@
     setupProfile();
     setupAddButtons();
     setupKeyboard();
+
+    // Deep-link support (seed/demo UX)
+    window.addEventListener('hashchange', maybeOpenHashListing);
 
     loadAndRender();
 
