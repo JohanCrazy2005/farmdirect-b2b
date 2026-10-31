@@ -187,3 +187,13 @@ PLACEHOLDER
 - `index.html`: new `#clear-fit-btn` next to Fit map.
 - `js/list.js`: `clearAndFit()` calls existing `clearFilters()` then `FD_MAP.fitAll()` after a short delay so the full set is pushed to the map first. Wired in `bind()` and exposed on `FD_LIST`.
 - Fully client-side; no schema or Worker changes.
+
+## 2026-10-31 – Locate button (seed/demo UX)
+
+**What:** Added a “Locate” button in the sidebar tools that calls the existing `FD_MAP.locateUser()` to center the map on the user’s geolocation (with toast feedback).
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. Geolocation was only available via the keyboard shortcut `L` or indirectly through Nearby. A visible one-click control makes map-first exploration easier without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#locate-btn` next to Nearby.
+- `js/list.js`: button click in `bind()` calls `FD_MAP.locateUser()`. Header comment updated. Fully client-side.

@@ -5,7 +5,8 @@
  * favorites (localStorage), and navigation. Fully client-side.
  * Includes random listing picker, Nearby quick filter (25 km + distance sort),
  * sidebar sort (price ↑/↓ or distance when location is known), Fit map,
- * and Only-in-map-view filter, plus a Favorites quick toggle, shareable filtered-view links, and a Clear & fit reset for easier seed/demo exploration.
+ * Only-in-map-view filter, Favorites quick toggle, shareable filtered-view links,
+ * Clear & fit reset, and a Locate button for centering on user location (seed/demo UX).
  */
 (function (global) {
   'use strict';
@@ -160,7 +161,7 @@
 
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function render() {
@@ -481,14 +482,16 @@
     if (filters.sort === 'distance' && !getUserLocation()) {
       if (global.FD_MAP && typeof global.FD_MAP.locateUser === 'function') {
         global.FD_MAP.locateUser(() => render());
-      } else if (global.FD_TOAST) {
-        global.FD_TOAST.show('Location needed for distance sort', 'info');
-      }
+      } else if (global.FD_TOAST) global.FD_TOAST.show('Location needed for distance sort', 'info');
     }
   }
 
   function setListings(listings) {
     allListings = Array.isArray(listings) ? listings : [];
+    // Preserve selection if still present
+    if (selectedId && !allListings.some(l => String(l.id) === String(selectedId))) {
+      selectedId = null;
+    }
     render();
   }
 
@@ -524,6 +527,12 @@
     document.getElementById('random-listing-btn')?.addEventListener('click', pickRandom);
     // Nearby quick filter (seed/demo UX)
     document.getElementById('nearby-btn')?.addEventListener('click', enableNearby);
+    // Locate me (seed/demo UX) — centers map on user location
+    document.getElementById('locate-btn')?.addEventListener('click', () => {
+      if (global.FD_MAP && typeof global.FD_MAP.locateUser === 'function') {
+        global.FD_MAP.locateUser();
+      }
+    });
     // Only in map view (seed/demo UX)
     document.getElementById('in-view-btn')?.addEventListener('click', toggleInView);
     // Favorites quick filter (seed/demo UX)
