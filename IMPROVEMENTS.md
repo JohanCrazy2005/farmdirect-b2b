@@ -42,3 +42,14 @@ PLACEHOLDER
 - `index.html`: new `.sidebar-sort` with `#sort-select` under the header tools.
 - `css/main.css`: styles for the sort row (flex, compact select).
 - `js/list.js`: `filters.sort`, applied after filtering in `applyFilters()`. Nearby still forces distance sort. Chip removal and Clear reset to default. `setSort()` exposed. Fully client-side.
+
+## 2026-10-30 – Fit map control (seed/demo UX)
+
+**What:** Added a “Fit map” button in the sidebar tools that re-frames the Leaflet map to the bounds of the current filtered listings (with padding and maxZoom).
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. After using Random, Nearby, selection, or manual panning/zooming, a one-click fit helps users reorient on the map-first UI without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#fit-map-btn` next to Nearby.
+- `js/map.js`: `fitAll()` collects lat/long from `currentListings` (the filtered set already pushed by the list), calls `map.fitBounds`, and toasts the count. Exposed on `FD_MAP.fitAll`.
+- `js/list.js`: button click in `bind()` calls `FD_MAP.fitAll()`. Fully client-side.

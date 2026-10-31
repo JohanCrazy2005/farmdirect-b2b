@@ -4,7 +4,8 @@
  * renders the list, handles selection (opens product card + flies map),
  * favorites (localStorage), and navigation. Fully client-side.
  * Includes random listing picker, Nearby quick filter (25 km + distance sort),
- * and sidebar sort (price ↑/↓ or distance when location is known) for easier seed/demo exploration.
+ * sidebar sort (price ↑/↓ or distance when location is known), and Fit map
+ * for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -448,6 +449,12 @@
     // Sort select (seed/demo UX)
     document.getElementById('sort-select')?.addEventListener('change', (e) => {
       setSort(e.target.value);
+    });
+    // Fit map to current filtered set (seed/demo UX)
+    document.getElementById('fit-map-btn')?.addEventListener('click', () => {
+      if (global.FD_MAP && typeof global.FD_MAP.fitAll === 'function') {
+        global.FD_MAP.fitAll();
+      }
     });
   }
 

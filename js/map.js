@@ -2,8 +2,9 @@
  * FarmDirect B2B – Leaflet map module
  * Initializes the map, renders markers for listings, supports fly-to and user location.
  * Works fully with seed/demo fallback. Clustering via simple DivIcon groups is optional;
- * markers use category-colored pins. Exposes getMap / flyToListing / getUserLocation / setListings.
+ * markers use category-colored pins. Exposes getMap / flyToListing / getUserLocation / setListings / fitAll.
  * locateUser now accepts an optional success callback so Nearby filter can activate after geolocation.
+ * fitAll re-frames the map to the current filtered set for easier seed/demo exploration.
  */
 (function (global) {
   'use strict';
@@ -164,6 +165,27 @@
     );
   }
 
+  /**
+   * Fit the map to all currently displayed (filtered) listings.
+   * Useful after Random / Nearby / selection has zoomed in. Fully client-side.
+   */
+  function fitAll() {
+    if (!map) return;
+    const bounds = [];
+    currentListings.forEach(l => {
+      const loc = l.location || {};
+      const lat = Number(loc.lat);
+      const lng = Number(loc.long);
+      if (!isNaN(lat) && !isNaN(lng)) bounds.push([lat, lng]);
+    });
+    if (!bounds.length) {
+      if (global.FD_TOAST) global.FD_TOAST.show('No listings to fit', 'info');
+      return;
+    }
+    map.fitBounds(bounds, { padding: [48, 48], maxZoom: 13 });
+    if (global.FD_TOAST) global.FD_TOAST.show(`Fitted ${bounds.length} listing${bounds.length === 1 ? '' : 's'}`, 'info');
+  }
+
   function getMap() { return map; }
   function getUserLocation() { return userLocation; }
 
@@ -172,6 +194,7 @@
     setListings,
     flyToListing,
     locateUser,
+    fitAll,
     getMap,
     getUserLocation
   };
