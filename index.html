@@ -1,1 +1,196 @@
-PLACEHOLDER_INDEX
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FarmDirect B2B – Map-first marketplace</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- Offline / seed banner -->
+  <div id="offline-banner" class="offline-banner" hidden>
+    <span id="banner-text">Showing seed/demo data.</span>
+    <button type="button" id="banner-details" class="link-btn">Details</button>
+    <button type="button" id="banner-dismiss" class="icon-btn" aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- Transparent top bar -->
+  <header class="top-bar">
+    <div class="brand">FarmDirect</div>
+    <div class="search-box">
+      <input type="search" id="search-input" placeholder="Search listings, categories, sellers…" autocomplete="off">
+      <button type="button" id="clear-search" class="icon-btn" aria-label="Clear search">×</button>
+      <div id="search-suggestions" class="search-suggestions" hidden role="listbox"></div>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="filter-btn" class="icon-btn" aria-label="Filters" aria-expanded="false">
+        <span class="filter-icon">⚙</span>
+        <span id="filter-badge" class="badge" hidden>0</span>
+      </button>
+      <button type="button" id="options-btn" class="icon-btn" aria-label="Options" aria-expanded="false">⋮</button>
+      <button type="button" id="profile-btn" class="icon-btn" aria-label="Profile">👤</button>
+      <span id="data-source-badge" class="data-source-badge" hidden title="Data source">SEED</span>
+    </div>
+  </header>
+
+  <!-- Map -->
+  <div id="map"></div>
+  <div id="map-legend" class="map-legend" hidden></div>
+
+  <!-- Sidebar listings -->
+  <aside id="sidebar" class="sidebar open">
+    <div class="sidebar-header">
+      <button type="button" id="sidebar-toggle" class="icon-btn" aria-label="Toggle sidebar">≡</button>
+      <h2>Listings</h2>
+      <button type="button" id="list-count" class="link-btn count-btn" title="Filtered / total">0 / 0</button>
+    </div>
+    <div class="sidebar-tools">
+      <button type="button" id="locate-btn" class="small-btn">Locate</button>
+      <button type="button" id="fit-btn" class="small-btn">Fit map</button>
+      <button type="button" id="clear-fit-btn" class="small-btn">Clear &amp; fit</button>
+      <button type="button" id="nearby-btn" class="small-btn">Nearby</button>
+      <button type="button" id="random-btn" class="small-btn">Random</button>
+      <label class="small-label">
+        Sort
+        <select id="sort-select">
+          <option value="default">Default</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="distance">Distance</option>
+        </select>
+      </label>
+      <label class="small-label">
+        <input type="checkbox" id="group-by-seller"> Group by seller
+      </label>
+    </div>
+    <div id="listings-list" class="listings-list"></div>
+  </aside>
+
+  <!-- Filter card -->
+  <div id="filter-card" class="filter-card" hidden>
+    <div class="card-header">
+      <h3>Filters</h3>
+      <button type="button" id="close-filter" class="icon-btn" aria-label="Close">×</button>
+    </div>
+    <div class="filter-body">
+      <label>Category <select id="filter-category"><option value="">All</option></select></label>
+      <label>Seller <select id="filter-seller"><option value="">All</option></select></label>
+      <label>Visibility
+        <select id="filter-visibility">
+          <option value="">All</option>
+          <option value="worldwide">Worldwide</option>
+          <option value="country">Country</option>
+          <option value="province">Province</option>
+        </select>
+      </label>
+      <label>Units <select id="filter-units"><option value="">All</option></select></label>
+      <label>Min price <input type="number" id="filter-min-price" step="0.01" min="0"></label>
+      <label>Max price <input type="number" id="filter-max-price" step="0.01" min="0"></label>
+      <label class="check"><input type="checkbox" id="filter-favorites"> Favorites only</label>
+      <label class="check"><input type="checkbox" id="filter-in-view"> Only in map view</label>
+      <div class="filter-actions">
+        <button type="button" id="apply-filters" class="small-btn primary">Apply</button>
+        <button type="button" id="reset-filters" class="small-btn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options menu -->
+  <div id="options-menu" class="options-menu" hidden>
+    <div class="menu-header">
+      <h3>Options</h3>
+      <button type="button" id="close-options" class="icon-btn">×</button>
+    </div>
+    <div class="menu-body">
+      <label class="theme-row">
+        Dark mode <input type="checkbox" id="theme-toggle">
+      </label>
+      <div class="api-row">
+        <input type="url" id="api-base-input" placeholder="API base URL">
+        <button type="button" id="save-api-base" class="small-btn">Save</button>
+      </div>
+      <button type="button" id="open-sellers" class="menu-btn">Sellers</button>
+      <button type="button" id="open-deploy" class="menu-btn">Deploy notes</button>
+      <button type="button" id="open-recent" class="menu-btn">Recent</button>
+      <button type="button" id="open-stats" class="menu-btn">Stats</button>
+      <button type="button" id="open-shortcuts" class="menu-btn">Shortcuts</button>
+      <button type="button" id="copy-filtered-link" class="menu-btn">Copy filtered view link</button>
+      <button type="button" id="export-demo" class="menu-btn">Export demo</button>
+      <button type="button" id="download-demo" class="menu-btn">Download backup</button>
+      <button type="button" id="reset-demo" class="menu-btn">Reset demo data</button>
+      <button type="button" id="add-listing-btn" class="menu-btn">Add listing</button>
+      <button type="button" id="sample-listing-btn" class="menu-btn">Sample listing</button>
+    </div>
+  </div>
+
+  <!-- Product & seller cards -->
+  <div id="product-card" class="floating-card"></div>
+  <div id="seller-card" class="floating-card"></div>
+
+  <!-- Image lightbox -->
+  <div id="image-lightbox" class="lightbox">
+    <img id="lightbox-img" alt="">
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Modals (shells; JS fills content) -->
+  <div id="auth-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="dashboard-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="listing-form-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="sellers-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="deploy-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-deploy-btn" class="close-modal">×</button>
+      <h3>Deploy notes</h3>
+      <p>See README.md for exact wrangler commands. Auth migration already applied. Optional RFQ migration and GitHub Actions secrets remain user actions.</p>
+    </div>
+  </div>
+  <div id="shortcuts-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-shortcuts-btn" class="close-modal">×</button>
+      <h3>Shortcuts</h3>
+      <ul>
+        <li><kbd>/</kbd> Focus search</li>
+        <li><kbd>Esc</kbd> Close cards / modals</li>
+      </ul>
+    </div>
+  </div>
+  <div id="data-source-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-source-btn" class="close-modal">×</button>
+      <h3>Data source</h3>
+      <div id="source-content"></div>
+    </div>
+  </div>
+  <div id="compare-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="recent-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="stats-modal" class="modal"><div class="modal-content"></div></div>
+
+  <!-- Scripts: config first, then modules, main last -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/config.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/sellers.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/list.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/form.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/fullscreen.js"></script>
+  <script src="js/rfq.js"></script>
+  <script src="js/shortcuts.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/csv.js"></script>
+  <script src="js/geojson.js"></script>
+  <script src="js/recent.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
