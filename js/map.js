@@ -5,6 +5,7 @@
  * markers use category-colored pins. Exposes getMap / flyToListing / getUserLocation / setListings / fitAll.
  * locateUser now accepts an optional success callback so Nearby filter can activate after geolocation.
  * fitAll re-frames the map to the current filtered set for easier seed/demo exploration.
+ * Category legend (bottom-right) shows colors + counts for the current filtered set; click to filter.
  */
 (function (global) {
   'use strict';
@@ -88,6 +89,39 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function updateLegend() {
+    const el = document.getElementById('map-legend');
+    if (!el) return;
+    const cats = {};
+    currentListings.forEach(l => {
+      const c = l.category || 'other';
+      cats[c] = (cats[c] || 0) + 1;
+    });
+    const keys = Object.keys(cats).sort();
+    if (!keys.length) {
+      el.hidden = true;
+      el.innerHTML = '';
+      return;
+    }
+    el.hidden = false;
+    el.innerHTML = `<h4>Categories</h4>` + keys.map(c => {
+      const color = colorFor(c);
+      return `<div class="legend-item" data-cat="${escapeHtml(c)}" title="Filter to ${escapeHtml(c)}">
+        <span class="swatch" style="background:${color}"></span>
+        <span>${escapeHtml(c)} <span class="muted">(${cats[c]})</span></span>
+      </div>`;
+    }).join('');
+    el.querySelectorAll('.legend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const cat = item.dataset.cat;
+        if (global.FD_LIST && typeof global.FD_LIST.setCategoryFilter === 'function') {
+          global.FD_LIST.setCategoryFilter(cat);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${cat}`, 'info');
+        }
+      });
+    });
+  }
+
   function setListings(listings) {
     currentListings = Array.isArray(listings) ? listings : [];
     if (!markersLayer) return;
@@ -122,6 +156,7 @@
         map._fdFitted = true;
       }
     }
+    updateLegend();
   }
 
   function flyToListing(listing) {

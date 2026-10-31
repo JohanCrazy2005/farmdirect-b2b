@@ -53,3 +53,14 @@ PLACEHOLDER
 - `index.html`: new `#fit-map-btn` next to Nearby.
 - `js/map.js`: `fitAll()` collects lat/long from `currentListings` (the filtered set already pushed by the list), calls `map.fitBounds`, and toasts the count. Exposed on `FD_MAP.fitAll`.
 - `js/list.js`: button click in `bind()` calls `FD_MAP.fitAll()`. Fully client-side.
+
+## 2026-10-30 – Clickable category legend (seed/demo UX)
+
+**What:** Added a bottom-right map legend that lists unique categories from the current filtered set, with color swatches matching the markers and live counts. Clicking an item filters the list and map to that category (via existing `FD_LIST.setCategoryFilter`).
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. The colored markers need a legend so users can quickly identify and isolate categories without opening the filter card.
+
+**How:**
+- `index.html`: new `#map-legend` div (hidden until populated).
+- `css/main.css`: absolute positioning (bottom-right, safe-area aware) plus heading styles; existing swatch/item rules reused.
+- `js/map.js`: `updateLegend()` aggregates categories from `currentListings`, renders clickable items, and is called at the end of `setListings()`. Fully client-side.

@@ -257,6 +257,10 @@ body {
 }
 
 .map-legend {
+  position: absolute;
+  bottom: max(16px, var(--safe-bottom));
+  right: max(16px, var(--safe-right));
+  z-index: 500;
   background: var(--surface);
   padding: .5rem .65rem;
   border-radius: 8px;
@@ -265,6 +269,15 @@ body {
   max-height: 220px;
   overflow: auto;
   border: 1px solid var(--border);
+  min-width: 140px;
+}
+.map-legend h4 {
+  margin: 0 0 .35rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 .map-legend .legend-item {
   display: flex;
