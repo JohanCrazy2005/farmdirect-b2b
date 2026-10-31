@@ -339,6 +339,10 @@
     const listing = allListings.find(l => String(l.id) === String(id)) || filtered.find(l => String(l.id) === String(id));
     if (!listing) return;
     selectedId = listing.id;
+    // Track for recently viewed (seed/demo UX)
+    if (global.FD_RECENT && typeof global.FD_RECENT.track === 'function') {
+      global.FD_RECENT.track(listing.id);
+    }
     render();
     if (global.FD_CARDS && typeof global.FD_CARDS.openProduct === 'function') {
       global.FD_CARDS.openProduct(listing);

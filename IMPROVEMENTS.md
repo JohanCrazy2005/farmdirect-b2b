@@ -97,3 +97,14 @@ PLACEHOLDER
 - `index.html`: new `#export-csv-btn` in the options menu (next to Export GeoJSON).
 - `js/main.js`: calls `FD_CSV.bind()` during bootstrap so the button listener is attached.
 - Existing `exportFilteredCsv()` uses `FD_LIST.getFiltered()`, builds a CSV with header + rows, and triggers a download. Fully client-side.
+
+## 2026-10-30 – Wire recently viewed module (seed/demo UX)
+
+**What:** Completed the existing `js/recent.js` module by adding the `#recent-modal` markup, an Options-menu “Recently viewed” button (`#open-recent`), calling `FD_RECENT.bind()` from bootstrap, and tracking every product-card selection from `FD_LIST.select()`. Clicking a recent item reopens the product card and flies the map.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. The recent-history feature was already implemented client-side (localStorage, last 8) but missing its UI surface and tracking hook, so users could not use it.
+
+**How:**
+- `index.html`: new `#open-recent` in the options menu and `#recent-modal` / `#recent-list` / `#clear-recent-btn`.
+- `js/main.js`: `FD_RECENT.bind()` in `init()` plus the options-menu click handler that opens the modal.
+- `js/list.js`: `select()` now calls `FD_RECENT.track(listing.id)` so every card open is recorded. Fully client-side; no schema or Worker changes.
