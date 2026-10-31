@@ -176,3 +176,14 @@ PLACEHOLDER
 - `js/main.js`: `maybeOpenHashListing()` now calls `applyFiltersFromParams` first; button listener wired in `setupOptions`.
 - `index.html`: new `#copy-filtered-link` button in the options menu.
 - Fully client-side; no schema or Worker changes. Works with existing #listing= support.
+
+## 2026-10-31 – Clear & fit reset button (seed/demo UX)
+
+**What:** Added a “Clear & fit” button in the sidebar tools that clears all active filters (category, seller, nearby, in-view, favorites, price, sort) while keeping the current search text, then fits the map to the full set of listings.
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. After using Nearby, In view, category legend, or other filters, a single action resets exploration and reorients the map without inventing unrelated features.
+
+**How:**
+- `index.html`: new `#clear-fit-btn` next to Fit map.
+- `js/list.js`: `clearAndFit()` calls existing `clearFilters()` then `FD_MAP.fitAll()` after a short delay so the full set is pushed to the map first. Wired in `bind()` and exposed on `FD_LIST`.
+- Fully client-side; no schema or Worker changes.
