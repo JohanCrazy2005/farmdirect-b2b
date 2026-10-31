@@ -86,3 +86,14 @@ PLACEHOLDER
 - `index.html`: new `#compare-btn` in the options menu and `#compare-modal` / `#compare-content`.
 - `css/main.css`: `.compare-table` styles and `.compare-btn.active` highlight.
 - Existing `FD_COMPARE.bind()` (already called from `main.js`) attaches the listeners. Fully client-side; no schema or Worker changes.
+
+## 2026-10-30 – CSV export button (seed/demo UX)
+
+**What:** Wired the existing `js/csv.js` exporter into the Options menu with an “Export CSV” button. It downloads the currently filtered listings as a properly escaped CSV (schema fields + lat/long).
+
+**Why:** Seed/demo mode is the primary experience while the live Worker is offline or empty. Exposing the already-implemented client-side CSV export complements GeoJSON and improves data portability without inventing new features.
+
+**How:**
+- `index.html`: new `#export-csv-btn` in the options menu (next to Export GeoJSON).
+- `js/main.js`: calls `FD_CSV.bind()` during bootstrap so the button listener is attached.
+- Existing `exportFilteredCsv()` uses `FD_LIST.getFiltered()`, builds a CSV with header + rows, and triggers a download. Fully client-side.

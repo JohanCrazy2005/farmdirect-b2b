@@ -225,6 +225,7 @@
     if (global.FD_RFQ && typeof global.FD_RFQ.bind === 'function') global.FD_RFQ.bind();
     if (global.FD_SHORTCUTS && typeof global.FD_SHORTCUTS.bind === 'function') global.FD_SHORTCUTS.bind();
     if (global.FD_COMPARE && typeof global.FD_COMPARE.bind === 'function') global.FD_COMPARE.bind();
+    if (global.FD_CSV && typeof global.FD_CSV.bind === 'function') global.FD_CSV.bind();
     if (global.FD_GEOJSON && typeof global.FD_GEOJSON.bind === 'function') global.FD_GEOJSON.bind();
 
     setupOptions();
