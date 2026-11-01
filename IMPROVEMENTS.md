@@ -1,5 +1,13 @@
 # Improvements log
 
+## 2026-11-01 (America/Denver) – Seed/demo UX: in-app tips module
+
+- Added substantial `js/seedtips.js` module that opens a guided tips modal covering map exploration, filters/sort, local demo edits, exports, and data-source indicators.
+- Wired a “Seed/demo tips” button into the options menu, added the `#seedtips-modal` shell to `index.html`, and bound the module in `main.js` (including outside-click close).
+- Data-source modal now mentions the new tips entry.
+- Fully client-side; improves seed/demo fallback clarity and onboarding while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: richer data-source status
 
 - Added `getDemoInfo()` to `js/api.js` so the client can report how many local demo overrides exist in localStorage.

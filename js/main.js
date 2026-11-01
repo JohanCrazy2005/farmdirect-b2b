@@ -61,6 +61,7 @@
       <p class="small">Local demo overrides: ${demo.hasDemo ? demo.count + ' listing(s) in localStorage' : 'none'}</p>
       <p class="small">Use the <strong>Retry live</strong> button on the banner to re-check the Worker without reloading.</p>
       <p class="small">Use <strong>Load pure seed data</strong> in Options to clear local overrides.</p>
+      <p class="small">Open <strong>Seed/demo tips</strong> in Options for a guided tour of offline features.</p>
       <p class="small">Next steps (optional, user action):</p>
       <ul class="small">
         <li>Apply RFQ migration: <code>npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql</code></li>
@@ -284,7 +285,7 @@
   }
 
   function setupModalsClose() {
-    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
+    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal?.addEventListener('click', (e) => {
         if (e.target.id === id) modal.classList.remove('open');
@@ -293,6 +294,7 @@
     document.getElementById('close-deploy-btn')?.addEventListener('click', () => document.getElementById('deploy-modal')?.classList.remove('open'));
     document.getElementById('close-shortcuts-btn')?.addEventListener('click', () => document.getElementById('shortcuts-modal')?.classList.remove('open'));
     document.getElementById('close-source-btn')?.addEventListener('click', () => document.getElementById('data-source-modal')?.classList.remove('open'));
+    document.getElementById('close-seedtips-btn')?.addEventListener('click', () => document.getElementById('seedtips-modal')?.classList.remove('open'));
     document.getElementById('image-lightbox')?.addEventListener('click', () => {
       if (global.FD_CARDS && global.FD_CARDS.closeLightbox) global.FD_CARDS.closeLightbox();
       else document.getElementById('image-lightbox')?.classList.remove('open');
@@ -362,6 +364,7 @@
     if (global.FD_GEOJSON && typeof global.FD_GEOJSON.bind === 'function') global.FD_GEOJSON.bind();
     if (global.FD_RECENT && typeof global.FD_RECENT.bind === 'function') global.FD_RECENT.bind();
     if (global.FD_STATS && typeof global.FD_STATS.bind === 'function') global.FD_STATS.bind();
+    if (global.FD_SEEDTIPS && typeof global.FD_SEEDTIPS.bind === 'function') global.FD_SEEDTIPS.bind();
 
     setupOptions();
     setupFilterCard();
