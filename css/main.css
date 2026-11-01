@@ -276,3 +276,15 @@ html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Seg
 .link-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; padding: 0; }
 .link-btn:hover { text-decoration: underline; }
 kbd { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+
+/* Demo status inspector */
+.demo-diff-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: var(--surface);
+}
+.demo-diff-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+.demo-diff-meta { margin-bottom: 6px; }
+.demo-diff-actions { display: flex; gap: 6px; }
