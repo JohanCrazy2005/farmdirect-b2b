@@ -1,5 +1,14 @@
 # Improvements log
 
+## 2026-11-01 (America/Denver) – Seed/demo UX: first-run onboarding welcome
+
+- Added substantial `js/onboarding.js` module that shows a one-time welcome modal on first visit when the data source is seed, demo, or api-empty.
+- Modal covers quick start (map, filters, local demo edits), exports, data-source indicators, and links to the existing Seed/demo tips.
+- Wired a “Welcome tour” button into the options menu, added the `#onboarding-modal` shell to `index.html`, and bound the module in `main.js` (auto-show after load + outside-click close).
+- Data-source modal now mentions the welcome tour.
+- Fully client-side; improves seed/demo fallback onboarding while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: in-app tips module
 
 - Added substantial `js/seedtips.js` module that opens a guided tips modal covering map exploration, filters/sort, local demo edits, exports, and data-source indicators.
