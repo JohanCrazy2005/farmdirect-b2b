@@ -294,7 +294,7 @@
   }
 
   function setupModalsClose() {
-    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
+    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'quality-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal?.addEventListener('click', (e) => {
         if (e.target.id === id) modal.classList.remove('open');
@@ -307,6 +307,7 @@
     document.getElementById('close-onboarding-btn')?.addEventListener('click', () => document.getElementById('onboarding-modal')?.classList.remove('open'));
     document.getElementById('close-demostatus-btn')?.addEventListener('click', () => document.getElementById('demostatus-modal')?.classList.remove('open'));
     document.getElementById('close-localmanager-btn')?.addEventListener('click', () => document.getElementById('localmanager-modal')?.classList.remove('open'));
+    document.getElementById('close-quality-btn')?.addEventListener('click', () => document.getElementById('quality-modal')?.classList.remove('open'));
     document.getElementById('image-lightbox')?.addEventListener('click', () => {
       if (global.FD_CARDS && global.FD_CARDS.closeLightbox) global.FD_CARDS.closeLightbox();
       else document.getElementById('image-lightbox')?.classList.remove('open');
@@ -380,6 +381,7 @@
     if (global.FD_ONBOARDING && typeof global.FD_ONBOARDING.bind === 'function') global.FD_ONBOARDING.bind();
     if (global.FD_DEMOSTATUS && typeof global.FD_DEMOSTATUS.bind === 'function') global.FD_DEMOSTATUS.bind();
     if (global.FD_LOCALMANAGER && typeof global.FD_LOCALMANAGER.bind === 'function') global.FD_LOCALMANAGER.bind();
+    if (global.FD_QUALITY && typeof global.FD_QUALITY.bind === 'function') global.FD_QUALITY.bind();
 
     setupOptions();
     setupFilterCard();
