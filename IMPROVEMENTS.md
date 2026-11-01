@@ -1,5 +1,14 @@
 # Improvements log
 
+## 2026-11-01 (America/Denver) – Seed/demo UX: demo status inspector
+
+- Added substantial `js/demostatus.js` module that compares current listings against pure seed data and shows added, modified, and missing items.
+- Users can revert individual listings to the original seed version (or remove demo-only items), export the current set, or force pure seed.
+- Wired a “Demo status” button into the options menu, added the `#demostatus-modal` shell to `index.html`, and bound the module in `main.js`.
+- Added light CSS for the diff items so the inspector is readable on both themes.
+- Fully client-side; improves seed/demo fallback clarity while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: first-run onboarding welcome
 
 - Added substantial `js/onboarding.js` module that shows a one-time welcome modal on first visit when the data source is seed, demo, or api-empty.
