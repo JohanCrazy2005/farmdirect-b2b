@@ -162,6 +162,25 @@
         if (global.FD_TOAST) global.FD_TOAST.show(res.ok ? 'Backup downloaded' : (res.error || 'Download failed'), res.ok ? 'success' : 'error');
       }
     });
+    document.getElementById('import-demo')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json,.json';
+      input.onchange = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const res = await (global.FD_API && global.FD_API.importDemoData ? global.FD_API.importDemoData(text) : Promise.resolve({ ok: false, error: 'Import unavailable' }));
+          if (global.FD_TOAST) global.FD_TOAST.show(res.ok ? `Imported ${res.count || 0} listings` : (res.error || 'Import failed'), res.ok ? 'success' : 'error');
+          if (res.ok) loadAndRender();
+        } catch (err) {
+          if (global.FD_TOAST) global.FD_TOAST.show(err.message || 'Import failed', 'error');
+        }
+      };
+      input.click();
+    });
     document.getElementById('reset-demo')?.addEventListener('click', () => {
       if (confirm('Reset local demo listings and reload seed data?')) {
         if (global.FD_API && global.FD_API.resetDemoListings) global.FD_API.resetDemoListings();
