@@ -28,6 +28,7 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 - [x] Persistent data-source badge in top bar (SEED/DEMO)
 - [x] Seller filter dropdown + chips use human-readable names from seed-sellers.json
 - [x] Banner Details button opens data-source modal with next-step guidance
+- [x] Retry live button on banner (re-probe Worker without full reload) + modal mention (2026-11-01)
 
 ### P5 – Optional GitHub Actions
 - [x] `.github/workflows/deploy.yml` present

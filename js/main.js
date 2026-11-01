@@ -45,14 +45,15 @@
     content.innerHTML = `
       <p><strong>Source:</strong> ${info.source || 'unknown'}</p>
       <p>${info.message || ''}</p>
-      <p class=\"small\">Health: ${info.health ? (info.health.ok ? 'reachable' : (info.health.error || 'offline')) : 'n/a'}</p>
-      <p class=\"small\">Next steps (optional, user action):</p>
-      <ul class=\"small\">
+      <p class="small">Health: ${info.health ? (info.health.ok ? 'reachable' : (info.health.error || 'offline')) : 'n/a'}</p>
+      <p class="small">Use the <strong>Retry live</strong> button on the banner to re-check the Worker without reloading.</p>
+      <p class="small">Next steps (optional, user action):</p>
+      <ul class="small">
         <li>Apply RFQ migration: <code>npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql</code></li>
         <li>Add GitHub Actions secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID) for auto-deploy</li>
         <li>Or continue with seed/demo — fully client-side</li>
       </ul>
-      <p class=\"small\">See README.md and the Deploy steps button for exact commands.</p>
+      <p class="small">See README.md and the Deploy steps button for exact commands.</p>
     `;
     modal.classList.add('open');
   }
@@ -289,6 +290,10 @@
       document.getElementById('offline-banner')?.setAttribute('hidden', '');
     });
     document.getElementById('banner-details')?.addEventListener('click', openSourceModal);
+    document.getElementById('banner-retry')?.addEventListener('click', () => {
+      if (global.FD_TOAST) global.FD_TOAST.show('Retrying live API…', 'info');
+      loadAndRender();
+    });
     document.getElementById('banner-deploy')?.addEventListener('click', () => {
       document.getElementById('deploy-modal')?.classList.add('open');
     });
