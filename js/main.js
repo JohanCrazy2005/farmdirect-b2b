@@ -5,6 +5,7 @@
  * Fully client-side; works offline with seed data.
  * Supports deep links: #listing=ID opens the matching product card after load.
  * Also supports shareable filtered views via hash params (cat, seller, vis, etc.).
+ * Supports shareable map views via #map=lat,lng,zoom.
  */
 (function (global) {
   'use strict';
@@ -60,7 +61,7 @@
    * If the URL hash contains #listing=ID, select that listing once the list is loaded.
    * Also applies any filter params (cat, seller, vis, units, min, max, fav, nearby, inview, sort, q)
    * for shareable filtered views. Makes Share links and filtered-view links work in seed/demo mode.
-   * Fully client-side.
+   * Fully client-side. Also applies #map=lat,lng,zoom if present.
    */
   function maybeOpenHashListing() {
     const hash = (location.hash || '').replace(/^#/, '');
@@ -68,6 +69,9 @@
     // Apply any filter params first (seed/demo shareable filtered views)
     if (global.FD_LIST && typeof global.FD_LIST.applyFiltersFromParams === 'function') {
       global.FD_LIST.applyFiltersFromParams(params);
+    }
+    if (global.FD_MAP && typeof global.FD_MAP.applyMapViewFromHash === 'function') {
+      global.FD_MAP.applyMapViewFromHash();
     }
     const id = params.get('listing');
     if (!id) return;
@@ -211,6 +215,17 @@
         global.FD_LIST.copyFilteredLink();
       }
     });
+    document.getElementById('copy-map-view')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_MAP && typeof global.FD_MAP.getMapViewLink === 'function') {
+        const link = global.FD_MAP.getMapViewLink();
+        navigator.clipboard.writeText(link).then(() => {
+          if (global.FD_TOAST) global.FD_TOAST.show('Map view link copied', 'success');
+        }).catch(() => {
+          if (global.FD_TOAST) global.FD_TOAST.show('Copy failed — select and copy manually', 'error');
+        });
+      }
+    });
   }
 
   function setupFilterCard() {
@@ -320,7 +335,7 @@
     setupAddButtons();
     setupKeyboard();
 
-    // Deep-link + filtered-view support (seed/demo UX)
+    // Deep-link + filtered-view + map-view support (seed/demo UX)
     window.addEventListener('hashchange', maybeOpenHashListing);
 
     loadAndRender();

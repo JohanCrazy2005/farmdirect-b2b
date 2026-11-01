@@ -1,3 +1,15 @@
+## 2026-11-01 – Shareable map view links (seed/demo UX)
+
+**What:** Added “Copy map view link” button in the options menu. It copies a URL with `#map=lat,lng,zoom` for the current map center and zoom. Opening that link (or changing the hash) restores the view. Complements existing filtered-view links and works fully with seed/demo data.
+
+Improves offline/seed fallback exploration and sharing without new features or schema changes.
+
+**How:** Frontend changes to `index.html` (button), `js/map.js` (`getMapViewLink` + `applyMapViewFromHash`), and `js/main.js` (wiring + hash handling). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** Optional user actions remain: RFQ migration (`npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`) and GitHub Actions secrets. Seed/demo continues to work fully client-side.
+
+---
+
 ## 2026-10-31 – Load pure seed data button (seed/demo UX)
 
 **What:** Added a “Load pure seed data” button in the options menu. It clears any local demo overrides (via existing `resetDemoListings`) and reloads the canonical seed listings so the map and sidebar return to a known baseline. Complements Reload listings, Import/Export/Download, and Reset demo.

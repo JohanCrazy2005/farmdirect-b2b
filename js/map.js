@@ -6,6 +6,7 @@
  * locateUser now accepts an optional success callback so Nearby filter can activate after geolocation.
  * fitAll re-frames the map to the current filtered set for easier seed/demo exploration.
  * Category legend (bottom-right) shows colors + counts for the current filtered set; click to filter.
+ * Supports shareable map views via #map=lat,lng,zoom (seed/demo UX).
  */
 (function (global) {
   'use strict';
@@ -50,6 +51,7 @@
       maxZoom: 19
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
+    applyMapViewFromHash();
     return map;
   }
 
@@ -221,6 +223,29 @@
     if (global.FD_TOAST) global.FD_TOAST.show(`Fitted ${bounds.length} listing${bounds.length === 1 ? '' : 's'}`, 'info');
   }
 
+  function getMapViewLink() {
+    if (!map) return location.href;
+    const c = map.getCenter();
+    const z = map.getZoom();
+    const base = location.origin + location.pathname;
+    return `${base}#map=${c.lat.toFixed(5)},${c.lng.toFixed(5)},${z}`;
+  }
+
+  function applyMapViewFromHash() {
+    if (!map) return;
+    const hash = (location.hash || '').replace(/^#/, '');
+    const params = new URLSearchParams(hash);
+    const mapParam = params.get('map');
+    if (!mapParam) return;
+    const parts = mapParam.split(',');
+    if (parts.length < 2) return;
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    const zoom = parts[2] ? parseFloat(parts[2]) : map.getZoom();
+    if (isNaN(lat) || isNaN(lng)) return;
+    map.setView([lat, lng], zoom);
+  }
+
   function getMap() { return map; }
   function getUserLocation() { return userLocation; }
 
@@ -230,6 +255,8 @@
     flyToListing,
     locateUser,
     fitAll,
+    getMapViewLink,
+    applyMapViewFromHash,
     getMap,
     getUserLocation
   };
