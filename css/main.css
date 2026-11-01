@@ -309,3 +309,22 @@ kbd { background: var(--surface); border: 1px solid var(--border); border-radius
   white-space: nowrap;
 }
 .local-actions { display: flex; gap: 6px; margin-top: 6px; }
+
+/* Data quality inspector */
+.quality-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: var(--surface);
+}
+.quality-item.quality-error { border-left: 3px solid #dc2626; }
+.quality-item.quality-warning { border-left: 3px solid #d97706; }
+.quality-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+.quality-issues { margin: 4px 0 6px; padding-left: 18px; font-size: 13px; }
+.quality-issues li { margin: 2px 0; }
+.quality-error { color: #dc2626; }
+.quality-warning { color: #d97706; }
+.quality-info { color: var(--muted); }
+.quality-sev { font-weight: 700; font-size: 11px; text-transform: uppercase; margin-right: 4px; }
+.quality-actions { display: flex; gap: 6px; }
