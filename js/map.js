@@ -7,6 +7,7 @@
  * fitAll re-frames the map to the current filtered set for easier seed/demo exploration.
  * Category legend (bottom-right) shows colors + counts for the current filtered set; click to filter.
  * Supports shareable map views via #map=lat,lng,zoom (seed/demo UX).
+ * resetToDefault returns the map to the configured center and zoom.
  */
 (function (global) {
   'use strict';
@@ -57,7 +58,7 @@
 
   function makeIcon(listing) {
     const color = colorFor(listing.category);
-    const html = `<div class="marker-pin" style="background:${color}"><span class="fav-star" style="opacity:${isFavorite(listing.id) ? 1 : 0}">★</span></div>`;
+    const html = `<div class=\"marker-pin\" style=\"background:${color}\"><span class=\"fav-star\" style=\"opacity:${isFavorite(listing.id) ? 1 : 0}\">★</span></div>`;
     return L.divIcon({
       className: 'fd-marker',
       html,
@@ -78,17 +79,17 @@
       ? global.FD_SELLERS.getDisplayName(listing.sellerid)
       : (listing.sellerid || '');
     const price = listing.price != null ? `$${Number(listing.price).toFixed(2)} / ${listing.units || ''}` : '';
-    return `<div class="map-popup">
+    return `<div class=\"map-popup\">
       <strong>${escapeHtml(listing.headerdescription || 'Listing')}</strong>
-      <div class="muted small">${escapeHtml(listing.category || '')} · ${escapeHtml(seller)}</div>
+      <div class=\"muted small\">${escapeHtml(listing.category || '')} · ${escapeHtml(seller)}</div>
       <div>${escapeHtml(price)}</div>
-      <button type="button" class="link-btn popup-open" data-id="${escapeHtml(listing.id)}">Open details</button>
+      <button type=\"button\" class=\"link-btn popup-open\" data-id=\"${escapeHtml(listing.id)}\">Open details</button>
     </div>`;
   }
 
   function escapeHtml(s) {
     if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
   }
 
   function updateLegend() {
@@ -108,9 +109,9 @@
     el.hidden = false;
     el.innerHTML = `<h4>Categories</h4>` + keys.map(c => {
       const color = colorFor(c);
-      return `<div class="legend-item" data-cat="${escapeHtml(c)}" title="Filter to ${escapeHtml(c)}">
-        <span class="swatch" style="background:${color}"></span>
-        <span>${escapeHtml(c)} <span class="muted">(${cats[c]})</span></span>
+      return `<div class=\"legend-item\" data-cat=\"${escapeHtml(c)}\" title=\"Filter to ${escapeHtml(c)}\">
+        <span class=\"swatch\" style=\"background:${color}\"></span>
+        <span>${escapeHtml(c)} <span class=\"muted\">(${cats[c]})</span></span>
       </div>`;
     }).join('');
     el.querySelectorAll('.legend-item').forEach(item => {
@@ -137,7 +138,7 @@
       const marker = L.marker([lat, lng], { icon: makeIcon(l) });
       marker.bindPopup(popupHtml(l));
       marker.on('popupopen', () => {
-        const btn = document.querySelector('.popup-open[data-id="' + CSS.escape(String(l.id)) + '"]');
+        const btn = document.querySelector('.popup-open[data-id=\"' + CSS.escape(String(l.id)) + '\"]');
         if (btn) {
           btn.onclick = () => {
             if (global.FD_LIST && typeof global.FD_LIST.select === 'function') global.FD_LIST.select(l.id);
@@ -246,6 +247,19 @@
     map.setView([lat, lng], zoom);
   }
 
+  /**
+   * Reset the map to the configured default center and zoom.
+   * Useful after exploring or following a share link. Fully client-side.
+   */
+  function resetToDefault() {
+    if (!map) return;
+    const cfg = getConfig();
+    const center = cfg.MAP_CENTER || [39.7392, -104.9903];
+    const zoom = cfg.MAP_ZOOM || 11;
+    map.setView(center, zoom);
+    if (global.FD_TOAST) global.FD_TOAST.show('Map reset to default view', 'info');
+  }
+
   function getMap() { return map; }
   function getUserLocation() { return userLocation; }
 
@@ -257,6 +271,7 @@
     fitAll,
     getMapViewLink,
     applyMapViewFromHash,
+    resetToDefault,
     getMap,
     getUserLocation
   };

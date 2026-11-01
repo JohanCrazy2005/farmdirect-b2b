@@ -45,14 +45,14 @@
     content.innerHTML = `
       <p><strong>Source:</strong> ${info.source || 'unknown'}</p>
       <p>${info.message || ''}</p>
-      <p class="small">Health: ${info.health ? (info.health.ok ? 'reachable' : (info.health.error || 'offline')) : 'n/a'}</p>
-      <p class="small">Next steps (optional, user action):</p>
-      <ul class="small">
+      <p class=\"small\">Health: ${info.health ? (info.health.ok ? 'reachable' : (info.health.error || 'offline')) : 'n/a'}</p>
+      <p class=\"small\">Next steps (optional, user action):</p>
+      <ul class=\"small\">
         <li>Apply RFQ migration: <code>npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql</code></li>
         <li>Add GitHub Actions secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID) for auto-deploy</li>
         <li>Or continue with seed/demo — fully client-side</li>
       </ul>
-      <p class="small">See README.md and the Deploy steps button for exact commands.</p>
+      <p class=\"small\">See README.md and the Deploy steps button for exact commands.</p>
     `;
     modal.classList.add('open');
   }
@@ -224,6 +224,12 @@
         }).catch(() => {
           if (global.FD_TOAST) global.FD_TOAST.show('Copy failed — select and copy manually', 'error');
         });
+      }
+    });
+    document.getElementById('reset-map-view')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_MAP && typeof global.FD_MAP.resetToDefault === 'function') {
+        global.FD_MAP.resetToDefault();
       }
     });
   }

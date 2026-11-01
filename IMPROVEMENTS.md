@@ -1,3 +1,15 @@
+## 2026-11-01 – Reset map view button (seed/demo UX)
+
+**What:** Added “Reset map view” button in the options menu. It returns the Leaflet map to the configured default center and zoom (from FD_CONFIG). Complements Copy map view link, Fit map, and shareable views. Fully client-side; works with seed/demo data.
+
+Improves offline/seed fallback exploration after zooming or following a shared map link.
+
+**How:** Frontend changes to `index.html` (button), `js/map.js` (`resetToDefault`), and `js/main.js` (event wiring). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** Optional user actions remain: RFQ migration (`npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`) and GitHub Actions secrets. Seed/demo continues to work fully client-side.
+
+---
+
 ## 2026-11-01 – Shareable map view links (seed/demo UX)
 
 **What:** Added “Copy map view link” button in the options menu. It copies a URL with `#map=lat,lng,zoom` for the current map center and zoom. Opening that link (or changing the hash) restores the view. Complements existing filtered-view links and works fully with seed/demo data.
