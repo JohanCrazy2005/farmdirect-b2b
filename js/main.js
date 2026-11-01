@@ -232,6 +232,12 @@
         global.FD_MAP.resetToDefault();
       }
     });
+    document.getElementById('export-filtered-json')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_LIST && typeof global.FD_LIST.exportFilteredJson === 'function') {
+        global.FD_LIST.exportFilteredJson();
+      }
+    });
   }
 
   function setupFilterCard() {
