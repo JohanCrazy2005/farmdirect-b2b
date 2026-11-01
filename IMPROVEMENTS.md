@@ -1,5 +1,14 @@
 # Improvements log
 
+## 2026-11-01 (America/Denver) – Seed/demo UX: data quality inspector
+
+- Added substantial `js/quality.js` module that scans current listings for schema issues (invalid/missing location, visibility enum, empty required fields, bad price, missing image).
+- Opens a modal listing issues with severity, and a “View” button that selects the listing (opens product card + flies map).
+- Wired a “Data quality” button into the options menu, added the `#quality-modal` shell to `index.html`, loaded the script, and bound the module in `main.js`.
+- Added light CSS for the quality items so the inspector is readable on both themes.
+- Fully client-side; improves seed/demo fallback clarity and data hygiene while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: local data manager
 
 - Added substantial `js/localmanager.js` module that lists all `fd-*` localStorage keys (demo listings, favorites, map view, theme, RFQs, onboarding flag, etc.) with sizes and short previews.
