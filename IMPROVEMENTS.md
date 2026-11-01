@@ -1,3 +1,16 @@
+## 2026-10-31 – Truly fix list.js HTML escaping (seed/demo UX)
+
+**What:** Corrected the still-broken `escapeHtml` in `js/list.js` so that `&`, `<`, `>` and `"` in seed data are properly converted to HTML entities before being inserted into the sidebar list.
+
+**Why:** Highest unfinished code-only item was further seed/demo UX polish. A prior commit claimed to fix the no-op replacements, but the source still contained identity replaces (e.g. `/&/g, '&'`). Any listing header, description, category, seller name or address containing special characters would break the list markup or inject unintended HTML.
+
+**How:**
+- `js/list.js`: `escapeHtml` now uses the same correct replacements as `js/cards.js` (`&`, `<`, `>`, `"`).
+
+Seed/demo fallback continues to work fully offline. Live E2E verification remains user action after optional migrations.
+
+---
+
 ## 2026-10-31 – Fix list escaping + wire Only-in-map-view filter (seed/demo UX)
 
 **What:** Corrected the broken `escapeHtml` in `js/list.js` (same no-op replacements previously fixed in cards.js) and completed the wiring for the “Only in map view” filter checkbox so it is read from and synced to the UI.
