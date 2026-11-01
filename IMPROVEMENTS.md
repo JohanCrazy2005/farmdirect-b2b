@@ -1,3 +1,15 @@
+## 2026-10-31 – Reload listings button (seed/demo UX)
+
+**What:** Added a “Reload listings” button in the options menu that re-fetches from the live Worker or seed/demo fallback and refreshes the map + sidebar. Complements the existing Import/Export/Download/Reset demo actions and the offline banner guidance.
+
+Improves offline/seed fallback UX without new features or schema changes. Useful after switching API base, restoring demo data, or retrying a previously empty Worker.
+
+**How:** Frontend changes to `index.html` (button) and `js/main.js` (event wiring + toast). Single commit via push_files. Appended this entry to IMPROVEMENTS.md.
+
+**Next:** Optional user actions remain: RFQ migration (`npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql`) and GitHub Actions secrets. Seed/demo continues to work fully client-side.
+
+---
+
 ## 2026-10-31 – Import demo backup button (seed/demo UX)
 
 **What:** Added an “Import demo backup” button in the options menu that opens a file picker for a JSON array of listings and calls the existing `FD_API.importDemoData`. On success it reloads the list so the restored data appears immediately. Complements the existing Export demo / Download backup / Reset demo actions.

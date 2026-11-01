@@ -181,6 +181,11 @@
       };
       input.click();
     });
+    document.getElementById('reload-listings')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_TOAST) global.FD_TOAST.show('Reloading listings…', 'info');
+      loadAndRender();
+    });
     document.getElementById('reset-demo')?.addEventListener('click', () => {
       if (confirm('Reset local demo listings and reload seed data?')) {
         if (global.FD_API && global.FD_API.resetDemoListings) global.FD_API.resetDemoListings();
