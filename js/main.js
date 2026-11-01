@@ -186,6 +186,14 @@
       if (global.FD_TOAST) global.FD_TOAST.show('Reloading listings…', 'info');
       loadAndRender();
     });
+    document.getElementById('force-seed')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (confirm('Clear local demo overrides and load pure seed data?')) {
+        if (global.FD_API && global.FD_API.resetDemoListings) global.FD_API.resetDemoListings();
+        if (global.FD_TOAST) global.FD_TOAST.show('Loading pure seed data…', 'info');
+        loadAndRender();
+      }
+    });
     document.getElementById('reset-demo')?.addEventListener('click', () => {
       if (confirm('Reset local demo listings and reload seed data?')) {
         if (global.FD_API && global.FD_API.resetDemoListings) global.FD_API.resetDemoListings();
