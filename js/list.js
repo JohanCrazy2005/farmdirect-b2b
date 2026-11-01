@@ -263,11 +263,26 @@
     }).join('');
   }
 
+
+  function updateQuickButtons() {
+    const favBtn = document.getElementById('favorites-btn');
+    if (favBtn) {
+      favBtn.classList.toggle('active', !!filters.favoritesOnly);
+      favBtn.setAttribute('aria-pressed', String(!!filters.favoritesOnly));
+    }
+    const nearBtn = document.getElementById('nearby-btn');
+    if (nearBtn) {
+      nearBtn.classList.toggle('active', !!filters.nearby);
+      nearBtn.setAttribute('aria-pressed', String(!!filters.nearby));
+    }
+  }
+
   function render() {
     applyFilters();
     const listEl = document.getElementById('listings-list');
     updateCount();
     updateFilterBadge();
+    updateQuickButtons();
     if (!listEl) return;
 
     if (!filtered.length) {
@@ -442,6 +457,12 @@
       } else {
         render();
       }
+    });
+    document.getElementById('favorites-btn')?.addEventListener('click', () => {
+      filters.favoritesOnly = !filters.favoritesOnly;
+      const favChk = document.getElementById('filter-favorites');
+      if (favChk) favChk.checked = filters.favoritesOnly;
+      render();
     });
     document.getElementById('random-btn')?.addEventListener('click', pickRandom);
     document.getElementById('fit-btn')?.addEventListener('click', () => {
