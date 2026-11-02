@@ -10,6 +10,18 @@
 
   function $(id) { return document.getElementById(id); }
 
+  let lastChecked = 0;
+
+  function relativeTime(ts) {
+    if (!ts) return '';
+    const sec = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (sec < 5) return 'just now';
+    if (sec < 60) return sec + 's ago';
+    const min = Math.round(sec / 60);
+    if (min < 60) return min + 'm ago';
+    return Math.round(min / 60) + 'h ago';
+  }
+
   function showBanner(source, health) {
     const banner = $('offline-banner');
     const text = $('banner-text');
@@ -35,13 +47,16 @@
     if (health && !health.ok) {
       msg += ' ' + (health.error || '');
     }
+    const checked = relativeTime(lastChecked);
+    if (checked) msg += ' Last checked ' + checked + '.';
     text.textContent = msg;
     banner.hidden = false;
     if (badge) {
       badge.textContent = badgeText;
       badge.hidden = false;
-      badge.title = 'Data source: ' + source + ' — click for details & next steps';
+      badge.title = 'Data source: ' + source + ' — click for details & next steps' + (checked ? ' (checked ' + checked + ')' : '');
       badge.style.cursor = 'pointer';
+      badge.dataset.source = source || 'seed';
     }
   }
 
@@ -50,9 +65,11 @@
     if (!content) return;
     const demo = global.FD_API && global.FD_API.getDemoInfo ? global.FD_API.getDemoInfo() : {};
     const hasToken = !!(global.FD_AUTH && global.FD_AUTH.getToken && global.FD_AUTH.getToken());
+    const checked = relativeTime(lastChecked) || 'unknown';
     content.innerHTML = `
       <p><strong>Current source:</strong> ${source || 'unknown'}</p>
       <p>Listings shown: ${count || 0}</p>
+      <p>Last checked: ${checked}</p>
       ${health ? `<p>Health: ${health.ok ? 'ok' : (health.error || 'failed')}</p>` : ''}
       ${demo.hasDemo ? `<p>Local demo override: ${demo.count} listings</p>` : '<p>No local demo override.</p>'}
       <hr>
@@ -89,6 +106,7 @@
       console.error('FD_API missing');
       return;
     }
+    lastChecked = Date.now();
     const result = await global.FD_API.fetchListings();
     const listings = result.listings || [];
     if (global.FD_LIST && global.FD_LIST.setListings) {

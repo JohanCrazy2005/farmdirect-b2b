@@ -85,6 +85,12 @@ html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Seg
 }
 .data-source-badge[data-source="live"] { background: #d1fae5; color: #065f46; }
 [data-theme="dark"] .data-source-badge[data-source="live"] { background: #064e3b; color: #a7f3d0; }
+.data-source-badge[data-source="seed"] { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+.data-source-badge[data-source="demo"] { background: #dbeafe; color: #1e40af; border-color: #60a5fa; }
+.data-source-badge[data-source="api-empty"] { background: #f3e8ff; color: #6b21a8; border-color: #c084fc; }
+[data-theme="dark"] .data-source-badge[data-source="seed"] { background: #451a03; color: #fde68a; }
+[data-theme="dark"] .data-source-badge[data-source="demo"] { background: #1e3a8a; color: #bfdbfe; }
+[data-theme="dark"] .data-source-badge[data-source="api-empty"] { background: #581c87; color: #e9d5ff; }
 
 /* Map */
 #map { position: fixed; inset: 0; z-index: 0; }

@@ -1,3 +1,12 @@
+## 2026-11-02 – Seed/demo UX: last-checked time + source-specific badge styles
+
+**What:** Further polished the seed/demo fallback UX (highest remaining code-only item). The offline banner and clickable data-source badge now show a relative "last checked" timestamp. The badge receives source-specific background/border colors (SEED amber, DEMO blue, API-EMPTY purple) in both light and dark themes so the data source is visually distinguishable at a glance. Data-source modal also reports the last check time. No new features or schema changes.
+
+**How:** Updated `js/main.js` (showBanner, updateSourceModal, loadAndRender) and `css/main.css` (badge variants). Single commit. Appended this entry.
+
+**Next:** Highest remaining code-only items are further seed/demo UX polish or live E2E support once the user applies the optional RFQ migration and verifies the publish workflow. P1/P5 remain user-owned.
+
+---
 ## 2026-11-02 – Seed/demo UX: interactive badge + actionable data-source modal
 
 **What:** Polished the seed/demo fallback UX (highest remaining code-only item). Data-source badge is now clickable (opens the details modal). The data-source modal now shows clear next-step guidance for the live publish workflow (register → create draft → publish) and includes quick-action buttons (Retry live, Deploy notes, Sign in / Open Dashboard). Banner title updated. No new features or schema changes; pure UX for offline/empty Worker cases.
