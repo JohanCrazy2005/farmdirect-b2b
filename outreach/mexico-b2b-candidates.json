@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-02T23:05:00Z",
-  "total_count": 10,
+  "last_updated": "2026-11-02T23:13:16Z",
+  "total_count": 20,
   "target": 2000,
   "candidates": [
     {
@@ -34,14 +34,14 @@
     {
       "username": "Canacintra_GP",
       "post_url": "https://x.com/Canacintra_GP/status/2117332890631438510",
-      "category": "c\u00e1maras de comercio / industriales",
-      "reason": "CANACINTRA branch in G\u00f3mez Palacio organizing Expo Industria & Negocios with confirmed buyer companies; local industrial network.",
+      "category": "cámaras de comercio / industriales",
+      "reason": "CANACINTRA branch in Gómez Palacio organizing Expo Industria & Negocios with confirmed buyer companies; local industrial network.",
       "found_at": "2026-11-02T23:05:00Z"
     },
     {
       "username": "HortiCultivos",
       "post_url": "https://x.com/HortiCultivos/status/2117286710262255955",
-      "category": "productores agr\u00edcolas",
+      "category": "productores agrícolas",
       "reason": "Magazine covering protected agriculture and horticultural producers in Mexico (384 production units mentioned).",
       "found_at": "2026-11-02T23:05:00Z"
     },
@@ -55,23 +55,93 @@
     {
       "username": "BumperCrop1",
       "post_url": "https://x.com/BumperCrop1/status/2117365462488998367",
-      "category": "productores agr\u00edcolas",
+      "category": "productores agrícolas",
       "reason": "Agricultural producer and engineer discussing pricing and issues affecting agricultural producers.",
       "found_at": "2026-11-02T23:05:00Z"
     },
     {
       "username": "SANXBRILLAS",
       "post_url": "https://x.com/SANXBRILLAS/status/2116355654952640575",
-      "category": "talleres mec\u00e1nicos / industriales",
+      "category": "talleres mecánicos / industriales",
       "reason": "Offers repair, rental, maintenance and sale of construction machinery; invites DMs for quotes – potential local industrial supplier.",
       "found_at": "2026-11-02T23:05:00Z"
     },
     {
       "username": "Cachoperiodista",
       "post_url": "https://x.com/Cachoperiodista/status/2117391553866174975",
-      "category": "productores agr\u00edcolas",
-      "reason": "Mexican journalist covering issues for avocado producers in Michoac\u00e1n, Jalisco and other states.",
+      "category": "productores agrícolas",
+      "reason": "Mexican journalist covering issues for avocado producers in Michoacán, Jalisco and other states.",
       "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "gojauregui",
+      "post_url": "https://x.com/gojauregui/status/2117343661864165870",
+      "category": "madera / carpintería",
+      "reason": "Family carpentry business in Mexico recovering from crime; promoting and selling wooden bookends nationwide. Ideal local wood supplier for B2B marketplace testing.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "RECSA_MX",
+      "post_url": "https://x.com/RECSA_MX/status/2117337504575557942",
+      "category": "proveedores industriales",
+      "reason": "Mexican infrastructure company executing hydraulic projects in CDMX using specialized machinery, engineering and construction expertise. Potential industrial supplier.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "plastimagen",
+      "post_url": "https://x.com/plastimagen/status/2117285608024346649",
+      "category": "industriales / B2B events",
+      "reason": "Organizes Plastimagen Mexico, major industry expo with operating machinery, technology and networking for plastic and industrial businesses. Strong B2B connection point.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "elpaismexico",
+      "post_url": "https://x.com/elpaismexico/status/2117281704335290489",
+      "category": "mercados locales / restaurantes",
+      "reason": "Coverage of CDMX restaurant owners facing rising costs for inputs like avocado, proteins and packaging. Potential buyers interested in better local supplier options.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "jjdd506",
+      "post_url": "https://x.com/jjdd506/status/2117391432289751415",
+      "category": "veterinarios / agro",
+      "reason": "Author of bestselling livestock technology book 'Ganadería 5.0' on Amazon Mexico; connected to modern agro and veterinary producers using tech.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "Zacatepec_toros",
+      "post_url": "https://x.com/Zacatepec_toros/status/2117366433831321642",
+      "category": "agro / ganadería",
+      "reason": "Traditional ganadería (bull breeding operation) in Puebla with historical presence; local agricultural producer relevant to agro B2B.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "industrialinfo",
+      "post_url": "https://x.com/industrialinfo/status/2117328028426535157",
+      "category": "industriales",
+      "reason": "Discusses Plan México initiatives to reduce imports and strengthen local industrial suppliers and parks. Relevant for industrial B2B outreach.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "MexicoMagico",
+      "post_url": "https://x.com/MexicoMagico/status/2117011048632905760",
+      "category": "productores agrícolas / mercados locales",
+      "reason": "Promotes supporting Mexican producers by buying directly and valuing their work during peak season. Aligns with local B2B marketplace goals.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "HORCAUCA",
+      "post_url": "https://x.com/HORCAUCA/status/2117286630931177953",
+      "category": "productores agrícolas",
+      "reason": "Posts about phytosanitary issues (avocado seed weevil) affecting large volumes of Mexican avocados for export and local market. Connected to producer challenges.",
+      "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "FIRA_Mexico",
+      "post_url": "https://x.com/FIRA_Mexico/status/2116591190204100637",
+      "category": "agro",
+      "reason": "Official Mexican institution providing credit and support to agropecuario sectors; highlights Mexico as top avocado producer. Key institutional contact for agro network.",
+      "found_at": "2026-11-02T23:13:16Z"
     }
   ],
   "run_summaries": [
@@ -79,6 +149,11 @@
       "run_at": "2026-11-02T23:05:00Z",
       "new_added": 10,
       "notes": "Initial seed list. Searches returned mostly news/media due to Dia de Muertos and security stories; focused on relevant Mexican agro/industrial/B2B accounts. Low volume of individual small business posts this hour."
+    },
+    {
+      "run_at": "2026-11-02T23:13:16Z",
+      "new_added": 10,
+      "notes": "Second hourly run. Continued low volume of pure small-business posts amid news cycle (Día de Muertos, crime, sports). Added diverse relevant accounts: family carpentry supplier, industrial infrastructure firm, plastic industry expo, restaurant cost coverage, livestock tech author, traditional ganadería, industrial analysis, producer-support media, avocado issue poster, and official agro financier. Prioritized quality and category coverage."
     }
   ]
 }
