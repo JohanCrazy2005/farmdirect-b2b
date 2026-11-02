@@ -1,0 +1,84 @@
+{
+  "last_updated": "2026-11-02T23:05:00Z",
+  "total_count": 10,
+  "target": 2000,
+  "candidates": [
+    {
+      "username": "newonpolsia",
+      "post_url": "https://x.com/newonpolsia/status/2117340623535759525",
+      "category": "emprendedores / B2B marketplace",
+      "reason": "Built Zunbral, a B2B marketplace for verified Mexican manufacturers of packaging, parts and restaurant inputs; ideal for feedback or collaboration on local B2B platforms.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "newonpolsia",
+      "post_url": "https://x.com/newonpolsia/status/2117149666819424394",
+      "category": "emprendedores / proveedores locales",
+      "reason": "Building a distributor for wholesale/retail food and cleaning supplies to homes, businesses and organizations in Mexico.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "Ganaderiamx",
+      "post_url": "https://x.com/Ganaderiamx/status/2117376822631379104",
+      "category": "veterinarios / agro",
+      "reason": "Leading Mexican electronic media specialized in livestock (ganadería); strong connection to producers and veterinary sector.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "Aviculturamx",
+      "post_url": "https://x.com/Aviculturamx/status/2117376733733089292",
+      "category": "veterinarios / agro",
+      "reason": "Mexican media focused on aviculture; reaches producers and professionals in poultry and related veterinary fields.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "Canacintra_GP",
+      "post_url": "https://x.com/Canacintra_GP/status/2117332890631438510",
+      "category": "c\u00e1maras de comercio / industriales",
+      "reason": "CANACINTRA branch in G\u00f3mez Palacio organizing Expo Industria & Negocios with confirmed buyer companies; local industrial network.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "HortiCultivos",
+      "post_url": "https://x.com/HortiCultivos/status/2117286710262255955",
+      "category": "productores agr\u00edcolas",
+      "reason": "Magazine covering protected agriculture and horticultural producers in Mexico (384 production units mentioned).",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "BMEditores",
+      "post_url": "https://x.com/BMEditores/status/2117376284258922603",
+      "category": "agro / veterinarios",
+      "reason": "Editors informing and connecting the Mexican livestock sector on topics like AI, circular economy and sustainability.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "BumperCrop1",
+      "post_url": "https://x.com/BumperCrop1/status/2117365462488998367",
+      "category": "productores agr\u00edcolas",
+      "reason": "Agricultural producer and engineer discussing pricing and issues affecting agricultural producers.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "SANXBRILLAS",
+      "post_url": "https://x.com/SANXBRILLAS/status/2116355654952640575",
+      "category": "talleres mec\u00e1nicos / industriales",
+      "reason": "Offers repair, rental, maintenance and sale of construction machinery; invites DMs for quotes – potential local industrial supplier.",
+      "found_at": "2026-11-02T23:05:00Z"
+    },
+    {
+      "username": "Cachoperiodista",
+      "post_url": "https://x.com/Cachoperiodista/status/2117391553866174975",
+      "category": "productores agr\u00edcolas",
+      "reason": "Mexican journalist covering issues for avocado producers in Michoac\u00e1n, Jalisco and other states.",
+      "found_at": "2026-11-02T23:05:00Z"
+    }
+  ],
+  "run_summaries": [
+    {
+      "run_at": "2026-11-02T23:05:00Z",
+      "new_added": 10,
+      "notes": "Initial seed list. Searches returned mostly news/media due to Dia de Muertos and security stories; focused on relevant Mexican agro/industrial/B2B accounts. Low volume of individual small business posts this hour."
+    }
+  ]
+}
