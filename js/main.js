@@ -4,6 +4,7 @@
  * wires the transparent top bar, sidebar, filter card, options menu,
  * data-source badge, and offline banner. Binds feature modules.
  * Exposes loadAndRender so demo-status / force-seed can refresh without reload.
+ * Wires Options-menu seed/demo controls (export/import/download/reset/force-seed/reload/add/sample).
  * Fully client-side; works when the Worker is offline or empty.
  */
 (function (global) {
@@ -90,6 +91,11 @@
       console.error('loadAndRender failed', err);
       if (global.FD_TOAST) global.FD_TOAST.show('Failed to load listings', 'error');
     }
+  }
+
+  function closeOptionsMenu() {
+    $('options-menu')?.setAttribute('hidden', '');
+    $('options-btn')?.setAttribute('aria-expanded', 'false');
   }
 
   function wireUI() {
@@ -180,6 +186,106 @@
         global.FD_AUTH.open();
       } else if (global.FD_DASHBOARD && typeof global.FD_DASHBOARD.open === 'function') {
         global.FD_DASHBOARD.open();
+      }
+    });
+
+    // ---- Options menu: seed/demo controls (previously unbound) ----
+    $('export-demo')?.addEventListener('click', async () => {
+      closeOptionsMenu();
+      if (!global.FD_API || typeof global.FD_API.exportDemoData !== 'function') {
+        if (global.FD_TOAST) global.FD_TOAST.show('Export unavailable', 'error');
+        return;
+      }
+      const res = await global.FD_API.exportDemoData();
+      if (global.FD_TOAST) {
+        global.FD_TOAST.show(res.ok ? `Exported ${res.count} listings to local demo` : (res.error || 'Export failed'), res.ok ? 'success' : 'error');
+      }
+      if (res.ok) loadAndRender();
+    });
+
+    $('download-demo')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (!global.FD_API || typeof global.FD_API.downloadDemoBackup !== 'function') {
+        if (global.FD_TOAST) global.FD_TOAST.show('Download unavailable', 'error');
+        return;
+      }
+      const res = global.FD_API.downloadDemoBackup();
+      if (global.FD_TOAST) {
+        global.FD_TOAST.show(res.ok ? `Downloaded backup (${res.count} listings)` : (res.error || 'Download failed'), res.ok ? 'success' : 'error');
+      }
+    });
+
+    $('import-demo')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json,.json';
+      input.style.display = 'none';
+      input.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          if (!global.FD_API || typeof global.FD_API.importDemoData !== 'function') {
+            if (global.FD_TOAST) global.FD_TOAST.show('Import unavailable', 'error');
+            return;
+          }
+          const res = await global.FD_API.importDemoData(text);
+          if (global.FD_TOAST) {
+            global.FD_TOAST.show(res.ok ? `Imported ${res.count} listings` : (res.error || 'Import failed'), res.ok ? 'success' : 'error');
+          }
+          if (res.ok) loadAndRender();
+        } catch (err) {
+          if (global.FD_TOAST) global.FD_TOAST.show(err.message || 'Import failed', 'error');
+        } finally {
+          input.remove();
+        }
+      });
+      document.body.appendChild(input);
+      input.click();
+    });
+
+    $('reload-listings')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (global.FD_TOAST) global.FD_TOAST.show('Reloading listings…', 'info');
+      loadAndRender();
+    });
+
+    $('force-seed')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (!confirm('Clear all local demo overrides and load pure seed data?')) return;
+      if (global.FD_API && typeof global.FD_API.resetDemoListings === 'function') {
+        global.FD_API.resetDemoListings();
+      }
+      if (global.FD_TOAST) global.FD_TOAST.show('Loading pure seed data…', 'info');
+      loadAndRender();
+    });
+
+    $('reset-demo')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (!confirm('Reset demo data (clear local overrides)?')) return;
+      if (global.FD_API && typeof global.FD_API.resetDemoListings === 'function') {
+        global.FD_API.resetDemoListings();
+      }
+      if (global.FD_TOAST) global.FD_TOAST.show('Demo data reset', 'success');
+      loadAndRender();
+    });
+
+    $('add-listing-btn')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (global.FD_FORM && typeof global.FD_FORM.openForm === 'function') {
+        global.FD_FORM.openForm(null);
+      } else if (global.FD_TOAST) {
+        global.FD_TOAST.show('Listing form unavailable', 'error');
+      }
+    });
+
+    $('sample-listing-btn')?.addEventListener('click', () => {
+      closeOptionsMenu();
+      if (global.FD_FORM && typeof global.FD_FORM.openSampleForm === 'function') {
+        global.FD_FORM.openSampleForm();
+      } else if (global.FD_TOAST) {
+        global.FD_TOAST.show('Sample form unavailable', 'error');
       }
     });
 
