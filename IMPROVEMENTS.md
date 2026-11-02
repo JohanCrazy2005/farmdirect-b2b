@@ -1,3 +1,10 @@
+## 2026-11-01 (America/Denver) – UI polish: full keyboard shortcuts help
+
+- Expanded the Shortcuts modal in `index.html` to list every implemented map-first keyboard control (search, filters, options, locate, fit, random, theme, favorites, list navigation, help, Escape).
+- Previously only `/` and Esc were shown; users now see the complete set provided by `js/shortcuts.js`.
+- Fully client-side; improves discoverability of the map-first shell in both seed/demo and live modes.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: listing collections
 
 - Added substantial `js/collections.js` module that stores named collections of listings in localStorage (`fd-collections`).
