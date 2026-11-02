@@ -1,3 +1,11 @@
+## 2026-11-02 (America/Denver) – Seed/demo UX: local price watch
+
+- Added substantial `js/pricewatch.js` module that stores baseline prices for selected listings in localStorage (`fd-pricewatch`).
+- Product card has a “Watch price” button that records the current price as baseline; Options menu “Price watch” opens a modal listing watches with current vs baseline, delta/% change, View (selects listing), Update baseline, Remove, and Clear all.
+- Fully client-side; no schema or Worker changes. Useful for tracking price changes in local demo edits or across reloads while the Worker may be empty or offline.
+- Wired the button, modal shell, script load, and bind into index.html, main.js, cards.js, and added light CSS.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: saved map views
 
 - Added substantial `js/mapviews.js` module that stores named snapshots of the current map center/zoom plus the active filter set in localStorage (`fd-mapviews`).
