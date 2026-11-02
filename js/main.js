@@ -66,7 +66,7 @@
       <p class="small">Local demo overrides: ${demo.hasDemo ? demo.count + ' listing(s) in localStorage' : 'none'}</p>
       <p class="small">Use the <strong>Retry live</strong> button on the banner to re-check the Worker without reloading.</p>
       <p class="small">Use <strong>Load pure seed data</strong> in Options to clear local overrides.</p>
-      <p class="small">Open <strong>Seed/demo tips</strong>, <strong>Welcome tour</strong>, or <strong>Demo status</strong> in Options for guided offline help and override inspection.</p>
+      <p class="small">Open <strong>Seed/demo tips</strong>, <strong>Welcome tour</strong>, <strong>Demo status</strong>, or <strong>Filter presets</strong> in Options for guided offline help.</p>
       <p class="small">Next steps (optional, user action):</p>
       <ul class="small">
         <li>Apply RFQ migration: <code>npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql</code></li>
@@ -294,7 +294,7 @@
   }
 
   function setupModalsClose() {
-    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'quality-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
+    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'quality-modal', 'presets-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal?.addEventListener('click', (e) => {
         if (e.target.id === id) modal.classList.remove('open');
@@ -308,6 +308,7 @@
     document.getElementById('close-demostatus-btn')?.addEventListener('click', () => document.getElementById('demostatus-modal')?.classList.remove('open'));
     document.getElementById('close-localmanager-btn')?.addEventListener('click', () => document.getElementById('localmanager-modal')?.classList.remove('open'));
     document.getElementById('close-quality-btn')?.addEventListener('click', () => document.getElementById('quality-modal')?.classList.remove('open'));
+    document.getElementById('close-presets-btn')?.addEventListener('click', () => document.getElementById('presets-modal')?.classList.remove('open'));
     document.getElementById('image-lightbox')?.addEventListener('click', () => {
       if (global.FD_CARDS && global.FD_CARDS.closeLightbox) global.FD_CARDS.closeLightbox();
       else document.getElementById('image-lightbox')?.classList.remove('open');
@@ -382,6 +383,7 @@
     if (global.FD_DEMOSTATUS && typeof global.FD_DEMOSTATUS.bind === 'function') global.FD_DEMOSTATUS.bind();
     if (global.FD_LOCALMANAGER && typeof global.FD_LOCALMANAGER.bind === 'function') global.FD_LOCALMANAGER.bind();
     if (global.FD_QUALITY && typeof global.FD_QUALITY.bind === 'function') global.FD_QUALITY.bind();
+    if (global.FD_PRESETS && typeof global.FD_PRESETS.bind === 'function') global.FD_PRESETS.bind();
 
     setupOptions();
     setupFilterCard();

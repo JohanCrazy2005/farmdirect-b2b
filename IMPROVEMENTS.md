@@ -1,5 +1,14 @@
 # Improvements log
 
+## 2026-11-01 (America/Denver) – Seed/demo UX: filter presets
+
+- Added substantial `js/presets.js` module that lets users save the current filter combination (search, category, seller, visibility, units, price range, favorites, nearby, in-view, sort) under a name and later re-apply it.
+- Stored in localStorage (`fd-presets`); modal lists presets with summary, Apply, and Delete actions plus a “Save current” form.
+- Wired a “Filter presets” button into the options menu, added the `#presets-modal` shell to `index.html`, loaded the script, and bound the module in `main.js`.
+- Added light CSS for the preset items so the manager is readable on both themes.
+- Fully client-side; improves seed/demo fallback exploration while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: data quality inspector
 
 - Added substantial `js/quality.js` module that scans current listings for schema issues (invalid/missing location, visibility enum, empty required fields, bad price, missing image).
