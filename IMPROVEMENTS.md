@@ -1,3 +1,12 @@
+## 2026-11-02 – Seed/demo UX: data-coverage summary + live last-checked ticker + copy status
+
+**What:** Further polished the seed/demo fallback UX (highest remaining code-only item). The data-source modal now shows a coverage summary (unique categories, sellers, and visibility breakdown) so users can see what the seed/demo data contains at a glance. Banner text includes a short cats/sellers hint. Relative “last checked” time updates live every 15s without a full reload (ticker). Added a “Copy status” button that copies a plain-text snapshot of source, count, coverage, and health for sharing or debugging. No new features or schema changes.
+
+**How:** Updated `js/main.js` (summarizeListings, showBanner, updateSourceModal, startTimeTicker, loadAndRender, force-seed path). Single commit. Appended this entry.
+
+**Next:** Highest remaining code-only items are further seed/demo UX polish or live E2E support once the user applies the optional RFQ migration and verifies the publish workflow. P1/P5 remain user-owned.
+
+---
 ## 2026-11-02 – Seed/demo UX: listing count on badge + banner + theme attribute fix
 
 **What:** Further polished the seed/demo fallback UX (highest remaining code-only item). The data-source badge and offline banner now display the number of listings shown (e.g. “SEED · 12”). Banner message includes the count. Also fixed dark-mode application so `data-theme="dark"` is set on `<html>` (matching CSS selectors) in addition to the body class, ensuring badge colors and other theme styles apply correctly. No new features or schema changes.

@@ -11,6 +11,8 @@
   function $(id) { return document.getElementById(id); }
 
   let lastChecked = 0;
+  let lastResult = null;
+  let timeTicker = null;
 
   function relativeTime(ts) {
     if (!ts) return '';
@@ -20,6 +22,23 @@
     const min = Math.round(sec / 60);
     if (min < 60) return min + 'm ago';
     return Math.round(min / 60) + 'h ago';
+  }
+
+  function summarizeListings(listings) {
+    if (!Array.isArray(listings) || !listings.length) {
+      return { categories: 0, sellers: 0, vis: { worldwide: 0, country: 0, province: 0 } };
+    }
+    const cats = new Set();
+    const sellers = new Set();
+    const vis = { worldwide: 0, country: 0, province: 0 };
+    listings.forEach(l => {
+      if (l.category) cats.add(l.category);
+      if (l.sellerid) sellers.add(l.sellerid);
+      const v = (l.visibility || 'province').toLowerCase();
+      if (vis[v] != null) vis[v]++;
+      else vis.province++;
+    });
+    return { categories: cats.size, sellers: sellers.size, vis };
   }
 
   function showBanner(source, health, count) {
@@ -50,6 +69,10 @@
     const checked = relativeTime(lastChecked);
     if (checked) msg += ' Last checked ' + checked + '.';
     if (count != null) msg += ' (' + count + ' listings)';
+    const summary = lastResult && lastResult.listings ? summarizeListings(lastResult.listings) : null;
+    if (summary && summary.categories) {
+      msg += ' · ' + summary.categories + ' cats, ' + summary.sellers + ' sellers';
+    }
     text.textContent = msg;
     banner.hidden = false;
     if (badge) {
@@ -67,10 +90,13 @@
     const demo = global.FD_API && global.FD_API.getDemoInfo ? global.FD_API.getDemoInfo() : {};
     const hasToken = !!(global.FD_AUTH && global.FD_AUTH.getToken && global.FD_AUTH.getToken());
     const checked = relativeTime(lastChecked) || 'unknown';
+    const summary = lastResult && lastResult.listings ? summarizeListings(lastResult.listings) : null;
+    const visParts = summary ? Object.entries(summary.vis).filter(([, n]) => n > 0).map(([k, n]) => k + ':' + n).join(', ') : '';
     content.innerHTML = `
       <p><strong>Current source:</strong> ${source || 'unknown'}</p>
       <p>Listings shown: ${count || 0}</p>
-      <p>Last checked: ${checked}</p>
+      <p>Last checked: <span id="source-checked">${checked}</span></p>
+      ${summary ? `<p>Coverage: ${summary.categories} categories · ${summary.sellers} sellers${visParts ? ' · ' + visParts : ''}</p>` : ''}
       ${health ? `<p>Health: ${health.ok ? 'ok' : (health.error || 'failed')}</p>` : ''}
       ${demo.hasDemo ? `<p>Local demo override: ${demo.count} listings</p>` : '<p>No local demo override.</p>'}
       <hr>
@@ -85,6 +111,7 @@
       <div style="margin-top:10px;">
         <button type="button" id="source-retry" class="small-btn">Retry live</button>
         <button type="button" id="source-deploy" class="small-btn">Deploy notes</button>
+        <button type="button" id="source-copy" class="small-btn">Copy status</button>
         ${hasToken ? '<button type="button" id="source-dashboard" class="small-btn primary">Open Dashboard</button>' : '<button type="button" id="source-auth" class="small-btn primary">Sign in / Register</button>'}
       </div>
     `;
@@ -94,12 +121,39 @@
       const m = $('deploy-modal');
       if (m) m.classList.add('open');
     });
+    content.querySelector('#source-copy')?.addEventListener('click', () => {
+      const status = [
+        'FarmDirect B2B data source',
+        'Source: ' + (source || 'unknown'),
+        'Listings: ' + (count || 0),
+        'Last checked: ' + (relativeTime(lastChecked) || 'unknown'),
+        summary ? 'Coverage: ' + summary.categories + ' categories, ' + summary.sellers + ' sellers' : '',
+        health ? 'Health: ' + (health.ok ? 'ok' : health.error || 'failed') : '',
+        demo.hasDemo ? 'Demo override: ' + demo.count : 'No demo override'
+      ].filter(Boolean).join('\n');
+      navigator.clipboard.writeText(status).then(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Status copied', 'success');
+      }).catch(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Copy failed', 'error');
+      });
+    });
     content.querySelector('#source-auth')?.addEventListener('click', () => {
       if (global.FD_AUTH && global.FD_AUTH.open) global.FD_AUTH.open();
     });
     content.querySelector('#source-dashboard')?.addEventListener('click', () => {
       if (global.FD_DASHBOARD && global.FD_DASHBOARD.open) global.FD_DASHBOARD.open();
     });
+  }
+
+  function startTimeTicker() {
+    if (timeTicker) clearInterval(timeTicker);
+    timeTicker = setInterval(() => {
+      const checked = relativeTime(lastChecked);
+      const el = $('source-checked');
+      if (el && checked) el.textContent = checked;
+      // Keep banner/badge title in sync without full rebuild
+      if (lastResult) showBanner(lastResult.source, lastResult.health, lastResult.count);
+    }, 15000);
   }
 
   async function loadAndRender() {
@@ -109,12 +163,14 @@
     }
     lastChecked = Date.now();
     const result = await global.FD_API.fetchListings();
+    lastResult = result;
     const listings = result.listings || [];
     if (global.FD_LIST && global.FD_LIST.setListings) {
       global.FD_LIST.setListings(listings);
     }
     showBanner(result.source, result.health, result.count);
     updateSourceModal(result.source, result.count, result.health);
+    startTimeTicker();
     if (global.FD_TOAST) {
       global.FD_TOAST.show(`Loaded ${result.count} listings (${result.source})`, 'info');
     }
@@ -259,7 +315,9 @@
         global.FD_API?.resetDemoListings?.();
         const seed = await global.FD_API?.loadSeedListings?.();
         global.FD_LIST?.setListings?.(seed || []);
+        lastResult = { listings: seed || [], source: 'seed', count: (seed || []).length, health: null };
         showBanner('seed', null, (seed || []).length);
+        updateSourceModal('seed', (seed || []).length, null);
         global.FD_TOAST?.show('Loaded pure seed data', 'info');
       },
       'reset-demo': () => {
