@@ -328,3 +328,15 @@ kbd { background: var(--surface); border: 1px solid var(--border); border-radius
 .quality-info { color: var(--muted); }
 .quality-sev { font-weight: 700; font-size: 11px; text-transform: uppercase; margin-right: 4px; }
 .quality-actions { display: flex; gap: 6px; }
+
+/* Filter presets */
+.preset-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: var(--surface);
+}
+.preset-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+.preset-summary { margin: 4px 0 6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.preset-actions { display: flex; gap: 6px; }
