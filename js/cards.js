@@ -71,6 +71,11 @@
     const tagsHtml = tagsArr.length
       ? `<div class="listing-tags">${tagsArr.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join(' ')}</div>`
       : '';
+    const colsArr = (global.FD_COLLECTIONS && typeof global.FD_COLLECTIONS.getCollectionsForListing === 'function')
+      ? global.FD_COLLECTIONS.getCollectionsForListing(listing.id) : [];
+    const colsHtml = colsArr.length
+      ? `<div class="listing-collections">${colsArr.map(c => `<span class="collection-pill">${escapeHtml(c)}</span>`).join(' ')}</div>`
+      : '';
     const mapsUrl = mapsUrlFor(listing);
     const addressHtml = listing.address
       ? (mapsUrl
@@ -105,6 +110,7 @@
         <p class="description">${escapeHtml(listing.description || '')}</p>
         ${noteText ? `<div class="listing-note"><strong>Note:</strong> ${escapeHtml(noteText)}</div>` : ''}
         ${tagsHtml}
+        ${colsHtml}
         <div class="seller-link">Seller: <button type="button" class="link-btn open-seller" data-seller="${escapeHtml(listing.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
         <div class="card-actions">
           <button type="button" class="small-btn nav-prev" data-id="${escapeHtml(listing.id)}">← Prev</button>
@@ -115,6 +121,7 @@
           <button type="button" class="small-btn share-btn" data-id="${escapeHtml(listing.id)}">Share</button>
           <button type="button" class="small-btn notes-btn" data-id="${escapeHtml(listing.id)}">${noteText ? '✎ Edit note' : '✎ Add note'}</button>
           <button type="button" class="small-btn tags-btn" data-id="${escapeHtml(listing.id)}">${tagsArr.length ? '🏷 Edit tags' : '🏷 Tags'}</button>
+          <button type="button" class="small-btn collections-btn" data-id="${escapeHtml(listing.id)}">${colsArr.length ? '📁 Collections' : '📁 Add to collection'}</button>
         </div>
       </div>
     `;
@@ -158,6 +165,11 @@
     el.querySelector('.tags-btn')?.addEventListener('click', () => {
       if (global.FD_TAGS && typeof global.FD_TAGS.editTags === 'function') {
         global.FD_TAGS.editTags(listing.id);
+      }
+    });
+    el.querySelector('.collections-btn')?.addEventListener('click', () => {
+      if (global.FD_COLLECTIONS && typeof global.FD_COLLECTIONS.editCollections === 'function') {
+        global.FD_COLLECTIONS.editCollections(listing.id);
       }
     });
     el.querySelectorAll('.card-cat').forEach(btn => {
