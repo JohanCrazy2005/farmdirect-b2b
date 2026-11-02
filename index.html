@@ -1,1 +1,287 @@
-PLACEHOLDER_INDEX
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FarmDirect B2B – Map-first marketplace</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- Offline / seed banner -->
+  <div id="offline-banner" class="offline-banner" hidden>
+    <span id="banner-text">Showing seed/demo data.</span>
+    <button type="button" id="banner-details" class="link-btn">Details</button>
+    <button type="button" id="banner-retry" class="link-btn">Retry live</button>
+    <button type="button" id="banner-deploy" class="link-btn">Deploy steps</button>
+    <button type="button" id="banner-dismiss" class="icon-btn" aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- Transparent top bar -->
+  <header class="top-bar">
+    <div class="brand">FarmDirect</div>
+    <div class="search-box">
+      <input type="search" id="search-input" placeholder="Search listings, categories, sellers…" autocomplete="off">
+      <button type="button" id="clear-search" class="icon-btn" aria-label="Clear search">×</button>
+      <div id="search-suggestions" class="search-suggestions" hidden role="listbox"></div>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="filter-btn" class="icon-btn" aria-label="Filters" aria-expanded="false">
+        <span class="filter-icon">⚙</span>
+        <span id="filter-badge" class="badge" hidden>0</span>
+      </button>
+      <button type="button" id="options-btn" class="icon-btn" aria-label="Options" aria-expanded="false">⋮</button>
+      <button type="button" id="profile-btn" class="icon-btn" aria-label="Profile">👤</button>
+      <span id="data-source-badge" class="data-source-badge" hidden title="Data source">SEED</span>
+    </div>
+  </header>
+
+  <!-- Map -->
+  <div id="map"></div>
+  <div id="map-legend" class="map-legend" hidden></div>
+
+  <!-- Sidebar listings -->
+  <aside id="sidebar" class="sidebar open">
+    <div class="sidebar-header">
+      <button type="button" id="sidebar-toggle" class="icon-btn" aria-label="Toggle sidebar">≡</button>
+      <h2>Listings</h2>
+      <button type="button" id="list-count" class="link-btn count-btn" title="Filtered / total">0 / 0</button>
+    </div>
+    <div class="sidebar-tools">
+      <button type="button" id="locate-btn" class="small-btn">Locate</button>
+      <button type="button" id="fit-btn" class="small-btn">Fit map</button>
+      <button type="button" id="clear-fit-btn" class="small-btn">Clear & fit</button>
+      <button type="button" id="nearby-btn" class="small-btn">Nearby</button>
+      <button type="button" id="favorites-btn" class="small-btn">Favorites</button>
+      <button type="button" id="random-btn" class="small-btn">Random</button>
+      <label class="small-label">
+        Sort
+        <select id="sort-select">
+          <option value="default">Default</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="distance">Distance</option>
+        </select>
+      </label>
+      <label class="small-label">
+        <input type="checkbox" id="group-by-seller"> Group by seller
+      </label>
+    </div>
+    <div id="filter-chips" class="filter-chips"></div>
+    <div id="listings-list" class="listings-list"></div>
+  </aside>
+
+  <!-- Filter card -->
+  <div id="filter-card" class="filter-card" hidden>
+    <div class="card-header">
+      <h3>Filters</h3>
+      <button type="button" id="close-filter" class="icon-btn" aria-label="Close">×</button>
+    </div>
+    <div class="filter-body">
+      <label>Category <select id="filter-category"><option value="">All</option></select></label>
+      <label>Seller <select id="filter-seller"><option value="">All</option></select></label>
+      <label>Visibility
+        <select id="filter-visibility">
+          <option value="">All</option>
+          <option value="worldwide">Worldwide</option>
+          <option value="country">Country</option>
+          <option value="province">Province</option>
+        </select>
+      </label>
+      <label>Units <select id="filter-units"><option value="">All</option></select></label>
+      <label>Min price <input type="number" id="filter-min-price" step="0.01" min="0"></label>
+      <label>Max price <input type="number" id="filter-max-price" step="0.01" min="0"></label>
+      <label class="check"><input type="checkbox" id="filter-favorites"> Favorites only</label>
+      <label class="check"><input type="checkbox" id="filter-in-view"> Only in map view</label>
+      <div class="filter-actions">
+        <button type="button" id="apply-filters" class="small-btn primary">Apply</button>
+        <button type="button" id="reset-filters" class="small-btn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options menu -->
+  <div id="options-menu" class="options-menu" hidden>
+    <div class="menu-header">
+      <h3>Options</h3>
+      <button type="button" id="close-options" class="icon-btn">×</button>
+    </div>
+    <div class="menu-body">
+      <label class="theme-row">
+        Dark mode <input type="checkbox" id="theme-toggle">
+      </label>
+      <div class="api-row">
+        <input type="url" id="api-base-input" placeholder="API base URL">
+        <button type="button" id="save-api-base" class="small-btn">Save</button>
+      </div>
+      <button type="button" id="open-sellers" class="menu-btn">Sellers</button>
+      <button type="button" id="open-deploy" class="menu-btn">Deploy notes</button>
+      <button type="button" id="open-seedtips" class="menu-btn">Seed/demo tips</button>
+      <button type="button" id="open-onboarding" class="menu-btn">Welcome tour</button>
+      <button type="button" id="open-demostatus" class="menu-btn">Demo status</button>
+      <button type="button" id="open-localmanager" class="menu-btn">Local data</button>
+      <button type="button" id="open-quality" class="menu-btn">Data quality</button>
+      <button type="button" id="open-presets" class="menu-btn">Filter presets</button>
+      <button type="button" id="open-notes" class="menu-btn">Private notes</button>
+      <button type="button" id="open-tags" class="menu-btn">Listing tags</button>
+      <button type="button" id="open-collections" class="menu-btn">Collections</button>
+      <button type="button" id="open-searchhistory" class="menu-btn">Search history</button>
+      <button type="button" id="open-mapviews" class="menu-btn">Map views</button>
+      <button type="button" id="open-pricewatch" class="menu-btn">Price watch</button>
+      <button type="button" id="open-recent" class="menu-btn">Recent</button>
+      <button type="button" id="open-stats" class="menu-btn">Stats</button>
+      <button type="button" id="open-shortcuts" class="menu-btn">Shortcuts</button>
+      <button type="button" id="copy-filtered-link" class="menu-btn">Copy filtered view link</button>
+      <button type="button" id="copy-map-view" class="menu-btn">Copy map view link</button>
+      <button type="button" id="reset-map-view" class="menu-btn">Reset map view</button>
+      <button type="button" id="export-csv-btn" class="menu-btn">Export CSV</button>
+      <button type="button" id="export-geojson-btn" class="menu-btn">Export GeoJSON</button>
+      <button type="button" id="export-filtered-json" class="menu-btn">Export filtered JSON</button>
+      <button type="button" id="copy-filter-summary" class="menu-btn">Copy filter summary</button>
+      <button type="button" id="export-demo" class="menu-btn">Export demo</button>
+      <button type="button" id="download-demo" class="menu-btn">Download backup</button>
+      <button type="button" id="import-demo" class="menu-btn">Import demo backup</button>
+      <button type="button" id="reload-listings" class="menu-btn">Reload listings</button>
+      <button type="button" id="force-seed" class="menu-btn">Load pure seed data</button>
+      <button type="button" id="reset-demo" class="menu-btn">Reset demo data</button>
+      <button type="button" id="add-listing-btn" class="menu-btn">Add listing</button>
+      <button type="button" id="sample-listing-btn" class="menu-btn">Sample listing</button>
+    </div>
+  </div>
+
+  <!-- Product & seller cards -->
+  <div id="product-card" class="floating-card"></div>
+  <div id="seller-card" class="floating-card"></div>
+
+  <!-- Image lightbox -->
+  <div id="image-lightbox" class="lightbox">
+    <img id="lightbox-img" alt="">
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Modals (shells; JS fills content) -->
+  <div id="auth-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="dashboard-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="listing-form-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="sellers-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="deploy-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-deploy-btn" class="close-modal">×</button>
+      <h3>Deploy notes</h3>
+      <p>Auth migration already applied. Optional next steps (user action):</p>
+      <ol>
+        <li>RFQ migration: <code>npx wrangler d1 execute b2bistening --remote --file=./schema/rfq-migration.sql</code></li>
+        <li>GitHub Actions secrets: add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (see README)</li>
+        <li>Redeploy if needed: <code>npx wrangler deploy</code></li>
+      </ol>
+      <p>Full commands in README.md. Seed/demo continues to work offline.</p>
+    </div>
+  </div>
+  <div id="shortcuts-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-shortcuts-btn" class="close-modal">×</button>
+      <h3>Keyboard shortcuts</h3>
+      <p class="small">Map-first controls (ignored while typing in fields).</p>
+      <ul>
+        <li><kbd>/</kbd> or <kbd>S</kbd> Focus search</li>
+        <li><kbd>I</kbd> Toggle filters</li>
+        <li><kbd>O</kbd> Toggle options menu</li>
+        <li><kbd>L</kbd> Locate me</li>
+        <li><kbd>F</kbd> Fit all markers</li>
+        <li><kbd>R</kbd> Random listing</li>
+        <li><kbd>D</kbd> Toggle dark mode</li>
+        <li><kbd>V</kbd> Toggle favorites only</li>
+        <li><kbd>↑</kbd> / <kbd>↓</kbd> Navigate list</li>
+        <li><kbd>Enter</kbd> Open highlighted listing</li>
+        <li><kbd>?</kbd> or <kbd>H</kbd> This help</li>
+        <li><kbd>Esc</kbd> Close cards / modals / panels</li>
+      </ul>
+      <p class="small">Works in seed/demo and live modes. See Options → Shortcuts anytime.</p>
+    </div>
+  </div>
+  <div id="data-source-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-source-btn" class="close-modal">×</button>
+      <h3>Data source</h3>
+      <div id="source-content"></div>
+    </div>
+  </div>
+  <div id="seedtips-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-seedtips-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="onboarding-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-onboarding-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="demostatus-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-demostatus-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="localmanager-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-localmanager-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="quality-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-quality-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="presets-modal" class="modal">
+    <div class="modal-content">
+      <button type="button" id="close-presets-btn" class="close-modal">×</button>
+    </div>
+  </div>
+  <div id="notes-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="tags-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="collections-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="compare-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="recent-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="stats-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="searchhistory-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="mapviews-modal" class="modal"><div class="modal-content"></div></div>
+  <div id="pricewatch-modal" class="modal"><div class="modal-content"></div></div>
+
+  <!-- Scripts: config first, then modules, main last -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/config.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/sellers.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/list.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/form.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/fullscreen.js"></script>
+  <script src="js/rfq.js"></script>
+  <script src="js/shortcuts.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/csv.js"></script>
+  <script src="js/geojson.js"></script>
+  <script src="js/recent.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/seedtips.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/demostatus.js"></script>
+  <script src="js/localmanager.js"></script>
+  <script src="js/quality.js"></script>
+  <script src="js/presets.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/tags.js"></script>
+  <script src="js/collections.js"></script>
+  <script src="js/searchhistory.js"></script>
+  <script src="js/mapviews.js"></script>
+  <script src="js/pricewatch.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
