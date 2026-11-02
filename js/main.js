@@ -187,6 +187,10 @@
       menu?.setAttribute('hidden', '');
       if (global.FD_TAGS && typeof global.FD_TAGS.open === 'function') global.FD_TAGS.open();
     });
+    document.getElementById('open-collections')?.addEventListener('click', () => {
+      menu?.setAttribute('hidden', '');
+      if (global.FD_COLLECTIONS && typeof global.FD_COLLECTIONS.open === 'function') global.FD_COLLECTIONS.open();
+    });
     document.getElementById('export-demo')?.addEventListener('click', async () => {
       if (global.FD_API && global.FD_API.exportDemoData) {
         const res = await global.FD_API.exportDemoData();
@@ -302,7 +306,7 @@
   }
 
   function setupModalsClose() {
-    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'quality-modal', 'presets-modal', 'notes-modal', 'tags-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
+    ['auth-modal', 'dashboard-modal', 'listing-form-modal', 'sellers-modal', 'deploy-modal', 'shortcuts-modal', 'data-source-modal', 'seedtips-modal', 'onboarding-modal', 'demostatus-modal', 'localmanager-modal', 'quality-modal', 'presets-modal', 'notes-modal', 'tags-modal', 'collections-modal', 'compare-modal', 'recent-modal', 'stats-modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal?.addEventListener('click', (e) => {
         if (e.target.id === id) modal.classList.remove('open');
@@ -394,6 +398,7 @@
     if (global.FD_PRESETS && typeof global.FD_PRESETS.bind === 'function') global.FD_PRESETS.bind();
     if (global.FD_NOTES && typeof global.FD_NOTES.bind === 'function') global.FD_NOTES.bind();
     if (global.FD_TAGS && typeof global.FD_TAGS.bind === 'function') global.FD_TAGS.bind();
+    if (global.FD_COLLECTIONS && typeof global.FD_COLLECTIONS.bind === 'function') global.FD_COLLECTIONS.bind();
 
     setupOptions();
     setupFilterCard();
