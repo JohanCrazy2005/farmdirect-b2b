@@ -1,1 +1,254 @@
-PLACEHOLDER_CARDS
+/**
+ * FarmDirect B2B – product & seller cards + lightbox
+ * Renders detailed product cards (visibility badge, price/units, seller display name
+ * from seed-sellers.json, RFQ, favorite, share, compare) and seller cards.
+ * Opens from list/map selection. Fully client-side; works with seed/demo fallback.
+ * Address is now a clickable Google Maps link when coordinates exist.
+ * Shows distance from user location (when Locate is used). Favorites state is correctly detected.
+ * Product card includes Prev/Next buttons (and position indicator) that cycle through
+ * the current filtered set via FD_LIST.navigate for easier seed/demo exploration.
+ * HTML escaping is correct so seed descriptions containing & < > render safely.
+ * Seller card “Show their listings” applies the seller filter via FD_LIST.setSellerFilter.
+ * Shows private notes and local tags when present.
+ */
+(function (global) {
+  'use strict';
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+
+  function fmtPrice(price, units) {
+    if (price == null || isNaN(Number(price))) return 'Price on request';
+    return '$' + Number(price).toFixed(2) + (units ? ' / ' + units : '');
+  }
+
+  function visibilityLabel(v) {
+    const map = { worldwide: 'Worldwide', country: 'Country', province: 'Province' };
+    return map[v] || v || 'Unknown';
+  }
+
+  function mapsUrlFor(listing) {
+    const loc = listing.location || {};
+    const lat = Number(loc.lat);
+    const lng = Number(loc.long);
+    if (isNaN(lat) || isNaN(lng)) return '';
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function formatDistance(km) {
+    if (km == null || isNaN(km)) return '';
+    if (km < 1) return Math.round(km * 1000) + ' m';
+    return km.toFixed(1) + ' km';
+  }
+
+  function openProduct(listing) {
+    const el = document.getElementById('product-card');
+    if (!el || !listing) return;
+    const sellerName = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(listing.sellerid)
+      : (listing.sellerid || '');
+    const favsArr = (global.FD_LIST && typeof global.FD_LIST.getFavorites === 'function')
+      ? global.FD_LIST.getFavorites() : [];
+    const isFav = Array.isArray(favsArr) ? favsArr.includes(listing.id) : false;
+    const noteText = (global.FD_NOTES && typeof global.FD_NOTES.getNote === 'function')
+      ? global.FD_NOTES.getNote(listing.id) : '';
+    const tagsArr = (global.FD_TAGS && typeof global.FD_TAGS.getTags === 'function')
+      ? global.FD_TAGS.getTags(listing.id) : [];
+    const tagsHtml = tagsArr.length
+      ? `<div class="listing-tags">${tagsArr.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join(' ')}</div>`
+      : '';
+    const mapsUrl = mapsUrlFor(listing);
+    const addressHtml = listing.address
+      ? (mapsUrl
+        ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" class="address-link" title="Open in Google Maps">${escapeHtml(listing.address)}</a>`
+        : escapeHtml(listing.address))
+      : '';
+    let distHtml = '';
+    const userLoc = (global.FD_MAP && typeof global.FD_MAP.getUserLocation === 'function') ? global.FD_MAP.getUserLocation() : null;
+    if (userLoc && listing.location && listing.location.lat != null && listing.location.long != null) {
+      const km = haversine(userLoc.lat, userLoc.long || userLoc.lng, listing.location.lat, listing.location.long);
+      distHtml = `<span class="distance muted small" title="From your location">${formatDistance(km)} away</span>`;
+    }
+    let posHtml = '';
+    if (global.FD_LIST && typeof global.FD_LIST.getFiltered === 'function') {
+      const filt = global.FD_LIST.getFiltered() || [];
+      const fi = filt.findIndex(l => l.id === listing.id);
+      if (fi >= 0) posHtml = `<span class="muted small" style="margin-left:0.5rem">${fi + 1} of ${filt.length}</span>`;
+    }
+    el.innerHTML = `
+      <button type="button" class="close-card" aria-label="Close">×</button>
+      ${listing.image ? `<img class="card-image" src="${escapeHtml(listing.image)}" alt="" data-full="${escapeHtml(listing.image)}">` : ''}
+      <div class="card-body">
+        <h3>${escapeHtml(listing.headerdescription || 'Listing')} ${posHtml}</h3>
+        <div class="card-meta">
+          <button type="button" class="category-badge card-cat" data-cat="${escapeHtml(listing.category || '')}">${escapeHtml(listing.category || '')}</button>
+          <button type="button" class="visibility-badge vis-${escapeHtml(listing.visibility || '')} card-vis" data-vis="${escapeHtml(listing.visibility || '')}">${escapeHtml(visibilityLabel(listing.visibility))}</button>
+          ${listing.units ? `<button type="button" class="units-badge card-units" data-units="${escapeHtml(listing.units)}">${escapeHtml(listing.units)}</button>` : ''}
+          <span class="price">${escapeHtml(fmtPrice(listing.price, listing.units))}</span>
+          ${distHtml}
+        </div>
+        <p class="address muted">${addressHtml}</p>
+        <p class="description">${escapeHtml(listing.description || '')}</p>
+        ${noteText ? `<div class="listing-note"><strong>Note:</strong> ${escapeHtml(noteText)}</div>` : ''}
+        ${tagsHtml}
+        <div class="seller-link">Seller: <button type="button" class="link-btn open-seller" data-seller="${escapeHtml(listing.sellerid || '')}">${escapeHtml(sellerName)}</button></div>
+        <div class="card-actions">
+          <button type="button" class="small-btn nav-prev" data-id="${escapeHtml(listing.id)}">← Prev</button>
+          <button type="button" class="small-btn nav-next" data-id="${escapeHtml(listing.id)}">Next →</button>
+          <button type="button" class="small-btn rfq-btn" data-id="${escapeHtml(listing.id)}">Request quote</button>
+          <button type="button" class="small-btn fav-btn" data-id="${escapeHtml(listing.id)}">${isFav ? '★ Unfavorite' : '☆ Favorite'}</button>
+          <button type="button" class="small-btn compare-btn" data-id="${escapeHtml(listing.id)}">Compare</button>
+          <button type="button" class="small-btn share-btn" data-id="${escapeHtml(listing.id)}">Share</button>
+          <button type="button" class="small-btn notes-btn" data-id="${escapeHtml(listing.id)}">${noteText ? '✎ Edit note' : '✎ Add note'}</button>
+          <button type="button" class="small-btn tags-btn" data-id="${escapeHtml(listing.id)}">${tagsArr.length ? '🏷 Edit tags' : '🏷 Tags'}</button>
+        </div>
+      </div>
+    `;
+    el.classList.add('open');
+    el.querySelector('.close-card')?.addEventListener('click', () => closeProduct());
+    el.querySelector('.card-image')?.addEventListener('click', () => openLightbox(listing.image));
+    el.querySelector('.open-seller')?.addEventListener('click', () => openSeller(listing.sellerid));
+    el.querySelector('.nav-prev')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.navigate === 'function') global.FD_LIST.navigate(-1);
+    });
+    el.querySelector('.nav-next')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.navigate === 'function') global.FD_LIST.navigate(1);
+    });
+    el.querySelector('.rfq-btn')?.addEventListener('click', () => {
+      if (global.FD_RFQ && typeof global.FD_RFQ.open === 'function') global.FD_RFQ.open(listing.id);
+    });
+    el.querySelector('.fav-btn')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.toggleFavorite === 'function') global.FD_LIST.toggleFavorite(listing.id);
+      openProduct(listing);
+    });
+    el.querySelector('.compare-btn')?.addEventListener('click', () => {
+      if (global.FD_COMPARE && typeof global.FD_COMPARE.toggle === 'function') {
+        global.FD_COMPARE.toggle(listing.id);
+        openProduct(listing);
+      }
+    });
+    el.querySelector('.share-btn')?.addEventListener('click', async () => {
+      const url = location.origin + location.pathname + '#listing=' + encodeURIComponent(listing.id);
+      try {
+        await navigator.clipboard.writeText(url);
+        if (global.FD_TOAST) global.FD_TOAST.show('Listing link copied', 'success');
+      } catch (_) {
+        if (global.FD_TOAST) global.FD_TOAST.show(url, 'info');
+      }
+    });
+    el.querySelector('.notes-btn')?.addEventListener('click', () => {
+      if (global.FD_NOTES && typeof global.FD_NOTES.editNote === 'function') {
+        global.FD_NOTES.editNote(listing.id);
+      }
+    });
+    el.querySelector('.tags-btn')?.addEventListener('click', () => {
+      if (global.FD_TAGS && typeof global.FD_TAGS.editTags === 'function') {
+        global.FD_TAGS.editTags(listing.id);
+      }
+    });
+    el.querySelectorAll('.card-cat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setCategoryFilter === 'function') {
+          global.FD_LIST.setCategoryFilter(btn.dataset.cat);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.cat}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    el.querySelectorAll('.card-vis').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setVisibilityFilter === 'function') {
+          global.FD_LIST.setVisibilityFilter(btn.dataset.vis);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.vis}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    el.querySelectorAll('.card-units').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (global.FD_LIST && typeof global.FD_LIST.setUnitsFilter === 'function') {
+          global.FD_LIST.setUnitsFilter(btn.dataset.units);
+          if (global.FD_TOAST) global.FD_TOAST.show(`Filtered to ${btn.dataset.units}`, 'info');
+        }
+        closeProduct();
+      });
+    });
+    if (global.FD_COMPARE && typeof global.FD_COMPARE.updateButtons === 'function') {
+      global.FD_COMPARE.updateButtons();
+    }
+  }
+
+  function closeProduct() {
+    document.getElementById('product-card')?.classList.remove('open');
+  }
+
+  function openSeller(sellerid) {
+    const el = document.getElementById('seller-card');
+    if (!el || !sellerid) return;
+    const name = (global.FD_SELLERS && typeof global.FD_SELLERS.getDisplayName === 'function')
+      ? global.FD_SELLERS.getDisplayName(sellerid) : sellerid;
+    const bio = (global.FD_SELLERS && typeof global.FD_SELLERS.getBio === 'function')
+      ? global.FD_SELLERS.getBio(sellerid) : '';
+    el.innerHTML = `
+      <button type="button" class="close-card" aria-label="Close">×</button>
+      <div class="card-body">
+        <h3>${escapeHtml(name)}</h3>
+        ${bio ? `<p class="description">${escapeHtml(bio)}</p>` : ''}
+        <p class="muted">ID: ${escapeHtml(sellerid)}</p>
+        <button type="button" class="small-btn filter-seller" data-seller="${escapeHtml(sellerid)}">Show their listings</button>
+      </div>
+    `;
+    el.classList.add('open');
+    el.querySelector('.close-card')?.addEventListener('click', () => closeSeller());
+    el.querySelector('.filter-seller')?.addEventListener('click', () => {
+      if (global.FD_LIST && typeof global.FD_LIST.setSellerFilter === 'function') {
+        global.FD_LIST.setSellerFilter(sellerid);
+      } else {
+        const sel = document.getElementById('filter-seller');
+        if (sel) sel.value = sellerid;
+      }
+      closeSeller();
+      closeProduct();
+      if (global.FD_TOAST) global.FD_TOAST.show('Filtered to ' + name, 'info');
+    });
+  }
+
+  function closeSeller() {
+    document.getElementById('seller-card')?.classList.remove('open');
+  }
+
+  function openLightbox(src) {
+    const lb = document.getElementById('image-lightbox');
+    const img = document.getElementById('lightbox-img');
+    if (!lb || !img || !src) return;
+    img.src = src;
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('image-lightbox')?.classList.remove('open');
+  }
+
+  global.FD_CARDS = {
+    openProduct,
+    closeProduct,
+    openSeller,
+    closeSeller,
+    openLightbox,
+    closeLightbox
+  };
+})(window);
