@@ -1,3 +1,12 @@
+## 2026-11-02 – Seed/demo UX: price range coverage + Fit map action
+
+**What:** Further polished the seed/demo fallback UX (highest remaining code-only item). The data-source modal and offline banner now include a price range summary (min–max and average) computed from the current listings, giving a quick sense of the seed/demo catalog. Added a “Fit map” button in the modal that calls the existing `FD_MAP.fitAll()` so users can re-frame the map to all listings after exploring. Copy status also includes the price line. No new features or schema changes.
+
+**How:** Updated `js/main.js` (summarizeListings, showBanner, updateSourceModal, copy status). Single commit. Appended this entry.
+
+**Next:** Highest remaining code-only items are further seed/demo UX polish or live E2E support once the user applies the optional RFQ migration and verifies the publish workflow. P1/P5 remain user-owned.
+
+---
 ## 2026-11-02 – Seed/demo UX: data-coverage summary + live last-checked ticker + copy status
 
 **What:** Further polished the seed/demo fallback UX (highest remaining code-only item). The data-source modal now shows a coverage summary (unique categories, sellers, and visibility breakdown) so users can see what the seed/demo data contains at a glance. Banner text includes a short cats/sellers hint. Relative “last checked” time updates live every 15s without a full reload (ticker). Added a “Copy status” button that copies a plain-text snapshot of source, count, coverage, and health for sharing or debugging. No new features or schema changes.

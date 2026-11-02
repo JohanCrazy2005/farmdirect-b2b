@@ -26,19 +26,38 @@
 
   function summarizeListings(listings) {
     if (!Array.isArray(listings) || !listings.length) {
-      return { categories: 0, sellers: 0, vis: { worldwide: 0, country: 0, province: 0 } };
+      return { categories: 0, sellers: 0, vis: { worldwide: 0, country: 0, province: 0 }, priceMin: null, priceMax: null, priceAvg: null };
     }
     const cats = new Set();
     const sellers = new Set();
     const vis = { worldwide: 0, country: 0, province: 0 };
+    let priceMin = Infinity, priceMax = -Infinity, priceSum = 0, priceCount = 0;
     listings.forEach(l => {
       if (l.category) cats.add(l.category);
       if (l.sellerid) sellers.add(l.sellerid);
       const v = (l.visibility || 'province').toLowerCase();
       if (vis[v] != null) vis[v]++;
       else vis.province++;
+      const p = l.price != null ? Number(l.price) : NaN;
+      if (!isNaN(p) && p >= 0) {
+        if (p < priceMin) priceMin = p;
+        if (p > priceMax) priceMax = p;
+        priceSum += p;
+        priceCount++;
+      }
     });
-    return { categories: cats.size, sellers: sellers.size, vis };
+    return {
+      categories: cats.size,
+      sellers: sellers.size,
+      vis,
+      priceMin: priceCount ? priceMin : null,
+      priceMax: priceCount ? priceMax : null,
+      priceAvg: priceCount ? priceSum / priceCount : null
+    };
+  }
+
+  function formatPrice(n) {
+    return n == null ? '' : '$' + Number(n).toFixed(2);
   }
 
   function showBanner(source, health, count) {
@@ -73,6 +92,9 @@
     if (summary && summary.categories) {
       msg += ' · ' + summary.categories + ' cats, ' + summary.sellers + ' sellers';
     }
+    if (summary && summary.priceMin != null) {
+      msg += ' · ' + formatPrice(summary.priceMin) + '–' + formatPrice(summary.priceMax);
+    }
     text.textContent = msg;
     banner.hidden = false;
     if (badge) {
@@ -92,11 +114,15 @@
     const checked = relativeTime(lastChecked) || 'unknown';
     const summary = lastResult && lastResult.listings ? summarizeListings(lastResult.listings) : null;
     const visParts = summary ? Object.entries(summary.vis).filter(([, n]) => n > 0).map(([k, n]) => k + ':' + n).join(', ') : '';
+    const priceLine = summary && summary.priceMin != null
+      ? `<p>Price range: ${formatPrice(summary.priceMin)} – ${formatPrice(summary.priceMax)} (avg ${formatPrice(summary.priceAvg)})</p>`
+      : '';
     content.innerHTML = `
       <p><strong>Current source:</strong> ${source || 'unknown'}</p>
       <p>Listings shown: ${count || 0}</p>
       <p>Last checked: <span id="source-checked">${checked}</span></p>
       ${summary ? `<p>Coverage: ${summary.categories} categories · ${summary.sellers} sellers${visParts ? ' · ' + visParts : ''}</p>` : ''}
+      ${priceLine}
       ${health ? `<p>Health: ${health.ok ? 'ok' : (health.error || 'failed')}</p>` : ''}
       ${demo.hasDemo ? `<p>Local demo override: ${demo.count} listings</p>` : '<p>No local demo override.</p>'}
       <hr>
@@ -111,6 +137,7 @@
       <div style="margin-top:10px;">
         <button type="button" id="source-retry" class="small-btn">Retry live</button>
         <button type="button" id="source-deploy" class="small-btn">Deploy notes</button>
+        <button type="button" id="source-fit" class="small-btn">Fit map</button>
         <button type="button" id="source-copy" class="small-btn">Copy status</button>
         ${hasToken ? '<button type="button" id="source-dashboard" class="small-btn primary">Open Dashboard</button>' : '<button type="button" id="source-auth" class="small-btn primary">Sign in / Register</button>'}
       </div>
@@ -121,6 +148,13 @@
       const m = $('deploy-modal');
       if (m) m.classList.add('open');
     });
+    content.querySelector('#source-fit')?.addEventListener('click', () => {
+      if (global.FD_MAP && typeof global.FD_MAP.fitAll === 'function') {
+        global.FD_MAP.fitAll();
+      } else if (global.FD_TOAST) {
+        global.FD_TOAST.show('Map not ready', 'info');
+      }
+    });
     content.querySelector('#source-copy')?.addEventListener('click', () => {
       const status = [
         'FarmDirect B2B data source',
@@ -128,6 +162,7 @@
         'Listings: ' + (count || 0),
         'Last checked: ' + (relativeTime(lastChecked) || 'unknown'),
         summary ? 'Coverage: ' + summary.categories + ' categories, ' + summary.sellers + ' sellers' : '',
+        summary && summary.priceMin != null ? 'Prices: ' + formatPrice(summary.priceMin) + '–' + formatPrice(summary.priceMax) + ' (avg ' + formatPrice(summary.priceAvg) + ')' : '',
         health ? 'Health: ' + (health.ok ? 'ok' : health.error || 'failed') : '',
         demo.hasDemo ? 'Demo override: ' + demo.count : 'No demo override'
       ].filter(Boolean).join('\n');
