@@ -1,3 +1,13 @@
+## 2026-11-01 (America/Denver) – Seed/demo UX: listing collections
+
+- Added substantial `js/collections.js` module that stores named collections of listings in localStorage (`fd-collections`).
+- Users can add/edit membership from the product card (“Collections” / “Add to collection” button) via a prompt, or manage all collections in a dedicated modal (create empty, list with counts/previews, View first, Delete).
+- Collections display as pills on the product card when present. Fully client-side; no schema or Worker changes.
+- Wired a “Collections” button into the options menu, added the `#collections-modal` shell to `index.html`, loaded the script, and bound the module in `main.js`.
+- Added light CSS for collection pills and the collections list so they remain readable on both themes.
+- Improves seed/demo fallback exploration (group by interest, season, follow-up status, bulk orders, etc.) while the Worker may be empty or offline.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – Seed/demo UX: local listing tags
 
 - Added substantial `js/tags.js` module that stores private per-listing tags in localStorage (`fd-tags`).
