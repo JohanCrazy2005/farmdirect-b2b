@@ -1,3 +1,12 @@
+## 2026-11-01 (America/Denver) – Seed/demo UX: search history
+
+- Added substantial `js/searchhistory.js` module that stores recent top-bar search queries in localStorage (`fd-search-history`).
+- Tracks queries automatically (debounced input + Enter), keeps the last 20 unique entries with timestamps.
+- Options menu “Search history” opens a modal listing past queries with relative time, Apply (re-runs the search), Delete, and Clear all.
+- Fully client-side; no schema or Worker changes. Improves map-first exploration in seed/demo mode while the Worker may be empty or offline.
+- Wired the button, modal shell, script load, and bind into index.html, main.js, and added light CSS.
+- Highest unfinished code-only item after documented user actions (P1 optional RFQ/GH secrets, P3 live E2E, P5 secrets).
+
 ## 2026-11-01 (America/Denver) – UI polish: full keyboard shortcuts help
 
 - Expanded the Shortcuts modal in `index.html` to list every implemented map-first keyboard control (search, filters, options, locate, fit, random, theme, favorites, list navigation, help, Escape).
