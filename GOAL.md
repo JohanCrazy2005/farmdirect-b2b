@@ -14,7 +14,7 @@ Map-first B2B marketplace. Leaflet + Cloudflare Worker + D1 `b2bistening`.
 ### P2 – Frontend shell (DONE)
 - [x] Complete `index.html` (transparent top bar, map, sidebar list, filter card, options menu, product/seller cards, modals)
 - [x] Complete `css/main.css` (layout, cards, clusters, responsive)
-- [x] Complete `js/main.js` (bootstrap map, list, search, dashboard, auth, seed/API load, options)
+- [x] Complete `js/main.js` (bootstrap map, list, search, dashboard, auth, seed/API load, options) — implemented 2026-11-02
 - [x] Complete `js/map.js` and `js/list.js` (markers, filtering, selection, favorites) so the shell actually runs with seed data
 
 ### P3 – Auth & publication polish
