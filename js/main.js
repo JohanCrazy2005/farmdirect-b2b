@@ -16,16 +16,47 @@
       .replace(/"/g, '&quot;');
   }
 
+  let lastCheckAt = null;
+  let lastResult = null;
+
+  function formatTime(ts) {
+    if (!ts) return 'never';
+    try {
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    } catch (_) {
+      return 'unknown';
+    }
+  }
+
+  function coverageSummary(listings) {
+    if (!Array.isArray(listings) || !listings.length) return { categories: 0, sellers: 0, withImage: 0, withPrice: 0 };
+    const cats = new Set();
+    const sellers = new Set();
+    let withImage = 0;
+    let withPrice = 0;
+    listings.forEach(l => {
+      if (l.category) cats.add(l.category);
+      if (l.sellerid) sellers.add(l.sellerid);
+      if (l.image) withImage++;
+      if (typeof l.price === 'number' && l.price > 0) withPrice++;
+    });
+    return { categories: cats.size, sellers: sellers.size, withImage, withPrice, total: listings.length };
+  }
+
   function updateDataSourceUI(result) {
     const source = result?.source || 'seed';
     const badge = document.getElementById('data-source-badge');
     const banner = document.getElementById('offline-banner');
     const bannerText = document.getElementById('banner-text');
+    lastResult = result;
+    lastCheckAt = Date.now();
 
     if (badge) {
+      const count = result?.count || (result?.listings?.length) || 0;
       const label = source === 'api' ? 'LIVE' : source.toUpperCase();
-      badge.textContent = label;
-      badge.title = `Data source: ${source}`;
+      badge.textContent = count ? `${label} (${count})` : label;
+      badge.title = `Data source: ${source} · ${count} listings · checked ${formatTime(lastCheckAt)}`;
       badge.hidden = false;
     }
 
@@ -37,9 +68,72 @@
         if (source === 'demo') msg = 'Showing local demo overrides.';
         else if (source === 'api-empty') msg = 'Live API reachable but empty – showing seed data.';
         else if (source === 'seed') msg = 'Showing seed data (API offline or unavailable).';
-        bannerText.textContent = msg;
+        const count = result?.count || (result?.listings?.length) || 0;
+        bannerText.textContent = count ? `${msg} (${count} listings)` : msg;
         banner.hidden = false;
       }
+    }
+  }
+
+  function renderSourceContent(result) {
+    const content = document.getElementById('source-content');
+    if (!content) return;
+    const source = result?.source || 'seed';
+    const listings = result?.listings || [];
+    const cov = coverageSummary(listings);
+    const info = (global.FD_API && global.FD_API.getDemoInfo) ? global.FD_API.getDemoInfo() : {};
+    const health = result?.health;
+    const healthLine = health
+      ? (health.ok ? `Health: ${health.status || 'ok'}${health.features?.length ? ' · features: ' + health.features.join(', ') : ''}` : `Health: unreachable (${health.error || 'error'})`)
+      : 'Health: not checked (no API base)';
+
+    content.innerHTML = `
+      <p><strong>Source:</strong> ${escapeHtml(source.toUpperCase())}</p>
+      <p class="small">Listings in view: <strong>${cov.total || 0}</strong></p>
+      <p class="small">Coverage: ${cov.categories} categories · ${cov.sellers} sellers · ${cov.withImage} with image · ${cov.withPrice} with price</p>
+      <p class="small">Local demo overrides: <strong>${info.count || 0}</strong> ${info.hasDemo ? '(in localStorage)' : '(none)'}</p>
+      <p class="small">Last checked: <strong id="source-last-checked">${escapeHtml(formatTime(lastCheckAt))}</strong></p>
+      <p class="small muted">${escapeHtml(healthLine)}</p>
+      <div class="onboarding-actions" style="margin-top:10px;">
+        <button type="button" id="source-copy-status" class="small-btn">Copy status</button>
+        <button type="button" id="source-retry" class="small-btn">Retry live</button>
+      </div>
+      <p class="small muted" style="margin-top:8px;">Retry live re-probes the Worker without a full reload. Deploy steps are in Options or the banner.</p>
+    `;
+
+    content.querySelector('#source-copy-status')?.addEventListener('click', () => {
+      const text = [
+        `FarmDirect data source: ${source.toUpperCase()}`,
+        `Listings: ${cov.total || 0}`,
+        `Categories: ${cov.categories}, Sellers: ${cov.sellers}`,
+        `With image: ${cov.withImage}, With price: ${cov.withPrice}`,
+        `Local overrides: ${info.count || 0}`,
+        `Last checked: ${formatTime(lastCheckAt)}`,
+        healthLine,
+      ].join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Status copied', 'success');
+      }).catch(() => {
+        if (global.FD_TOAST) global.FD_TOAST.show('Copy failed', 'error');
+      });
+    });
+
+    content.querySelector('#source-retry')?.addEventListener('click', async () => {
+      if (global.FD_TOAST) global.FD_TOAST.show('Retrying live API…', 'info');
+      await loadAndRender();
+      if (document.getElementById('data-source-modal')?.classList.contains('open')) {
+        renderSourceContent(lastResult);
+      }
+    });
+
+    // Live ticker
+    const ticker = content.querySelector('#source-last-checked');
+    if (ticker) {
+      const tick = () => {
+        if (!document.getElementById('data-source-modal')?.classList.contains('open')) return;
+        ticker.textContent = formatTime(lastCheckAt);
+      };
+      tick();
     }
   }
 
@@ -74,15 +168,7 @@
     });
     document.getElementById('banner-details')?.addEventListener('click', () => {
       document.getElementById('data-source-modal')?.classList.add('open');
-      const content = document.getElementById('source-content');
-      if (content && global.FD_API) {
-        const info = global.FD_API.getDemoInfo?.() || {};
-        content.innerHTML = `
-          <p>Current source is reflected in the top-bar badge.</p>
-          <p class="small">Local demo overrides: ${info.count || 0}</p>
-          <p class="small muted">Retry live re-probes the Worker. Deploy steps are in Options or the banner.</p>
-        `;
-      }
+      renderSourceContent(lastResult);
     });
     document.getElementById('banner-retry')?.addEventListener('click', async () => {
       if (global.FD_TOAST) global.FD_TOAST.show('Retrying live API…', 'info');
@@ -93,6 +179,11 @@
     });
     document.getElementById('close-source-btn')?.addEventListener('click', () => {
       document.getElementById('data-source-modal')?.classList.remove('open');
+    });
+    // Also open from badge
+    document.getElementById('data-source-badge')?.addEventListener('click', () => {
+      document.getElementById('data-source-modal')?.classList.add('open');
+      renderSourceContent(lastResult);
     });
   }
 
