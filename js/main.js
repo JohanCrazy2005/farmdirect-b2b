@@ -40,7 +40,8 @@
     if (badge) {
       badge.textContent = badgeText;
       badge.hidden = false;
-      badge.title = 'Data source: ' + source;
+      badge.title = 'Data source: ' + source + ' — click for details & next steps';
+      badge.style.cursor = 'pointer';
     }
   }
 
@@ -48,13 +49,39 @@
     const content = $('source-content');
     if (!content) return;
     const demo = global.FD_API && global.FD_API.getDemoInfo ? global.FD_API.getDemoInfo() : {};
+    const hasToken = !!(global.FD_AUTH && global.FD_AUTH.getToken && global.FD_AUTH.getToken());
     content.innerHTML = `
       <p><strong>Current source:</strong> ${source || 'unknown'}</p>
       <p>Listings shown: ${count || 0}</p>
       ${health ? `<p>Health: ${health.ok ? 'ok' : (health.error || 'failed')}</p>` : ''}
       ${demo.hasDemo ? `<p>Local demo override: ${demo.count} listings</p>` : '<p>No local demo override.</p>'}
-      <p class="small">Seed/demo works fully offline. After auth migration, register → create draft → publish to see live listings.</p>
+      <hr>
+      <p class="small"><strong>Next steps for live data:</strong></p>
+      <ol class="small">
+        <li>Auth migration already applied. Register/login via Profile (👤).</li>
+        <li>Create a draft listing from Options → Add listing (or Dashboard).</li>
+        <li>Publish it from the Dashboard. It will appear on the map once published.</li>
+        <li>Optional: apply RFQ migration (see Deploy notes) for persistent quote requests.</li>
+      </ol>
+      <p class="small">You are ${hasToken ? 'signed in' : 'not signed in'}. Seed/demo works fully offline.</p>
+      <div style="margin-top:10px;">
+        <button type="button" id="source-retry" class="small-btn">Retry live</button>
+        <button type="button" id="source-deploy" class="small-btn">Deploy notes</button>
+        ${hasToken ? '<button type="button" id="source-dashboard" class="small-btn primary">Open Dashboard</button>' : '<button type="button" id="source-auth" class="small-btn primary">Sign in / Register</button>'}
+      </div>
     `;
+    // Wire the new buttons
+    content.querySelector('#source-retry')?.addEventListener('click', loadAndRender);
+    content.querySelector('#source-deploy')?.addEventListener('click', () => {
+      const m = $('deploy-modal');
+      if (m) m.classList.add('open');
+    });
+    content.querySelector('#source-auth')?.addEventListener('click', () => {
+      if (global.FD_AUTH && global.FD_AUTH.open) global.FD_AUTH.open();
+    });
+    content.querySelector('#source-dashboard')?.addEventListener('click', () => {
+      if (global.FD_DASHBOARD && global.FD_DASHBOARD.open) global.FD_DASHBOARD.open();
+    });
   }
 
   async function loadAndRender() {
@@ -120,6 +147,12 @@
     // Sidebar toggle
     $('sidebar-toggle')?.addEventListener('click', () => {
       $('sidebar')?.classList.toggle('open');
+    });
+
+    // Data-source badge opens details modal
+    $('data-source-badge')?.addEventListener('click', () => {
+      const m = $('data-source-modal');
+      if (m) m.classList.add('open');
     });
   }
 

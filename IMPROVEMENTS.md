@@ -1,3 +1,12 @@
+## 2026-11-02 – Seed/demo UX: interactive badge + actionable data-source modal
+
+**What:** Polished the seed/demo fallback UX (highest remaining code-only item). Data-source badge is now clickable (opens the details modal). The data-source modal now shows clear next-step guidance for the live publish workflow (register → create draft → publish) and includes quick-action buttons (Retry live, Deploy notes, Sign in / Open Dashboard). Banner title updated. No new features or schema changes; pure UX for offline/empty Worker cases.
+
+**How:** Updated `js/main.js` (showBanner, updateSourceModal, wireTopBar). Single commit. Appended this entry.
+
+**Next:** Highest remaining code-only items are further seed/demo UX polish or live E2E support once the user applies the optional RFQ migration and verifies the publish workflow. P1/P5 remain user-owned.
+
+---
 ## 2026-11-02 – Complete missing frontend bootstrap and product/seller cards
 
 **What:** Implemented the empty `js/main.js` (bootstrap) and replaced the placeholder `js/cards.js` with a functional product + seller card module.  
