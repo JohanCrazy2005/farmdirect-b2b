@@ -22,7 +22,7 @@
     return Math.round(min / 60) + 'h ago';
   }
 
-  function showBanner(source, health) {
+  function showBanner(source, health, count) {
     const banner = $('offline-banner');
     const text = $('banner-text');
     const badge = $('data-source-badge');
@@ -49,12 +49,13 @@
     }
     const checked = relativeTime(lastChecked);
     if (checked) msg += ' Last checked ' + checked + '.';
+    if (count != null) msg += ' (' + count + ' listings)';
     text.textContent = msg;
     banner.hidden = false;
     if (badge) {
-      badge.textContent = badgeText;
+      badge.textContent = badgeText + (count != null ? ' · ' + count : '');
       badge.hidden = false;
-      badge.title = 'Data source: ' + source + ' — click for details & next steps' + (checked ? ' (checked ' + checked + ')' : '');
+      badge.title = 'Data source: ' + source + ' — ' + (count != null ? count + ' listings — ' : '') + 'click for details & next steps' + (checked ? ' (checked ' + checked + ')' : '');
       badge.style.cursor = 'pointer';
       badge.dataset.source = source || 'seed';
     }
@@ -112,7 +113,7 @@
     if (global.FD_LIST && global.FD_LIST.setListings) {
       global.FD_LIST.setListings(listings);
     }
-    showBanner(result.source, result.health);
+    showBanner(result.source, result.health, result.count);
     updateSourceModal(result.source, result.count, result.health);
     if (global.FD_TOAST) {
       global.FD_TOAST.show(`Loaded ${result.count} listings (${result.source})`, 'info');
@@ -176,12 +177,15 @@
 
   function wireOptionsMenu() {
     $('theme-toggle')?.addEventListener('change', (e) => {
-      document.body.classList.toggle('dark', e.target.checked);
-      try { localStorage.setItem('fd-theme', e.target.checked ? 'dark' : 'light'); } catch (_) {}
+      const dark = e.target.checked;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.body.classList.toggle('dark', dark);
+      try { localStorage.setItem('fd-theme', dark ? 'dark' : 'light'); } catch (_) {}
     });
     // Restore theme
     try {
       if (localStorage.getItem('fd-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
         document.body.classList.add('dark');
         if ($('theme-toggle')) $('theme-toggle').checked = true;
       }
@@ -255,7 +259,7 @@
         global.FD_API?.resetDemoListings?.();
         const seed = await global.FD_API?.loadSeedListings?.();
         global.FD_LIST?.setListings?.(seed || []);
-        showBanner('seed');
+        showBanner('seed', null, (seed || []).length);
         global.FD_TOAST?.show('Loaded pure seed data', 'info');
       },
       'reset-demo': () => {
