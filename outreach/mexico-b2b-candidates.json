@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-02T23:13:16Z",
-  "total_count": 20,
+  "last_updated": "2026-11-03T00:15:00Z",
+  "total_count": 28,
   "target": 2000,
   "candidates": [
     {
@@ -142,6 +142,62 @@
       "category": "agro",
       "reason": "Official Mexican institution providing credit and support to agropecuario sectors; highlights Mexico as top avocado producer. Key institutional contact for agro network.",
       "found_at": "2026-11-02T23:13:16Z"
+    },
+    {
+      "username": "GiganteAgroa",
+      "post_url": "https://x.com/GiganteAgroa/status/2117403555174977707",
+      "category": "productores agrícolas / agro",
+      "reason": "Digital magazine dedicated to the Mexican agroindustry; covers production and agribusiness topics relevant to local producers and suppliers.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "CNAgropecuario",
+      "post_url": "https://x.com/CNAgropecuario/status/2117340983687864616",
+      "category": "asociaciones de productores / agro",
+      "reason": "Consejo Nacional Agropecuario representing the agropecuario sector in Mexico since 1984; key network connecting millions of producers of all sizes.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "YoBienInformado",
+      "post_url": "https://x.com/YoBienInformado/status/2117296822662435231",
+      "category": "emprendedores / agro",
+      "reason": "Business information portal for northwest Mexico featuring interviews with agricultural producers combining own production and commercialization for local and broader markets.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "ASKHAMexico",
+      "post_url": "https://x.com/ASKHAMexico/status/2117285611535016135",
+      "category": "emprendedores / startups",
+      "reason": "Integrator of social projects in Guanajuato promoting entrepreneurship across public, educational and business sectors; helps startups scale with strategy and mentoring.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "MxSector",
+      "post_url": "https://x.com/MxSector/status/2117249637811884506",
+      "category": "agro / ganadería",
+      "reason": "Informative medium focused on primary sector activities; covering government supports for livestock producers in Sinaloa and related agro topics.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "ottojosed",
+      "post_url": "https://x.com/ottojosed/status/2117240520892170686",
+      "category": "emprendedores / mercados locales",
+      "reason": "CEO of InterGo helping local product sellers find international buyers and turn local sales into export opportunities; relevant for producers seeking B2B channels.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "DIBAGobPue",
+      "post_url": "https://x.com/DIBAGobPue/status/2117315810125557998",
+      "category": "veterinarios",
+      "reason": "Official animal welfare account in Puebla promoting veterinary attention, care and recovery for animals; connected to veterinary products and professional services.",
+      "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "columbalopezg",
+      "post_url": "https://x.com/columbalopezg/status/2117353305701843070",
+      "category": "agro / institucionales",
+      "reason": "Secretaria de Agricultura y Desarrollo Rural announcing incentive payments to rice and wheat producers to support national production and fair commercialization.",
+      "found_at": "2026-11-03T00:15:00Z"
     }
   ],
   "run_summaries": [
@@ -154,6 +210,11 @@
       "run_at": "2026-11-02T23:13:16Z",
       "new_added": 10,
       "notes": "Second hourly run. Continued low volume of pure small-business posts amid news cycle (Día de Muertos, crime, sports). Added diverse relevant accounts: family carpentry supplier, industrial infrastructure firm, plastic industry expo, restaurant cost coverage, livestock tech author, traditional ganadería, industrial analysis, producer-support media, avocado issue poster, and official agro financier. Prioritized quality and category coverage."
+    },
+    {
+      "run_at": "2026-11-03T00:15:00Z",
+      "new_added": 8,
+      "notes": "Third hourly run. Volume of individual small-business or seller posts remains low amid Día de Muertos news and institutional announcements. Added quality relevant accounts: agroindustry magazine, national agro council, northwest business portal with producer interviews, Guanajuato entrepreneurship integrator, primary sector informativo, export consulting for local products, Puebla animal welfare/vet account, and Agriculture Secretary announcement on producer incentives. Maintained diversity across agro, associations, entrepreneurs, and veterinary categories."
     }
   ]
 }
