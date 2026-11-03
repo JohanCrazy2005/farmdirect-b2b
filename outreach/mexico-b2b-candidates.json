@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T13:17:00Z",
-  "total_count": 3,
+  "last_updated": "2026-11-03T15:15:00Z",
+  "total_count": 4,
   "target": 2000,
   "candidates": [
     {
@@ -26,6 +26,14 @@
       "category": "mercados locales / productores",
       "reason": "Account for Feria de Productores, a market for local organic and artisanal foods directly from producers in Guadalajara area; ideal for feedback on B2B local marketplace for agro suppliers and buyers.",
       "found_at": "2026-11-03T07:15:00Z"
+    },
+    {
+      "username": "maxi1980g",
+      "post_url": "https://x.com/maxi1980g/status/2117294182582603858",
+      "followers": 256,
+      "category": "proveedores industriales",
+      "reason": "Small industrial supplies provider (insumos industriales) with 16 years experience, posting about severe difficulties finding and retaining clients as businesses close; a local B2B marketplace could help connect directly with buyers and stabilize demand.",
+      "found_at": "2026-11-03T15:15:00Z"
     }
   ],
   "run_summaries": [
@@ -37,6 +45,7 @@
     "2026-11-03T10:12Z run: Continued keyword and semantic searches across agro producers, talleres mecánicos/refacciones, wood/carpintería, veterinaria, local markets, and associations since 2026-11-01. Most results were non-Mexico, large media accounts, or personal posts. Confirmed existing candidates under limit (Andrea2000p 115, CrespoMigue1 474, FProductores 457). No new unique <1k Mexican business-relevant candidates found. Total remains 3. Low volume of accessible small accounts posting recently.",
     "2026-11-03T11:15Z run: Keyword and semantic searches for productores agrícolas, talleres mecánicos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts (e.g. MartinRoma23486 1446, newonpolsia ~3400). Confirmed existing 3 candidates still <1000. No new unique qualifying <1k Mexican business accounts found. Total remains 3.",
     "2026-11-03T12:16Z run: Keyword and semantic searches across agro, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones, and emprendedores since 2026-11-01. Results predominantly non-Mexico, large media, or over-limit accounts (e.g. MartinRoma23486 1446, AtelierMule 2915, Claudia12588983 1990, rostodi 1165). No new unique qualifying <1k Mexican business-relevant candidates found. Confirmed existing candidates remain under limit. Total remains 3. Low recent volume of small accessible accounts.",
-    "2026-11-03T13:17Z run: Keyword and semantic searches across productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales/comprar local, and emprendedores since 2026-11-01. Results mostly non-Mexico, large media/government accounts, or over-limit/personal. Confirmed existing candidates (Andrea2000p 115, CrespoMigue1 474, FProductores 457) still under limit. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 3. Low recent volume of small accessible accounts in target categories."
+    "2026-11-03T13:17Z run: Keyword and semantic searches across productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales/comprar local, and emprendedores since 2026-11-01. Results mostly non-Mexico, large media/government accounts, or over-limit/personal. Confirmed existing candidates (Andrea2000p 115, CrespoMigue1 474, FProductores 457) still under limit. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 3. Low recent volume of small accessible accounts in target categories.",
+    "2026-11-03T15:15Z run: Keyword and semantic searches across agro, mechanical/refacciones/insumos industriales, wood/carpintería, veterinaria, local markets, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit (MartinRoma23486 1448). Added 1 new: maxi1980g (256 followers, industrial supplies provider complaining about client closures). Confirmed existing under limit. Total now 4. Continued low volume of qualifying small Mexican business accounts."
   ]
 }
