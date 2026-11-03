@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-03T08:16:00Z",
+  "last_updated": "2026-11-03T09:13:00Z",
   "total_count": 3,
   "target": 2000,
   "candidates": [
@@ -32,6 +32,7 @@
     "2026-11-03 hourly run: added 3 new candidates (<1k followers) across industrial suppliers, construction materials, and carpentry. Total now 51.",
     "2026-11-03T06:15Z run: Searches yielded limited small accounts. Added 1 new (<1k): Andrea2000p (115 followers, mechanical/taller). Note: Previous GitHub file showed total_count 51 but only 1 candidate listed (truncation issue in prior updates). Updated to reflect actual listed candidates.",
     "2026-11-03T07:15Z run: Low volume of qualifying <1k accounts in recent searches across agro, mechanical, vet, wood, and local markets. Cleaned over-limit entry (newonpolsia 3394). Added 2 new: CrespoMigue1 (474, intermediaries discussion) and FProductores (457, local producers market). Total now 3. Continued focus on small accessible accounts.",
-    "2026-11-03T08:16Z run: Continued low volume of recent posts from small (<1k followers) Mexican accounts in agro, mechanical, vet, wood, local markets, and associations. No new qualifying unique candidates found (checked profiles for promising posts; most were large media, non-Mexico, or over limit). Total remains 3. Prioritizing quality over quantity."
+    "2026-11-03T08:16Z run: Continued low volume of recent posts from small (<1k followers) Mexican accounts in agro, mechanical, vet, wood, local markets, and associations. No new qualifying unique candidates found (checked profiles for promising posts; most were large media, non-Mexico, or over limit). Total remains 3. Prioritizing quality over quantity.",
+    "2026-11-03T09:13Z run: Searched keyword and semantic queries for agro, mechanical/refacciones, wood/carpintería, vet, local markets, and associations since 2026-11-01. Checked multiple promising profiles (e.g. MartinRoma23486 1446 followers over limit, gojauregui 13239 over, Ovejaroja1 7745 over). No new unique candidates under 1000 followers found. Total remains 3. Low recent volume from small accessible Mexican business accounts."
   ]
 }
