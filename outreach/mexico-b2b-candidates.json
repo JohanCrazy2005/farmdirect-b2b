@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T00:15:00Z",
-  "total_count": 28,
+  "last_updated": "2026-11-03T01:20:00Z",
+  "total_count": 33,
   "target": 2000,
   "candidates": [
     {
@@ -198,6 +198,41 @@
       "category": "agro / institucionales",
       "reason": "Secretaria de Agricultura y Desarrollo Rural announcing incentive payments to rice and wheat producers to support national production and fair commercialization.",
       "found_at": "2026-11-03T00:15:00Z"
+    },
+    {
+      "username": "CapitalMexico",
+      "post_url": "https://x.com/CapitalMexico/status/2117391315851710668",
+      "category": "agro / productores",
+      "reason": "Coverage of legislative initiative to give legal certainty and protect small and medium Mexican field producers from intermediaries, low incomes and high production costs.",
+      "found_at": "2026-11-03T01:20:00Z"
+    },
+    {
+      "username": "entreveredas",
+      "post_url": "https://x.com/entreveredas/status/2117387202825232478",
+      "category": "productores agrícolas",
+      "reason": "Regional Sinaloa news portal reporting on the start of SADER payments and supports to wheat producers across multiple municipalities (Ahome, El Fuerte, Guasave, etc.).",
+      "found_at": "2026-11-03T01:20:00Z"
+    },
+    {
+      "username": "ADMEXICO",
+      "post_url": "https://x.com/ADMEXICO/status/2117331652183740505",
+      "category": "agro / ganadería",
+      "reason": "Architectural and design coverage of Ganadería Santillán in Querétaro, highlighting landscape-integrated livestock facilities and rural production spaces.",
+      "found_at": "2026-11-03T01:20:00Z"
+    },
+    {
+      "username": "sintesisweb",
+      "post_url": "https://x.com/sintesisweb/status/2117406653196767337",
+      "category": "productores agrícolas",
+      "reason": "Puebla-based synthesis media covering phytosanitary protocols applied by producers in Michoacán, Jalisco, Colima and Nayarit to contain avocado pests.",
+      "found_at": "2026-11-03T01:20:00Z"
+    },
+    {
+      "username": "SonoraPresente",
+      "post_url": "https://x.com/SonoraPresente/status/2117272659272642942",
+      "category": "emprendedores / restaurantes",
+      "reason": "Coverage of Hermosillo-based food entrepreneur RobeGrill who scaled from home grilling to multi-business with restaurants, seasoning brands and large social following.",
+      "found_at": "2026-11-03T01:20:00Z"
     }
   ],
   "run_summaries": [
@@ -215,6 +250,11 @@
       "run_at": "2026-11-03T00:15:00Z",
       "new_added": 8,
       "notes": "Third hourly run. Volume of individual small-business or seller posts remains low amid Día de Muertos news and institutional announcements. Added quality relevant accounts: agroindustry magazine, national agro council, northwest business portal with producer interviews, Guanajuato entrepreneurship integrator, primary sector informativo, export consulting for local products, Puebla animal welfare/vet account, and Agriculture Secretary announcement on producer incentives. Maintained diversity across agro, associations, entrepreneurs, and veterinary categories."
+    },
+    {
+      "run_at": "2026-11-03T01:20:00Z",
+      "new_added": 5,
+      "notes": "Fourth hourly run. Continued low volume of direct small-business seller posts (mostly news cycle around avocado phytosanitary issues, Día de Muertos and institutional supports). Added 5 quality relevant accounts: Capital México coverage of producer protection legislation, Sinaloa regional portal on wheat producer payments, architectural feature on Querétaro ganadería, Puebla synthesis media on pest protocols, and Sonora coverage of scaling food entrepreneur with restaurants. Prioritized diversity and genuine B2B relevance."
     }
   ]
 }
