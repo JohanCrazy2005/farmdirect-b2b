@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-03T10:12:00Z",
+  "last_updated": "2026-11-03T11:15:00Z",
   "total_count": 3,
   "target": 2000,
   "candidates": [
@@ -34,6 +34,7 @@
     "2026-11-03T07:15Z run: Low volume of qualifying <1k accounts in recent searches across agro, mechanical, vet, wood, and local markets. Cleaned over-limit entry (newonpolsia 3394). Added 2 new: CrespoMigue1 (474, intermediaries discussion) and FProductores (457, local producers market). Total now 3. Continued focus on small accessible accounts.",
     "2026-11-03T08:16Z run: Continued low volume of recent posts from small (<1k followers) Mexican accounts in agro, mechanical, vet, wood, local markets, and associations. No new qualifying unique candidates found (checked profiles for promising posts; most were large media, non-Mexico, or over limit). Total remains 3. Prioritizing quality over quantity.",
     "2026-11-03T09:13Z run: Searched keyword and semantic queries for agro, mechanical/refacciones, wood/carpintería, vet, local markets, and associations since 2026-11-01. Checked multiple promising profiles (e.g. MartinRoma23486 1446 followers over limit, gojauregui 13239 over, Ovejaroja1 7745 over). No new unique candidates under 1000 followers found. Total remains 3. Low recent volume from small accessible Mexican business accounts.",
-    "2026-11-03T10:12Z run: Continued keyword and semantic searches across agro producers, talleres mecánicos/refacciones, wood/carpintería, veterinaria, local markets, and associations since 2026-11-01. Most results were non-Mexico, large media accounts, or personal posts. Confirmed existing candidates under limit (Andrea2000p 115, CrespoMigue1 474, FProductores 457). No new unique <1k Mexican business-relevant candidates found. Total remains 3. Low volume of accessible small accounts posting recently."
+    "2026-11-03T10:12Z run: Continued keyword and semantic searches across agro producers, talleres mecánicos/refacciones, wood/carpintería, veterinaria, local markets, and associations since 2026-11-01. Most results were non-Mexico, large media accounts, or personal posts. Confirmed existing candidates under limit (Andrea2000p 115, CrespoMigue1 474, FProductores 457). No new unique <1k Mexican business-relevant candidates found. Total remains 3. Low volume of accessible small accounts posting recently.",
+    "2026-11-03T11:15Z run: Keyword and semantic searches for productores agrícolas, talleres mecánicos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts (e.g. MartinRoma23486 1446, newonpolsia ~3400). Confirmed existing 3 candidates still <1000. No new unique qualifying <1k Mexican business accounts found. Total remains 3."
   ]
 }
