@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T01:20:00Z",
-  "total_count": 33,
+  "last_updated": "2026-11-03T02:12:00Z",
+  "total_count": 37,
   "target": 2000,
   "candidates": [
     {
@@ -233,6 +233,34 @@
       "category": "emprendedores / restaurantes",
       "reason": "Coverage of Hermosillo-based food entrepreneur RobeGrill who scaled from home grilling to multi-business with restaurants, seasoning brands and large social following.",
       "found_at": "2026-11-03T01:20:00Z"
+    },
+    {
+      "username": "AhoraMex",
+      "post_url": "https://x.com/AhoraMex/status/2116994140919439691",
+      "category": "asociaciones de productores / artesanos",
+      "reason": "Coverage of the Asociación de Productores de Pan Artesanal de Morelos creating monumental bread mosaics for festivals; connects artisan food producers in local markets.",
+      "found_at": "2026-11-03T02:12:00Z"
+    },
+    {
+      "username": "extrusion_inc",
+      "post_url": "https://x.com/extrusion_inc/status/2117273067617493227",
+      "category": "proveedores industriales / manufactura",
+      "reason": "North American extrusion consulting now offering technical support for manufacturers in Mexico; relevant for industrial suppliers and B2B technical needs.",
+      "found_at": "2026-11-03T02:12:00Z"
+    },
+    {
+      "username": "SoldeTlaxcala",
+      "post_url": "https://x.com/SoldeTlaxcala/status/2117300712698998897",
+      "category": "agro / ganadería",
+      "reason": "Regional media highlighting the historic Hacienda de Piedras Negras as the mother of brava cattle breeding in Mexico with over 150 years of tradition.",
+      "found_at": "2026-11-03T02:12:00Z"
+    },
+    {
+      "username": "elmitoteromx",
+      "post_url": "https://x.com/elmitoteromx/status/2117421060307955870",
+      "category": "veterinarios / bienestar animal",
+      "reason": "Reporting on upcoming Mexican law for animal welfare, care and protection recognizing animals as sentient beings with veterinary attention requirements; relevant to veterinary sector.",
+      "found_at": "2026-11-03T02:12:00Z"
     }
   ],
   "run_summaries": [
@@ -255,6 +283,11 @@
       "run_at": "2026-11-03T01:20:00Z",
       "new_added": 5,
       "notes": "Fourth hourly run. Continued low volume of direct small-business seller posts (mostly news cycle around avocado phytosanitary issues, Día de Muertos and institutional supports). Added 5 quality relevant accounts: Capital México coverage of producer protection legislation, Sinaloa regional portal on wheat producer payments, architectural feature on Querétaro ganadería, Puebla synthesis media on pest protocols, and Sonora coverage of scaling food entrepreneur with restaurants. Prioritized diversity and genuine B2B relevance."
+    },
+    {
+      "run_at": "2026-11-03T02:12:00Z",
+      "new_added": 4,
+      "notes": "Fifth hourly run. Searches continued to yield mostly institutional, media and news coverage rather than individual small-business sellers or active buyers due to ongoing news cycles. Added 4 quality relevant accounts: coverage of artisan bread producers association in Morelos, extrusion consulting support for Mexican manufacturers, historic ganadería feature in Tlaxcala, and reporting on new animal welfare legislation relevant to veterinary sector. Focused on diversity and genuine potential interest in local B2B connections."
     }
   ]
 }
