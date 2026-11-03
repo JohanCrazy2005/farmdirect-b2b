@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T02:12:00Z",
-  "total_count": 37,
+  "last_updated": "2026-11-03T03:15:00Z",
+  "total_count": 40,
   "target": 2000,
   "candidates": [
     {
@@ -261,6 +261,27 @@
       "category": "veterinarios / bienestar animal",
       "reason": "Reporting on upcoming Mexican law for animal welfare, care and protection recognizing animals as sentient beings with veterinary attention requirements; relevant to veterinary sector.",
       "found_at": "2026-11-03T02:12:00Z"
+    },
+    {
+      "username": "_lharo",
+      "post_url": "https://x.com/_lharo/status/2117405023789265094",
+      "category": "asociaciones de productores / agro",
+      "reason": "Director of the Consejo Nacional Agropecuario sharing interview on innovation, financing and market access translating into profitability for producers ahead of Foro Global Agroalimentario in Guadalajara.",
+      "found_at": "2026-11-03T03:15:00Z"
+    },
+    {
+      "username": "AMLAC_Mexico",
+      "post_url": "https://x.com/AMLAC_Mexico/status/2117180654173446490",
+      "category": "asociaciones de productores / agro / ganadería",
+      "reason": "National organization representing dairy producers' interests in Mexico, focusing on economic development, competitiveness and sustainability; ideal for feedback on local B2B for agro inputs and buyers.",
+      "found_at": "2026-11-03T03:15:00Z"
+    },
+    {
+      "username": "ForoGlobalAgro",
+      "post_url": "https://x.com/ForoGlobalAgro/status/2117416635506073839",
+      "category": "asociaciones de productores / agro / eventos B2B",
+      "reason": "Leading agroalimentario forum in Mexico and LATAM for 22 years, connecting +10,000 producers, academia and authorities; perfect for outreach on local B2B marketplace for suppliers and buyers.",
+      "found_at": "2026-11-03T03:15:00Z"
     }
   ],
   "run_summaries": [
@@ -288,6 +309,11 @@
       "run_at": "2026-11-03T02:12:00Z",
       "new_added": 4,
       "notes": "Fifth hourly run. Searches continued to yield mostly institutional, media and news coverage rather than individual small-business sellers or active buyers due to ongoing news cycles. Added 4 quality relevant accounts: coverage of artisan bread producers association in Morelos, extrusion consulting support for Mexican manufacturers, historic ganadería feature in Tlaxcala, and reporting on new animal welfare legislation relevant to veterinary sector. Focused on diversity and genuine potential interest in local B2B connections."
+    },
+    {
+      "run_at": "2026-11-03T03:15:00Z",
+      "new_added": 3,
+      "notes": "Sixth hourly run. Direct individual seller or buyer posts remain scarce amid news and institutional content. Added 3 high-quality relevant accounts: Director of Consejo Nacional Agropecuario on producer profitability and market access, national dairy producers association (AMLAC), and the leading Foro Global Agroalimentario connecting thousands of producers. Prioritized genuine B2B and association networks for feedback on local marketplace."
     }
   ]
 }
