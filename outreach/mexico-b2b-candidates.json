@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T19:10:00Z",
-  "total_count": 6,
+  "last_updated": "2026-11-03T20:12:00Z",
+  "total_count": 7,
   "target": 2000,
   "candidates": [
     {
@@ -50,6 +50,14 @@
       "category": "asociaciones / cámaras de comercio locales",
       "reason": "Local CANACO (chamber of commerce) in Tlalnepantla representing businesses in the area; participates in innovation forums and supports local commerce/services. Ideal for feedback and outreach on a B2B local marketplace connecting suppliers and buyers in the Mexico City metro area.",
       "found_at": "2026-11-03T19:10:00Z"
+    },
+    {
+      "username": "Canacosanluisof",
+      "post_url": "https://x.com/Canacosanluisof/status/2117663609824116874",
+      "followers": 389,
+      "category": "asociaciones / cámaras de comercio locales",
+      "reason": "Official CANACO SERVYTUR account for San Luis Potosí, representing and supporting local businesses in commerce, services and tourism with training and alliances. Excellent contact for feedback on a B2B local marketplace for suppliers and buyers in the region.",
+      "found_at": "2026-11-03T20:12:00Z"
     }
   ],
   "run_summaries": [
@@ -65,6 +73,7 @@
     "2026-11-03T15:15Z run: Keyword and semantic searches across agro, mechanical/refacciones/insumos industriales, wood/carpintería, veterinaria, local markets, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit (MartinRoma23486 1448). Added 1 new: maxi1980g (256 followers, industrial supplies provider complaining about client closures). Confirmed existing under limit. Total now 4. Continued low volume of qualifying small Mexican business accounts.",
     "2026-11-03T17:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, associations, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts. Added 1 new: eurowipe (96 followers, industrial cleaning products supplier with local parts). Confirmed existing candidates under limit. Total now 5. Continued low volume of qualifying <1k Mexican business accounts.",
     "2026-11-03T18:15Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones/insumos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results predominantly large media accounts, non-Mexico posts, or over-limit profiles (e.g. SQUENDA 2288 followers for vet software). No new unique qualifying <1k Mexican business-relevant candidates found. Confirmed existing 5 candidates remain under 1000 followers. Total remains 5. Low recent volume of small accessible accounts in target categories.",
-    "2026-11-03T19:10Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: canacotlalne (154 followers, local CANACO Tlalnepantla chamber of commerce). Confirmed existing candidates under limit. Total now 6. Continued low volume of qualifying <1k Mexican business-relevant accounts."
+    "2026-11-03T19:10Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: canacotlalne (154 followers, local CANACO Tlalnepantla chamber of commerce). Confirmed existing candidates under limit. Total now 6. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
+    "2026-11-03T20:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: Canacosanluisof (389 followers, official CANACO San Luis Potosí). Confirmed existing candidates under limit. Total now 7. Continued low volume of qualifying <1k Mexican business-relevant accounts."
   ]
 }
