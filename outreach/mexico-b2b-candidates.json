@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T18:15:00Z",
-  "total_count": 5,
+  "last_updated": "2026-11-03T19:10:00Z",
+  "total_count": 6,
   "target": 2000,
   "candidates": [
     {
@@ -42,6 +42,14 @@
       "category": "proveedores industriales / insumos",
       "reason": "Small Mexican supplier of industrial cleaning products (hand dryers with local parts availability and factory warranty); relevant for B2B marketplace connecting local industrial suppliers with businesses seeking reliable insumos.",
       "found_at": "2026-11-03T17:12:00Z"
+    },
+    {
+      "username": "canacotlalne",
+      "post_url": "https://x.com/canacotlalne/status/2117671846292475913",
+      "followers": 154,
+      "category": "asociaciones / cámaras de comercio locales",
+      "reason": "Local CANACO (chamber of commerce) in Tlalnepantla representing businesses in the area; participates in innovation forums and supports local commerce/services. Ideal for feedback and outreach on a B2B local marketplace connecting suppliers and buyers in the Mexico City metro area.",
+      "found_at": "2026-11-03T19:10:00Z"
     }
   ],
   "run_summaries": [
@@ -56,6 +64,7 @@
     "2026-11-03T13:17Z run: Keyword and semantic searches across productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales/comprar local, and emprendedores since 2026-11-01. Results mostly non-Mexico, large media/government accounts, or over-limit/personal. Confirmed existing candidates (Andrea2000p 115, CrespoMigue1 474, FProductores 457) still under limit. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 3. Low recent volume of small accessible accounts in target categories.",
     "2026-11-03T15:15Z run: Keyword and semantic searches across agro, mechanical/refacciones/insumos industriales, wood/carpintería, veterinaria, local markets, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit (MartinRoma23486 1448). Added 1 new: maxi1980g (256 followers, industrial supplies provider complaining about client closures). Confirmed existing under limit. Total now 4. Continued low volume of qualifying small Mexican business accounts.",
     "2026-11-03T17:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, associations, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts. Added 1 new: eurowipe (96 followers, industrial cleaning products supplier with local parts). Confirmed existing candidates under limit. Total now 5. Continued low volume of qualifying <1k Mexican business accounts.",
-    "2026-11-03T18:15Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones/insumos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results predominantly large media accounts, non-Mexico posts, or over-limit profiles (e.g. SQUENDA 2288 followers for vet software). No new unique qualifying <1k Mexican business-relevant candidates found. Confirmed existing 5 candidates remain under 1000 followers. Total remains 5. Low recent volume of small accessible accounts in target categories."
+    "2026-11-03T18:15Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones/insumos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results predominantly large media accounts, non-Mexico posts, or over-limit profiles (e.g. SQUENDA 2288 followers for vet software). No new unique qualifying <1k Mexican business-relevant candidates found. Confirmed existing 5 candidates remain under 1000 followers. Total remains 5. Low recent volume of small accessible accounts in target categories.",
+    "2026-11-03T19:10Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: canacotlalne (154 followers, local CANACO Tlalnepantla chamber of commerce). Confirmed existing candidates under limit. Total now 6. Continued low volume of qualifying <1k Mexican business-relevant accounts."
   ]
 }
