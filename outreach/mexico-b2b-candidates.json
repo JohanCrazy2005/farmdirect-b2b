@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T21:12:00Z",
-  "total_count": 7,
+  "last_updated": "2026-11-03T22:12:00Z",
+  "total_count": 9,
   "target": 2000,
   "candidates": [
     {
@@ -58,6 +58,22 @@
       "category": "asociaciones / cámaras de comercio locales",
       "reason": "Official CANACO SERVYTUR account for San Luis Potosí, representing and supporting local businesses in commerce, services and tourism with training and alliances. Excellent contact for feedback on a B2B local marketplace for suppliers and buyers in the region.",
       "found_at": "2026-11-03T20:12:00Z"
+    },
+    {
+      "username": "valvulitax",
+      "post_url": "https://x.com/valvulitax/status/2117623028309729555",
+      "followers": 120,
+      "category": "talleres mecánicos",
+      "reason": "Small mobile mechanic (Técnica Automotriz TPS) in Chiautempan posting service offers (afinación, frenos, motor, electrónica, etc.); accessible local workshop owner who would benefit from a B2B marketplace for more clients and parts suppliers.",
+      "found_at": "2026-11-03T22:12:00Z"
+    },
+    {
+      "username": "AceroMundoMx",
+      "post_url": "https://x.com/AceroMundoMx/status/2117348519816372226",
+      "followers": 644,
+      "category": "proveedores industriales / construcción",
+      "reason": "Mexican steel and construction materials supplier actively inviting quotes for paneles, láminas, and losacero; ideal for local B2B marketplace connecting industrial suppliers with builders and contractors.",
+      "found_at": "2026-11-03T22:12:00Z"
     }
   ],
   "run_summaries": [
@@ -75,6 +91,7 @@
     "2026-11-03T18:15Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones/insumos, madera/carpintería, veterinaria/ganadería, mercados locales, and emprendedores since 2026-11-01. Results predominantly large media accounts, non-Mexico posts, or over-limit profiles (e.g. SQUENDA 2288 followers for vet software). No new unique qualifying <1k Mexican business-relevant candidates found. Confirmed existing 5 candidates remain under 1000 followers. Total remains 5. Low recent volume of small accessible accounts in target categories.",
     "2026-11-03T19:10Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: canacotlalne (154 followers, local CANACO Tlalnepantla chamber of commerce). Confirmed existing candidates under limit. Total now 6. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-03T20:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: Canacosanluisof (389 followers, official CANACO San Luis Potosí). Confirmed existing candidates under limit. Total now 7. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
-    "2026-11-03T21:12Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results predominantly large media, non-Mexico, or previously identified accounts. Confirmed existing 7 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 7. Continued low recent volume of small accessible accounts posting in target categories."
+    "2026-11-03T21:12Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results predominantly large media, non-Mexico, or previously identified accounts. Confirmed existing 7 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 7. Continued low recent volume of small accessible accounts posting in target categories.",
+    "2026-11-03T22:12Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/CANACO, and emprendedores since 2026-11-01. Added 2 new: valvulitax (120 followers, mobile mechanic in Chiautempan) and AceroMundoMx (644 followers, construction steel supplier). Confirmed existing candidates under limit. Total now 9. Continued low volume of qualifying <1k Mexican business-relevant accounts."
   ]
 }
