@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T22:12:00Z",
-  "total_count": 9,
+  "last_updated": "2026-11-03T23:15:00Z",
+  "total_count": 10,
   "target": 2000,
   "candidates": [
     {
@@ -74,6 +74,14 @@
       "category": "proveedores industriales / construcción",
       "reason": "Mexican steel and construction materials supplier actively inviting quotes for paneles, láminas, and losacero; ideal for local B2B marketplace connecting industrial suppliers with builders and contractors.",
       "found_at": "2026-11-03T22:12:00Z"
+    },
+    {
+      "username": "CanacoTijuana",
+      "post_url": "https://x.com/CanacoTijuana/status/2117745065875370486",
+      "followers": 405,
+      "category": "asociaciones / cámaras de comercio locales",
+      "reason": "Official CANACO account for Tijuana promoting local commerce, services, tourism and events like Expo Cooperativas; small accessible chamber representing regional businesses ideal for feedback on a B2B local marketplace connecting suppliers and buyers in northern Mexico.",
+      "found_at": "2026-11-03T23:15:00Z"
     }
   ],
   "run_summaries": [
@@ -92,6 +100,7 @@
     "2026-11-03T19:10Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: canacotlalne (154 followers, local CANACO Tlalnepantla chamber of commerce). Confirmed existing candidates under limit. Total now 6. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-03T20:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: Canacosanluisof (389 followers, official CANACO San Luis Potosí). Confirmed existing candidates under limit. Total now 7. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-03T21:12Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results predominantly large media, non-Mexico, or previously identified accounts. Confirmed existing 7 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 7. Continued low recent volume of small accessible accounts posting in target categories.",
-    "2026-11-03T22:12Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/CANACO, and emprendedores since 2026-11-01. Added 2 new: valvulitax (120 followers, mobile mechanic in Chiautempan) and AceroMundoMx (644 followers, construction steel supplier). Confirmed existing candidates under limit. Total now 9. Continued low volume of qualifying <1k Mexican business-relevant accounts."
+    "2026-11-03T22:12Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/CANACO, and emprendedores since 2026-11-01. Added 2 new: valvulitax (120 followers, mobile mechanic in Chiautempan) and AceroMundoMx (644 followers, construction steel supplier). Confirmed existing candidates under limit. Total now 9. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
+    "2026-11-03T23:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit. Added 1 new: CanacoTijuana (405 followers, official CANACO Tijuana). Confirmed existing candidates under limit. Total now 10. Continued low volume of qualifying <1k Mexican business-relevant accounts."
   ]
 }
