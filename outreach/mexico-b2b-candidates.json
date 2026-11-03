@@ -1,1 +1,17 @@
-PLACEHOLDER_FOR_FULL_JSON
+{
+  "last_updated": "2026-11-03T05:12:46Z",
+  "total_count": 51,
+  "target": 2000,
+  "candidates": [
+    {
+      "username": "newonpolsia",
+      "post_url": "https://x.com/newonpolsia/status/2117340623535759525",
+      "category": "emprendedores / B2B marketplace",
+      "reason": "Built Zunbral, a B2B marketplace for verified Mexican manufacturers of packaging, parts and restaurant inputs; ideal for feedback or collaboration on local B2B platforms.",
+      "found_at": "2026-11-02T23:05:00Z"
+    }
+  ],
+  "run_summaries": [
+    "2026-11-03 hourly run: added 3 new candidates (<1k followers) across industrial suppliers, construction materials, and carpentry. Total now 51."
+  ]
+}
