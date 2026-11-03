@@ -1,16 +1,8 @@
 {
-  "last_updated": "2026-11-03T06:15:00Z",
-  "total_count": 2,
+  "last_updated": "2026-11-03T07:15:00Z",
+  "total_count": 3,
   "target": 2000,
   "candidates": [
-    {
-      "username": "newonpolsia",
-      "post_url": "https://x.com/newonpolsia/status/2117340623535759525",
-      "followers": 3394,
-      "category": "emprendedores / B2B marketplace",
-      "reason": "Built Zunbral, a B2B marketplace for verified Mexican manufacturers of packaging, parts and restaurant inputs; ideal for feedback or collaboration on local B2B platforms.",
-      "found_at": "2026-11-02T23:05:00Z"
-    },
     {
       "username": "Andrea2000p",
       "post_url": "https://x.com/Andrea2000p/status/2117461082319319231",
@@ -18,10 +10,27 @@
       "category": "talleres mecánicos",
       "reason": "Mechanical engineer in Mexico expressing interest in setting up a workshop/taller; relevant for local industrial and mechanical suppliers on a B2B marketplace.",
       "found_at": "2026-11-03T06:13:00Z"
+    },
+    {
+      "username": "CrespoMigue1",
+      "post_url": "https://x.com/CrespoMigue1/status/2115652138940441029",
+      "followers": 474,
+      "category": "productores agrícolas / intermediarios",
+      "reason": "Discussed how intermediaries harm national producers and bureaucracy for direct sales; would benefit from a direct local B2B marketplace to connect buyers and sellers without middlemen.",
+      "found_at": "2026-11-03T07:15:00Z"
+    },
+    {
+      "username": "FProductores",
+      "post_url": "https://x.com/FProductores/status/1773584272667910387",
+      "followers": 457,
+      "category": "mercados locales / productores",
+      "reason": "Account for Feria de Productores, a market for local organic and artisanal foods directly from producers in Guadalajara area; ideal for feedback on B2B local marketplace for agro suppliers and buyers.",
+      "found_at": "2026-11-03T07:15:00Z"
     }
   ],
   "run_summaries": [
     "2026-11-03 hourly run: added 3 new candidates (<1k followers) across industrial suppliers, construction materials, and carpentry. Total now 51.",
-    "2026-11-03T06:15Z run: Searches yielded limited small accounts. Added 1 new (<1k): Andrea2000p (115 followers, mechanical/taller). Note: Previous GitHub file showed total_count 51 but only 1 candidate listed (truncation issue in prior updates). Updated to reflect actual listed candidates."
+    "2026-11-03T06:15Z run: Searches yielded limited small accounts. Added 1 new (<1k): Andrea2000p (115 followers, mechanical/taller). Note: Previous GitHub file showed total_count 51 but only 1 candidate listed (truncation issue in prior updates). Updated to reflect actual listed candidates.",
+    "2026-11-03T07:15Z run: Low volume of qualifying <1k accounts in recent searches across agro, mechanical, vet, wood, and local markets. Cleaned over-limit entry (newonpolsia 3394). Added 2 new: CrespoMigue1 (474, intermediaries discussion) and FProductores (457, local producers market). Total now 3. Continued focus on small accessible accounts."
   ]
 }
