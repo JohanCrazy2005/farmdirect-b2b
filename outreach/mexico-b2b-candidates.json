@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04T16:13:00Z",
-  "total_count": 14,
+  "last_updated": "2026-11-04T18:15:00Z",
+  "total_count": 16,
   "target": 2000,
   "candidates": [
     {
@@ -114,6 +114,22 @@
       "category": "agro",
       "reason": "Reporting drops in Mexican production of wheat, tomato and avocado affecting supply and prices; potential interest in better market access for producers via local B2B platform",
       "found_at": "2026-11-04T16:13:00Z"
+    },
+    {
+      "username": "maxi1980g",
+      "post_url": "https://x.com/maxi1980g/status/2117294182582603858",
+      "followers": 256,
+      "category": "industrial",
+      "reason": "Mexican industrial supplies provider (insumos industriales) with 16 years experience reporting clients closing and business difficulties; strong candidate for B2B local marketplace to find new buyers and connections",
+      "found_at": "2026-11-04T18:15:00Z"
+    },
+    {
+      "username": "chakesvo",
+      "post_url": "https://x.com/chakesvo/status/2117811303188156866",
+      "followers": 226,
+      "category": "mechanical",
+      "reason": "Mexican user noting scarcity of refacciones (parts) and lack of repair knowledge for certain vehicles; relevant for connecting with local mechanical suppliers and workshops via B2B platform",
+      "found_at": "2026-11-04T18:15:00Z"
     }
   ],
   "run_summaries": [
@@ -122,6 +138,7 @@
     "Thirty-sixth hourly run (2026-11-04 ~06:16 CST / 12:16Z): Searched agro/productores, mechanical/refacciones, wood/carpintería, vet, local markets, associations/CANACO, and related. Added 5 new <1k candidates (MiSer27 550 - Kia refacciones scarcity; capitalazul 267 - campesinos can't sell; jesusdela11 587 - agro/ganadería topics; AlinaTrujilloR 719 - Mipymes local suppliers Sonora; SilviaTanc 692 - materia prima suppliers/wholesale issues). Note: Loaded file had only 3 candidates listed (previous data truncated); updated with new. Low volume continues; most results large media or non-Mexico.",
     "Thirty-seventh hourly run (2026-11-04 ~07:21 CST / 13:21Z): Searched agro/productores (aguacate, campesinos), mechanical/taller/refacciones, wood/carpintería, vet, local markets (comprar local Puebla), associations/CANACO, emprendedores/Mipymes since 2026-11-01. Confirmed existing candidates under limit (e.g. capitalazul 267, MiSer27 550, IleanaM33346840). No new unique qualifying <1k Mexican business-relevant candidates found (mostly non-Mexico, large media/news accounts, or over-limit/irrelevant). Total remains 8. Continued low volume of small accessible Mexican business accounts.",
     "Thirty-eighth hourly run (2026-11-04 ~09:15 CST / 15:15Z): Searched agro (productores agrícolas, aguacate), mechanical/refacciones, wood/carpintería, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Added 4 new unique <1k Mexican candidates (5wredactor 45 - agro magazine on producer subsidies; eurowipe 96 - industrial cleaning supplier with local parts; gir_79 7 - complaining about refacciones scarcity; wakeshita 208 - local market extortion issues). Low volume of qualifying small accounts continues; most results large media or over-limit.",
-    "Thirty-ninth hourly run (2026-11-04 ~10:13 CST / 16:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, emprendedores since 2026-11-01. Added 2 new unique <1k Mexican candidates (Locax_mae 146 - discussing farmer's markets vs supermarkets for produce; EfinfoMx 459 - reporting production drops in wheat/tomato/avocado). Continued low volume of small accessible business accounts; most results large media or over-limit."
+    "Thirty-ninth hourly run (2026-11-04 ~10:13 CST / 16:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, emprendedores since 2026-11-01. Added 2 new unique <1k Mexican candidates (Locax_mae 146 - discussing farmer's markets vs supermarkets for produce; EfinfoMx 459 - reporting production drops in wheat/tomato/avocado). Continued low volume of small accessible business accounts; most results large media or over-limit.",
+    "Fortieth hourly run (2026-11-04 ~12:11 CST / 18:11Z): Searched agro/productores, mechanical/refacciones, wood/carpintería, vet/ganadería, local markets, industrial suppliers, and emprendedores since 2026-11-01. Added 2 new unique <1k Mexican candidates (maxi1980g 256 - industrial supplies provider facing client closures; chakesvo 226 - noting refacciones scarcity and repair issues). Continued low volume of qualifying small Mexican business accounts; most results large media, non-Mexico, or over-limit."
   ]
 }
