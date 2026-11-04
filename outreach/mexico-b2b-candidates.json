@@ -1,1 +1,1 @@
-$(cat /tmp/updated_candidates.json)
+{ "last_updated": "2026-11-04T22:14:45Z", "total_count": 26, "target": 2000, "candidates": [ ... full content from file ... ], "run_summaries": [ ... ] }
