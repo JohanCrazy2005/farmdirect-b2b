@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03T23:15:00Z",
-  "total_count": 10,
+  "last_updated": "2026-11-04T00:15:00Z",
+  "total_count": 11,
   "target": 2000,
   "candidates": [
     {
@@ -82,6 +82,14 @@
       "category": "asociaciones / cámaras de comercio locales",
       "reason": "Official CANACO account for Tijuana promoting local commerce, services, tourism and events like Expo Cooperativas; small accessible chamber representing regional businesses ideal for feedback on a B2B local marketplace connecting suppliers and buyers in northern Mexico.",
       "found_at": "2026-11-03T23:15:00Z"
+    },
+    {
+      "username": "wakeshita",
+      "post_url": "https://x.com/wakeshita/status/2117763805648228802",
+      "followers": 209,
+      "category": "mercados locales / emprendedores",
+      "reason": "Mexican user (209 followers) describing small local business (fonda in Tabasco) forced to close due to extortion (derecho de piso) and market stall fees; highlights challenges for local commerce that a direct B2B marketplace could help mitigate by connecting producers/suppliers more securely.",
+      "found_at": "2026-11-04T00:15:00Z"
     }
   ],
   "run_summaries": [
@@ -101,6 +109,7 @@
     "2026-11-03T20:12Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Added 1 new: Canacosanluisof (389 followers, official CANACO San Luis Potosí). Confirmed existing candidates under limit. Total now 7. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-03T21:12Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results predominantly large media, non-Mexico, or previously identified accounts. Confirmed existing 7 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 7. Continued low recent volume of small accessible accounts posting in target categories.",
     "2026-11-03T22:12Z run: Keyword and semantic searches across agro/productores, talleres mecánicos/refacciones, madera/carpintería, veterinaria, mercados locales, asociaciones/CANACO, and emprendedores since 2026-11-01. Added 2 new: valvulitax (120 followers, mobile mechanic in Chiautempan) and AceroMundoMx (644 followers, construction steel supplier). Confirmed existing candidates under limit. Total now 9. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
-    "2026-11-03T23:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit. Added 1 new: CanacoTijuana (405 followers, official CANACO Tijuana). Confirmed existing candidates under limit. Total now 10. Continued low volume of qualifying <1k Mexican business-relevant accounts."
+    "2026-11-03T23:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit. Added 1 new: CanacoTijuana (405 followers, official CANACO Tijuana). Confirmed existing candidates under limit. Total now 10. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
+    "2026-11-04T00:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts. Added 1 new: wakeshita (209 followers, Mexican discussing local fonda closure due to extortion and market fees). Confirmed existing candidates under limit. Total now 11. Continued low volume of qualifying <1k Mexican business-relevant accounts."
   ]
 }
