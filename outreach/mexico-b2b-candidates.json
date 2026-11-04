@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04T20:12:00Z",
-  "total_count": 22,
+  "last_updated": "2026-11-04T21:15:00Z",
+  "total_count": 24,
   "target": 2000,
   "candidates": [
     {
@@ -178,6 +178,22 @@
       "category": "local products",
       "reason": "Promoting catalog of local Mexican products (Yaoyotl); small account focused on national/local goods suitable for marketplace feedback",
       "found_at": "2026-11-04T19:13:00Z"
+    },
+    {
+      "username": "chema_3004",
+      "post_url": "https://x.com/chema_3004/status/2118067477758230812",
+      "followers": 220,
+      "category": "agro",
+      "reason": "Mexican accountant suggesting producers sell directly to city markets and tianguis for fairer prices; ideal candidate for local B2B marketplace connecting producers to buyers",
+      "found_at": "2026-11-04T21:15:00Z"
+    },
+    {
+      "username": "Aceititoajolote",
+      "post_url": "https://x.com/Aceititoajolote/status/2118087927427113186",
+      "followers": 17,
+      "category": "agro",
+      "reason": "Small Mexican account discussing avocado producers holding production in Michoacán affecting prices; relevant for connecting local producers to markets",
+      "found_at": "2026-11-04T21:15:00Z"
     }
   ],
   "run_summaries": [
@@ -189,6 +205,7 @@
     "Thirty-ninth hourly run (2026-11-04 ~10:13 CST / 16:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, emprendedores since 2026-11-01. Added 2 new unique <1k Mexican candidates (Locax_mae 146 - discussing farmer's markets vs supermarkets for produce; EfinfoMx 459 - reporting production drops in wheat/tomato/avocado). Continued low volume of small accessible business accounts; most results large media or over-limit.",
     "Fortieth hourly run (2026-11-04 ~12:11 CST / 18:11Z): Searched agro/productores, mechanical/refacciones, wood/carpintería, vet/ganadería, local markets, industrial suppliers, and emprendedores since 2026-11-01. Added 2 new unique <1k Mexican candidates (maxi1980g 256 - industrial supplies provider facing client closures; chakesvo 226 - noting refacciones scarcity and repair issues). Continued low volume of qualifying small Mexican business accounts; most results large media, non-Mexico, or over-limit.",
     "Forty-first hourly run (2026-11-04 ~13:13 CST / 19:13Z): Searched agro (productores agrícolas, aguacate, campesinos, ganadería), mechanical/refacciones, wood/carpintería, vet, local markets (comprar local, consume local), associations/CANACO, emprendedores/agro tech since 2026-11-01. Added 6 new unique <1k Mexican candidates (morrodeagua 847 - protecting agropecuario/campesinos; pedro_nunezvite 613 - ganadería/campo mexicano; alexmunoz1_ 275 - agro tech innovation; IszabelMartinez 514 - local market Chignahuapan consume local; balfa9500 111 - foreign inputs limiting national industry; Panque88ARM 677 - promoting local Mexican products). Continued low volume; most results large media, non-Mexico, or over-limit accounts.",
-    "Forty-second hourly run (2026-11-04 ~14:12 CST / 20:12Z): Searched agro/productores (aguacate, campesinos, feria del agricultor), mechanical/refacciones/taller, wood/carpintería, vet/ganadería, local markets (comprar local, consume local), associations/CANACO, emprendedores/Mipymes, and industrial since 2026-11-01. Confirmed existing candidates under limit. No new unique qualifying <1k Mexican business-relevant candidates found (mostly large media, non-Mexico, official accounts, or over-limit). Total remains 22. Continued low volume of small accessible Mexican business accounts."
+    "Forty-second hourly run (2026-11-04 ~14:12 CST / 20:12Z): Searched agro/productores (aguacate, campesinos, feria del agricultor), mechanical/refacciones/taller, wood/carpintería, vet/ganadería, local markets (comprar local, consume local), associations/CANACO, emprendedores/Mipymes, and industrial since 2026-11-01. Confirmed existing candidates under limit. No new unique qualifying <1k Mexican business-relevant candidates found (mostly large media, non-Mexico, official accounts, or over-limit). Total remains 22. Continued low volume of small accessible Mexican business accounts.",
+    "Forty-third hourly run (2026-11-04 ~15:11 CST / 21:15Z): Searched agro (aguacate producers, campesinos), mechanical/refacciones, wood/carpintería, vet/ganadería, local markets, associations/CANACO, and semantic queries for small producers/suppliers since 2026-11-01. Added 2 new unique <1k Mexican candidates (chema_3004 220 - suggesting producers sell directly to markets/tianguis; Aceititoajolote 17 - discussing Michoacán avocado producers and prices). Continued low volume of qualifying small accessible accounts; most results large media or over-limit."
   ]
 }
