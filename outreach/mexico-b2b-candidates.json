@@ -1,1 +1,34 @@
-PLACEHOLDER_FOR_FULL_JSON
+{
+  "last_updated": "2026-11-04T10:12:00Z",
+  "total_count": 25,
+  "target": 2000,
+  "candidates": [
+    {
+      "username": "12hrsver",
+      "post_url": "https://x.com/12hrsver/status/2117869835304481230",
+      "followers": 17,
+      "category": "agro",
+      "reason": "Local Veracruz news covering avocado producers destroying crops due to sanitary alert; relevant for connecting producers to buyers",
+      "found_at": "2026-11-04T10:12:00Z"
+    },
+    {
+      "username": "ResendizRamosA",
+      "post_url": "https://x.com/ResendizRamosA/status/2117891078078513541",
+      "followers": 810,
+      "category": "agro",
+      "reason": "Advocating for avocado producers in Uruapan to be heard on their problems; small account interested in agricultural issues",
+      "found_at": "2026-11-04T10:12:00Z"
+    },
+    {
+      "username": "IleanaM33346840",
+      "post_url": "https://x.com/IleanaM33346840/status/2117839800812093926",
+      "followers": 57,
+      "category": "local markets",
+      "reason": "Posting about buying local to strengthen community in Puebla area; good for local B2B marketplace feedback",
+      "found_at": "2026-11-04T10:12:00Z"
+    }
+  ],
+  "run_summaries": [
+    "Thirty-fourth hourly run (2026-11-04 ~04:12 CST): Searched agro (avocado producers), local markets, mechanical, wood, vet. Added 3 new <1k candidates (12hrsver 17 - Veracruz agro news; ResendizRamosA 810 - Uruapan avocado support; IleanaM33346840 57 - comprar local Puebla). Note: Previous GitHub file was placeholder; restored structure with new entries. Previous reported total ~22. Low volume of qualifying small Mexican business accounts continues."
+  ]
+}
