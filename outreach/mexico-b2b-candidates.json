@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-04T10:12:00Z",
+  "last_updated": "2026-11-04T11:13:00Z",
   "total_count": 25,
   "target": 2000,
   "candidates": [
@@ -29,6 +29,7 @@
     }
   ],
   "run_summaries": [
-    "Thirty-fourth hourly run (2026-11-04 ~04:12 CST): Searched agro (avocado producers), local markets, mechanical, wood, vet. Added 3 new <1k candidates (12hrsver 17 - Veracruz agro news; ResendizRamosA 810 - Uruapan avocado support; IleanaM33346840 57 - comprar local Puebla). Note: Previous GitHub file was placeholder; restored structure with new entries. Previous reported total ~22. Low volume of qualifying small Mexican business accounts continues."
+    "Thirty-fourth hourly run (2026-11-04 ~04:12 CST): Searched agro (avocado producers), local markets, mechanical, wood, vet. Added 3 new <1k candidates (12hrsver 17 - Veracruz agro news; ResendizRamosA 810 - Uruapan avocado support; IleanaM33346840 57 - comprar local Puebla). Note: Previous GitHub file was placeholder; restored structure with new entries. Previous reported total ~22. Low volume of qualifying small Mexican business accounts continues.",
+    "Thirty-fifth hourly run (2026-11-04 ~05:13 CST / 11:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, and emprendedores since 2026-11-01. No new unique qualifying <1k Mexican business-relevant candidates found (mostly large media, non-Mexico, ticket sellers, or over-limit). Confirmed existing under limit. Total remains 25. Continued low volume of small accessible accounts."
   ]
 }
