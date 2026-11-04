@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04T02:11:00Z",
-  "total_count": 11,
+  "last_updated": "2026-11-04T03:11:00Z",
+  "total_count": 13,
   "target": 2000,
   "candidates": [
     {
@@ -90,6 +90,22 @@
       "category": "mercados locales / emprendedores",
       "reason": "Mexican user (209 followers) describing small local business (fonda in Tabasco) forced to close due to extortion (derecho de piso) and market stall fees; highlights challenges for local commerce that a direct B2B marketplace could help mitigate by connecting producers/suppliers more securely.",
       "found_at": "2026-11-04T00:15:00Z"
+    },
+    {
+      "username": "gir_79",
+      "post_url": "https://x.com/gir_79/status/2117767096608186769",
+      "followers": 7,
+      "category": "talleres mecánicos / refacciones",
+      "reason": "Very small account (7 followers) complaining about buying a car in Mexico with many failures and no available refacciones (parts), plus lack of support from authorities; a local B2B marketplace could help connect vehicle owners and workshops with reliable parts suppliers.",
+      "found_at": "2026-11-04T03:11:00Z"
+    },
+    {
+      "username": "CrecMiNegocio",
+      "post_url": "https://x.com/CrecMiNegocio/status/2117794555013541949",
+      "followers": 55,
+      "category": "emprendedores / asociaciones",
+      "reason": "Small Mexican account (55 followers) promoting Crece Mi Negocio, described as the largest business nursery in Mexico for networking, digital showcase, and courses to boost businesses; relevant for outreach on a B2B local marketplace to support local suppliers, buyers, and entrepreneurs.",
+      "found_at": "2026-11-04T03:11:00Z"
     }
   ],
   "run_summaries": [
@@ -112,6 +128,7 @@
     "2026-11-03T23:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Most results large media, non-Mexico, or over-limit. Added 1 new: CanacoTijuana (405 followers, official CANACO Tijuana). Confirmed existing candidates under limit. Total now 10. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-04T00:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, or over-limit accounts. Added 1 new: wakeshita (209 followers, Mexican discussing local fonda closure due to extortion and market fees). Confirmed existing candidates under limit. Total now 11. Continued low volume of qualifying <1k Mexican business-relevant accounts.",
     "2026-11-04T01:15Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio, and emprendedores since 2026-11-01. Results predominantly large media accounts, non-Mexico, or over-limit profiles (e.g. various news outlets). Confirmed existing 11 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 11. Continued low recent volume of small accessible accounts posting in target categories.",
-    "2026-11-04T02:11Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, over-limit (e.g. newonpolsia 3435, YoSoyKilmes 1155), or irrelevant personal posts. Confirmed existing 11 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 11. Continued low recent volume of small accessible accounts in target categories."
+    "2026-11-04T02:11Z run: Keyword and semantic searches across agro/productores agrícolas, talleres mecánicos/refacciones, madera/carpintería, veterinaria/ganadería, mercados locales, asociaciones/cámaras de comercio (CANACO), and emprendedores since 2026-11-01. Results mostly large media, non-Mexico, over-limit (e.g. newonpolsia 3435, YoSoyKilmes 1155), or irrelevant personal posts. Confirmed existing 11 candidates remain under 1000 followers. No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 11. Continued low recent volume of small accessible accounts in target categories.",
+    "2026-11-04T03:11Z run: Keyword and semantic searches across agro, mechanical/refacciones, wood/carpintería, veterinaria, local markets, associations/CANACO, and emprendedores since 2026-11-01. Added 2 new under 1k: gir_79 (7 followers, complaining about car refacciones shortages in Mexico) and CrecMiNegocio (55 followers, Mexican entrepreneurship networking platform). Confirmed existing under limit. Total now 13. Continued low volume of qualifying small Mexican business accounts."
   ]
 }
