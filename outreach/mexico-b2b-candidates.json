@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04T11:13:00Z",
-  "total_count": 25,
+  "last_updated": "2026-11-04T12:16:00Z",
+  "total_count": 8,
   "target": 2000,
   "candidates": [
     {
@@ -26,10 +26,51 @@
       "category": "local markets",
       "reason": "Posting about buying local to strengthen community in Puebla area; good for local B2B marketplace feedback",
       "found_at": "2026-11-04T10:12:00Z"
+    },
+    {
+      "username": "MiSer27",
+      "post_url": "https://x.com/MiSer27/status/2117857807835828676",
+      "followers": 550,
+      "category": "mechanical",
+      "reason": "Discusses difficulty obtaining car parts (refacciones) after Kia brand left Mexico; could benefit from B2B marketplace for local industrial/mechanical suppliers and buyers",
+      "found_at": "2026-11-04T12:16:00Z"
+    },
+    {
+      "username": "capitalazul",
+      "post_url": "https://x.com/capitalazul/status/2117821242161914089",
+      "followers": 267,
+      "category": "agro",
+      "reason": "Highlights that campesinos complain they cannot sell their products or compete with imports; marketplace could help connect producers directly to buyers",
+      "found_at": "2026-11-04T12:16:00Z"
+    },
+    {
+      "username": "jesusdela11",
+      "post_url": "https://x.com/jesusdela11/status/2117791852220862609",
+      "followers": 587,
+      "category": "agro",
+      "reason": "Engages with topics of Mexican agriculture and livestock (ganadería); potential interest in local producer-buyer connections",
+      "found_at": "2026-11-04T12:16:00Z"
+    },
+    {
+      "username": "AlinaTrujilloR",
+      "post_url": "https://x.com/AlinaTrujilloR/status/2117897745415680412",
+      "followers": 719,
+      "category": "local markets",
+      "reason": "Covers initiatives to help Mipymes and local suppliers compete in public works and circulate resources regionally in Sonora; good for B2B local marketplace feedback",
+      "found_at": "2026-11-04T12:16:00Z"
+    },
+    {
+      "username": "SilviaTanc",
+      "post_url": "https://x.com/SilviaTanc/status/2117760362485350595",
+      "followers": 692,
+      "category": "industrial",
+      "reason": "Works as nexus between raw material (materia prima) suppliers and wholesale; experiences difficulties finding materials and clients not selling, addressable by local B2B platform",
+      "found_at": "2026-11-04T12:16:00Z"
     }
   ],
   "run_summaries": [
     "Thirty-fourth hourly run (2026-11-04 ~04:12 CST): Searched agro (avocado producers), local markets, mechanical, wood, vet. Added 3 new <1k candidates (12hrsver 17 - Veracruz agro news; ResendizRamosA 810 - Uruapan avocado support; IleanaM33346840 57 - comprar local Puebla). Note: Previous GitHub file was placeholder; restored structure with new entries. Previous reported total ~22. Low volume of qualifying small Mexican business accounts continues.",
-    "Thirty-fifth hourly run (2026-11-04 ~05:13 CST / 11:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, and emprendedores since 2026-11-01. No new unique qualifying <1k Mexican business-relevant candidates found (mostly large media, non-Mexico, ticket sellers, or over-limit). Confirmed existing under limit. Total remains 25. Continued low volume of small accessible accounts."
+    "Thirty-fifth hourly run (2026-11-04 ~05:13 CST / 11:13Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, and emprendedores since 2026-11-01. No new unique qualifying <1k Mexican business-relevant candidates found (mostly large media, non-Mexico, ticket sellers, or over-limit). Confirmed existing under limit. Total remains 25. Continued low volume of small accessible accounts.",
+    "Thirty-sixth hourly run (2026-11-04 ~06:16 CST / 12:16Z): Searched agro/productores, mechanical/refacciones, wood/carpintería, vet, local markets, associations/CANACO, and related. Added 5 new <1k candidates (MiSer27 550 - Kia refacciones scarcity; capitalazul 267 - campesinos can't sell; jesusdela11 587 - agro/ganadería topics; AlinaTrujilloR 719 - Mipymes local suppliers Sonora; SilviaTanc 692 - materia prima suppliers/wholesale issues). Note: Loaded file had only 3 candidates listed (previous data truncated); updated with new. Low volume continues; most results large media or non-Mexico."
   ]
 }
