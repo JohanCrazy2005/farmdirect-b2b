@@ -1,1 +1,18 @@
-PLACEHOLDER_FULL_JSON
+{
+  "last_updated": "2026-11-05T07:17:55Z",
+  "total_count": 36,
+  "target": 2000,
+  "candidates": [
+    {
+      "username": "GraficoXalapa",
+      "post_url": "https://x.com/GraficoXalapa/status/2118004471573930393",
+      "followers": 364,
+      "category": "agro / media",
+      "reason": "Local Xalapa media reporting on agricultural producers facing reduced profits from rising input costs and commercialization challenges; could benefit from or provide feedback on direct local B2B marketplace.",
+      "found_at": "2026-11-04T23:14:25Z"
+    }
+  ],
+  "run_summaries": [
+    "Fifty-third hourly run (2026-11-05 ~01:17 CST / 07:17Z): No new unique qualifying <1k Mexican business-relevant candidates found. Total remains 36."
+  ]
+}
