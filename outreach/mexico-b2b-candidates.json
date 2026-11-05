@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-05T00:14:00Z",
-  "total_count": 17,
+  "last_updated": "2026-11-05T01:15:00Z",
+  "total_count": 23,
   "target": 2000,
   "candidates": [
     {
@@ -138,10 +138,59 @@
       "category": "associations / local commerce",
       "reason": "Local CANACO Tlalnepantla chamber posting about jobs and business events; potential partner for promoting local B2B marketplace.",
       "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "gir_79",
+      "post_url": "https://x.com/gir_79/status/2117767096608186769",
+      "followers": 7,
+      "category": "mechanical / refacciones",
+      "reason": "Complaining about lack of refacciones for MG cars in Mexico and no authority support; potential user of local parts/suppliers marketplace.",
+      "found_at": "2026-11-05T01:15:00Z"
+    },
+    {
+      "username": "CarinoImagen",
+      "post_url": "https://x.com/CarinoImagen/status/2118124701566284096",
+      "followers": 377,
+      "category": "local commerce / emprendedores",
+      "reason": "Promoting consume local and supporting women entrepreneurs/workshops in Tuxtla; ideal for feedback on B2B local marketplace connecting producers and buyers.",
+      "found_at": "2026-11-05T01:15:00Z"
+    },
+    {
+      "username": "IleanaM33346840",
+      "post_url": "https://x.com/IleanaM33346840/status/2118149503148503412",
+      "followers": 57,
+      "category": "local markets / commerce",
+      "reason": "Small Puebla account promoting 'Comprar local nos fortalece'; perfect small accessible candidate for outreach on local B2B platform.",
+      "found_at": "2026-11-05T01:15:00Z"
+    },
+    {
+      "username": "Presencidigital",
+      "post_url": "https://x.com/Presencidigital/status/2118147425961406886",
+      "followers": 649,
+      "category": "local commerce",
+      "reason": "Puebla media/account posting 'Comprar local nos fortalece a todas y todos'; relevant for promoting or testing direct local supplier connections.",
+      "found_at": "2026-11-05T01:15:00Z"
+    },
+    {
+      "username": "chavarocker",
+      "post_url": "https://x.com/chavarocker/status/2117674457141506219",
+      "followers": 118,
+      "category": "local business",
+      "reason": "Discusses that people do not appreciate work and haggle over prices; potential interest in fairer local B2B pricing and marketplace tools.",
+      "found_at": "2026-11-05T01:15:00Z"
+    },
+    {
+      "username": "EFEXGlobal",
+      "post_url": "https://x.com/EFEXGlobal/status/2118097951725953424",
+      "followers": 16,
+      "category": "business / B2B / international trade",
+      "reason": "Small account analyzing high import costs and currency risks from China for Mexican businesses; ideal for testing local B2B alternative to reduce import dependency.",
+      "found_at": "2026-11-05T01:15:00Z"
     }
   ],
   "run_summaries": [
     "Forty-fifth hourly run (2026-11-04 ~17:13 CST / 23:14Z): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets, associations, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media or over-limit). Added 2 new: GraficoXalapa (364, agro media on producer cost issues), CINNTE_Mx (277, consulting on fiscal impacts for businesses). Previous file was placeholder; restored structure with key prior candidates + new. Total now 10. Continued low volume of small accessible accounts.",
-    "Forty-sixth hourly run (2026-11-04 ~18:14 CST / 00:14Z next day): Searched agro, mechanical/refacciones, wood, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Low volume continues (mostly large media, non-Mexico, or over-limit). Added 7 new unique <1k: PrincipadoMx (422, industrial B2B supplies), chema_3004 (219, direct sales for producers), capitalazul (267, campesinos sales issues), AlinaTrujilloR (719, Mipymes local suppliers), eurowipe (96, industrial cleaning), MiSer27 (551, refacciones scarcity), canacotlalne (155, local CANACO). Total now 17. Continued focus on small accessible Mexican business accounts."
+    "Forty-sixth hourly run (2026-11-04 ~18:14 CST / 00:14Z next day): Searched agro, mechanical/refacciones, wood, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Low volume continues (mostly large media, non-Mexico, or over-limit). Added 7 new unique <1k: PrincipadoMx (422, industrial B2B supplies), chema_3004 (219, direct sales for producers), capitalazul (267, campesinos sales issues), AlinaTrujilloR (719, Mipymes local suppliers), eurowipe (96, industrial cleaning), MiSer27 (551, refacciones scarcity), canacotlalne (155, local CANACO). Total now 17. Continued focus on small accessible Mexican business accounts.",
+    "Forty-seventh hourly run (2026-11-04 ~19:15 CST / 01:15Z next day): Searched agro, mechanical/refacciones, wood, local markets/comprar local, associations, and business topics since 2026-11-01. Low volume of qualifying <1k accounts (many large media or over-limit). Added 6 new unique <1k: gir_79 (7, mechanical refacciones scarcity), CarinoImagen (377, local women entrepreneurs/consume local), IleanaM33346840 (57, Puebla buy local), Presencidigital (649, Puebla buy local), chavarocker (118, pricing/appreciation issues), EFEXGlobal (16, import cost risks). Total now 23. Continued focus on small accessible Mexican business-relevant accounts."
   ]
 }
