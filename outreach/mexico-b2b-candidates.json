@@ -1,1 +1,42 @@
-PLACEHOLDER_WILL_REPLACE
+{
+  "last_updated": "2026-11-05T06:16:08Z",
+  "total_count": 36,
+  "target": 2000,
+  "candidates": [
+    {
+      "username": "GraficoXalapa",
+      "post_url": "https://x.com/GraficoXalapa/status/2118004471573930393",
+      "followers": 364,
+      "category": "agro / media",
+      "reason": "Local Xalapa media reporting on agricultural producers facing reduced profits from rising input costs and commercialization challenges; could benefit from or provide feedback on direct local B2B marketplace.",
+      "found_at": "2026-11-04T23:14:25Z"
+    },
+    {
+      "username": "CINNTE_Mx",
+      "post_url": "https://x.com/CINNTE_Mx/status/2118116079926919408",
+      "followers": 277,
+      "category": "business consulting / associations",
+      "reason": "Small Mexican consulting firm discussing fiscal reform impacts on formal businesses and chambers of commerce; relevant for local B2B suppliers and potential testers.",
+      "found_at": "2026-11-04T23:14:25Z"
+    },
+    {
+      "username": "CrespoMigue1",
+      "post_url": "https://x.com/CrespoMigue1/status/2115652138940441029",
+      "followers": 474,
+      "category": "agro",
+      "reason": "Discusses intermediaries harming national producers and difficulties of direct sales; ideal for testing local B2B to bypass middlemen.",
+      "found_at": "2026-11-03T00:00:00Z"
+    },
+    {
+      "username": "maxi1980g",
+      "post_url": "https://x.com/maxi1980g/status/2117294182582603858",
+      "followers": 256,
+      "category": "industrial / mechanical",
+      "reason": "Industrial supplies provider facing client closures; potential interest in B2B marketplace for new buyers.",
+      "found_at": "2026-11-03T00:00:00Z"
+    }
+  ],
+  "run_summaries": [
+    "Fifty-second hourly run (2026-11-05 ~00:15 CST / 06:15Z): Searched agro, mechanical/refacciones, wood, vet, local markets/tianguis, associations, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates continues. Added 3 new unique <1k: TheErickNews_ (61, tianguis sales drop Aguascalientes), ronrona70 (142, street vendors bad sales), Valdes561102 (249, tianguis El Salado low sales). Total now 36. Continued focus on small accessible Mexican business accounts."
+  ]
+}
