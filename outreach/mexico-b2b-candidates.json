@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04T23:14:25Z",
-  "total_count": 10,
+  "last_updated": "2026-11-05T00:14:00Z",
+  "total_count": 17,
   "target": 2000,
   "candidates": [
     {
@@ -61,7 +61,7 @@
     },
     {
       "username": "wakeshita",
-      "post_url": "https://x.com/wakeshita/status/placeholder",
+      "post_url": "https://x.com/wakeshita/status/2117763805648228802",
       "followers": 209,
       "category": "local markets",
       "reason": "Discussing local fonda closure due to extortion and market fees; interested in fair local business platforms.",
@@ -82,9 +82,66 @@
       "category": "agro media",
       "reason": "Small agro-focused digital magazine covering producer subsidies and avocado certification.",
       "found_at": "2026-11-04T00:00:00Z"
+    },
+    {
+      "username": "PrincipadoMx",
+      "post_url": "https://x.com/PrincipadoMx/status/2118030932318023912",
+      "followers": 422,
+      "category": "industrial B2B / supplies",
+      "reason": "Mexican company offering B2B solutions for industrial supplies and optimizing procurement; ideal tester and potential user of local marketplace.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "chema_3004",
+      "post_url": "https://x.com/chema_3004/status/2118067477758230812",
+      "followers": 219,
+      "category": "agro / local markets",
+      "reason": "Suggests producers sell directly to city markets and tianguis for fairer prices; perfect for feedback on direct B2B platform.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "capitalazul",
+      "post_url": "https://x.com/capitalazul/status/2117821242161914089",
+      "followers": 267,
+      "category": "agro",
+      "reason": "Notes that campesinos complain they cannot sell their products or compete with imports; relevant for local marketplace solutions.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "AlinaTrujilloR",
+      "post_url": "https://x.com/AlinaTrujilloR/status/2117897745415680412",
+      "followers": 719,
+      "category": "local commerce / Mipymes",
+      "reason": "Coverage of initiatives to help Mipymes access public works and strengthen local suppliers in Sonora; potential promoter or user.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "eurowipe",
+      "post_url": "https://x.com/eurowipe/status/2117666640662016466",
+      "followers": 96,
+      "category": "industrial / cleaning supplies",
+      "reason": "Supplier of industrial cleaning products and equipment for businesses with local availability; good candidate for B2B listings.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "MiSer27",
+      "post_url": "https://x.com/MiSer27/status/2117857807835828676",
+      "followers": 551,
+      "category": "mechanical / refacciones",
+      "reason": "Discusses scarcity of car parts/refacciones after brands leave Mexico; relevant for mechanical suppliers and workshops.",
+      "found_at": "2026-11-05T00:14:00Z"
+    },
+    {
+      "username": "canacotlalne",
+      "post_url": "https://x.com/canacotlalne/status/2118060423790707009",
+      "followers": 155,
+      "category": "associations / local commerce",
+      "reason": "Local CANACO Tlalnepantla chamber posting about jobs and business events; potential partner for promoting local B2B marketplace.",
+      "found_at": "2026-11-05T00:14:00Z"
     }
   ],
   "run_summaries": [
-    "Forty-fifth hourly run (2026-11-04 ~17:13 CST / 23:14Z): Searched agro, mechanical/refacciones, wood/carpintería, vet, local markets, associations, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media or over-limit). Added 2 new: GraficoXalapa (364, agro media on producer cost issues), CINNTE_Mx (277, consulting on fiscal impacts for businesses). Previous file was placeholder; restored structure with key prior candidates + new. Total now 10. Continued low volume of small accessible accounts."
+    "Forty-fifth hourly run (2026-11-04 ~17:13 CST / 23:14Z): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets, associations, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media or over-limit). Added 2 new: GraficoXalapa (364, agro media on producer cost issues), CINNTE_Mx (277, consulting on fiscal impacts for businesses). Previous file was placeholder; restored structure with key prior candidates + new. Total now 10. Continued low volume of small accessible accounts.",
+    "Forty-sixth hourly run (2026-11-04 ~18:14 CST / 00:14Z next day): Searched agro, mechanical/refacciones, wood, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Low volume continues (mostly large media, non-Mexico, or over-limit). Added 7 new unique <1k: PrincipadoMx (422, industrial B2B supplies), chema_3004 (219, direct sales for producers), capitalazul (267, campesinos sales issues), AlinaTrujilloR (719, Mipymes local suppliers), eurowipe (96, industrial cleaning), MiSer27 (551, refacciones scarcity), canacotlalne (155, local CANACO). Total now 17. Continued focus on small accessible Mexican business accounts."
   ]
 }
