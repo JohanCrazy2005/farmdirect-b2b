@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-05T02:13:56Z",
-  "total_count": 28,
+  "last_updated": "2026-11-05T03:13:19Z",
+  "total_count": 29,
   "target": 2000,
   "candidates": [
     {
@@ -226,12 +226,21 @@
       "category": "Mipymes / local business",
       "reason": "Local Puebla deputy focusing on support and information for MiPyMEs regarding labor changes; potential ally or tester for marketplace tools aiding small businesses.",
       "found_at": "2026-11-05T02:13:56Z"
+    },
+    {
+      "username": "CrecMiNegocio",
+      "post_url": "https://x.com/CrecMiNegocio/status/2117794555013541949",
+      "followers": 55,
+      "category": "emprendedores / local business",
+      "reason": "Small Mexican entrepreneurship networking platform (vivero empresarial) offering networking, digital showcase, and courses to boost businesses in Mexico; ideal for outreach and feedback on local B2B marketplace.",
+      "found_at": "2026-11-05T03:13:19Z"
     }
   ],
   "run_summaries": [
     "Forty-fifth hourly run (2026-11-04 ~17:13 CST / 23:14Z): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets, associations, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media or over-limit). Added 2 new: GraficoXalapa (364, agro media on producer cost issues), CINNTE_Mx (277, consulting on fiscal impacts for businesses). Previous file was placeholder; restored structure with key prior candidates + new. Total now 10. Continued low volume of small accessible accounts.",
     "Forty-sixth hourly run (2026-11-04 ~18:14 CST / 00:14Z next day): Searched agro, mechanical/refacciones, wood, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Low volume continues (mostly large media, non-Mexico, or over-limit). Added 7 new unique <1k: PrincipadoMx (422, industrial B2B supplies), chema_3004 (219, direct sales for producers), capitalazul (267, campesinos sales issues), AlinaTrujilloR (719, Mipymes local suppliers), eurowipe (96, industrial cleaning), MiSer27 (551, refacciones scarcity), canacotlalne (155, local CANACO). Total now 17. Continued focus on small accessible Mexican business accounts.",
     "Forty-seventh hourly run (2026-11-04 ~19:15 CST / 01:15Z next day): Searched agro, mechanical/refacciones, wood, local markets/comprar local, associations, and business topics since 2026-11-01. Low volume of qualifying <1k accounts (many large media or over-limit). Added 6 new unique <1k: gir_79 (7, mechanical refacciones scarcity), CarinoImagen (377, local women entrepreneurs/consume local), IleanaM33346840 (57, Puebla buy local), Presencidigital (649, Puebla buy local), chavarocker (118, pricing/appreciation issues), EFEXGlobal (16, import cost risks). Total now 23. Continued focus on small accessible Mexican business-relevant accounts.",
-    "Forty-eighth hourly run (2026-11-04 ~20:13 CST / 02:13Z next day): Searched agro/productores, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores/Mipymes since 2026-11-01. Low volume of qualifying <1k Mexican accounts (mostly large media, over-limit, or non-relevant). Added 5 new unique <1k: ContigoPuebla1 (372, CANACO/Buen Fin for small commerce), desde_lasilla (823, consume local/Buen Fin), RespuestaInmedi (159, local Puebla media), NosoyBatman0910 (229, market costs/informal sellers), AmievaMarisol (222, MiPyMEs support). Total now 28. Continued low volume of small accessible business-relevant accounts."
+    "Forty-eighth hourly run (2026-11-04 ~20:13 CST / 02:13Z next day): Searched agro/productores, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores/Mipymes since 2026-11-01. Low volume of qualifying <1k Mexican accounts (mostly large media, over-limit, or non-relevant). Added 5 new unique <1k: ContigoPuebla1 (372, CANACO/Buen Fin for small commerce), desde_lasilla (823, consume local/Buen Fin), RespuestaInmedi (159, local Puebla media), NosoyBatman0910 (229, market costs/informal sellers), AmievaMarisol (222, MiPyMEs support). Total now 28. Continued low volume of small accessible business-relevant accounts.",
+    "Forty-ninth hourly run (2026-11-04 ~21:12 CST / 03:13Z next day): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media, non-Mexico, or over-limit like MartinRoma23486 1458). Added 1 new unique <1k: CrecMiNegocio (55, Mexican entrepreneurship networking platform / vivero empresarial). Total now 29. Continued low volume of small accessible accounts."
   ]
 }
