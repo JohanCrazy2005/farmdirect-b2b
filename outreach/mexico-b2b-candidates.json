@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-05T03:13:19Z",
-  "total_count": 29,
+  "last_updated": "2026-11-05T04:13:48Z",
+  "total_count": 32,
   "target": 2000,
   "candidates": [
     {
@@ -234,6 +234,30 @@
       "category": "emprendedores / local business",
       "reason": "Small Mexican entrepreneurship networking platform (vivero empresarial) offering networking, digital showcase, and courses to boost businesses in Mexico; ideal for outreach and feedback on local B2B marketplace.",
       "found_at": "2026-11-05T03:13:19Z"
+    },
+    {
+      "username": "MissNaoji",
+      "post_url": "https://x.com/MissNaoji/status/2118088789520236562",
+      "followers": 902,
+      "category": "mechanical / refacciones",
+      "reason": "Small Mexican account sharing deals and offers on auto parts/refacciones (e.g. motorcycle batteries) via Mercado Libre; relevant for mechanical workshops and suppliers seeking local or affordable options.",
+      "found_at": "2026-11-05T04:13:48Z"
+    },
+    {
+      "username": "Diana_LnC",
+      "post_url": "https://x.com/Diana_LnC/status/2118186359152140488",
+      "followers": 241,
+      "category": "wood / furniture / emprendedores",
+      "reason": "Mexican official focused on furniture and toy industry (wood-related) promoting young talent, innovation, and emprendedores at events; potential connector for local wood/furniture suppliers or feedback on B2B tools.",
+      "found_at": "2026-11-05T04:13:48Z"
+    },
+    {
+      "username": "MCNoticiasPue",
+      "post_url": "https://x.com/MCNoticiasPue/status/2118180490553299315",
+      "followers": 996,
+      "category": "local commerce / associations",
+      "reason": "Small Puebla local news account covering CANACO projections for Buen Fin economic impact on small commerce; accessible for outreach promoting or testing local B2B marketplace for MIPYMES.",
+      "found_at": "2026-11-05T04:13:48Z"
     }
   ],
   "run_summaries": [
@@ -241,6 +265,7 @@
     "Forty-sixth hourly run (2026-11-04 ~18:14 CST / 00:14Z next day): Searched agro, mechanical/refacciones, wood, vet, local markets, associations/CANACO, and emprendedores since 2026-11-01. Low volume continues (mostly large media, non-Mexico, or over-limit). Added 7 new unique <1k: PrincipadoMx (422, industrial B2B supplies), chema_3004 (219, direct sales for producers), capitalazul (267, campesinos sales issues), AlinaTrujilloR (719, Mipymes local suppliers), eurowipe (96, industrial cleaning), MiSer27 (551, refacciones scarcity), canacotlalne (155, local CANACO). Total now 17. Continued focus on small accessible Mexican business accounts.",
     "Forty-seventh hourly run (2026-11-04 ~19:15 CST / 01:15Z next day): Searched agro, mechanical/refacciones, wood, local markets/comprar local, associations, and business topics since 2026-11-01. Low volume of qualifying <1k accounts (many large media or over-limit). Added 6 new unique <1k: gir_79 (7, mechanical refacciones scarcity), CarinoImagen (377, local women entrepreneurs/consume local), IleanaM33346840 (57, Puebla buy local), Presencidigital (649, Puebla buy local), chavarocker (118, pricing/appreciation issues), EFEXGlobal (16, import cost risks). Total now 23. Continued focus on small accessible Mexican business-relevant accounts.",
     "Forty-eighth hourly run (2026-11-04 ~20:13 CST / 02:13Z next day): Searched agro/productores, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores/Mipymes since 2026-11-01. Low volume of qualifying <1k Mexican accounts (mostly large media, over-limit, or non-relevant). Added 5 new unique <1k: ContigoPuebla1 (372, CANACO/Buen Fin for small commerce), desde_lasilla (823, consume local/Buen Fin), RespuestaInmedi (159, local Puebla media), NosoyBatman0910 (229, market costs/informal sellers), AmievaMarisol (222, MiPyMEs support). Total now 28. Continued low volume of small accessible business-relevant accounts.",
-    "Forty-ninth hourly run (2026-11-04 ~21:12 CST / 03:13Z next day): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media, non-Mexico, or over-limit like MartinRoma23486 1458). Added 1 new unique <1k: CrecMiNegocio (55, Mexican entrepreneurship networking platform / vivero empresarial). Total now 29. Continued low volume of small accessible accounts."
+    "Forty-ninth hourly run (2026-11-04 ~21:12 CST / 03:13Z next day): Searched agro, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates (mostly large media, non-Mexico, or over-limit like MartinRoma23486 1458). Added 1 new unique <1k: CrecMiNegocio (55, Mexican entrepreneurship networking platform / vivero empresarial). Total now 29. Continued low volume of small accessible accounts.",
+    "Fiftieth hourly run (2026-11-04 ~22:13 CST / 04:13Z): Searched agro/productores, mechanical/refacciones, wood/carpinter\u00eda, vet, local markets/comprar local, associations/CANACO, and emprendedores since 2026-11-01. Low volume of qualifying <1k Mexican business-relevant candidates continues (mostly large media, non-Mexico, or over-limit). Added 3 new unique <1k: MissNaoji (902, refacciones/auto parts deals), Diana_LnC (241, furniture/wood industry + emprendedores), MCNoticiasPue (996, local Puebla CANACO/Buen Fin coverage). Total now 32. Continued focus on small accessible Mexican business accounts."
   ]
 }
